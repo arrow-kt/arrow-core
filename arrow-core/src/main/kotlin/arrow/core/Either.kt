@@ -9,7 +9,7 @@ import arrow.legacy.*
  * Represents a value of one of two possible types (a disjoint union.)
  * An instance of Either is either an instance of [Left] or [Right].
  */
-@higherkind sealed class Either<out A, out B> : EitherKind<A, B> {
+@higherkind sealed class Either<out A, out B> : EitherOf<A, B> {
 
     /**
      * Returns `true` if this is a [Right], `false` otherwise.
@@ -55,7 +55,7 @@ import arrow.legacy.*
     }
 
     fun <C> foldLeft(b: C, f: (C, B) -> C): C =
-            this.ev().let { either ->
+            this.fix().let { either ->
                 when (either) {
                     is Right -> f(b, either.b)
                     is Left -> b
@@ -63,7 +63,7 @@ import arrow.legacy.*
             }
 
     fun <C> foldRight(lb: Eval<C>, f: (B, Eval<C>) -> Eval<C>): Eval<C> =
-            this.ev().let { either ->
+            this.fix().let { either ->
                 when (either) {
                     is Right -> f(either.b, lb)
                     is Left -> lb
@@ -150,24 +150,26 @@ import arrow.legacy.*
     /**
      * The left side of the disjoint union, as opposed to the [Right] side.
      */
-    data class Left<out A, out B>(val a: A, private val dummy: Unit) : Either<A, B>() {
+    @Suppress("DataClassPrivateConstructor")
+    data class Left<out A, out B> @PublishedApi internal constructor(val a: A) : Either<A, B>() {
         override val isLeft = true
         override val isRight = false
 
         companion object {
-            inline operator fun <A> invoke(a: A): Either<A, Nothing> = Left(a, Unit)
+            inline operator fun <A> invoke(a: A): Either<A, Nothing> = Left(a)
         }
     }
 
     /**
      * The right side of the disjoint union, as opposed to the [Left] side.
      */
-    data class Right<out A, out B>(val b: B, private val dummy: Unit) : Either<A, B>() {
+    @Suppress("DataClassPrivateConstructor")
+    data class Right<out A, out B> @PublishedApi internal constructor(val b: B) : Either<A, B>() {
         override val isLeft = false
         override val isRight = true
 
         companion object {
-            inline operator fun <B> invoke(b: B): Either<Nothing, B> = Right(b, Unit)
+            inline operator fun <B> invoke(b: B): Either<Nothing, B> = Right(b)
         }
     }
 
@@ -177,8 +179,8 @@ import arrow.legacy.*
 
         fun <R> right(right: R): Either<Nothing, R> = Right(right)
 
-        tailrec fun <L, A, B> tailRecM(a: A, f: (A) -> HK<EitherKindPartial<L>, Either<A, B>>): Either<L, B> {
-            val ev: Either<L, Either<A, B>> = f(a).ev()
+        tailrec fun <L, A, B> tailRecM(a: A, f: (A) -> Kind<EitherPartialOf<L>, Either<A, B>>): Either<L, B> {
+            val ev: Either<L, Either<A, B>> = f(a).fix()
             return when (ev) {
                 is Left<L, Either<A, B>> -> Left(ev.a)
                 is Right<L, Either<A, B>> -> {
@@ -190,6 +192,8 @@ import arrow.legacy.*
                 }
             }
         }
+
+        fun <L, R> cond(test: Boolean, r: () -> R, l: () -> L): Either<L, R> = if (test) right(r()) else left(l())
 
     }
 }
@@ -215,6 +219,18 @@ fun <A, B, C> Either<A, B>.flatMap(f: (B) -> Either<A, C>): Either<A, C> = fold(
  * ```
  */
 inline fun <B> Either<*, B>.getOrElse(crossinline default: () -> B): B = fold({ default() }, { it })
+
+/**
+ * Returns the value from this [Either.Right] or allows clients to transform [Either.Left] to [Either.Right] while providing access to
+ * the value of [Either.Left].
+ *
+ * Example:
+ * ```
+ * Right(12).getOrHandle { 17 } // Result: 12
+ * Left(12).getOrHandle { it + 5 } // Result: 17
+ * ```
+ */
+inline fun <A, B> Either<A, B>.getOrHandle(crossinline default: (A) -> B): B = fold({ default(it) }, { it })
 
 /**
  * * Returns [Either.Right] with the existing value of [Either.Right] if this is a [Either.Right] and the given predicate
@@ -251,12 +267,12 @@ inline fun <A, B> Either<A, B>.filterOrElse(crossinline predicate: (B) -> Boolea
  */
 fun <A, B> Either<A, B>.contains(elem: B): Boolean = fold({ false }, { it == elem })
 
-fun <A, B, C> Either<A, B>.ap(ff: EitherKind<A, (B) -> C>): Either<A, C> = ff.ev().flatMap { f -> map(f) }.ev()
+fun <A, B, C> Either<A, B>.ap(ff: EitherOf<A, (B) -> C>): Either<A, C> = ff.fix().flatMap { f -> map(f) }.fix()
 
-fun <A, B> Either<A, B>.combineK(y: EitherKind<A, B>): Either<A, B> =
+fun <A, B> Either<A, B>.combineK(y: EitherOf<A, B>): Either<A, B> =
         when (this) {
-            is Either.Left -> y.ev()
-            else -> this.ev()
+            is Either.Left -> y.fix()
+            else -> this.fix()
         }
 
 @Deprecated(DeprecatedAmbiguity, ReplaceWith("Try { body }.toEither()"))
