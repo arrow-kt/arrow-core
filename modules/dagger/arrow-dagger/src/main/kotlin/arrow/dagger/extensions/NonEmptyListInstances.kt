@@ -1,6 +1,7 @@
 package arrow.dagger.extensions
 
-import arrow.data.*
+import arrow.data.ForNonEmptyList
+import arrow.data.NonEmptyList
 import arrow.data.extensions.nonemptylist.applicative.applicative
 import arrow.data.extensions.nonemptylist.bimonad.bimonad
 import arrow.data.extensions.nonemptylist.comonad.comonad
@@ -9,7 +10,14 @@ import arrow.data.extensions.nonemptylist.functor.functor
 import arrow.data.extensions.nonemptylist.monad.monad
 import arrow.data.extensions.nonemptylist.semigroupK.semigroupK
 import arrow.data.extensions.nonemptylist.traverse.traverse
-import arrow.typeclasses.*
+import arrow.typeclasses.Applicative
+import arrow.typeclasses.Bimonad
+import arrow.typeclasses.Comonad
+import arrow.typeclasses.Foldable
+import arrow.typeclasses.Functor
+import arrow.typeclasses.Monad
+import arrow.typeclasses.SemigroupK
+import arrow.typeclasses.Traverse
 import dagger.Module
 import dagger.Provides
 
@@ -39,5 +47,4 @@ class NonEmptyListInstances {
 
   @Provides
   fun nonEmptyListBimonad(): Bimonad<ForNonEmptyList> = NonEmptyList.bimonad()
-
 }

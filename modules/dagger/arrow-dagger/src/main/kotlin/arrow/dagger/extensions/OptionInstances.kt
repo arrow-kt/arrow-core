@@ -1,13 +1,19 @@
 package arrow.dagger.extensions
 
-import arrow.core.*
+import arrow.core.ForOption
+import arrow.core.Option
 import arrow.core.extensions.option.applicative.applicative
 import arrow.core.extensions.option.foldable.foldable
 import arrow.core.extensions.option.functor.functor
 import arrow.core.extensions.option.monad.monad
 import arrow.core.extensions.option.monadError.monadError
 import arrow.core.extensions.option.traverse.traverse
-import arrow.typeclasses.*
+import arrow.typeclasses.Applicative
+import arrow.typeclasses.Foldable
+import arrow.typeclasses.Functor
+import arrow.typeclasses.Monad
+import arrow.typeclasses.MonadError
+import arrow.typeclasses.Traverse
 import dagger.Module
 import dagger.Provides
 
@@ -31,5 +37,4 @@ class OptionInstances {
 
   @Provides
   fun optionTraverse(): Traverse<ForOption> = Option.traverse()
-
 }

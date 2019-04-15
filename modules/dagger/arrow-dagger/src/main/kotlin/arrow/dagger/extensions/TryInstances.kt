@@ -1,13 +1,19 @@
 package arrow.dagger.extensions
 
-import arrow.core.*
+import arrow.core.ForTry
+import arrow.core.Try
 import arrow.core.extensions.`try`.applicative.applicative
 import arrow.core.extensions.`try`.foldable.foldable
 import arrow.core.extensions.`try`.functor.functor
 import arrow.core.extensions.`try`.monad.monad
 import arrow.core.extensions.`try`.monadError.monadError
 import arrow.core.extensions.`try`.traverse.traverse
-import arrow.typeclasses.*
+import arrow.typeclasses.Applicative
+import arrow.typeclasses.Foldable
+import arrow.typeclasses.Functor
+import arrow.typeclasses.Monad
+import arrow.typeclasses.MonadError
+import arrow.typeclasses.Traverse
 import dagger.Module
 import dagger.Provides
 
@@ -31,5 +37,4 @@ class TryInstances {
 
   @Provides
   fun tryTraverse(): Traverse<ForTry> = Try.traverse()
-
 }

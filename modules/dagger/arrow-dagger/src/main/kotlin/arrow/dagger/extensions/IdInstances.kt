@@ -1,12 +1,17 @@
 package arrow.dagger.extensions
 
-import arrow.core.*
+import arrow.core.ForId
+import arrow.core.Id
 import arrow.core.extensions.id.applicative.applicative
 import arrow.core.extensions.id.bimonad.bimonad
 import arrow.core.extensions.id.comonad.comonad
 import arrow.core.extensions.id.functor.functor
 import arrow.core.extensions.id.monad.monad
-import arrow.typeclasses.*
+import arrow.typeclasses.Applicative
+import arrow.typeclasses.Bimonad
+import arrow.typeclasses.Comonad
+import arrow.typeclasses.Functor
+import arrow.typeclasses.Monad
 import dagger.Module
 import dagger.Provides
 
@@ -27,5 +32,4 @@ class IdInstances {
 
   @Provides
   fun idBimonad(): Bimonad<ForId> = Id.bimonad()
-
 }
