@@ -1,17 +1,17 @@
-package arrow.data.extensions
+package arrow.core.extensions
 
 import arrow.Kind
 import arrow.Kind2
 import arrow.core.Either
 import arrow.core.Eval
-import arrow.data.ForIor
-import arrow.data.Ior
-import arrow.data.IorOf
-import arrow.data.IorPartialOf
-import arrow.data.ap
-import arrow.data.extensions.ior.monad.monad
-import arrow.data.fix
-import arrow.data.flatMap
+import arrow.core.ForIor
+import arrow.core.Ior
+import arrow.core.IorOf
+import arrow.core.IorPartialOf
+import arrow.core.ap
+import arrow.core.extensions.ior.monad.monad
+import arrow.core.fix
+import arrow.core.flatMap
 import arrow.extension
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Apply

@@ -1,16 +1,16 @@
-package arrow.data.extensions
+package arrow.core.extensions
 
 import arrow.Kind
 import arrow.core.Either
 import arrow.core.Eval
-import arrow.data.Invalid
-import arrow.data.Valid
-import arrow.data.Validated
-import arrow.data.ValidatedPartialOf
-import arrow.data.ap
-import arrow.data.combineK
-import arrow.data.fix
-import arrow.data.handleLeftWith
+import arrow.core.Invalid
+import arrow.core.Valid
+import arrow.core.Validated
+import arrow.core.ValidatedPartialOf
+import arrow.core.fix
+import arrow.core.ap
+import arrow.core.handleLeftWith
+import arrow.core.combineK
 import arrow.extension
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.ApplicativeError
@@ -24,7 +24,7 @@ import arrow.typeclasses.SemigroupK
 import arrow.typeclasses.Show
 import arrow.typeclasses.Traverse
 import arrow.undocumented
-import arrow.data.traverse as validatedTraverse
+import arrow.core.traverse as validatedTraverse
 
 @extension
 @undocumented

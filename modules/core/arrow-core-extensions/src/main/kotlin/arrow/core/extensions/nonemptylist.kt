@@ -1,17 +1,16 @@
-package arrow.data.extensions
+package arrow.core.extensions
 
 import arrow.Kind
 import arrow.core.Either
 import arrow.core.Eval
-import arrow.data.ForNonEmptyList
-import arrow.data.NonEmptyList
-import arrow.data.NonEmptyListOf
-import arrow.data.extensions.nonemptylist.monad.monad
-import arrow.data.fix
+import arrow.core.ForNonEmptyList
+import arrow.core.NonEmptyList
+import arrow.core.NonEmptyListOf
+import arrow.core.extensions.nonemptylist.monad.monad
+import arrow.core.fix
 import arrow.extension
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Apply
-import arrow.typeclasses.Bimonad
 import arrow.typeclasses.Comonad
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Foldable
@@ -24,7 +23,8 @@ import arrow.typeclasses.Semigroup
 import arrow.typeclasses.SemigroupK
 import arrow.typeclasses.Show
 import arrow.typeclasses.Traverse
-import arrow.data.combineK as nelCombineK
+import arrow.typeclasses.Bimonad
+import arrow.core.combineK as nelCombineK
 
 @extension
 interface NonEmptyListSemigroup<A> : Semigroup<NonEmptyList<A>> {

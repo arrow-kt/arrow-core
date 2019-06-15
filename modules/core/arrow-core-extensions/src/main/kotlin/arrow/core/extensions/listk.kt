@@ -1,17 +1,15 @@
-package arrow.data.extensions
+package arrow.core.extensions
 
 import arrow.Kind
 import arrow.core.Either
 import arrow.core.Eval
 import arrow.core.Tuple2
-import arrow.data.ForListK
-import arrow.data.ListK
-import arrow.data.ListKOf
-import arrow.data.k
-import arrow.data.extensions.listk.foldable.foldLeft
-import arrow.data.extensions.listk.monad.map
-import arrow.data.extensions.listk.monad.monad
-import arrow.data.fix
+import arrow.core.ForListK
+import arrow.core.ListK
+import arrow.core.ListKOf
+import arrow.core.k
+import arrow.core.extensions.listk.monad.monad
+import arrow.core.fix
 import arrow.extension
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Apply
@@ -30,7 +28,7 @@ import arrow.typeclasses.Semigroupal
 import arrow.typeclasses.Show
 import arrow.typeclasses.Traverse
 import kotlin.collections.emptyList
-import arrow.data.combineK as listCombineK
+import arrow.core.combineK as listCombineK
 import kotlin.collections.plus as listPlus
 
 @extension
@@ -158,7 +156,7 @@ interface ListKSemigroupK : SemigroupK<ForListK> {
 @extension
 interface ListKSemigroupal : Semigroupal<ForListK> {
   override fun <A, B> Kind<ForListK, A>.product(fb: Kind<ForListK, B>): Kind<ForListK, Tuple2<A, B>> =
-    fb.fix().ap(this.map { a: A -> { b: B -> Tuple2(a, b) } })
+    fb.fix().ap(fix().map { a: A -> { b: B -> Tuple2(a, b) } })
 }
 
 @extension
@@ -182,7 +180,7 @@ interface ListKHash<A> : Hash<ListKOf<A>>, ListKEq<A> {
 
   override fun EQ(): Eq<A> = HA()
 
-  override fun ListKOf<A>.hash(): Int = foldLeft(1) { hash, a ->
+  override fun ListKOf<A>.hash(): Int = fix().foldLeft(1) { hash, a ->
     31 * hash + HA().run { a.hash() }
   }
 }
