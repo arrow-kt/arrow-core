@@ -1,7 +1,17 @@
 import org.gradle.internal.jvm.Jvm
 
-apply plugin: 'kotlin'
-apply plugin: 'kotlin-kapt'
+plugins {
+    id "maven-publish"
+    id "base"
+    id "org.jetbrains.kotlin.jvm"
+    id "org.jetbrains.kotlin.kapt"
+    id "net.rdrei.android.buildtimetracker"
+    id "org.jetbrains.dokka"
+    id "org.jlleitschuh.gradle.ktlint"
+}
+
+apply from: "$DOC_CONF"
+apply from: "$PUBLISH_CONF"
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KOTLIN_VERSION"
@@ -18,8 +28,8 @@ dependencies {
     kaptTest "com.google.auto.service:auto-service:$GOOGLE_AUTO_SERVICE_VERSION"
     testCompile "com.google.testing.compile:compile-testing:$GOOGLE_COMPILE_TESTING_VERSION"
     testCompile fileTree(dir: './src/test/libs', includes: ['*.jar'])
-    testCompile project(":arrow-meta-test-models")
-    testCompile project(":arrow-optics")
+    testCompile project(":arrow-meta:arrow-meta-test-models")
+    testCompile "io.arrow-kt:arrow-optics:$VERSION_NAME"
     testCompile("junit:junit:$JUNIT_VERSION")
     testRuntime("org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION")
     testCompile "io.kotlintest:kotlintest-runner-junit4:$KOTLIN_TEST_VERSION"
@@ -30,5 +40,3 @@ dependencies {
                 "Building with a JRE or JDK9 is currently not supported.")
     testCompile files(toolsJar)
 }
-
-apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
