@@ -209,7 +209,7 @@ interface Foldable<F> {
     find { true }
 
   /**
-   * Get the first element of the foldable or none if empty or the predicate does not match
+   * Get the first element matching the predicate or none
    */
   fun <A> Kind<F, A>.firstOption(predicate: (A) -> Boolean): Option<A> =
     find { predicate(it) }
