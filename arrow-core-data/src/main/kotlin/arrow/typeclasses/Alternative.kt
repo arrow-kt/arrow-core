@@ -32,7 +32,8 @@ interface Alternative<F> : Applicative<F>, MonoidK<F> {
    * @receiver computation to repeat.
    * @returns the collection of results.
    */
-  fun <A> Kind<F, A>.many(): Kind<F, SequenceK<A>> = some().orElse(just(emptySequence<A>().k()))
+  fun <A> Kind<F, A>.many(): Kind<F, SequenceK<A>> =
+    some().orElse(just(emptySequence<A>().k()))
 
   /**
    * Combines two computations.
@@ -42,7 +43,8 @@ interface Alternative<F> : Applicative<F>, MonoidK<F> {
    * @param b computation to combine with [this@orElse].
    * @returns a combination of both computations.
    */
-  infix fun <A> Kind<F, A>.alt(b: Kind<F, A>): Kind<F, A> = this.orElse(b)
+  infix fun <A> Kind<F, A>.alt(b: Kind<F, A>): Kind<F, A> =
+    this.orElse(b)
 
   /**
    * Combines two computations.
@@ -53,22 +55,26 @@ interface Alternative<F> : Applicative<F>, MonoidK<F> {
    */
   fun <A> Kind<F, A>.orElse(b: Kind<F, A>): Kind<F, A>
 
-  override fun <A> Kind<F, A>.combineK(y: Kind<F, A>): Kind<F, A> = orElse(y)
+  override fun <A> Kind<F, A>.combineK(y: Kind<F, A>): Kind<F, A> =
+    orElse(y)
 
   /**
    * Wraps the result in an optional. This never fails.
    * @receiver computation to execute
    * @return Option with either the result or none in case it failed
    */
-  fun <A> Kind<F, A>.optional(): Kind<F, Option<A>> = map(::Some).orElse(just(None))
+  fun <A> Kind<F, A>.optional(): Kind<F, Option<A>> =
+    map(::Some).orElse(just(None))
 
-  fun guard(b: Boolean): Kind<F, Unit> = if (b) just(Unit) else empty()
+  fun guard(b: Boolean): Kind<F, Unit> =
+    if (b) just(Unit) else empty()
 
   /**
    * Lazy or else, useful when traversing a structure with asum which short circuits on success. In general this should be implemented
    *  for every Alternative that models success and failure.
    */
-  fun <A> Kind<F, A>.lazyOrElse(b: () -> Kind<F, A>): Kind<F, A> = orElse(b())
+  fun <A> Kind<F, A>.lazyOrElse(b: () -> Kind<F, A>): Kind<F, A> =
+    orElse(b())
 }
 
 // TODO move back to alternative once arrow-meta is used to handle @extension because currently this breaks for lists and sequences
@@ -80,11 +86,17 @@ fun <T, F, A> Kind<T, Kind<F, A>>.altSum(AF: Alternative<F>, FT: Foldable<T>): K
   }
 }
 
-fun <T, F, A> Kind<T, A>.altFold(AF: Alternative<F>, FT: Foldable<T>): Kind<F, A> = FT.run { toList().altFromList(AF) }
+fun <T, F, A> Kind<T, A>.altFold(AF: Alternative<F>, FT: Foldable<T>): Kind<F, A> =
+  FT.run { toList().altFromList(AF) }
 
-fun <F, A> List<A>.altFromList(AF: Alternative<F>): Kind<F, A> = map { AF.just(it) }.k().altSum(AF, object : Foldable<ForListK> {
-  override fun <A, B> Kind<ForListK, A>.foldLeft(b: B, f: (B, A) -> B): B = fix().foldLeft(b, f)
-  override fun <A, B> Kind<ForListK, A>.foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> = fix().foldRight(lb, f)
-})
+fun <F, A> List<A>.altFromList(AF: Alternative<F>): Kind<F, A> =
+  map { AF.just(it) }.k().altSum(AF, object : Foldable<ForListK> {
+    override fun <A, B> Kind<ForListK, A>.foldLeft(b: B, f: (B, A) -> B): B =
+      fix().foldLeft(b, f)
 
-fun <F, A> Option<A>.altFromOption(AF: Alternative<F>): Kind<F, A> = fold({ AF.empty() }, { AF.just(it) })
+    override fun <A, B> Kind<ForListK, A>.foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> =
+      fix().foldRight(lb, f)
+  })
+
+fun <F, A> Option<A>.altFromOption(AF: Alternative<F>): Kind<F, A> =
+  fold({ AF.empty() }, { AF.just(it) })
