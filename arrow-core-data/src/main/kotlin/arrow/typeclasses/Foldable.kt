@@ -205,18 +205,14 @@ interface Foldable<F> {
   /**
    * Get the first element of the foldable or none
    */
-  fun <A> Kind<F, A>.firstOption(): Option<A> = get(0)
+  fun <A> Kind<F, A>.firstOption(): Option<A> =
+    find { true }
 
   /**
    * Get the first element of the foldable or none if empty or the predicate does not match
    */
   fun <A> Kind<F, A>.firstOption(predicate: (A) -> Boolean): Option<A> =
-    foldLeft<A, Either<A, Long>>(0L.right()) { i, a ->
-      i.flatMap {
-        if (predicate(a)) Left(a)
-        else Right(it + 1L)
-      }
-    }.swap().toOption()
+    find { predicate(it) }
 
   fun <A> Kind<F, A>.toList(): List<A> = foldRight(Eval.now(emptyList<A>())) { v, acc -> acc.map { listOf(v) + it } }.value()
 
