@@ -218,9 +218,9 @@ interface Foldable<F> {
   /**
    * Get the first element of the foldable or none
    */
-  @Deprecated("In favor of having a more Kotlin idiomatic API", ReplaceWith("first()"))
+  @Deprecated("In favor of having a more Kotlin idiomatic API", ReplaceWith("firstOrNone()"))
   fun <A> Kind<F, A>.firstOption(): Option<A> =
-    first()
+    firstOrNone()
 
   /**
    * Get the first element matching the predicate or none
@@ -232,7 +232,7 @@ interface Foldable<F> {
   /**
    * Get the first element of the foldable or none
    */
-  fun <A> Kind<F, A>.first(): Option<A> =
+  fun <A> Kind<F, A>.firstOrNone(): Option<A> =
     find { true }
 
   /**
