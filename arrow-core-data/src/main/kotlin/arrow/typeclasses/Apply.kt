@@ -38,10 +38,10 @@ interface Apply<F> : Functor<F> {
    */
   fun <A, B> Kind<F, A>.ap(ff: Kind<F, (A) -> B>): Kind<F, B>
 
-  fun <A, B> Kind<F, A>.lazyAp(ff: Eval<Kind<F, (A) -> B>>): Eval<Kind<F, B>> = ff.map { this.ap(it) }
+  fun <A, B> Kind<F, A>.apEval(ff: Eval<Kind<F, (A) -> B>>): Eval<Kind<F, B>> = ff.map { this.ap(it) }
 
   fun <A, B, Z> Kind<F, A>.map2Eval(fb: Eval<Kind<F, B>>, f: (Tuple2<A, B>) -> Z): Eval<Kind<F, Z>> =
-    lazyAp(fb.map { it.map { b -> { a: A -> f(Tuple2(a, b)) } } })
+    apEval(fb.map { it.map { b -> { a: A -> f(Tuple2(a, b)) } } })
 
   @Deprecated(
     "map is being renamed to mapN",

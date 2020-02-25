@@ -147,7 +147,7 @@ interface OptionApply : Apply<ForOption> {
   override fun <A, B> OptionOf<A>.map(f: (A) -> B): Option<B> =
     fix().map(f)
 
-  override fun <A, B> Kind<ForOption, A>.lazyAp(ff: Eval<Kind<ForOption, (A) -> B>>): Eval<Kind<ForOption, B>> =
+  override fun <A, B> Kind<ForOption, A>.apEval(ff: Eval<Kind<ForOption, (A) -> B>>): Eval<Kind<ForOption, B>> =
     fix().fold({ Eval.now(None) }, { v -> ff.map { it.fix().map { f -> f(v) } } })
 }
 

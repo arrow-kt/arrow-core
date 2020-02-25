@@ -97,7 +97,7 @@ interface EitherApply<L> : Apply<EitherPartialOf<L>>, EitherFunctor<L> {
 
   override fun <A, B> EitherOf<L, A>.map(f: (A) -> B): Either<L, B> = fix().map(f)
 
-  override fun <A, B> Kind<EitherPartialOf<L>, A>.lazyAp(ff: Eval<Kind<EitherPartialOf<L>, (A) -> B>>): Eval<Kind<EitherPartialOf<L>, B>> =
+  override fun <A, B> Kind<EitherPartialOf<L>, A>.apEval(ff: Eval<Kind<EitherPartialOf<L>, (A) -> B>>): Eval<Kind<EitherPartialOf<L>, B>> =
     fix().fold({ l -> Eval.now(l.left()) }, { r -> ff.map { it.fix().map { f -> f(r) } } })
 
   override fun <A, B> EitherOf<L, A>.ap(ff: EitherOf<L, (A) -> B>): Either<L, B> =

@@ -118,7 +118,7 @@ interface TryApply : Apply<ForTry> {
   override fun <A, B> TryOf<A>.ap(ff: TryOf<(A) -> B>): Try<B> =
     fix().ap(ff)
 
-  override fun <A, B> Kind<ForTry, A>.lazyAp(ff: Eval<Kind<ForTry, (A) -> B>>): Eval<Kind<ForTry, B>> =
+  override fun <A, B> Kind<ForTry, A>.apEval(ff: Eval<Kind<ForTry, (A) -> B>>): Eval<Kind<ForTry, B>> =
     fix().fold({ t -> Eval.now(Try.raiseError(t)) }, { a -> ff.map { it.fix().map { f -> f(a) } } })
 
   override fun <A, B> TryOf<A>.map(f: (A) -> B): Try<B> =
