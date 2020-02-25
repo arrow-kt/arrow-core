@@ -36,6 +36,10 @@ interface Apply<F> : Functor<F> {
    * }
    * ```
    */
+  @Deprecated(
+    "ap will have its type signature changed to fun <A, B> Kind<F, (A) -> B>.ap(ff: Kind<F, A>) in future versions. You can either keep it as is and change it then, or use mapN as a stable replacement",
+    ReplaceWith("mapN(this, ff) { (a, f) -> f(a) }")
+  )
   fun <A, B> Kind<F, A>.ap(ff: Kind<F, (A) -> B>): Kind<F, B>
 
   /**
