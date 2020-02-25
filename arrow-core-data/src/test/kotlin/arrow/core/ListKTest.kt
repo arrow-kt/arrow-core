@@ -29,6 +29,7 @@ import arrow.test.generators.listK
 import arrow.test.laws.AlignLaws
 import arrow.test.laws.CrosswalkLaws
 import arrow.test.laws.EqKLaws
+import arrow.test.laws.FoldableLaws
 import arrow.test.laws.HashLaws
 import arrow.test.laws.MonadCombineLaws
 import arrow.test.laws.MonoidKLaws
@@ -73,6 +74,7 @@ class ListKTest : UnitSpec() {
         this::bijection),
       MonoidKLaws.laws(ListK.monoidK(), ListK.genK(), ListK.eqK()),
       TraverseLaws.laws(ListK.traverse(), ListK.genK(), ListK.eqK()),
+      FoldableLaws.laws(ListK.foldable(), ListK.genK()),
 
       HashLaws.laws(ListK.hash(Int.hash()), Gen.listK(Gen.int()), ListK.eq(Int.eq())),
       EqKLaws.laws(
