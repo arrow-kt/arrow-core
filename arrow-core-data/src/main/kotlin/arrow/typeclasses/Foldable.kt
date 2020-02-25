@@ -116,7 +116,7 @@ interface Foldable<F> {
    * not otherwise needed.
    */
   fun <G, A, B> Kind<F, A>.traverse_(GA: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, Unit> =
-    foldRight(always { GA.just(Unit) }) { a, acc -> Eval.later { GA.run { f(a).lazyAp { acc.value().map { { _: B -> Unit } } } } } }.value()
+    foldRight(always { GA.just(Unit) }) { a, acc -> GA.run { f(a).apEval(acc.map { it.map { { _: B -> Unit } } }) } }.value()
 
   /**
    * Sequence F<G<A>> using Applicative<G>.
@@ -147,7 +147,16 @@ interface Foldable<F> {
    *
    * If there are no elements, the result is true.
    */
+  @Deprecated("In favor of having a more Kotlin idiomatic API", ReplaceWith("all(p)"))
   fun <A> Kind<F, A>.forAll(p: (A) -> Boolean): Boolean =
+    all(p)
+
+  /**
+   * Check whether all elements satisfy the predicate.
+   *
+   * If there are no elements, the result is true.
+   */
+  fun <A> Kind<F, A>.all(p: (A) -> Boolean): Boolean =
     this.foldRight(Eval.True) { a, lb -> if (p(a)) lb else Eval.False }.value()
 
   /**
@@ -156,7 +165,11 @@ interface Foldable<F> {
   fun <A> Kind<F, A>.isEmpty(): Boolean =
     this.foldRight(Eval.True) { _, _ -> Eval.False }.value()
 
+  @Deprecated("In favor of having a more Kotlin idiomatic API", ReplaceWith("isNotEmpty()"))
   fun <A> Kind<F, A>.nonEmpty(): Boolean =
+    isNotEmpty()
+
+  fun <A> Kind<F, A>.isNotEmpty(): Boolean =
     !isEmpty()
 
   /**
@@ -205,22 +218,37 @@ interface Foldable<F> {
   /**
    * Get the first element of the foldable or none
    */
-  fun <A> Kind<F, A>.firstOption(): Option<A> = get(0)
+  @Deprecated("In favor of having a more Kotlin idiomatic API", ReplaceWith("firstOrNone()"))
+  fun <A> Kind<F, A>.firstOption(): Option<A> =
+    firstOrNone()
 
   /**
-   * Get the first element of the foldable or none if empty or the predicate does not match
+   * Get the first element matching the predicate or none
    */
+  @Deprecated("In favor of having a more Kotlin idiomatic API", ReplaceWith("firstOrNone(predicate)"))
   fun <A> Kind<F, A>.firstOption(predicate: (A) -> Boolean): Option<A> =
-    get(0).filter(predicate)
+    firstOrNone { predicate(it) }
+
+  /**
+   * Get the first element of the foldable or none
+   */
+  fun <A> Kind<F, A>.firstOrNone(): Option<A> =
+    find { true }
+
+  /**
+   * Get the first element matching the predicate or none
+   */
+  fun <A> Kind<F, A>.firstOrNone(predicate: (A) -> Boolean): Option<A> =
+    find { predicate(it) }
 
   fun <A> Kind<F, A>.toList(): List<A> = foldRight(Eval.now(emptyList<A>())) { v, acc -> acc.map { listOf(v) + it } }.value()
 
   companion object {
     @Deprecated("This function will be removed soon. Use Iterator.iterateRight from Eval.kt instead")
     fun <A, B> iterateRight(it: Iterator<A>, lb: Eval<B>): (f: (A, Eval<B>) -> Eval<B>) -> Eval<B> = { f: (A, Eval<B>) -> Eval<B> ->
-        fun loop(): Eval<B> =
-          Eval.defer { if (it.hasNext()) f(it.next(), loop()) else lb }
-        loop()
-      }
+      fun loop(): Eval<B> =
+        Eval.defer { if (it.hasNext()) f(it.next(), loop()) else lb }
+      loop()
+    }
   }
 }
