@@ -241,7 +241,11 @@ interface Foldable<F> {
   fun <A> Kind<F, A>.firstOrNone(predicate: (A) -> Boolean): Option<A> =
     find { predicate(it) }
 
-  fun <A> Kind<F, A>.toList(): List<A> = foldRight(Eval.now(emptyList<A>())) { v, acc -> acc.map { listOf(v) + it } }.value()
+  /**
+   * Turn items into a list
+   */
+  fun <A> Kind<F, A>.toList(): List<A> =
+    foldRight(Eval.now(emptyList<A>())) { v, acc -> acc.map { listOf(v) + it } }.value()
 
   companion object {
     @Deprecated("This function will be removed soon. Use Iterator.iterateRight from Eval.kt instead")

@@ -38,11 +38,12 @@ object FoldableLaws {
       Law("Foldable Laws: ForAll is lazy") { FF.forAllIsLazy(GEN, EQ) },
       Law("Foldable Laws: ForAll consistent with exists") { FF.forallConsistentWithExists(GEN) },
       Law("Foldable Laws: ForAll returns true if isEmpty") { FF.forallReturnsTrueIfEmpty(GEN) },
+      Law("Foldable Laws: FoldM for Id is equivalent to fold left") { FF.foldMIdIsFoldL(GEN, EQ) },
       Law("Foldable Laws: firstOrNone returns None if isEmpty") { FF.firstOrNoneReturnsNoneIfEmpty(GEN) },
       Law("Foldable Laws: firstOrNone returns None if predicate fails") { FF.firstOrNoneReturnsNoneIfPredicateFails(GEN) },
-      Law("Foldable Laws: FoldM for Id is equivalent to fold left") { FF.foldMIdIsFoldL(GEN, EQ) },
       Law("Foldable Laws: firstOrNone is consistent with find") { FF.`firstOrNone is consistent with find`(GEN, EQOptionInt) },
-      Law("Foldable Laws: firstOrNone is consistent with find matching predicate") { FF.`firstOrNone is consistent with find predicate`(GEN, EQOptionInt) }
+      Law("Foldable Laws: firstOrNone is consistent with find matching predicate") { FF.`firstOrNone is consistent with find predicate`(GEN, EQOptionInt) },
+      Law("Foldable Laws: toList turn items into a list") { FF.`toList turn items into a list`(GEN, EQ) }
     )
   }
 
@@ -121,6 +122,15 @@ object FoldableLaws {
       !fa.isEmpty() || fa.all(f)
     }
 
+  fun <F> Foldable<F>.foldMIdIsFoldL(G: Gen<Kind<F, Int>>, EQ: Eq<Int>) =
+    forAll(Gen.functionAToB<Int, Int>(Gen.intSmall()), G) { f: (Int) -> Int, fa: Kind<F, Int> ->
+      with(Int.monoid()) {
+        val foldL: Int = fa.foldLeft(empty()) { acc, a -> acc.combine(f(a)) }
+        val foldM: Int = fa.foldM(Id.monad(), empty()) { acc, a -> Id(acc.combine(f(a))) }.extract()
+        foldM.equalUnderTheLaw(foldL, EQ)
+      }
+    }
+
   fun <F> Foldable<F>.firstOrNoneReturnsNoneIfEmpty(G: Gen<Kind<F, Int>>) =
     forAll(G) { fa: Kind<F, Int> ->
       if (fa.isEmpty()) fa.firstOrNone().isEmpty()
@@ -132,15 +142,6 @@ object FoldableLaws {
       fa.firstOrNone { false }.isEmpty()
     }
 
-  fun <F> Foldable<F>.foldMIdIsFoldL(G: Gen<Kind<F, Int>>, EQ: Eq<Int>) =
-    forAll(Gen.functionAToB<Int, Int>(Gen.intSmall()), G) { f: (Int) -> Int, fa: Kind<F, Int> ->
-      with(Int.monoid()) {
-        val foldL: Int = fa.foldLeft(empty()) { acc, a -> acc.combine(f(a)) }
-        val foldM: Int = fa.foldM(Id.monad(), empty()) { acc, a -> Id(acc.combine(f(a))) }.extract()
-        foldM.equalUnderTheLaw(foldL, EQ)
-      }
-    }
-
   fun <F> Foldable<F>.`firstOrNone is consistent with find`(G: Gen<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
     forAll(G) { fa: Kind<F, Int> ->
       fa.firstOrNone().equalUnderTheLaw(fa.find { true }, EQ)
@@ -149,5 +150,11 @@ object FoldableLaws {
   fun <F> Foldable<F>.`firstOrNone is consistent with find predicate`(G: Gen<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
     forAll(Gen.intPredicate(), G) { f: (Int) -> Boolean, fa: Kind<F, Int> ->
       fa.firstOrNone(f).equalUnderTheLaw(fa.find { f(it) }, EQ)
+    }
+
+  fun <F> Foldable<F>.`toList turn items into a list`(G: Gen<Kind<F, Int>>, EQ: Eq<Int>) =
+    forAll(G) { fa: Kind<F, Int> ->
+      val expected = fa.foldRight(Eval.now(emptyList<Int>())) { v, acc -> acc.map { listOf(v) + it } }.value()
+      fa.toList().size.equalUnderTheLaw(expected.size, EQ)
     }
 }
