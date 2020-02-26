@@ -8,7 +8,6 @@ import arrow.core.NonEmptyList
 import arrow.core.Tuple2
 import arrow.core.extensions.listk.foldable.foldable
 import arrow.core.extensions.monoid
-import arrow.core.extensions.nonemptylist.applicative.applicative
 import arrow.core.extensions.nonemptylist.eqK.eqK
 import arrow.core.extensions.semigroup
 import arrow.core.fix
@@ -28,7 +27,6 @@ class ReducibleTests : UnitSpec() {
 
     testLaws(ReducibleLaws.laws(
       nonEmptyReducible,
-      NonEmptyList.applicative(),
       NonEmptyList.genK(),
       NonEmptyList.eqK()
     ))

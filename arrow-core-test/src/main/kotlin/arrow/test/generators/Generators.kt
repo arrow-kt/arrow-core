@@ -199,7 +199,5 @@ fun <A, B> Gen.Companion.genConst(gen: Gen<A>): Gen<Const<A, B>> =
     Const<A, B>(it)
   }
 
-fun <A> Gen.Companion.genEval(gen: Gen<A>): Gen<Eval<A>> =
-  gen.map {
-    Eval.just(it)
-  }
+fun <A> Gen<A>.genEval(): Gen<Eval<A>> =
+  map { Eval.just(it) }

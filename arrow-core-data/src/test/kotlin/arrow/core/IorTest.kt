@@ -57,7 +57,6 @@ class IorTest : UnitSpec() {
         Ior.eqK(Int.eq())
       ),
       TraverseLaws.laws(Ior.traverse(),
-        Ior.applicative(Int.semigroup()),
         Ior.genK(Gen.int()),
         Ior.eqK(Int.eq())
       ),
