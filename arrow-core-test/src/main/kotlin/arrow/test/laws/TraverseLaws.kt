@@ -66,6 +66,10 @@ object TraverseLaws {
       )
   }
 
+  fun <F> laws(TF: Traverse<F>, GA: Applicative<F>, GENK: GenK<F>, EQK: EqK<F>): List<Law> {
+    return FoldableLaws.laws(TF, GA, GENK, EQK)
+  }
+
   fun <F> Traverse<F>.identityTraverse(FF: Functor<F>, G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) = Id.applicative().run {
     val idApp = this
     forAll(Gen.functionAToB<Int, Kind<ForId, Int>>(Gen.intSmall().map(::Id)), G) { f: (Int) -> Kind<ForId, Int>, fa: Kind<F, Int> ->
