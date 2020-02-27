@@ -1,14 +1,20 @@
 package arrow.test.laws
 
 import arrow.Kind
+import arrow.core.Either
 import arrow.core.Eval
 import arrow.core.Eval.Companion.always
+import arrow.core.ForId
 import arrow.core.ForListK
 import arrow.core.Id
+import arrow.core.Left
 import arrow.core.ListK
 import arrow.core.None
 import arrow.core.Option
+import arrow.core.Right
 import arrow.core.Some
+import arrow.core.extensions.ListKEq
+import arrow.core.extensions.either.monad.flatMap
 import arrow.core.extensions.eq
 import arrow.core.extensions.id.applicative.applicative
 import arrow.core.extensions.id.comonad.extract
@@ -24,6 +30,7 @@ import arrow.core.extensions.option.eq.eq
 import arrow.core.extensions.option.eqK.eqK
 import arrow.core.extensions.option.traverseFilter.traverseFilter
 import arrow.core.identity
+import arrow.core.right
 import arrow.core.some
 import arrow.test.concurrency.SideEffect
 import arrow.test.generators.GenK
@@ -53,7 +60,8 @@ object FoldableLaws {
     val EQ: Eq<Int> = Int.eq()
     val EQBool = Boolean.eq()
     val EQOptionInt = Option.eq(Int.eq())
-    val EQListKInt = ListK.eq(Int.eq())
+    val EQListKInt: ListKEq<Int> = ListK.eq(Int.eq())
+    val EQForIdInt: Eq<Kind<ForId, Int>> = Id.eqK().liftEq(Int.eq())
 
     return laws2(Id.traverse(), Id.applicative(), Id.genK(), Id.eqK()) +
       listOf(
@@ -79,7 +87,9 @@ object FoldableLaws {
         Law("Foldable Laws: reduceLeftOption consistent with reduceLeftToOption") { FF.`reduceLeftOption returns Option value`(GEN, EQOptionInt) },
         Law("Foldable Laws: reduceRightOption consistent with reduceRightToOption") { FF.`reduceRightOption returns Option value`(GEN, EQOptionInt) },
         Law("Foldable Laws: isEmpty returns if there are elements or not") { FF.`isEmpty returns if there are elements or not`(GEN, EQBool) },
-        Law("Foldable Laws: isNotEmpty consistent with isEmpty") { FF.`isNotEmpty consistent with isEmpty`(GEN, EQBool) }
+        Law("Foldable Laws: isNotEmpty consistent with isEmpty") { FF.`isNotEmpty consistent with isEmpty`(GEN, EQBool) },
+        Law("Foldable Laws: foldMapM folds on F mapping values to G(B) using given Monoid") { FF.`foldMapM folds on F mapping values to G(B) using given Monoid`(GEN, EQForIdInt) },
+        Law("Foldable Laws: get gets the item at the given index of the Foldable") { FF.`get gets the item at the given index of the Foldable`(GEN, EQOptionInt) }
       )
   }
 
@@ -300,5 +310,30 @@ object FoldableLaws {
   fun <F> Foldable<F>.`isNotEmpty consistent with isEmpty`(G: Gen<Kind<F, Int>>, EQ: Eq<Boolean>) =
     forAll(G) { fa: Kind<F, Int> ->
       fa.isNotEmpty().equalUnderTheLaw(!fa.isEmpty(), EQ)
+    }
+
+  fun <F> Foldable<F>.`foldMapM folds on F mapping values to G(B) using given Monoid`(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<ForId, Int>>) =
+    forAll(Gen.functionAToB<Int, Kind<ForId, Int>>(Gen.intSmall().map(::Id)), G) { f: (Int) -> Kind<ForId, Int>, fa: Kind<F, Int> ->
+      Id.monad().run {
+        with(Int.monoid()) {
+          val expected = fa.foldM(this@run, this.empty()) { b, a -> f(a).map { this.run { b.combine(it) } } }
+          fa.foldMapM(this@run, this, f).equalUnderTheLaw(expected, EQ)
+        }
+      }
+    }
+
+  fun <F> Foldable<F>.`get gets the item at the given index of the Foldable`(G: Gen<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
+    forAll(Gen.intSmall(), G) { index, fa: Kind<F, Int> ->
+      val idx = index.toLong()
+      val expected = if (idx < 0L)
+        None
+      else
+        fa.foldLeft<Int, Either<Int, Long>>(0L.right()) { i, a ->
+          i.flatMap {
+            if (it == idx) Left(a)
+            else Right(it + 1L)
+          }
+        }.swap().toOption()
+      fa.get(idx).equalUnderTheLaw(expected, EQ)
     }
 }
