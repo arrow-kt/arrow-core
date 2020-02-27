@@ -10,6 +10,7 @@ import arrow.test.generators.GenK
 import arrow.test.generators.functionAAToA
 import arrow.test.generators.functionAToB
 import arrow.test.generators.intSmall
+import arrow.typeclasses.Applicative
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.Reducible
@@ -18,14 +19,14 @@ import io.kotlintest.properties.forAll
 
 object ReducibleLaws {
 
-  fun <F> laws(RF: Reducible<F>, GENK: GenK<F>, EQK: EqK<F>): List<Law> {
+  fun <F> laws(RF: Reducible<F>, GA: Applicative<F>, GENK: GenK<F>, EQK: EqK<F>): List<Law> {
 
     val EQ = Int.eq()
     val EQOptionInt = Option.eq(Int.eq())
     val EQLong = Long.eq()
     val G = GENK.genK(Gen.int())
 
-    return FoldableLaws.laws(RF, GENK) +
+    return FoldableLaws.laws(RF, GA, EQK) +
       listOf(
         Law("Reducible Laws: reduceLeftTo consistent with reduceMap") { RF.reduceLeftToConsistentWithReduceMap(G, EQ) },
         Law("Reducible Laws: reduceRightTo consistent with reduceMap") { RF.reduceRightToConsistentWithReduceMap(G, EQ) },

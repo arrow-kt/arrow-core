@@ -51,40 +51,45 @@ object FoldableLaws {
     val EQOptionInt = Option.eq(Int.eq())
     val EQListKInt = ListK.eq(Int.eq())
 
-    return laws(Option.traverseFilter(), Option.applicative(), Option.genK(), Option.eqK()) +
+    return listOf(
+      Law("Foldable Laws: foldRight is lazy") { FF.`foldRight is lazy`(GEN, EQ) },
+      Law("Foldable Laws: Left fold consistent with foldMap") { FF.leftFoldConsistentWithFoldMap(GEN, EQ) },
+      Law("Foldable Laws: Right fold consistent with foldMap") { FF.rightFoldConsistentWithFoldMap(GEN, EQ) },
+      Law("Foldable Laws: find matching predicate should return some(value) or none") { FF.`find matching predicate should return some(value) or none`(GEN, EQOptionInt) },
+      Law("Foldable Laws: Exists is consistent with find") { FF.existsConsistentWithFind(GEN) },
+      Law("Foldable Laws: Exists is lazy") { FF.existsIsLazy(GEN, EQ) },
+      Law("Foldable Laws: ForAll is lazy") { FF.forAllIsLazy(GEN, EQ) },
+      Law("Foldable Laws: ForAll consistent with exists") { FF.forallConsistentWithExists(GEN) },
+      Law("Foldable Laws: ForAll returns true if isEmpty") { FF.forallReturnsTrueIfEmpty(GEN) },
+      Law("Foldable Laws: FoldM for Id is equivalent to fold left") { FF.foldMIdIsFoldL(GEN, EQ) },
+      Law("Foldable Laws: firstOrNone returns None if isEmpty") { FF.firstOrNoneReturnsNoneIfEmpty(GEN) },
+      Law("Foldable Laws: firstOrNone returns None if predicate fails") { FF.firstOrNoneReturnsNoneIfPredicateFails(GEN) },
+      Law("Foldable Laws: firstOrNone is consistent with find") { FF.`firstOrNone is consistent with find`(GEN, EQOptionInt) },
+      Law("Foldable Laws: firstOrNone is consistent with find matching predicate") { FF.`firstOrNone is consistent with find predicate`(GEN, EQOptionInt) },
+      Law("Foldable Laws: toList turn items into a list") { FF.`toList turn items into a list`(GEN, EQ) },
+      Law("Foldable Laws: fold returns combination of all items") { FF.`fold should combine all items`(GENListK, EQListKInt) },
+      Law("Foldable Laws: combineAll is an alias for fold") { FF.`combineAll consistent with fold (alias)`(GENListK, EQListKInt) },
+      Law("Foldable Laws: reduceLeftToOption combines all items into an optional value") { FF.`reduceLeftToOption returns Option value`(GENB, EQOptionInt) },
+      Law("Foldable Laws: reduceRightToOption combines all items into an optional value") { FF.`reduceRightToOption returns Option value`(GENB, EQOptionInt) },
+      Law("Foldable Laws: reduceLeftOption consistent with reduceLeftToOption") { FF.`reduceLeftOption returns Option value`(GEN, EQOptionInt) },
+      Law("Foldable Laws: reduceRightOption consistent with reduceRightToOption") { FF.`reduceRightOption returns Option value`(GEN, EQOptionInt) }
+    )
+  }
+
+  fun <F> laws(FF: Foldable<F>, GA: Applicative<F>, EQK: EqK<F>): List<Law> {
+    val EQKListKInt: Eq<Kind<F, Kind<ForListK, Int>>> = EQK.liftEq(ListK.eq(Int.eq()))
+
+    return laws2(Option.traverseFilter(), Option.applicative(), Option.genK(), Option.eqK()) +
       listOf(
-        Law("Foldable Laws: foldRight is lazy") { FF.`foldRight is lazy`(GEN, EQ) },
-        Law("Foldable Laws: Left fold consistent with foldMap") { FF.leftFoldConsistentWithFoldMap(GEN, EQ) },
-        Law("Foldable Laws: Right fold consistent with foldMap") { FF.rightFoldConsistentWithFoldMap(GEN, EQ) },
-        Law("Foldable Laws: find matching predicate should return some(value) or none") { FF.`find matching predicate should return some(value) or none`(GEN, EQOptionInt) },
-        Law("Foldable Laws: Exists is consistent with find") { FF.existsConsistentWithFind(GEN) },
-        Law("Foldable Laws: Exists is lazy") { FF.existsIsLazy(GEN, EQ) },
-        Law("Foldable Laws: ForAll is lazy") { FF.forAllIsLazy(GEN, EQ) },
-        Law("Foldable Laws: ForAll consistent with exists") { FF.forallConsistentWithExists(GEN) },
-        Law("Foldable Laws: ForAll returns true if isEmpty") { FF.forallReturnsTrueIfEmpty(GEN) },
-        Law("Foldable Laws: FoldM for Id is equivalent to fold left") { FF.foldMIdIsFoldL(GEN, EQ) },
-        Law("Foldable Laws: firstOrNone returns None if isEmpty") { FF.firstOrNoneReturnsNoneIfEmpty(GEN) },
-        Law("Foldable Laws: firstOrNone returns None if predicate fails") { FF.firstOrNoneReturnsNoneIfPredicateFails(GEN) },
-        Law("Foldable Laws: firstOrNone is consistent with find") { FF.`firstOrNone is consistent with find`(GEN, EQOptionInt) },
-        Law("Foldable Laws: firstOrNone is consistent with find matching predicate") { FF.`firstOrNone is consistent with find predicate`(GEN, EQOptionInt) },
-        Law("Foldable Laws: toList turn items into a list") { FF.`toList turn items into a list`(GEN, EQ) },
-        Law("Foldable Laws: fold returns combination of all items") { FF.`fold should combine all items`(GENListK, EQListKInt) },
-        Law("Foldable Laws: combineAll is an alias for fold") { FF.`combineAll consistent with fold (alias)`(GENListK, EQListKInt) },
-        Law("Foldable Laws: reduceLeftToOption combines all items into an optional value") { FF.`reduceLeftToOption returns Option value`(GENB, EQOptionInt) },
-        Law("Foldable Laws: reduceRightToOption combines all items into an optional value") { FF.`reduceRightToOption returns Option value`(GENB, EQOptionInt) },
-        Law("Foldable Laws: reduceLeftOption consistent with reduceLeftToOption") { FF.`reduceLeftOption returns Option value`(GEN, EQOptionInt) },
-        Law("Foldable Laws: reduceRightOption consistent with reduceRightToOption") { FF.`reduceRightOption returns Option value`(GEN, EQOptionInt) }
+        Law("Foldable Laws: orEmpty consistent with just empty") { FF.`orEmpty consistent with just empty`(GA, EQKListKInt) }
       )
   }
 
-  fun <F> laws(FF: Foldable<F>, GA: Applicative<F>, GENK: GenK<F>, EQK: EqK<F>): List<Law> {
+  private fun <F> laws2(FF: Foldable<F>, GA: Applicative<F>, GENK: GenK<F>, EQK: EqK<F>): List<Law> {
     val GEN: Gen<Kind<F, Int>> = GENK.genK(Gen.intSmall())
-
-    val EQListKInt: Eq<Kind<F, Kind<ForListK, Int>>> = EQK.liftEq(ListK.eq(Int.eq()))
     val EQKUnit = EQK.liftEq(Eq.any())
 
     return listOf(
-      Law("Foldable Laws: orEmpty consistent with just empty") { FF.`orEmpty consistent with just empty`(GA, EQListKInt) },
       Law("Foldable Laws: traverse_ consistent with foldRight") { FF.`traverse_ consistent with foldRight`(GA, GENK, GEN, EQKUnit) },
       Law("Foldable Laws: sequence_ consistent with traverse_") { FF.`sequence_ consistent with traverse_`(GA, GENK, EQKUnit) }
     )
