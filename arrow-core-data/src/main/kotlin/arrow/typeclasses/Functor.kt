@@ -30,7 +30,7 @@ import arrow.documented
  * [map] allows us to safely compute over values under the assumption that they'll be there returning the
  * transformation encapsulated in the same context.
  *
- * Consider [arrow.core.Option]:
+ * Consider [arrow.core.Option] and [arrow.core.Either]:
  *
  * `Option<A>` allows us to model absence and has two possible states, `Some(a: A)` if the value is not absent and `None` to represent an empty case.
  * In a similar fashion `Either<L, R>` may have two possible cases `Left(l: L)` and `Right(r: R)`. By convention, `Left` is used to model the exceptional
