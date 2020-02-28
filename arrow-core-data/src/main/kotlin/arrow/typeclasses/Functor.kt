@@ -42,10 +42,10 @@ import arrow.documented
  * import arrow.*
  * import arrow.core.*
  *
- * fun main(args: Array<String>) {
+ * suspend fun main(args: Array<String>) {
  *   val result =
  *   //sampleStart
- *   runBlocking { Either.catch { "1".toInt() }.map { it * 2 } }
+ *   Either.catch { "1".toInt() }.map { it * 2 }
  *   //sampleEnd
  *   println(result)
  * }
