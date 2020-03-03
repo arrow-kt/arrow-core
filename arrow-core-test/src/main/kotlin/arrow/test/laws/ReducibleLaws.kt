@@ -26,7 +26,7 @@ object ReducibleLaws {
     val EQLong = Long.eq()
     val G = GENK.genK(Gen.int())
 
-    return FoldableLaws.laws(RF, GA, EQK) +
+    return FoldableLaws.laws(RF, GA, GENK, EQK) +
       listOf(
         Law("Reducible Laws: reduceLeftTo consistent with reduceMap") { RF.reduceLeftToConsistentWithReduceMap(G, EQ) },
         Law("Reducible Laws: reduceRightTo consistent with reduceMap") { RF.reduceRightToConsistentWithReduceMap(G, EQ) },
