@@ -24,11 +24,9 @@ Consider both `Option` and `Either`:
 
 `Option<A>` allows us to model absence and has two possible states: `Some(a: A)` if the value is not absent, and `None` to represent an empty case.
 
-In a similar fashion, `Either<A, B>` may have two possible cases: `Left(a: A)` for computations that succeed, and `Right(b: B)`.
+In a similar fashion, `Either<A, B>` may have two possible cases: `Right(b: B)` for computations that succeed, and `Left(a: A)` for exceptional cases.
 
-By convention, the `Left` case is used to model the exceptional case.
-
-`Either` is an example datatype that can be computed over transforming its inner results.
+Both `Either` and `Option` are example datatypes that can be computed over transforming their inner results.
 
 ```kotlin:ank
 import arrow.*
