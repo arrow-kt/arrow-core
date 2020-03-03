@@ -241,9 +241,6 @@ interface Foldable<F> {
   fun <A> Kind<F, A>.firstOrNone(predicate: (A) -> Boolean): Option<A> =
     find { predicate(it) }
 
-  /**
-   * Turn items into a list
-   */
   fun <A> Kind<F, A>.toList(): List<A> =
     foldRight(Eval.now(emptyList<A>())) { v, acc -> acc.map { listOf(v) + it } }.value()
 
