@@ -601,7 +601,7 @@ import arrow.typeclasses.Show
  * ```
  *
  * Arrow contains `Either` instances for many useful typeclasses that allows you to use and transform right values.
- * Both Option and Try don't require a type parameter with the following functions, but it is specifically used for Either.Left
+ * Option does not require a type parameter with the following functions, but it is specifically used for Either.Left
  *
  * [Functor]({{'/docs/arrow/typeclasses/functor/' | relative_url }})
  *
@@ -722,7 +722,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
   fun <C> foldRight(initial: Eval<C>, rightOperation: (B, Eval<C>) -> Eval<C>): Eval<C> =
     fix().let { either ->
       when (either) {
-        is Right -> rightOperation(either.b, initial)
+        is Right -> Eval.defer { rightOperation(either.b, initial) }
         is Left -> initial
       }
     }
