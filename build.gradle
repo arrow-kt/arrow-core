@@ -1,3 +1,6 @@
+// TODO: Add this into https://github.com/arrow-kt/arrow gradle.properties
+// ext.KOTLINX_VALIDATOR_VERSION = "0.2.2"
+
 buildscript {
     apply from: "$COMMON_SETUP"
     repositories {
@@ -8,6 +11,7 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlinx:atomicfu-gradle-plugin:$ATOMICFU_VERSION"
+        classpath "org.jetbrains.kotlinx:binary-compatibility-validator:0.2.2"
     }
 }
 
@@ -27,6 +31,8 @@ apply from: "$GENERIC_CONF"
 subprojects {
     apply plugin: 'kotlinx-atomicfu'
 }
+
+apply plugin: 'binary-compatibility-validator'
 
 configure(subprojects - project("arrow-meta")) {
     apply plugin: 'ru.vyarus.animalsniffer'

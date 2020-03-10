@@ -1,0 +1,153 @@
+public final class arrow/aql/AQLHelperKt {
+	public static final fun fix (Larrow/Kind;)Larrow/aql/Box;
+}
+
+public abstract class arrow/aql/Box : arrow/Kind {
+}
+
+public final class arrow/aql/ForBox {
+	public static final field Companion Larrow/aql/ForBox$Companion;
+}
+
+public final class arrow/aql/ForBox$Companion {
+}
+
+public final class arrow/reflect/ExtensionsHelperKt {
+	public static final fun docsMarkdownLink (Larrow/reflect/DataType;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public static final fun docsMarkdownLink (Larrow/reflect/TypeClass;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public static final fun docsMarkdownLink (Lkotlin/reflect/KClass;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public static final fun dtMarkdownList (Larrow/reflect/TypeClass;)Ljava/lang/String;
+	public static final fun hierarchyGraph (Larrow/reflect/TypeClass;)Ljava/lang/String;
+	public static final fun mixedHierarchyGraph (Ljava/util/List;)Ljava/lang/String;
+	public static final fun nomnomlBlock (Larrow/reflect/TypeClass;)Ljava/lang/String;
+	public static final fun nomnomlExtends (Larrow/reflect/Extends;)Ljava/lang/String;
+	public static final fun nomnomlExtensions (Larrow/reflect/TypeClass;)Ljava/lang/String;
+	public static final fun nomnomlHierarchy (Larrow/reflect/TypeClass;)Ljava/lang/String;
+	public static final fun nomnomlMethods (Larrow/reflect/TypeClass;)Ljava/lang/String;
+	public static final fun nomnomlMixedHierarchyGraph (Ljava/util/List;)Ljava/lang/String;
+	public static final fun tcMarkdownList (Larrow/reflect/DataType;)Ljava/lang/String;
+	public static final fun toKebabCase (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public final class com/example/domain/ForSerializer {
+	public static final field Companion Lcom/example/domain/ForSerializer$Companion;
+}
+
+public final class com/example/domain/ForSerializer$Companion {
+}
+
+public final class com/example/domain/Higherkind_com_example_domain_SerializerKt {
+	public static final fun fix (Larrow/Kind;)Lcom/example/domain/Serializer;
+}
+
+public final class com/example/domain/Serializer : arrow/Kind {
+	public static final field Companion Lcom/example/domain/Serializer$Companion;
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public final fun getFunc ()Lkotlin/jvm/functions/Function1;
+}
+
+public final class com/example/domain/Serializer$Companion {
+	public final fun decidable ()Lcom/example/domain/SerializerDecidable;
+	public final fun divide ()Lcom/example/domain/SerializerDivide;
+	public final fun divisible ()Lcom/example/domain/SerializerDivisible;
+}
+
+public abstract interface class com/example/domain/SerializerDecidable : arrow/typeclasses/Decidable, com/example/domain/SerializerDivisible {
+	public abstract fun choose (Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+}
+
+public final class com/example/domain/SerializerDecidable$DefaultImpls {
+	public static fun choose (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun choose (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun choose (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun choose (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun choose (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun choose (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun choose (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun choose (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun choose (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun conquer (Lcom/example/domain/SerializerDecidable;)Larrow/Kind;
+	public static fun contramap (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Lcom/example/domain/Serializer;
+	public static fun imap (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun lift (Lcom/example/domain/SerializerDecidable;Lkotlin/jvm/functions/Function1;Lkotlin/Unit;)Lkotlin/jvm/functions/Function1;
+	public static fun narrow (Lcom/example/domain/SerializerDecidable;Larrow/Kind;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDecidable;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+}
+
+public abstract interface class com/example/domain/SerializerDivide : arrow/typeclasses/Divide {
+	public abstract fun contramap (Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public abstract fun divide (Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Lcom/example/domain/Serializer;
+}
+
+public final class com/example/domain/SerializerDivide$DefaultImpls {
+	public static fun contramap (Lcom/example/domain/SerializerDivide;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Lcom/example/domain/Serializer;
+	public static fun imap (Lcom/example/domain/SerializerDivide;Larrow/Kind;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun lift (Lcom/example/domain/SerializerDivide;Lkotlin/jvm/functions/Function1;Lkotlin/Unit;)Lkotlin/jvm/functions/Function1;
+	public static fun narrow (Lcom/example/domain/SerializerDivide;Larrow/Kind;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivide;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+}
+
+public abstract interface class com/example/domain/SerializerDivisible : arrow/typeclasses/Divisible, com/example/domain/SerializerDivide {
+	public abstract fun conquer ()Larrow/Kind;
+}
+
+public final class com/example/domain/SerializerDivisible$DefaultImpls {
+	public static fun conquer (Lcom/example/domain/SerializerDivisible;)Larrow/Kind;
+	public static fun contramap (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun divide (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Lkotlin/jvm/functions/Function1;)Lcom/example/domain/Serializer;
+	public static fun imap (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public static fun lift (Lcom/example/domain/SerializerDivisible;Lkotlin/jvm/functions/Function1;Lkotlin/Unit;)Lkotlin/jvm/functions/Function1;
+	public static fun narrow (Lcom/example/domain/SerializerDivisible;Larrow/Kind;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+	public static fun product (Lcom/example/domain/SerializerDivisible;Larrow/Kind;Larrow/Kind;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;Lkotlin/Unit;)Larrow/Kind;
+}
+
