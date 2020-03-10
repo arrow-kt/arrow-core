@@ -1,16 +1,16 @@
-public abstract class arrow/core/test/UnitSpec : io/kotlintest/specs/AbstractStringSpec {
+public abstract class arrow/test/UnitSpec : io/kotlintest/specs/AbstractStringSpec {
 	public fun <init> ()V
 	public fun testCases ()Ljava/util/List;
 	public final fun testLaws ([Ljava/util/List;)Ljava/util/List;
 }
 
-public final class arrow/core/test/concurrency/SideEffect {
+public final class arrow/test/concurrency/SideEffect {
 	public fun <init> ()V
 	public fun <init> (I)V
 	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()I
-	public final fun copy (I)Larrow/core/test/concurrency/SideEffect;
-	public static synthetic fun copy$default (Larrow/core/test/concurrency/SideEffect;IILjava/lang/Object;)Larrow/core/test/concurrency/SideEffect;
+	public final fun copy (I)Larrow/test/concurrency/SideEffect;
+	public static synthetic fun copy$default (Larrow/test/concurrency/SideEffect;IILjava/lang/Object;)Larrow/test/concurrency/SideEffect;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getCounter ()I
 	public fun hashCode ()I
@@ -19,77 +19,56 @@ public final class arrow/core/test/concurrency/SideEffect {
 	public fun toString ()Ljava/lang/String;
 }
 
-public abstract interface class arrow/core/test/generators/GenK {
+public abstract interface class arrow/test/generators/GenK {
 	public abstract fun genK (Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
 }
 
-public abstract interface class arrow/core/test/generators/GenK2 {
-	public abstract fun genK (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
+public final class arrow/test/generators/GenKKt {
+	public static final fun genK (Larrow/core/Id$Companion;)Larrow/test/generators/GenK;
+	public static final fun genK (Larrow/core/Ior$Companion;Lio/kotlintest/properties/Gen;)Larrow/test/generators/GenK;
+	public static final fun genK (Larrow/core/ListK$Companion;)Larrow/test/generators/GenK;
+	public static final fun genK (Larrow/core/MapK$Companion;Lio/kotlintest/properties/Gen;)Larrow/test/generators/GenK;
+	public static final fun genK (Larrow/core/NonEmptyList$Companion;)Larrow/test/generators/GenK;
+	public static final fun genK (Larrow/core/Option$Companion;)Larrow/test/generators/GenK;
+	public static final fun genK (Larrow/core/SequenceK$Companion;)Larrow/test/generators/GenK;
+	public static final fun genK (Larrow/core/SetK$Companion;)Larrow/test/generators/GenK;
+	public static final fun genK (Larrow/core/SortedMapK$Companion;Lio/kotlintest/properties/Gen;)Larrow/test/generators/GenK;
 }
 
-public final class arrow/core/test/generators/GenK2Kt {
-	public static final fun genK2 (Larrow/core/Either$Companion;)Larrow/core/test/generators/GenK2;
-	public static final fun genK2 (Larrow/core/Ior$Companion;)Larrow/core/test/generators/GenK2;
-	public static final fun genK2 (Larrow/core/Validated$Companion;)Larrow/core/test/generators/GenK2;
-}
-
-public final class arrow/core/test/generators/GenKKt {
-	public static final fun genK (Larrow/core/Const$Companion;Lio/kotlintest/properties/Gen;)Larrow/core/test/generators/GenK;
-	public static final fun genK (Larrow/core/Either$Companion;Lio/kotlintest/properties/Gen;)Larrow/core/test/generators/GenK;
-	public static final fun genK (Larrow/core/Id$Companion;)Larrow/core/test/generators/GenK;
-	public static final fun genK (Larrow/core/Ior$Companion;Lio/kotlintest/properties/Gen;)Larrow/core/test/generators/GenK;
-	public static final fun genK (Larrow/core/ListK$Companion;I)Larrow/core/test/generators/GenK;
-	public static final fun genK (Larrow/core/MapK$Companion;Lio/kotlintest/properties/Gen;I)Larrow/core/test/generators/GenK;
-	public static final fun genK (Larrow/core/NonEmptyList$Companion;I)Larrow/core/test/generators/GenK;
-	public static final fun genK (Larrow/core/Option$Companion;)Larrow/core/test/generators/GenK;
-	public static final fun genK (Larrow/core/SequenceK$Companion;)Larrow/core/test/generators/GenK;
-	public static final fun genK (Larrow/core/SetK$Companion;I)Larrow/core/test/generators/GenK;
-	public static final fun genK (Larrow/core/SortedMapK$Companion;Lio/kotlintest/properties/Gen;I)Larrow/core/test/generators/GenK;
-	public static final fun genK (Larrow/core/Try$Companion;)Larrow/core/test/generators/GenK;
-	public static final fun genK (Larrow/core/Validated$Companion;Lio/kotlintest/properties/Gen;)Larrow/core/test/generators/GenK;
-	public static synthetic fun genK$default (Larrow/core/ListK$Companion;IILjava/lang/Object;)Larrow/core/test/generators/GenK;
-	public static synthetic fun genK$default (Larrow/core/MapK$Companion;Lio/kotlintest/properties/Gen;IILjava/lang/Object;)Larrow/core/test/generators/GenK;
-	public static synthetic fun genK$default (Larrow/core/NonEmptyList$Companion;IILjava/lang/Object;)Larrow/core/test/generators/GenK;
-	public static synthetic fun genK$default (Larrow/core/SetK$Companion;IILjava/lang/Object;)Larrow/core/test/generators/GenK;
-	public static synthetic fun genK$default (Larrow/core/SortedMapK$Companion;Lio/kotlintest/properties/Gen;IILjava/lang/Object;)Larrow/core/test/generators/GenK;
-}
-
-public final class arrow/core/test/generators/GeneratorsKt {
+public final class arrow/test/generators/GeneratorsKt {
 	public static final fun applicative (Lio/kotlintest/properties/Gen;Larrow/typeclasses/Applicative;)Lio/kotlintest/properties/Gen;
 	public static final fun applicativeError (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/ApplicativeError;)Lio/kotlintest/properties/Gen;
 	public static final fun applicativeError (Lio/kotlintest/properties/Gen;Larrow/typeclasses/ApplicativeError;)Lio/kotlintest/properties/Gen;
 	public static final fun byte (Lio/kotlintest/properties/Gen$Companion;)Lio/kotlintest/properties/Gen;
-	public static final fun byteSmall (Lio/kotlintest/properties/Gen$Companion;)Lio/kotlintest/properties/Gen;
 	public static final fun char (Lio/kotlintest/properties/Gen$Companion;)Lio/kotlintest/properties/Gen;
-	public static final fun doubleSmall (Lio/kotlintest/properties/Gen$Companion;)Lio/kotlintest/properties/Gen;
 	public static final fun either (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
 	public static final fun endo (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
-	public static final fun eval (Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
 	public static final fun fatalThrowable (Lio/kotlintest/properties/Gen$Companion;)Lio/kotlintest/properties/Gen;
-	public static final fun floatSmall (Lio/kotlintest/properties/Gen$Companion;)Lio/kotlintest/properties/Gen;
 	public static final fun functionAAToA (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
-	public static final fun functionABToB (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
 	public static final fun functionAToB (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
-	public static final fun functionBAToB (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
-	public static final fun functionToA (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
 	public static final fun genConst (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
 	public static final fun genSetK (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
+	public static final fun greaterEqual (Lio/kotlintest/properties/Gen$Companion;I)Lio/kotlintest/properties/Gen;
+	public static final fun greaterOrEqThan (Lio/kotlintest/properties/Gen$Companion;I)Lio/kotlintest/properties/Gen;
+	public static final fun greaterThan (Lio/kotlintest/properties/Gen$Companion;I)Lio/kotlintest/properties/Gen;
 	public static final fun id (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
 	public static final fun intPredicate (Lio/kotlintest/properties/Gen$Companion;)Lio/kotlintest/properties/Gen;
 	public static final fun intSmall (Lio/kotlintest/properties/Gen$Companion;)Lio/kotlintest/properties/Gen;
 	public static final fun ior (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
+	public static final fun lessEqual (Lio/kotlintest/properties/Gen$Companion;I)Lio/kotlintest/properties/Gen;
+	public static final fun lessThan (Lio/kotlintest/properties/Gen$Companion;I)Lio/kotlintest/properties/Gen;
 	public static final fun listK (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
-	public static final fun longSmall (Lio/kotlintest/properties/Gen$Companion;)Lio/kotlintest/properties/Gen;
 	public static final fun mapK (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
 	public static final fun nonEmptyList (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
+	public static final fun nonEmptyString (Lio/kotlintest/properties/Gen$Companion;)Lio/kotlintest/properties/Gen;
 	public static final fun nonZeroInt (Lio/kotlintest/properties/Gen$Companion;)Lio/kotlintest/properties/Gen;
 	public static final fun option (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
 	public static final fun or (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
 	public static final fun sequenceK (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
 	public static final fun short (Lio/kotlintest/properties/Gen$Companion;)Lio/kotlintest/properties/Gen;
-	public static final fun shortSmall (Lio/kotlintest/properties/Gen$Companion;)Lio/kotlintest/properties/Gen;
 	public static final fun sortedMapK (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
 	public static final fun throwable (Lio/kotlintest/properties/Gen$Companion;)Lio/kotlintest/properties/Gen;
+	public static final fun timeUnit (Lio/kotlintest/properties/Gen$Companion;)Lio/kotlintest/properties/Gen;
 	public static final fun try (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
 	public static synthetic fun try$default (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;ILjava/lang/Object;)Lio/kotlintest/properties/Gen;
 	public static final fun tuple10 (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
@@ -105,26 +84,26 @@ public final class arrow/core/test/generators/GeneratorsKt {
 	public static final fun validated (Lio/kotlintest/properties/Gen$Companion;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;)Lio/kotlintest/properties/Gen;
 }
 
-public final class arrow/core/test/laws/AlignLaws {
-	public static final field INSTANCE Larrow/core/test/laws/AlignLaws;
+public final class arrow/test/laws/AlignLaws {
+	public static final field INSTANCE Larrow/test/laws/AlignLaws;
 	public final fun alignLeftEmpty (Larrow/typeclasses/Align;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 	public final fun alignRightEmpty (Larrow/typeclasses/Align;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 	public final fun getIorEq ()Larrow/core/extensions/IorEq;
-	public final fun laws (Larrow/typeclasses/Align;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun laws (Larrow/typeclasses/Align;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;Larrow/typeclasses/Foldable;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Align;Larrow/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Align;Larrow/test/generators/GenK;Larrow/typeclasses/EqK;Larrow/typeclasses/Foldable;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/AlternativeLaws {
-	public static final field INSTANCE Larrow/core/test/laws/AlternativeLaws;
-	public final fun alternativeAssociativity (Larrow/typeclasses/Alternative;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun alternativeLeftDistributivity (Larrow/typeclasses/Alternative;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun alternativeRightAbsorption (Larrow/typeclasses/Alternative;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun alternativeRightDistributivity (Larrow/typeclasses/Alternative;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Alternative;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+public final class arrow/test/laws/AlternativeLaws {
+	public static final field INSTANCE Larrow/test/laws/AlternativeLaws;
+	public final fun alternativeAssociativity (Larrow/typeclasses/Alternative;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun alternativeLeftDistributivity (Larrow/typeclasses/Alternative;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun alternativeRightAbsorption (Larrow/typeclasses/Alternative;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun alternativeRightDistributivity (Larrow/typeclasses/Alternative;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/typeclasses/Alternative;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/ApplicativeErrorLaws {
-	public static final field INSTANCE Larrow/core/test/laws/ApplicativeErrorLaws;
+public final class arrow/test/laws/ApplicativeErrorLaws {
+	public static final field INSTANCE Larrow/test/laws/ApplicativeErrorLaws;
 	public final fun applicativeErrorAttemptError (Larrow/typeclasses/ApplicativeError;Larrow/typeclasses/Eq;)V
 	public final fun applicativeErrorAttemptFromEitherConsistentWithPure (Larrow/typeclasses/ApplicativeError;Larrow/typeclasses/Eq;)V
 	public final fun applicativeErrorAttemptSuccess (Larrow/typeclasses/ApplicativeError;Larrow/typeclasses/Eq;)V
@@ -133,218 +112,283 @@ public final class arrow/core/test/laws/ApplicativeErrorLaws {
 	public final fun applicativeErrorHandle (Larrow/typeclasses/ApplicativeError;Larrow/typeclasses/Eq;)V
 	public final fun applicativeErrorHandleWith (Larrow/typeclasses/ApplicativeError;Larrow/typeclasses/Eq;)V
 	public final fun applicativeErrorHandleWithPure (Larrow/typeclasses/ApplicativeError;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/ApplicativeError;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/ApplicativeError;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public static synthetic fun laws$default (Larrow/test/laws/ApplicativeErrorLaws;Larrow/typeclasses/ApplicativeError;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;ILjava/lang/Object;)Ljava/util/List;
 	public final fun redeemIsDerivedFromMapHandleError (Larrow/typeclasses/ApplicativeError;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/ApplicativeLaws {
-	public static final field INSTANCE Larrow/core/test/laws/ApplicativeLaws;
-	public final fun apEvalConsistent (Larrow/typeclasses/Applicative;Larrow/core/test/generators/GenK;Larrow/typeclasses/Eq;)V
-	public final fun apIdentity (Larrow/typeclasses/Applicative;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+public final class arrow/test/laws/ApplicativeLaws {
+	public static final field INSTANCE Larrow/test/laws/ApplicativeLaws;
+	public final fun apIdentity (Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)V
 	public final fun cartesianBuilderMap (Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)V
-	public final fun cartesianBuilderTupled2 (Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)V
-	public final fun cartesianBuilderTupled3 (Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)V
+	public final fun cartesianBuilderTupled (Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)V
 	public final fun homomorphism (Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)V
-	public final fun interchange (Larrow/typeclasses/Applicative;Larrow/core/test/generators/GenK;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Applicative;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun laws (Larrow/typeclasses/Applicative;Larrow/typeclasses/Functor;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun mapDerived (Larrow/typeclasses/Applicative;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Functor;Larrow/typeclasses/Eq;)V
-	public final fun replicateListOf1 (Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)V
-	public final fun replicateMonoid (Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)V
-	public final fun replicateSize (Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)V
+	public final fun interchange (Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun mapDerived (Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/BicrosswalkLaws {
-	public static final field INSTANCE Larrow/core/test/laws/BicrosswalkLaws;
+public final class arrow/test/laws/AsyncLaws {
+	public static final field INSTANCE Larrow/test/laws/AsyncLaws;
+	public final fun asyncCanBeDerivedFromAsyncF (Larrow/fx/typeclasses/Async;Larrow/typeclasses/Eq;)V
+	public final fun asyncConstructor (Larrow/fx/typeclasses/Async;Larrow/typeclasses/Eq;)V
+	public final fun asyncError (Larrow/fx/typeclasses/Async;Larrow/typeclasses/Eq;)V
+	public final fun asyncSuccess (Larrow/fx/typeclasses/Async;Larrow/typeclasses/Eq;)V
+	public final fun bracketReleaseIscalledOnCompletedOrError (Larrow/fx/typeclasses/Async;Larrow/typeclasses/Eq;)V
+	public final fun continueOn (Larrow/fx/typeclasses/Async;Larrow/typeclasses/Eq;)V
+	public final fun continueOnComprehension (Larrow/fx/typeclasses/Async;Larrow/typeclasses/Eq;)V
+	public final fun effectCanCallSuspend (Larrow/fx/typeclasses/Async;Larrow/typeclasses/Eq;)V
+	public final fun effectEquivalence (Larrow/fx/typeclasses/Async;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/fx/typeclasses/Async;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Z)Ljava/util/List;
+	public final fun laws (Larrow/fx/typeclasses/Async;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Z)Ljava/util/List;
+	public static synthetic fun laws$default (Larrow/test/laws/AsyncLaws;Larrow/fx/typeclasses/Async;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;ZILjava/lang/Object;)Ljava/util/List;
+	public static synthetic fun laws$default (Larrow/test/laws/AsyncLaws;Larrow/fx/typeclasses/Async;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;ZILjava/lang/Object;)Ljava/util/List;
+}
+
+public final class arrow/test/laws/BicrosswalkLaws {
+	public static final field INSTANCE Larrow/test/laws/BicrosswalkLaws;
 	public final fun bicrosswalkEmpty (Larrow/typeclasses/Bicrosswalk;Larrow/typeclasses/Align;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 	public final fun bicrosswalkSequencelEquality (Larrow/typeclasses/Bicrosswalk;Larrow/typeclasses/Align;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Bicrosswalk;Larrow/core/test/generators/GenK2;Larrow/typeclasses/EqK2;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Bicrosswalk;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/BifoldableLaws {
-	public static final field INSTANCE Larrow/core/test/laws/BifoldableLaws;
-	public final fun bifoldLeftConsistentWithBifoldMap (Larrow/typeclasses/Bifoldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun bifoldRightConsistentWithBifoldMap (Larrow/typeclasses/Bifoldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Bifoldable;Larrow/core/test/generators/GenK2;)Ljava/util/List;
+public final class arrow/test/laws/BifoldableLaws {
+	public static final field INSTANCE Larrow/test/laws/BifoldableLaws;
+	public final fun bifoldLeftConsistentWithBifoldMap (Larrow/typeclasses/Bifoldable;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun bifoldRightConsistentWithBifoldMap (Larrow/typeclasses/Bifoldable;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/typeclasses/Bifoldable;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/BifunctorLaws {
-	public static final field INSTANCE Larrow/core/test/laws/BifunctorLaws;
-	public final fun composition (Larrow/typeclasses/Bifunctor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun identity (Larrow/typeclasses/Bifunctor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Bifunctor;Larrow/core/test/generators/GenK2;Larrow/typeclasses/EqK2;)Ljava/util/List;
+public final class arrow/test/laws/BifunctorLaws {
+	public static final field INSTANCE Larrow/test/laws/BifunctorLaws;
+	public final fun composition (Larrow/typeclasses/Bifunctor;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun identity (Larrow/typeclasses/Bifunctor;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/typeclasses/Bifunctor;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/BimonadLaws {
-	public static final field INSTANCE Larrow/core/test/laws/BimonadLaws;
-	public final fun coflatMapComposition (Larrow/typeclasses/Bimonad;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun extractFlatMap (Larrow/typeclasses/Bimonad;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun extractIsIdentity (Larrow/typeclasses/Bimonad;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Bimonad;Larrow/typeclasses/Monad;Larrow/typeclasses/Comonad;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun laws (Larrow/typeclasses/Bimonad;Larrow/typeclasses/Monad;Larrow/typeclasses/Comonad;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+public final class arrow/test/laws/BimonadLaws {
+	public static final field INSTANCE Larrow/test/laws/BimonadLaws;
+	public final fun coflatMapComposition (Larrow/typeclasses/Bimonad;Larrow/typeclasses/Eq;)V
+	public final fun extractFlatMap (Larrow/typeclasses/Bimonad;Larrow/typeclasses/Eq;)V
+	public final fun extractIsIdentity (Larrow/typeclasses/Bimonad;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/typeclasses/Bimonad;Larrow/typeclasses/Monad;Larrow/typeclasses/Comonad;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Bimonad;Larrow/typeclasses/Monad;Larrow/typeclasses/Comonad;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/BitraverseLaws {
-	public static final field INSTANCE Larrow/core/test/laws/BitraverseLaws;
-	public final fun identityBitraverse (Larrow/typeclasses/Bitraverse;Larrow/typeclasses/Bitraverse;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Bitraverse;Larrow/core/test/generators/GenK2;Larrow/typeclasses/EqK2;)Ljava/util/List;
+public final class arrow/test/laws/BirecursiveLaws {
+	public static final field INSTANCE Larrow/test/laws/BirecursiveLaws;
+	public final fun laws (Larrow/recursion/typeclasses/Birecursive;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Traverse;Larrow/recursion/typeclasses/Birecursive;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/CategoryLaws {
-	public static final field INSTANCE Larrow/core/test/laws/CategoryLaws;
-	public final fun associativity (Larrow/typeclasses/Category;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Category;Larrow/core/test/generators/GenK2;Larrow/typeclasses/EqK2;)Ljava/util/List;
+public final class arrow/test/laws/BitraverseLaws {
+	public static final field INSTANCE Larrow/test/laws/BitraverseLaws;
+	public final fun identityBitraverse (Larrow/typeclasses/Bitraverse;Larrow/typeclasses/Bitraverse;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/typeclasses/Bitraverse;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
+}
+
+public final class arrow/test/laws/BracketLaws {
+	public static final field INSTANCE Larrow/test/laws/BracketLaws;
+	public final fun acquireAndReleaseAreUncancelable (Larrow/fx/typeclasses/Bracket;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun bracketCaseFailureInAcquisitionRemainsFailure (Larrow/fx/typeclasses/Bracket;Larrow/typeclasses/Eq;)V
+	public final fun bracketCaseWithJustUnitEqvMap (Larrow/fx/typeclasses/Bracket;Larrow/typeclasses/Eq;)V
+	public final fun bracketCaseWithJustUnitIsUncancelable (Larrow/fx/typeclasses/Bracket;Larrow/typeclasses/Eq;)V
+	public final fun bracketIsDerivedFromBracketCase (Larrow/fx/typeclasses/Bracket;Larrow/typeclasses/Eq;)V
+	public final fun bracketMustRunReleaseTask (Larrow/fx/typeclasses/Bracket;Larrow/typeclasses/Eq;)V
+	public final fun bracketPropagatesTransformerEffects (Larrow/fx/typeclasses/Bracket;Larrow/typeclasses/Eq;)V
+	public final fun guaranteeCaseIsDerivedFromBracketCase (Larrow/fx/typeclasses/Bracket;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun guaranteeIsDerivedFromBracket (Larrow/fx/typeclasses/Bracket;Larrow/Kind;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/fx/typeclasses/Bracket;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun laws (Larrow/fx/typeclasses/Bracket;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public static synthetic fun laws$default (Larrow/test/laws/BracketLaws;Larrow/fx/typeclasses/Bracket;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;ILjava/lang/Object;)Ljava/util/List;
+	public static synthetic fun laws$default (Larrow/test/laws/BracketLaws;Larrow/fx/typeclasses/Bracket;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;ILjava/lang/Object;)Ljava/util/List;
+	public final fun uncancelablePreventsCanceledCase (Larrow/fx/typeclasses/Bracket;Larrow/Kind;Larrow/Kind;Larrow/typeclasses/Eq;)V
+}
+
+public final class arrow/test/laws/CategoryLaws {
+	public static final field INSTANCE Larrow/test/laws/CategoryLaws;
+	public final fun associativity (Larrow/typeclasses/Category;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
 	public final fun laws (Larrow/typeclasses/Category;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
-	public final fun leftIdentity (Larrow/typeclasses/Category;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun rightIdentity (Larrow/typeclasses/Category;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun leftIdentity (Larrow/typeclasses/Category;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun rightIdentity (Larrow/typeclasses/Category;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/ComonadLaws {
-	public static final field INSTANCE Larrow/core/test/laws/ComonadLaws;
-	public final fun cobinding (Larrow/typeclasses/Comonad;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun comonadLeftIdentity (Larrow/typeclasses/Comonad;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun comonadRightIdentity (Larrow/typeclasses/Comonad;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun duplicateThenExtractIsId (Larrow/typeclasses/Comonad;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun duplicateThenMapExtractIsId (Larrow/typeclasses/Comonad;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Comonad;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun mapAndCoflatmapCoherence (Larrow/typeclasses/Comonad;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+public final class arrow/test/laws/ComonadLaws {
+	public static final field INSTANCE Larrow/test/laws/ComonadLaws;
+	public final fun cobinding (Larrow/typeclasses/Comonad;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun cokleisliLeftIdentity (Larrow/typeclasses/Comonad;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun cokleisliRightIdentity (Larrow/typeclasses/Comonad;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun comonadLeftIdentity (Larrow/typeclasses/Comonad;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun comonadRightIdentity (Larrow/typeclasses/Comonad;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun duplicateThenExtractIsId (Larrow/typeclasses/Comonad;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun duplicateThenMapExtractIsId (Larrow/typeclasses/Comonad;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/typeclasses/Comonad;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun mapAndCoflatmapCoherence (Larrow/typeclasses/Comonad;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/ContravariantLaws {
-	public static final field INSTANCE Larrow/core/test/laws/ContravariantLaws;
-	public final fun composition (Larrow/typeclasses/Contravariant;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun identity (Larrow/typeclasses/Contravariant;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Contravariant;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+public final class arrow/test/laws/ConcurrentLaws {
+	public static final field INSTANCE Larrow/test/laws/ConcurrentLaws;
+	public final fun acquireBracketIsNotCancelable (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun actionConcurrentWithPureValueIsJustAction (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun asyncCancelableCoherence (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;)V
+	public final fun asyncFRegisterCanBeCancelled (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun cancelOnBracketReleases (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun cancelableCancelableFCoherence (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;)V
+	public final fun cancelableFReceivesCancelSignal (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun cancelableReceivesCancelSignal (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun getTestError ()Ljava/lang/RuntimeException;
+	public final fun joinIsIdempotent (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun laws (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;Z)Ljava/util/List;
+	public final fun laws (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;Z)Ljava/util/List;
+	public static synthetic fun laws$default (Larrow/test/laws/ConcurrentLaws;Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;ZILjava/lang/Object;)Ljava/util/List;
+	public static synthetic fun laws$default (Larrow/test/laws/ConcurrentLaws;Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;ZILjava/lang/Object;)Ljava/util/List;
+	public final fun parMapCancelCancelsBoth (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun parSequenceForksTheEffects (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;)V
+	public final fun parTraverseCanTraverseEffectfullComputations (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;)V
+	public final fun parTraverseForksTheEffects (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;)V
+	public final fun parTraverseResultsInTheCorrectError (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;)V
+	public final fun raceCancelCancelsBoth (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun raceCancelsLoser (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun raceMirrorsLeftWinner (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun raceMirrorsRightWinner (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun racePairCanCancelsLoser (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun racePairCanJoinLeft (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun racePairCanJoinRight (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun racePairCancelCancelsBoth (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun racePairMirrorsLeftWinner (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun racePairMirrorsRightWinner (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun raceTripleCanCancelsLoser (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun raceTripleCanJoinLeft (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun raceTripleCanJoinMiddle (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun raceTripleCanJoinRight (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun raceTripleCancelCancelsAll (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun raceTripleMirrorsLeftWinner (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun raceTripleMirrorsMiddleWinner (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun raceTripleMirrorsRightWinner (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun releaseBracketIsNotCancelable (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun startCancelIsUnit (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun startJoinIsIdentity (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;Lkotlin/coroutines/CoroutineContext;)V
+	public final fun uncancelableMirrorsSource (Larrow/fx/typeclasses/Concurrent;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/CrosswalkLaws {
-	public static final field INSTANCE Larrow/core/test/laws/CrosswalkLaws;
+public final class arrow/test/laws/ContravariantLaws {
+	public static final field INSTANCE Larrow/test/laws/ContravariantLaws;
+	public final fun composition (Larrow/typeclasses/Contravariant;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun identity (Larrow/typeclasses/Contravariant;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/typeclasses/Contravariant;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
+}
+
+public final class arrow/test/laws/CorecursiveLaws {
+	public static final field INSTANCE Larrow/test/laws/CorecursiveLaws;
+	public final fun anaEqualsHyloAndEmbed (Larrow/recursion/typeclasses/Corecursive;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun anaMIsStackSafeWithEval (Larrow/recursion/typeclasses/Corecursive;Larrow/typeclasses/Traverse;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public final fun apoEqualsAnaWithNormalCoalgebra (Larrow/recursion/typeclasses/Corecursive;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun apoMIsStackSafeWithEval (Larrow/recursion/typeclasses/Corecursive;Larrow/typeclasses/Traverse;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public final fun futuEqualsAnaWithNormalCoalgebra (Larrow/recursion/typeclasses/Corecursive;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun futuMIsStackSafeWithEval (Larrow/recursion/typeclasses/Corecursive;Larrow/typeclasses/Traverse;Lkotlin/jvm/functions/Function1;)Larrow/Kind;
+	public final fun laws (Larrow/recursion/typeclasses/Corecursive;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Traverse;Larrow/recursion/typeclasses/Corecursive;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
+}
+
+public final class arrow/test/laws/CrosswalkLaws {
+	public static final field INSTANCE Larrow/test/laws/CrosswalkLaws;
 	public final fun crosswalkEmptyIsEmpty (Larrow/typeclasses/Crosswalk;Larrow/typeclasses/Align;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 	public final fun crosswalkFunctionEqualsComposeSequenceAndFunction (Larrow/typeclasses/Crosswalk;Larrow/typeclasses/Align;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Crosswalk;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Crosswalk;Larrow/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/DivideLaws {
-	public static final field INSTANCE Larrow/core/test/laws/DivideLaws;
-	public final fun associative (Larrow/typeclasses/Divide;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+public final class arrow/test/laws/DivideLaws {
+	public static final field INSTANCE Larrow/test/laws/DivideLaws;
+	public final fun associative (Larrow/typeclasses/Divide;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
 	public final fun delta (Ljava/lang/Object;)Larrow/core/Tuple2;
-	public final fun laws (Larrow/typeclasses/Divide;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Divide;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/DivisibleLaws {
-	public static final field INSTANCE Larrow/core/test/laws/DivisibleLaws;
-	public final fun laws (Larrow/typeclasses/Divisible;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun leftIdentity (Larrow/typeclasses/Divisible;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun rightIdentity (Larrow/typeclasses/Divisible;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+public final class arrow/test/laws/DivisibleLaws {
+	public static final field INSTANCE Larrow/test/laws/DivisibleLaws;
+	public final fun laws (Larrow/typeclasses/Divisible;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun leftIdentity (Larrow/typeclasses/Divisible;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun rightIdentity (Larrow/typeclasses/Divisible;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/EqK2Laws {
-	public static final field INSTANCE Larrow/core/test/laws/EqK2Laws;
-	public final fun eqKSymmetry (Larrow/typeclasses/EqK2;Lio/kotlintest/properties/Gen;)V
-	public final fun eqKTransitivity (Larrow/typeclasses/EqK2;Lio/kotlintest/properties/Gen;)V
-	public final fun eqkReflexivity (Larrow/typeclasses/EqK2;Lio/kotlintest/properties/Gen;)V
-	public final fun laws (Larrow/typeclasses/EqK2;Larrow/core/test/generators/GenK2;)Ljava/util/List;
-}
-
-public final class arrow/core/test/laws/EqKLaws {
-	public static final field INSTANCE Larrow/core/test/laws/EqKLaws;
+public final class arrow/test/laws/EqKLaws {
+	public static final field INSTANCE Larrow/test/laws/EqKLaws;
 	public final fun eqKSymmetry (Larrow/typeclasses/EqK;Lio/kotlintest/properties/Gen;)V
 	public final fun eqKTransitivity (Larrow/typeclasses/EqK;Lio/kotlintest/properties/Gen;)V
 	public final fun eqkReflexivity (Larrow/typeclasses/EqK;Lio/kotlintest/properties/Gen;)V
-	public final fun laws (Larrow/typeclasses/EqK;Larrow/core/test/generators/GenK;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/EqK;Larrow/test/generators/GenK;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/EqLaws {
-	public static final field INSTANCE Larrow/core/test/laws/EqLaws;
+public final class arrow/test/laws/EqLaws {
+	public static final field INSTANCE Larrow/test/laws/EqLaws;
 	public final fun eqReflexivity (Larrow/typeclasses/Eq;Lio/kotlintest/properties/Gen;)V
 	public final fun eqSymmetry (Larrow/typeclasses/Eq;Lio/kotlintest/properties/Gen;)V
 	public final fun eqTransitivity (Larrow/typeclasses/Eq;Lio/kotlintest/properties/Gen;)V
 	public final fun laws (Larrow/typeclasses/Eq;Lio/kotlintest/properties/Gen;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/FoldableLaws {
-	public static final field INSTANCE Larrow/core/test/laws/FoldableLaws;
-	public final fun combineAll consistent with fold (alias) (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun existsConsistentWithFind (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;)V
-	public final fun existsIsLazy (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun find matching predicate should return some(value) or none (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun firstOrNone is consistent with find (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun firstOrNone is consistent with find predicate (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun firstOrNoneReturnsNoneIfEmpty (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;)V
-	public final fun firstOrNoneReturnsNoneIfPredicateFails (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;)V
-	public final fun fold should combine all items (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun foldMIdIsFoldL (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun foldMapM folds on F mapping values to G(B) using given Monoid (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun foldRight is lazy (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;)V
-	public final fun forAllIsLazy (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun forallConsistentWithExists (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;)V
-	public final fun forallReturnsTrueIfEmpty (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;)V
-	public final fun get gets the item at the given index of the Foldable (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun isEmpty returns if there are elements or not (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun isNotEmpty consistent with isEmpty (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Foldable;Larrow/core/test/generators/GenK;)Ljava/util/List;
-	public final fun laws (Larrow/typeclasses/Foldable;Larrow/typeclasses/Applicative;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun leftFoldConsistentWithFoldMap (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun orEmpty consistent with just empty (Larrow/typeclasses/Foldable;Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)Z
-	public final fun reduceLeftOption returns Option value (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun reduceLeftToOption returns Option value (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun reduceRightOption returns Option value (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun reduceRightToOption returns Option value (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun rightFoldConsistentWithFoldMap (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun sequence_ consistent with traverse_ (Larrow/typeclasses/Foldable;Larrow/typeclasses/Applicative;Larrow/core/test/generators/GenK;Larrow/core/test/generators/GenK;Larrow/typeclasses/Eq;)V
-	public final fun toList turn items into a list (Larrow/typeclasses/Foldable;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun traverse_ consistent with foldRight (Larrow/typeclasses/Foldable;Larrow/typeclasses/Applicative;Lio/kotlintest/properties/Gen;Larrow/core/test/generators/GenK;Larrow/typeclasses/Eq;)V
+public final class arrow/test/laws/FoldableLaws {
+	public static final field INSTANCE Larrow/test/laws/FoldableLaws;
+	public final fun existsConsistentWithFind (Larrow/typeclasses/Foldable;Lkotlin/jvm/functions/Function1;)V
+	public final fun existsIsLazy (Larrow/typeclasses/Foldable;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun firstOptionReturnsNoneIfEmpty (Larrow/typeclasses/Foldable;Lkotlin/jvm/functions/Function1;)V
+	public final fun firstOptionReturnsNoneIfPredicateFails (Larrow/typeclasses/Foldable;Lkotlin/jvm/functions/Function1;)V
+	public final fun foldMIdIsFoldL (Larrow/typeclasses/Foldable;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun forAllIsLazy (Larrow/typeclasses/Foldable;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun forallConsistentWithExists (Larrow/typeclasses/Foldable;Lkotlin/jvm/functions/Function1;)V
+	public final fun forallReturnsTrueIfEmpty (Larrow/typeclasses/Foldable;Lkotlin/jvm/functions/Function1;)V
+	public final fun laws (Larrow/typeclasses/Foldable;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun leftFoldConsistentWithFoldMap (Larrow/typeclasses/Foldable;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun rightFoldConsistentWithFoldMap (Larrow/typeclasses/Foldable;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/FunctorFilterLaws {
-	public static final field INSTANCE Larrow/core/test/laws/FunctorFilterLaws;
-	public final fun filterConsistentWithfilterMap (Larrow/typeclasses/FunctorFilter;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun filterMapComposition (Larrow/typeclasses/FunctorFilter;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun filterMapMapConsistency (Larrow/typeclasses/FunctorFilter;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun flattenOptionConsistentWithfilterMap (Larrow/typeclasses/FunctorFilter;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/FunctorFilter;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+public final class arrow/test/laws/FunctorFilterLaws {
+	public static final field INSTANCE Larrow/test/laws/FunctorFilterLaws;
+	public final fun filterConsistentWithfilterMap (Larrow/typeclasses/FunctorFilter;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun filterMapComposition (Larrow/typeclasses/FunctorFilter;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun filterMapMapConsistency (Larrow/typeclasses/FunctorFilter;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun flattenOptionConsistentWithfilterMap (Larrow/typeclasses/FunctorFilter;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/typeclasses/FunctorFilter;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/FunctorLaws {
-	public static final field INSTANCE Larrow/core/test/laws/FunctorLaws;
-	public final fun covariantComposition (Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun covariantIdentity (Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun fproductComposition (Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun fproductIdentity (Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Functor;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun liftComposition (Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun liftIdentity (Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun mapConstKindComposition (Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun mapConstKindIdentity (Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun mapConstValueComposition (Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun mapConstValueIdentity (Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun tupleLeftComposition (Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun tupleLeftIdentity (Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun tupleRightComposition (Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun tupleRightIdentity (Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun unitComposition (Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun unitIdentity (Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun widenIdentity ()V
+public final class arrow/test/laws/FunctorLaws {
+	public static final field INSTANCE Larrow/test/laws/FunctorLaws;
+	public final fun covariantComposition (Larrow/typeclasses/Functor;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun covariantIdentity (Larrow/typeclasses/Functor;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Functor;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/HashLaws {
-	public static final field INSTANCE Larrow/core/test/laws/HashLaws;
-	public final fun laws (Larrow/typeclasses/Hash;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)Ljava/util/List;
+public final class arrow/test/laws/HashLaws {
+	public static final field INSTANCE Larrow/test/laws/HashLaws;
+	public final fun laws (Larrow/typeclasses/Hash;Larrow/typeclasses/Eq;Lio/kotlintest/properties/Gen;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/InvariantLaws {
-	public static final field INSTANCE Larrow/core/test/laws/InvariantLaws;
-	public final fun composition (Larrow/typeclasses/Invariant;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun identity (Larrow/typeclasses/Invariant;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Invariant;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+public final class arrow/test/laws/InvariantLaws {
+	public static final field INSTANCE Larrow/test/laws/InvariantLaws;
+	public final fun composition (Larrow/typeclasses/Invariant;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun identity (Larrow/typeclasses/Invariant;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/typeclasses/Invariant;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/Law {
+public final class arrow/test/laws/IsoLaws {
+	public static final field INSTANCE Larrow/test/laws/IsoLaws;
+	public final fun composeModify (Larrow/optics/PIso;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun consistentModifyModifyId (Larrow/optics/PIso;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun consistentSetModify (Larrow/optics/PIso;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun consitentGetModifyId (Larrow/optics/PIso;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;Larrow/typeclasses/Monoid;)V
+	public final fun laws (Larrow/optics/PIso;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Monoid;)Ljava/util/List;
+	public final fun modifyIdentity (Larrow/optics/PIso;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun roundTripOneWay (Larrow/optics/PIso;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun roundTripOtherWay (Larrow/optics/PIso;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+}
+
+public final class arrow/test/laws/Law {
 	public fun <init> (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Lkotlin/jvm/functions/Function2;
-	public final fun copy (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)Larrow/core/test/laws/Law;
-	public static synthetic fun copy$default (Larrow/core/test/laws/Law;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Larrow/core/test/laws/Law;
+	public final fun copy (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)Larrow/test/laws/Law;
+	public static synthetic fun copy$default (Larrow/test/laws/Law;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Larrow/test/laws/Law;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getName ()Ljava/lang/String;
 	public final fun getTest ()Lkotlin/jvm/functions/Function2;
@@ -352,20 +396,73 @@ public final class arrow/core/test/laws/Law {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class arrow/core/test/laws/LawKt {
+public final class arrow/test/laws/LawKt {
 	public static final fun equalUnderTheLaw (Ljava/lang/Object;Ljava/lang/Object;Larrow/typeclasses/Eq;)Z
+	public static final fun forFew (ILio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lkotlin/jvm/functions/Function5;)V
+	public static final fun forFew (ILio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lkotlin/jvm/functions/Function4;)V
+	public static final fun forFew (ILio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lkotlin/jvm/functions/Function3;)V
+	public static final fun forFew (ILio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lkotlin/jvm/functions/Function2;)V
+	public static final fun forFew (ILio/kotlintest/properties/Gen;Lkotlin/jvm/functions/Function1;)V
+	public static final fun matchUnderEq (Larrow/typeclasses/Eq;Ljava/lang/Object;)Lio/kotlintest/Matcher;
+	public static final fun shouldBeEq (Ljava/lang/Object;Ljava/lang/Object;Larrow/typeclasses/Eq;)V
+	public static final fun throwableEq ()Larrow/typeclasses/Eq;
 }
 
-public final class arrow/core/test/laws/MonadCombineLaws {
-	public static final field INSTANCE Larrow/core/test/laws/MonadCombineLaws;
-	public final fun laws (Larrow/typeclasses/MonadCombine;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun laws (Larrow/typeclasses/MonadCombine;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+public final class arrow/test/laws/LensLaws {
+	public static final field INSTANCE Larrow/test/laws/LensLaws;
+	public final fun laws (Larrow/optics/PLens;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Monoid;)Ljava/util/List;
+	public final fun laws (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Monoid;)Ljava/util/List;
+	public final fun lensComposeModify (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun lensConsistentGetModifyid (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;Larrow/typeclasses/Monoid;)V
+	public final fun lensConsistentModifyModifyId (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun lensConsistentSetModify (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun lensGetSet (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun lensModifyIdentity (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun lensSetGet (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun lensSetIdempotent (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/MonadErrorLaws {
-	public static final field INSTANCE Larrow/core/test/laws/MonadErrorLaws;
-	public final fun laws (Larrow/typeclasses/MonadError;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun laws (Larrow/typeclasses/MonadError;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+public final class arrow/test/laws/MonadCombineLaws {
+	public static final field INSTANCE Larrow/test/laws/MonadCombineLaws;
+	public final fun laws (Larrow/typeclasses/MonadCombine;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/MonadCombine;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
+}
+
+public final class arrow/test/laws/MonadDeferLaws {
+	public static final field INSTANCE Larrow/test/laws/MonadDeferLaws;
+	public final fun deferConstantEqualsPure (Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Eq;)V
+	public final fun deferSuspendsEvaluation (Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Eq;)V
+	public final fun delayConstantEqualsPure (Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Eq;)V
+	public final fun delayOrRaiseConstantLeftEqualsRaiseError (Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Eq;)V
+	public final fun delayOrRaiseConstantRightEqualsPure (Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Eq;)V
+	public final fun delaySuspendsEvaluation (Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Eq;)V
+	public final fun delayThrowEqualsRaiseError (Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Eq;)V
+	public final fun flatMapSuspendsEvaluation (Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Z)Ljava/util/List;
+	public final fun laws (Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Z)Ljava/util/List;
+	public static synthetic fun laws$default (Larrow/test/laws/MonadDeferLaws;Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;ZILjava/lang/Object;)Ljava/util/List;
+	public static synthetic fun laws$default (Larrow/test/laws/MonadDeferLaws;Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;ZILjava/lang/Object;)Ljava/util/List;
+	public final fun mapSuspendsEvaluation (Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Eq;)V
+	public final fun monadDeferLaws (Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Z)Ljava/util/List;
+	public static synthetic fun monadDeferLaws$default (Larrow/test/laws/MonadDeferLaws;Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;ZILjava/lang/Object;)Ljava/util/List;
+	public final fun propagateErrorsThroughBind (Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Eq;)V
+	public final fun repeatedSyncEvaluationNotMemoized (Larrow/fx/typeclasses/MonadDefer;Larrow/typeclasses/Eq;)V
+	public final fun stackSafetyOnRepeatedMaps (Larrow/fx/typeclasses/MonadDefer;ILarrow/typeclasses/Eq;)V
+	public static synthetic fun stackSafetyOnRepeatedMaps$default (Larrow/test/laws/MonadDeferLaws;Larrow/fx/typeclasses/MonadDefer;ILarrow/typeclasses/Eq;ILjava/lang/Object;)V
+	public final fun stackSafetyOverRepeatedAttempts (Larrow/fx/typeclasses/MonadDefer;ILarrow/typeclasses/Eq;)V
+	public static synthetic fun stackSafetyOverRepeatedAttempts$default (Larrow/test/laws/MonadDeferLaws;Larrow/fx/typeclasses/MonadDefer;ILarrow/typeclasses/Eq;ILjava/lang/Object;)V
+	public final fun stackSafetyOverRepeatedLeftBinds (Larrow/fx/typeclasses/MonadDefer;ILarrow/typeclasses/Eq;)V
+	public static synthetic fun stackSafetyOverRepeatedLeftBinds$default (Larrow/test/laws/MonadDeferLaws;Larrow/fx/typeclasses/MonadDefer;ILarrow/typeclasses/Eq;ILjava/lang/Object;)V
+	public final fun stackSafetyOverRepeatedRightBinds (Larrow/fx/typeclasses/MonadDefer;ILarrow/typeclasses/Eq;)V
+	public static synthetic fun stackSafetyOverRepeatedRightBinds$default (Larrow/test/laws/MonadDeferLaws;Larrow/fx/typeclasses/MonadDefer;ILarrow/typeclasses/Eq;ILjava/lang/Object;)V
+}
+
+public final class arrow/test/laws/MonadErrorLaws {
+	public static final field INSTANCE Larrow/test/laws/MonadErrorLaws;
+	public final fun laws (Larrow/typeclasses/MonadError;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/MonadError;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public static synthetic fun laws$default (Larrow/test/laws/MonadErrorLaws;Larrow/typeclasses/MonadError;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;ILjava/lang/Object;)Ljava/util/List;
+	public static synthetic fun laws$default (Larrow/test/laws/MonadErrorLaws;Larrow/typeclasses/MonadError;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;ILjava/lang/Object;)Ljava/util/List;
 	public final fun monadErrorCatchesNonFatalThrowables (Larrow/typeclasses/MonadError;Larrow/typeclasses/Eq;)V
 	public final fun monadErrorDerivesRedeemWith (Larrow/typeclasses/MonadError;Larrow/typeclasses/Eq;)V
 	public final fun monadErrorEnsureConsistency (Larrow/typeclasses/MonadError;Larrow/typeclasses/Eq;)V
@@ -374,135 +471,192 @@ public final class arrow/core/test/laws/MonadErrorLaws {
 	public final fun monadErrorThrowsFatalThrowables (Larrow/typeclasses/MonadError;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/MonadFilterLaws {
-	public static final field INSTANCE Larrow/core/test/laws/MonadFilterLaws;
-	public final fun laws (Larrow/typeclasses/MonadFilter;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun laws (Larrow/typeclasses/MonadFilter;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+public final class arrow/test/laws/MonadFilterLaws {
+	public static final field INSTANCE Larrow/test/laws/MonadFilterLaws;
+	public final fun laws (Larrow/typeclasses/MonadFilter;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/MonadFilter;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
 	public final fun monadFilterBindWithFilterComprehensions (Larrow/typeclasses/MonadFilter;Larrow/typeclasses/Eq;)V
-	public final fun monadFilterConsistency (Larrow/typeclasses/MonadFilter;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun monadFilterConsistency (Larrow/typeclasses/MonadFilter;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
 	public final fun monadFilterEmptyComprehensions (Larrow/typeclasses/MonadFilter;Larrow/typeclasses/Eq;)V
-	public final fun monadFilterLeftEmpty (Larrow/typeclasses/MonadFilter;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun monadFilterRightEmpty (Larrow/typeclasses/MonadFilter;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun monadFilterLeftEmpty (Larrow/typeclasses/MonadFilter;Larrow/typeclasses/Eq;)V
+	public final fun monadFilterRightEmpty (Larrow/typeclasses/MonadFilter;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/MonadLaws {
-	public static final field INSTANCE Larrow/core/test/laws/MonadLaws;
-	public final fun derivedApConsistent (Larrow/typeclasses/Monad;Larrow/core/test/generators/GenK;Larrow/typeclasses/Apply;Larrow/typeclasses/Eq;)V
-	public final fun derivedApTapConsistent (Larrow/typeclasses/Monad;Larrow/core/test/generators/GenK;Larrow/typeclasses/Apply;Larrow/typeclasses/Eq;)V
-	public final fun derivedFlattenConsistent (Larrow/typeclasses/Monad;Larrow/core/test/generators/GenK;Larrow/typeclasses/Eq;)V
-	public final fun derivedFollowedByConsistent (Larrow/typeclasses/Monad;Larrow/core/test/generators/GenK;Larrow/typeclasses/Apply;Larrow/typeclasses/Eq;)V
-	public final fun derivedFollowedByEvalConsistent (Larrow/typeclasses/Monad;Larrow/core/test/generators/GenK;Larrow/typeclasses/Eq;)V
-	public final fun derivedIfMConsistent (Larrow/typeclasses/Monad;Larrow/core/test/generators/GenK;Larrow/typeclasses/Eq;)V
-	public final fun derivedMProductConsistent (Larrow/typeclasses/Monad;Larrow/core/test/generators/GenK;Larrow/typeclasses/Eq;)V
-	public final fun derivedMapConsistent (Larrow/typeclasses/Monad;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Functor;Larrow/typeclasses/Eq;)V
-	public final fun derivedProductConsistent (Larrow/typeclasses/Monad;Larrow/core/test/generators/GenK;Larrow/typeclasses/Apply;Larrow/typeclasses/Eq;)V
-	public final fun derivedProductLConsistent (Larrow/typeclasses/Monad;Larrow/core/test/generators/GenK;Larrow/typeclasses/Eq;)V
-	public final fun derivedProductLEvalConsistent (Larrow/typeclasses/Monad;Larrow/core/test/generators/GenK;Larrow/typeclasses/Eq;)V
-	public final fun derivedSelectiveConsistent (Larrow/typeclasses/Monad;Larrow/core/test/generators/GenK;Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Monad;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun laws (Larrow/typeclasses/Monad;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun leftIdentity (Larrow/typeclasses/Monad;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+public final class arrow/test/laws/MonadLaws {
+	public static final field INSTANCE Larrow/test/laws/MonadLaws;
+	public final fun kleisliLeftIdentity (Larrow/typeclasses/Monad;Larrow/typeclasses/Eq;)V
+	public final fun kleisliRightIdentity (Larrow/typeclasses/Monad;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/typeclasses/Monad;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Monad;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun leftIdentity (Larrow/typeclasses/Monad;Larrow/typeclasses/Eq;)V
+	public final fun mapFlatMapCoherence (Larrow/typeclasses/Monad;Larrow/typeclasses/Eq;)V
 	public final fun monadComprehensions (Larrow/typeclasses/Monad;Larrow/typeclasses/Eq;)V
-	public final fun rightIdentity (Larrow/typeclasses/Monad;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun preservesApply (Larrow/typeclasses/Monad;Larrow/typeclasses/Apply;Larrow/typeclasses/Eq;)V
+	public final fun preservesFunctor (Larrow/typeclasses/Monad;Larrow/typeclasses/Functor;Larrow/typeclasses/Eq;)V
+	public final fun preservesSelective (Larrow/typeclasses/Monad;Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;)V
+	public final fun rightIdentity (Larrow/typeclasses/Monad;Larrow/typeclasses/Eq;)V
 	public final fun stackSafety (Larrow/typeclasses/Monad;ILarrow/typeclasses/Eq;)V
-	public static synthetic fun stackSafety$default (Larrow/core/test/laws/MonadLaws;Larrow/typeclasses/Monad;ILarrow/typeclasses/Eq;ILjava/lang/Object;)V
+	public static synthetic fun stackSafety$default (Larrow/test/laws/MonadLaws;Larrow/typeclasses/Monad;ILarrow/typeclasses/Eq;ILjava/lang/Object;)V
 }
 
-public final class arrow/core/test/laws/MonadLogicLaws {
-	public static final field INSTANCE Larrow/core/test/laws/MonadLogicLaws;
-	public final fun iftePicksFirstOnSuccess (Larrow/typeclasses/MonadLogic;ILio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun iftePicksSecondOnFailure (Larrow/typeclasses/MonadLogic;ILio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun ifteReturnsRemainingComputation (Larrow/typeclasses/MonadLogic;ILio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/MonadLogic;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;I)Ljava/util/List;
-	public static synthetic fun laws$default (Larrow/core/test/laws/MonadLogicLaws;Larrow/typeclasses/MonadLogic;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;IILjava/lang/Object;)Ljava/util/List;
-	public final fun msplitGivesAccessToFirstResult (Larrow/typeclasses/MonadLogic;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun msplitReflect (Larrow/typeclasses/MonadLogic;ILio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun msplitZeroIsNone (Larrow/typeclasses/MonadLogic;Larrow/typeclasses/Eq;)V
-	public final fun onceJust (Larrow/typeclasses/MonadLogic;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+public final class arrow/test/laws/MonadStateLaws {
+	public static final field INSTANCE Larrow/test/laws/MonadStateLaws;
+	public final fun laws (Larrow/mtl/typeclasses/MonadState;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun laws (Larrow/mtl/typeclasses/MonadState;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun monadStateGetIdempotent (Larrow/mtl/typeclasses/MonadState;Larrow/typeclasses/Eq;)V
+	public final fun monadStateGetSet (Larrow/mtl/typeclasses/MonadState;Larrow/typeclasses/Eq;)V
+	public final fun monadStateSetGet (Larrow/mtl/typeclasses/MonadState;Larrow/typeclasses/Eq;)V
+	public final fun monadStateSetTwice (Larrow/mtl/typeclasses/MonadState;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/MonadPlusLaws {
-	public static final field INSTANCE Larrow/core/test/laws/MonadPlusLaws;
-	public final fun associativity (Larrow/typeclasses/MonadPlus;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/MonadPlus;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun leftIdentity (Larrow/typeclasses/MonadPlus;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun leftZero (Larrow/typeclasses/MonadPlus;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun rightIdentity (Larrow/typeclasses/MonadPlus;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun rightZero (Larrow/typeclasses/MonadPlus;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+public final class arrow/test/laws/MonadWriterLaws {
+	public static final field INSTANCE Larrow/test/laws/MonadWriterLaws;
+	public final fun laws (Larrow/typeclasses/Monad;Larrow/mtl/typeclasses/MonadWriter;Larrow/typeclasses/Monoid;Larrow/typeclasses/Functor;Larrow/typeclasses/Apply;Larrow/typeclasses/Selective;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Monad;Larrow/mtl/typeclasses/MonadWriter;Larrow/typeclasses/Monoid;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun monadWriterListenJust (Larrow/mtl/typeclasses/MonadWriter;Larrow/typeclasses/Monoid;Larrow/typeclasses/Eq;)V
+	public final fun monadWriterListenWriter (Larrow/mtl/typeclasses/MonadWriter;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun monadWriterTellFusion (Larrow/mtl/typeclasses/MonadWriter;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Monoid;)V
+	public final fun monadWriterWriterJust (Larrow/mtl/typeclasses/MonadWriter;Larrow/typeclasses/Monoid;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/MonoidKLaws {
-	public static final field INSTANCE Larrow/core/test/laws/MonoidKLaws;
-	public final fun laws (Larrow/typeclasses/MonoidK;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun monoidKFold (Larrow/typeclasses/MonoidK;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun monoidKLeftIdentity (Larrow/typeclasses/MonoidK;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun monoidKRightIdentity (Larrow/typeclasses/MonoidK;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+public final class arrow/test/laws/MonoidKLaws {
+	public static final field INSTANCE Larrow/test/laws/MonoidKLaws;
+	public final fun laws (Larrow/typeclasses/MonoidK;Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/MonoidK;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun monoidKFold (Larrow/typeclasses/MonoidK;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun monoidKLeftIdentity (Larrow/typeclasses/MonoidK;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun monoidKRightIdentity (Larrow/typeclasses/MonoidK;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/MonoidLaws {
-	public static final field INSTANCE Larrow/core/test/laws/MonoidLaws;
-	public final fun combineAllIsDerived (Larrow/typeclasses/Monoid;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun combineAllOfEmptyIsEmpty (Larrow/typeclasses/Monoid;Larrow/typeclasses/Eq;)V
+public final class arrow/test/laws/MonoidLaws {
+	public static final field INSTANCE Larrow/test/laws/MonoidLaws;
 	public final fun laws (Larrow/typeclasses/Monoid;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)Ljava/util/List;
 	public final fun monoidLeftIdentity (Larrow/typeclasses/Monoid;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 	public final fun monoidRightIdentity (Larrow/typeclasses/Monoid;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/MonoidalLaws {
-	public static final field INSTANCE Larrow/core/test/laws/MonoidalLaws;
-	public final fun laws (Larrow/typeclasses/Monoidal;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;Lkotlin/jvm/functions/Function1;)Ljava/util/List;
+public final class arrow/test/laws/MonoidalLaws {
+	public static final field INSTANCE Larrow/test/laws/MonoidalLaws;
+	public final fun laws (Larrow/typeclasses/Monoidal;Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Monoidal;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
 }
 
-public abstract interface class arrow/core/test/laws/Nested {
+public final class arrow/test/laws/OptionalLaws {
+	public static final field INSTANCE Larrow/test/laws/OptionalLaws;
+	public final fun composeModify (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun consistentGetOptionModifyId (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun consistentModifyModifyId (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun consistentSetModify (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun getOptionSet (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/optics/POptional;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun laws (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun modifyIdentity (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun setGetOption (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun setIdempotent (Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/ProfunctorLaws {
-	public static final field INSTANCE Larrow/core/test/laws/ProfunctorLaws;
-	public final fun composition (Larrow/typeclasses/Profunctor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun identity (Larrow/typeclasses/Profunctor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun lMapComposition (Larrow/typeclasses/Profunctor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun lMapIdentity (Larrow/typeclasses/Profunctor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Profunctor;Larrow/core/test/generators/GenK2;Larrow/typeclasses/EqK2;)Ljava/util/List;
-	public final fun rMapComposition (Larrow/typeclasses/Profunctor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun rMapIdentity (Larrow/typeclasses/Profunctor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+public final class arrow/test/laws/OptionalLaws$FirstOption {
+	public fun <init> (Larrow/core/Option;)V
+	public final fun component1 ()Larrow/core/Option;
+	public final fun copy (Larrow/core/Option;)Larrow/test/laws/OptionalLaws$FirstOption;
+	public static synthetic fun copy$default (Larrow/test/laws/OptionalLaws$FirstOption;Larrow/core/Option;ILjava/lang/Object;)Larrow/test/laws/OptionalLaws$FirstOption;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getOption ()Larrow/core/Option;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
-public final class arrow/core/test/laws/ReducibleLaws {
-	public static final field INSTANCE Larrow/core/test/laws/ReducibleLaws;
-	public final fun laws (Larrow/typeclasses/Reducible;Larrow/typeclasses/Applicative;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun reduceLeftToConsistentWithReduceMap (Larrow/typeclasses/Reducible;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun reduceReduceLeftConsistent (Larrow/typeclasses/Reducible;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun reduceRightConsistentWithReduceRightOption (Larrow/typeclasses/Reducible;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun reduceRightToConsistentWithReduceMap (Larrow/typeclasses/Reducible;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun reduceRightToConsistentWithReduceRightToOption (Larrow/typeclasses/Reducible;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun sizeConsistent (Larrow/typeclasses/Reducible;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+public final class arrow/test/laws/OrderLaws {
+	public static final field INSTANCE Larrow/test/laws/OrderLaws;
+	public final fun antisymmetryEq (Larrow/typeclasses/Order;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;)V
+	public final fun antisymmetryPartialOrder (Larrow/typeclasses/Order;Lio/kotlintest/properties/Gen;)V
+	public final fun compareOrder (Larrow/typeclasses/Order;Lio/kotlintest/properties/Gen;)V
+	public final fun greaterThanOrEqualPartialOrder (Larrow/typeclasses/Order;Lio/kotlintest/properties/Gen;)V
+	public final fun greaterThanPartialOrder (Larrow/typeclasses/Order;Lio/kotlintest/properties/Gen;)V
+	public final fun laws (Larrow/typeclasses/Order;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;)Ljava/util/List;
+	public final fun lesserThanPartialOrder (Larrow/typeclasses/Order;Lio/kotlintest/properties/Gen;)V
+	public final fun maxOrder (Larrow/typeclasses/Order;Lio/kotlintest/properties/Gen;)V
+	public final fun minOrder (Larrow/typeclasses/Order;Lio/kotlintest/properties/Gen;)V
+	public final fun operatorCompareToOrder (Larrow/typeclasses/Order;Lio/kotlintest/properties/Gen;)V
+	public final fun reflexitivityEq (Larrow/typeclasses/Order;Lio/kotlintest/properties/Gen;)V
+	public final fun reflexivityPartialOrder (Larrow/typeclasses/Order;Lio/kotlintest/properties/Gen;)V
+	public final fun symmetryEq (Larrow/typeclasses/Order;Lio/kotlintest/properties/Gen;)V
+	public final fun totalityOrder (Larrow/typeclasses/Order;Lio/kotlintest/properties/Gen;)V
+	public final fun transitivityEq (Larrow/typeclasses/Order;Lio/kotlintest/properties/Gen;)V
+	public final fun transitivityPartialOrder (Larrow/typeclasses/Order;Lio/kotlintest/properties/Gen;)V
 }
 
-public final class arrow/core/test/laws/RepeatLaws {
-	public static final field INSTANCE Larrow/core/test/laws/RepeatLaws;
-	public final fun laws (Larrow/typeclasses/Repeat;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun laws (Larrow/typeclasses/Repeat;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;Larrow/typeclasses/Foldable;)Ljava/util/List;
+public final class arrow/test/laws/PrismLaws {
+	public static final field INSTANCE Larrow/test/laws/PrismLaws;
+	public final fun composeModify (Larrow/optics/PPrism;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun consistentGetOptionModifyId (Larrow/optics/PPrism;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun consistentModifyModifyFId (Larrow/optics/PPrism;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun consistentSetModify (Larrow/optics/PPrism;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/optics/PPrism;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun modifyIdentity (Larrow/optics/PPrism;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun partialRoundTripOneWay (Larrow/optics/PPrism;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun roundTripOtherWay (Larrow/optics/PPrism;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+}
+
+public final class arrow/test/laws/ProfunctorLaws {
+	public static final field INSTANCE Larrow/test/laws/ProfunctorLaws;
+	public final fun composition (Larrow/typeclasses/Profunctor;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun identity (Larrow/typeclasses/Profunctor;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun lMapComposition (Larrow/typeclasses/Profunctor;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun lMapIdentity (Larrow/typeclasses/Profunctor;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/typeclasses/Profunctor;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun rMapComposition (Larrow/typeclasses/Profunctor;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun rMapIdentity (Larrow/typeclasses/Profunctor;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+}
+
+public final class arrow/test/laws/RecursiveLaws {
+	public static final field INSTANCE Larrow/test/laws/RecursiveLaws;
+	public final fun cataEqualsHyloAndProject (Larrow/recursion/typeclasses/Recursive;Lio/kotlintest/properties/Gen;Lkotlin/jvm/functions/Function1;)V
+	public final fun cataMEvalIsStackSafe (Larrow/recursion/typeclasses/Recursive;Larrow/typeclasses/Traverse;Lio/kotlintest/properties/Gen;Lkotlin/jvm/functions/Function1;)V
+	public final fun histoEqualsCataWithNormalAlgebra (Larrow/recursion/typeclasses/Recursive;Lio/kotlintest/properties/Gen;Lkotlin/jvm/functions/Function1;)V
+	public final fun histoMEvalIsStackSafe (Larrow/recursion/typeclasses/Recursive;Larrow/typeclasses/Traverse;Lio/kotlintest/properties/Gen;Lkotlin/jvm/functions/Function1;)V
+	public final fun laws (Larrow/recursion/typeclasses/Recursive;Lio/kotlintest/properties/Gen;Lkotlin/jvm/functions/Function1;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Traverse;Larrow/recursion/typeclasses/Recursive;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/util/List;
+	public final fun paraEqualsCataWithNormalAlgebra (Larrow/recursion/typeclasses/Recursive;Lio/kotlintest/properties/Gen;Lkotlin/jvm/functions/Function1;)V
+	public final fun paraMEvalIsStackSafe (Larrow/recursion/typeclasses/Recursive;Larrow/typeclasses/Traverse;Lio/kotlintest/properties/Gen;Lkotlin/jvm/functions/Function1;)V
+}
+
+public final class arrow/test/laws/ReducibleLaws {
+	public static final field INSTANCE Larrow/test/laws/ReducibleLaws;
+	public final fun laws (Larrow/typeclasses/Reducible;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun reduceLeftToConsistentWithReduceMap (Larrow/typeclasses/Reducible;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun reduceReduceLeftConsistent (Larrow/typeclasses/Reducible;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun reduceRightConsistentWithReduceRightOption (Larrow/typeclasses/Reducible;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun reduceRightToConsistentWithReduceMap (Larrow/typeclasses/Reducible;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun reduceRightToConsistentWithReduceRightToOption (Larrow/typeclasses/Reducible;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun sizeConsistent (Larrow/typeclasses/Reducible;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+}
+
+public final class arrow/test/laws/RepeatLaws {
+	public static final field INSTANCE Larrow/test/laws/RepeatLaws;
+	public final fun laws (Larrow/typeclasses/Repeat;Larrow/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Repeat;Larrow/test/generators/GenK;Larrow/typeclasses/EqK;Larrow/typeclasses/Foldable;)Ljava/util/List;
 	public final fun zipWithLhsRepeatIsNeutralToTheRhs (Larrow/typeclasses/Repeat;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 	public final fun zipWithRhsRepeatIsNeutralToTheLhs (Larrow/typeclasses/Repeat;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/SelectiveLaws {
-	public static final field INSTANCE Larrow/core/test/laws/SelectiveLaws;
-	public final fun associativity (Larrow/typeclasses/Selective;Larrow/core/test/generators/GenK;Larrow/typeclasses/Eq;)V
-	public final fun branch (Larrow/typeclasses/Selective;Larrow/core/test/generators/GenK;Larrow/typeclasses/Eq;)V
-	public final fun distributivity (Larrow/typeclasses/Selective;Larrow/core/test/generators/GenK;Larrow/typeclasses/Eq;)V
+public final class arrow/test/laws/SelectiveLaws {
+	public static final field INSTANCE Larrow/test/laws/SelectiveLaws;
+	public final fun associativity (Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;)V
+	public final fun branch (Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;)V
+	public final fun distributivity (Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;)V
 	public final fun identityLaw (Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;)V
-	public final fun ifSLaw (Larrow/typeclasses/Selective;Larrow/core/test/generators/GenK;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Selective;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun laws (Larrow/typeclasses/Selective;Larrow/typeclasses/Functor;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+	public final fun ifSLaw (Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/typeclasses/Selective;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun sequenceRight (Larrow/typeclasses/Applicative;Larrow/Kind;Larrow/Kind;)Larrow/Kind;
 }
 
-public final class arrow/core/test/laws/SemialignLaws {
-	public static final field INSTANCE Larrow/core/test/laws/SemialignLaws;
+public final class arrow/test/laws/SemialignLaws {
+	public static final field INSTANCE Larrow/test/laws/SemialignLaws;
 	public final fun getIorEq1 ()Larrow/core/extensions/IorEq;
 	public final fun getIorEq2 ()Larrow/core/extensions/IorEq;
-	public final fun laws (Larrow/typeclasses/Semialign;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun laws (Larrow/typeclasses/Semialign;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;Larrow/typeclasses/Foldable;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Semialign;Larrow/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Semialign;Larrow/test/generators/GenK;Larrow/typeclasses/EqK;Larrow/typeclasses/Foldable;)Ljava/util/List;
 	public final fun semialignAlignedness (Larrow/typeclasses/Semialign;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Foldable;)V
 	public final fun semialignAssociativity (Larrow/typeclasses/Semialign;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 	public final fun semialignCommutativity (Larrow/typeclasses/Semialign;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
@@ -511,114 +665,134 @@ public final class arrow/core/test/laws/SemialignLaws {
 	public final fun semialignWith (Larrow/typeclasses/Semialign;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/SemigroupKLaws {
-	public static final field INSTANCE Larrow/core/test/laws/SemigroupKLaws;
-	public final fun laws (Larrow/typeclasses/SemigroupK;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun semigroupKAssociative (Larrow/typeclasses/SemigroupK;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+public final class arrow/test/laws/SemigroupKLaws {
+	public static final field INSTANCE Larrow/test/laws/SemigroupKLaws;
+	public final fun laws (Larrow/typeclasses/SemigroupK;Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/SemigroupK;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun semigroupKAssociative (Larrow/typeclasses/SemigroupK;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/SemigroupLaws {
-	public static final field INSTANCE Larrow/core/test/laws/SemigroupLaws;
-	public final fun laws (Larrow/typeclasses/Semigroup;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)Ljava/util/List;
-	public final fun semigroupAssociative (Larrow/typeclasses/Semigroup;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+public final class arrow/test/laws/SemigroupLaws {
+	public static final field INSTANCE Larrow/test/laws/SemigroupLaws;
+	public final fun laws (Larrow/typeclasses/Semigroup;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun semigroupAssociative (Larrow/typeclasses/Semigroup;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Larrow/typeclasses/Eq;)Z
 }
 
-public final class arrow/core/test/laws/SemigroupalLaws {
-	public static final field INSTANCE Larrow/core/test/laws/SemigroupalLaws;
-	public final fun laws (Larrow/typeclasses/Semigroupal;Larrow/core/test/generators/GenK;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/EqK;)Ljava/util/List;
+public final class arrow/test/laws/SemigroupalLaws {
+	public static final field INSTANCE Larrow/test/laws/SemigroupalLaws;
+	public final fun laws (Larrow/typeclasses/Semigroupal;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/SemiringLaws {
-	public static final field INSTANCE Larrow/core/test/laws/SemiringLaws;
-	public final fun laws (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)Ljava/util/List;
-	public final fun maybeCombineAdditionBothNull (Larrow/typeclasses/Semiring;Larrow/typeclasses/Eq;)V
-	public final fun maybeCombineAdditionIsDerived (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun maybeCombineAdditionLeftNull (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun maybeCombineAdditionRightNull (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun maybeCombineMultiplicateBothNull (Larrow/typeclasses/Semiring;Larrow/typeclasses/Eq;)V
-	public final fun maybeCombineMultiplicateIsDerived (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun maybeCombineMultiplicateLeftNull (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun maybeCombineMultiplicateRightNull (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun plusIsDerived (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun semiringAdditiveAssociativity (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun semiringAdditiveCommutativity (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun semiringAdditiveLeftIdentity (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun semiringAdditiveRightIdentity (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun semiringLeftDistributivity (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun semiringMultiplicativeAssociativity (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun semiringMultiplicativeCommutativity (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun semiringMultiplicativeLeftAbsorption (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun semiringMultiplicativeLeftIdentity (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun semiringMultiplicativeRightAbsorption (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun semiringMultiplicativeRightIdentity (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun semiringRightDistributivity (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun timesIsDerived (Larrow/typeclasses/Semiring;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+public final class arrow/test/laws/SemiringLaws {
+	public static final field INSTANCE Larrow/test/laws/SemiringLaws;
+	public final fun laws (Larrow/typeclasses/Semiring;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List;
+	public final fun semiringAdditiveCommutativity (Larrow/typeclasses/Semiring;Ljava/lang/Object;Ljava/lang/Object;)V
+	public final fun semiringLeftDistributivity (Larrow/typeclasses/Semiring;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
+	public final fun semiringMultiplicativeCommutativity (Larrow/typeclasses/Semiring;Ljava/lang/Object;Ljava/lang/Object;)V
+	public final fun semiringMultiplicativeLeftAbsorption (Larrow/typeclasses/Semiring;Ljava/lang/Object;Ljava/lang/Object;)V
+	public final fun semiringMultiplicativeLeftIdentity (Larrow/typeclasses/Semiring;Ljava/lang/Object;Ljava/lang/Object;)V
+	public final fun semiringMultiplicativeRightAbsorption (Larrow/typeclasses/Semiring;Ljava/lang/Object;Ljava/lang/Object;)V
+	public final fun semiringMultiplicativeRightIdentity (Larrow/typeclasses/Semiring;Ljava/lang/Object;)V
+	public final fun semiringRightDistributivity (Larrow/typeclasses/Semiring;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
 }
 
-public final class arrow/core/test/laws/ShowLaws {
-	public static final field INSTANCE Larrow/core/test/laws/ShowLaws;
+public final class arrow/test/laws/SetterLaws {
+	public static final field INSTANCE Larrow/test/laws/SetterLaws;
+	public final fun composeModify (Larrow/optics/PSetter;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;Lio/kotlintest/properties/Gen;)V
+	public final fun consistentSetModify (Larrow/optics/PSetter;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/optics/PSetter;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun modifyIdentity (Larrow/optics/PSetter;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun setIdempotent (Larrow/optics/PSetter;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+}
+
+public final class arrow/test/laws/ShowLaws {
+	public static final field INSTANCE Larrow/test/laws/ShowLaws;
 	public final fun equalShow (Larrow/typeclasses/Show;Larrow/typeclasses/Eq;Lio/kotlintest/properties/Gen;)V
 	public final fun laws (Larrow/typeclasses/Show;Larrow/typeclasses/Eq;Lio/kotlintest/properties/Gen;)Ljava/util/List;
 }
 
-public final class arrow/core/test/laws/TIC : arrow/Kind {
+public final class arrow/test/laws/TIC : arrow/Kind {
 	public fun <init> (Larrow/core/Tuple2;)V
 	public final fun component1 ()Larrow/core/Tuple2;
-	public final fun copy (Larrow/core/Tuple2;)Larrow/core/test/laws/TIC;
-	public static synthetic fun copy$default (Larrow/core/test/laws/TIC;Larrow/core/Tuple2;ILjava/lang/Object;)Larrow/core/test/laws/TIC;
+	public final fun copy (Larrow/core/Tuple2;)Larrow/test/laws/TIC;
+	public static synthetic fun copy$default (Larrow/test/laws/TIC;Larrow/core/Tuple2;ILjava/lang/Object;)Larrow/test/laws/TIC;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getTi ()Larrow/core/Tuple2;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class arrow/core/test/laws/TIF {
+public final class arrow/test/laws/TIF {
 }
 
-public final class arrow/core/test/laws/TraverseFilterLaws {
-	public static final field INSTANCE Larrow/core/test/laws/TraverseFilterLaws;
-	public final fun filterAconsistentWithTraverseFilter (Larrow/typeclasses/TraverseFilter;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)V
-	public final fun identityTraverseFilter (Larrow/typeclasses/TraverseFilter;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)V
-	public static synthetic fun identityTraverseFilter$default (Larrow/core/test/laws/TraverseFilterLaws;Larrow/typeclasses/TraverseFilter;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;ILjava/lang/Object;)V
-	public final fun laws (Larrow/typeclasses/TraverseFilter;Larrow/typeclasses/Applicative;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+public final class arrow/test/laws/TimerLaws {
+	public static final field INSTANCE Larrow/test/laws/TimerLaws;
+	public final fun laws (Larrow/fx/typeclasses/Async;Larrow/fx/Timer;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun negativeSleepShouldBeImmediate (Larrow/fx/typeclasses/Async;Larrow/fx/Timer;Larrow/typeclasses/Eq;)V
+	public final fun sleepShouldLastSpecifiedTime (Larrow/fx/typeclasses/Async;Larrow/fx/Timer;Larrow/test/laws/TimerLaws$Clock;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/TraverseLaws {
-	public static final field INSTANCE Larrow/core/test/laws/TraverseLaws;
-	public final fun foldMapDerived (Larrow/typeclasses/Traverse;Lio/kotlintest/properties/Gen;)V
-	public final fun identityTraverse (Larrow/typeclasses/Traverse;Larrow/typeclasses/Functor;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Traverse;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun laws (Larrow/typeclasses/Traverse;Larrow/typeclasses/Applicative;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun leftToRight (Larrow/typeclasses/Traverse;Lio/kotlintest/properties/Gen;)V
-	public final fun parallelComposition (Larrow/typeclasses/Traverse;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun sequentialComposition (Larrow/typeclasses/Traverse;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+public abstract interface class arrow/test/laws/TimerLaws$Clock {
+	public static final field Companion Larrow/test/laws/TimerLaws$Clock$Companion;
+	public abstract fun timeMillis ()Larrow/Kind;
+	public abstract fun timeNano ()Larrow/Kind;
 }
 
-public final class arrow/core/test/laws/TraverseLawsKt {
-	public static final fun ComposedApplicative (Larrow/typeclasses/Applicative;Larrow/typeclasses/Applicative;)Larrow/typeclasses/Applicative;
-	public static final fun fix (Larrow/Kind;)Larrow/core/test/laws/TIC;
-	public static final fun nest (Larrow/Kind;)Larrow/Kind;
-	public static final fun unnest (Larrow/Kind;)Larrow/Kind;
+public final class arrow/test/laws/TimerLaws$Clock$Companion {
+	public final fun invoke (Larrow/fx/typeclasses/Async;)Larrow/test/laws/TimerLaws$Clock;
 }
 
-public final class arrow/core/test/laws/UnalignLaws {
-	public static final field INSTANCE Larrow/core/test/laws/UnalignLaws;
+public final class arrow/test/laws/TraversalLaws {
+	public static final field INSTANCE Larrow/test/laws/TraversalLaws;
+	public final fun composeModify (Larrow/optics/PTraversal;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun headOption (Larrow/optics/PTraversal;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/optics/PTraversal;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun modifyGetAll (Larrow/optics/PTraversal;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun modifyIdentity (Larrow/optics/PTraversal;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+	public final fun setIdempotent (Larrow/optics/PTraversal;Lio/kotlintest/properties/Gen;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
+}
+
+public final class arrow/test/laws/TraverseFilterLaws {
+	public static final field INSTANCE Larrow/test/laws/TraverseFilterLaws;
+	public final fun filterAconsistentWithTraverseFilter (Larrow/typeclasses/TraverseFilter;Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)V
+	public static synthetic fun filterAconsistentWithTraverseFilter$default (Larrow/test/laws/TraverseFilterLaws;Larrow/typeclasses/TraverseFilter;Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;ILjava/lang/Object;)V
+	public final fun identityTraverseFilter (Larrow/typeclasses/TraverseFilter;Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;)V
+	public static synthetic fun identityTraverseFilter$default (Larrow/test/laws/TraverseFilterLaws;Larrow/typeclasses/TraverseFilter;Larrow/typeclasses/Applicative;Larrow/typeclasses/Eq;ILjava/lang/Object;)V
+	public final fun laws (Larrow/typeclasses/TraverseFilter;Larrow/typeclasses/Applicative;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public static synthetic fun laws$default (Larrow/test/laws/TraverseFilterLaws;Larrow/typeclasses/TraverseFilter;Larrow/typeclasses/Applicative;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;Larrow/typeclasses/Eq;ILjava/lang/Object;)Ljava/util/List;
+}
+
+public final class arrow/test/laws/TraverseLaws {
+	public static final field INSTANCE Larrow/test/laws/TraverseLaws;
+	public final fun foldMapDerived (Larrow/typeclasses/Traverse;Lkotlin/jvm/functions/Function1;)V
+	public final fun identityTraverse (Larrow/typeclasses/Traverse;Larrow/typeclasses/Functor;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun laws (Larrow/typeclasses/Traverse;Larrow/typeclasses/Functor;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)Ljava/util/List;
+	public final fun parallelComposition (Larrow/typeclasses/Traverse;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+	public final fun sequentialComposition (Larrow/typeclasses/Traverse;Lkotlin/jvm/functions/Function1;Larrow/typeclasses/Eq;)V
+}
+
+public final class arrow/test/laws/TraverseLawsKt {
+	public static final fun fix (Larrow/Kind;)Larrow/test/laws/TIC;
+}
+
+public final class arrow/test/laws/UnalignLaws {
+	public static final field INSTANCE Larrow/test/laws/UnalignLaws;
 	public final fun alignInvertsUnalign (Larrow/typeclasses/Unalign;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Unalign;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun laws (Larrow/typeclasses/Unalign;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;Larrow/typeclasses/Foldable;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Unalign;Larrow/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Unalign;Larrow/test/generators/GenK;Larrow/typeclasses/EqK;Larrow/typeclasses/Foldable;)Ljava/util/List;
 	public final fun unalignInvertsAlign (Larrow/typeclasses/Unalign;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/UnzipLaws {
-	public static final field INSTANCE Larrow/core/test/laws/UnzipLaws;
-	public final fun laws (Larrow/typeclasses/Unzip;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun laws (Larrow/typeclasses/Unzip;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;Larrow/typeclasses/Foldable;)Ljava/util/List;
+public final class arrow/test/laws/UnzipLaws {
+	public static final field INSTANCE Larrow/test/laws/UnzipLaws;
+	public final fun laws (Larrow/typeclasses/Unzip;Larrow/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Unzip;Larrow/test/generators/GenK;Larrow/typeclasses/EqK;Larrow/typeclasses/Foldable;)Ljava/util/List;
 	public final fun unipIsInverseOfZip (Larrow/typeclasses/Unzip;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 	public final fun zipIsInverseOfUnzip (Larrow/typeclasses/Unzip;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 }
 
-public final class arrow/core/test/laws/ZipLaws {
-	public static final field INSTANCE Larrow/core/test/laws/ZipLaws;
+public final class arrow/test/laws/ZipLaws {
+	public static final field INSTANCE Larrow/test/laws/ZipLaws;
 	public final fun absorption1 (Larrow/typeclasses/Zip;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 	public final fun absorption2 (Larrow/typeclasses/Zip;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 	public final fun associativity (Larrow/typeclasses/Zip;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
@@ -628,8 +802,8 @@ public final class arrow/core/test/laws/ZipLaws {
 	public final fun distributivity3 (Larrow/typeclasses/Zip;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 	public final fun functoriality (Larrow/typeclasses/Zip;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 	public final fun idempotency (Larrow/typeclasses/Zip;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
-	public final fun laws (Larrow/typeclasses/Zip;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
-	public final fun laws (Larrow/typeclasses/Zip;Larrow/core/test/generators/GenK;Larrow/typeclasses/EqK;Larrow/typeclasses/Foldable;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Zip;Larrow/test/generators/GenK;Larrow/typeclasses/EqK;)Ljava/util/List;
+	public final fun laws (Larrow/typeclasses/Zip;Larrow/test/generators/GenK;Larrow/typeclasses/EqK;Larrow/typeclasses/Foldable;)Ljava/util/List;
 	public final fun zipWith (Larrow/typeclasses/Zip;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 	public final fun zippyness1 (Larrow/typeclasses/Zip;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
 	public final fun zippyness2 (Larrow/typeclasses/Zip;Lio/kotlintest/properties/Gen;Larrow/typeclasses/Eq;)V
