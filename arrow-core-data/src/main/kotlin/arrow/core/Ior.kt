@@ -319,7 +319,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
 
     companion object {
       @Deprecated("Deprecated, use the constructor instead", ReplaceWith("Right(a)"))
-      operator fun <A> invoke(b: B): Ior<Nothing, B> = Right(b)
+      operator fun <B> invoke(b: B): Ior<Nothing, B> = Right(b)
     }
   }
 
