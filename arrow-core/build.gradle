@@ -14,7 +14,7 @@ apply from: "$DOC_CONF"
 apply from: "$PUBLISH_CONF"
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KOTLIN_VERSION"
     compile project(":arrow-annotations")
     compile project(":arrow-core-data")
     kapt project(":arrow-meta")
