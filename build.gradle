@@ -9,8 +9,8 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlinx:atomicfu-gradle-plugin:$ATOMICFU_VERSION"
-        classpath "io.arrow-kt:compiler-plugin:1.3.61-SNAPSHOT"
-        classpath "io.arrow-kt:gradle-plugin:1.3.61-SNAPSHOT"
+        classpath "io.arrow-kt:compiler-plugin:1.3.70-SNAPSHOT"
+        classpath "io.arrow-kt:gradle-plugin:1.3.70-SNAPSHOT"
     }
 }
 
@@ -29,7 +29,6 @@ apply from: "$GENERIC_CONF"
 
 subprojects {
     apply plugin: 'kotlinx-atomicfu'
-
     repositories {
         mavenLocal()
     }
@@ -38,9 +37,7 @@ subprojects {
 configure(subprojects - project("arrow-meta")) {
     apply plugin: 'ru.vyarus.animalsniffer'
     apply plugin: 'java'
-
     dependencies {
         signature 'net.sf.androidscents.signature:android-api-level-21:5.0.1_r2@signature'
-
     }
 }
