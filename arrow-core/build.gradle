@@ -18,7 +18,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
     compile project(":arrow-annotations")
     compile project(":arrow-core-data")
-    compile "io.arrow-kt:prelude:1.3.70-SNAPSHOT"
+    compile "io.arrow-kt:prelude:1.3.61-SNAPSHOT"
     kapt project(":arrow-meta")
     kaptTest project(":arrow-meta")
     compileOnly project(":arrow-meta")
