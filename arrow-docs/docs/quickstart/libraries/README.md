@@ -26,7 +26,7 @@ In this doc, we'll describe all the modules that form the core, alongside a list
 * [arrow-optics-mtl]({{ '/quickstart/libraries/#arrow-optics-mtl' | relative_url }})
 * [arrow-recursion]({{ '/quickstart/libraries/#arrow-recursion' | relative_url }})
 * [arrow-recursion-data]({{ '/quickstart/libraries/#arrow-recursion-data' | relative_url }})
-* [arrow-integration-retrofit-adapter]({{ '/quickstart/libraries/#arrow-integration-retrofit-adapter' | relative_url }})
+* [arrow-integrations-retrofit-adapter]({{ '/quickstart/libraries/#arrow-integrations-retrofit-adapter' | relative_url }})
 * [arrow-free]({{ '/quickstart/libraries/#arrow-free' | relative_url }})
 * [arrow-free-data]({{ '/quickstart/libraries/#arrow-free-data' | relative_url }})
 * [arrow-aql]({{ '/quickstart/libraries/#arrow-aql' | relative_url }})
@@ -179,11 +179,11 @@ This library includes the datatypes and typeclasses in Recursion schemes.
 
 Dependency: `arrow-core`
 
-### arrow-integration-retrofit-adapter
+### arrow-integrations-retrofit-adapter
 
 ```groovy
 dependencies {
-    implementation "io.arrow-kt:arrow-integration-retrofit-adapter:$arrow_version"
+    implementation "io.arrow-kt:arrow-integrations-retrofit-adapter:$arrow_version"
 }
 ```
 
