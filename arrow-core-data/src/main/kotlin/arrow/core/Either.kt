@@ -1,6 +1,7 @@
 package arrow.core
 
 import arrow.Kind
+import arrow.Kind2
 import arrow.core.Either.Left
 import arrow.core.Either.Right
 import arrow.higherkind
@@ -849,7 +850,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
 
     fun <R> right(right: R): Either<Nothing, R> = Right(right)
 
-    tailrec fun <L, A, B> tailRecM(a: A, f: (A) -> Kind<EitherPartialOf<L>, Either<A, B>>): Either<L, B> {
+    tailrec fun <L, A, B> tailRecM(a: A, f: (A) -> Kind2<ForEither, L, Either<A, B>>): Either<L, B> {
       val ev: Either<L, Either<A, B>> = f(a).fix()
       return when (ev) {
         is Left -> Left(ev.a)

@@ -82,21 +82,32 @@ interface Bifunctor<F> {
   /**
    * Returns a [Functor] acting on the type of the right side.
    */
-  fun <X> rightFunctor(): Functor<Kind<F, X>> = object : RightFunctor<F, X> {
+  fun rightFunctor(): Functor<F> = object : RightFunctor<F> {
     override val F: Bifunctor<F> = this@Bifunctor
   }
 
   /**
    * Returns a [Functor] acting on the type of the left side.
    */
-  fun <X> leftFunctor(): Functor<Conested<F, X>> = CocomposedFunctor(this@Bifunctor)
+  fun leftFunctor(): Functor<F> = object : LeftFunctor<F> {
+    override val F: Bifunctor<F> = this@Bifunctor
+  }
 
   fun <AA, B, A : AA> Kind2<F, A, B>.leftWiden(): Kind2<F, AA, B> = this
 }
 
-private interface RightFunctor<F, X> : Functor<Kind<F, X>> {
+private interface RightFunctor<F> : Functor<F> {
   val F: Bifunctor<F>
 
-  override fun <A, B> Kind2<F, X, A>.map(f: (A) -> B): Kind2<F, X, B> =
-    F.run { bimap(::identity, f) }
+  override fun <A, B> Kind<F, A>.map(f: (A) -> B): Kind<F, B> =
+    F.run { map(f) }
+
+}
+
+private interface LeftFunctor<F> : Functor<F> {
+  val F: Bifunctor<F>
+
+  override fun <A, B> Kind<F, A>.map(f: (A) -> B): Kind<F, B> =
+    F.run { mapLeft(f) }.unnest()
+
 }
