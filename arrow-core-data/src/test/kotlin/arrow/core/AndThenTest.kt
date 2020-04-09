@@ -20,12 +20,9 @@ import arrow.core.test.laws.ContravariantLaws
 import arrow.core.test.laws.MonadLaws
 import arrow.core.test.laws.MonoidLaws
 import arrow.core.test.laws.ProfunctorLaws
-import arrow.typeclasses.Conested
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.EqK2
-import arrow.typeclasses.conest
-import arrow.typeclasses.counnest
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
@@ -36,23 +33,12 @@ class AndThenTest : UnitSpec() {
     a(1) == b(1)
   }
 
-  val conestedEQK = object : EqK<Conested<ForAndThen, Int>> {
-    override fun <A> Kind<Conested<ForAndThen, Int>, A>.eqK(other: Kind<Conested<ForAndThen, Int>, A>, EQ: Eq<A>): Boolean =
-      this@eqK.counnest().invoke(1) == other.counnest().invoke(1)
-  }
-
-  fun conestedGENK() = object : GenK<Conested<ForAndThen, Int>> {
-    override fun <A> genK(gen: Gen<A>): Gen<Kind<Conested<ForAndThen, Int>, A>> = gen.map {
-      AndThen.just<Int, A>(it).conest()
-    } as Gen<Kind<Conested<ForAndThen, Int>, A>>
-  }
-
   init {
 
     testLaws(
       MonadLaws.laws(AndThen.monad(), AndThen.functor(), AndThen.applicative(), AndThen.monad(), AndThen.genK(), AndThen.eqK<Int>()),
       MonoidLaws.laws(AndThen.monoid<Int, Int>(Int.monoid()), Gen.int().map { i -> AndThen<Int, Int> { i } }, EQ),
-      ContravariantLaws.laws(AndThen.contravariant(), conestedGENK(), conestedEQK),
+      ContravariantLaws.laws(AndThen.contravariant(), AndThen.genK(), AndThen.eqK()),
       ProfunctorLaws.laws(AndThen.profunctor(), AndThen.genK2(), AndThen.eqK2()),
       CategoryLaws.laws(AndThen.category(), AndThen.genK2(), AndThen.eqK2())
     )
@@ -121,9 +107,9 @@ class AndThenTest : UnitSpec() {
   }
 }
 
-private fun <A> AndThen.Companion.eqK() = object : EqK<AndThenPartialOf<A>> {
-  override fun <B> Kind<AndThenPartialOf<A>, B>.eqK(other: Kind<AndThenPartialOf<A>, B>, EQ: Eq<B>): Boolean =
-    (this.fix() to other.fix()).let { (ls, rs) ->
+private fun AndThen.Companion.eqK() = object : EqK<ForAndThen> {
+  override fun <A> AndThenPartialOf<A>.eqK(other: AndThenPartialOf<A>, EQ: Eq<A>): Boolean =
+    (this.unnest<A>() to other.unnest<A>()).let { (ls, rs) ->
       EQ.run {
         ls(1).eqv(rs(1))
       }
@@ -132,21 +118,20 @@ private fun <A> AndThen.Companion.eqK() = object : EqK<AndThenPartialOf<A>> {
 
 private fun AndThen.Companion.eqK2() = object : EqK2<ForAndThen> {
   override fun <A, B> Kind2<ForAndThen, A, B>.eqK(other: Kind2<ForAndThen, A, B>, EQA: Eq<A>, EQB: Eq<B>): Boolean =
-    (this.fix() to other.fix()).let {
-      AndThen.eqK<A>().run {
-        it.first.eqK(it.second, EQB)
+    (this.fix() to other.fix()).let { (ls, rs) ->
+      AndThen.eqK().run {
+        ls.unnest<B>().eqK(rs.unnest(), EQB)
       }
     }
 }
 
-private fun <A> AndThen.Companion.genK() = object : GenK<AndThenPartialOf<A>> {
-  override fun <B> genK(gen: Gen<B>): Gen<Kind<AndThenPartialOf<A>, B>> =
-    gen.map {
-      AndThen.just<A, B>(it)
-    }
+private fun AndThen.Companion.genK() = object : GenK<ForAndThen> {
+  override fun <A> genK(gen: Gen<A>): Gen<Kind<ForAndThen, A>> = gen.map {
+    just<Int, A>(it).unnest()
+  }
 }
 
 private fun AndThen.Companion.genK2() = object : GenK2<ForAndThen> {
   override fun <A, B> genK(genA: Gen<A>, genB: Gen<B>): Gen<Kind2<ForAndThen, A, B>> =
-    AndThen.genK<A>().genK(genB)
+    AndThen.genK().genK(genB).map { it.nest() }
 }

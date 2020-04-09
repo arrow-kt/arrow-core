@@ -18,10 +18,6 @@ package arrow
  * ```
  */
 
-Kind<F, A> = Kind2<F, Nothing, A>
-
-Kind2<F, E, A> -> Kind<F, A> .map, fla
-
 @documented
 interface Kind<out F, out A> : Kind2<F, Nothing, A> {
   fun <B> nest(): Kind2<F, B, A> = this

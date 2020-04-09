@@ -126,7 +126,8 @@ sealed class AndThen<A, B> : (A) -> B, AndThenOf<A, B> {
   fun <C> contramap(f: (C) -> A): AndThen<C, B> =
     this compose f
 
-  fun <C> flatMap(f: (B) -> AndThenOf<A, C>): AndThen<A, C> = Join(this.map(AndThen(f).andThen { it.fix() }))
+  fun <C> flatMap(f: (B) -> AndThenOf<A, C>): AndThen<A, C> =
+    Join(this.map(AndThen(f).andThen { it.fix() }))
 
   fun <C> ap(ff: AndThenOf<A, (B) -> C>): AndThen<A, C> =
     ff.fix().flatMap { f ->
@@ -153,7 +154,8 @@ sealed class AndThen<A, B> : (A) -> B, AndThenOf<A, B> {
    *
    **/
   @Suppress("UNCHECKED_CAST")
-  override fun invoke(a: A): B = loop(this as AndThen<Any?, Any?>, a, 0)
+  override fun invoke(a: A): B =
+    loop(this as AndThen<Any?, Any?>, a, 0)
 
   override fun toString(): String = "AndThen(...)"
 

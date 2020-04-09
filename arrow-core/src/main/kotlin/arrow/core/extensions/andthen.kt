@@ -17,10 +17,7 @@ import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Monad
 import arrow.typeclasses.Category
-import arrow.typeclasses.Conested
 import arrow.typeclasses.Profunctor
-import arrow.typeclasses.counnest
-import arrow.typeclasses.conest
 import arrow.typeclasses.Contravariant
 
 @extension
@@ -44,45 +41,45 @@ interface AndThenMonoid<A, B> : Monoid<AndThen<A, B>>, AndThenSemigroup<A, B> {
 }
 
 @extension
-interface AndThenFunctor<X> : Functor<AndThenPartialOf<X>> {
-  override fun <A, B> AndThenOf<X, A>.map(f: (A) -> B): AndThen<X, B> =
-    fix().map(f)
+interface AndThenFunctor : Functor<ForAndThen> {
+  override fun <A, B> AndThenPartialOf<A>.map(f: (A) -> B): AndThenPartialOf<B> =
+    fix().map(f).unnest()
 }
 
 @extension
-interface AndThenApply<X> : Apply<AndThenPartialOf<X>>, AndThenFunctor<X> {
-  override fun <A, B> AndThenOf<X, A>.ap(ff: AndThenOf<X, (A) -> B>): AndThen<X, B> =
-    fix().ap(ff)
+interface AndThenApply : Apply<ForAndThen>, AndThenFunctor {
+  override fun <A, B> AndThenPartialOf<A>.ap(ff: AndThenPartialOf<(A) -> B>): AndThenPartialOf<B> =
+    fix().ap(ff).unnest()
 
-  override fun <A, B> AndThenOf<X, A>.map(f: (A) -> B): AndThen<X, B> =
-    fix().map(f)
+  override fun <A, B> AndThenPartialOf<A>.map(f: (A) -> B): AndThenPartialOf<B> =
+    fix().map(f).unnest()
 }
 
 @extension
-interface AndThenApplicative<X> : Applicative<AndThenPartialOf<X>>, AndThenFunctor<X> {
-  override fun <A> just(a: A): AndThenOf<X, A> =
-    AndThen.just(a)
+interface AndThenApplicative : Applicative<ForAndThen>, AndThenFunctor {
+  override fun <A> just(a: A): AndThenPartialOf<A> =
+    AndThen.just<Nothing, A>(a).unnest()
 
-  override fun <A, B> AndThenOf<X, A>.ap(ff: AndThenOf<X, (A) -> B>): AndThen<X, B> =
-    fix().ap(ff)
+  override fun <A, B> AndThenPartialOf<A>.ap(ff: AndThenPartialOf<(A) -> B>): AndThenPartialOf<B> =
+    fix().ap(ff).unnest()
 
-  override fun <A, B> AndThenOf<X, A>.map(f: (A) -> B): AndThen<X, B> =
-    fix().map(f)
+  override fun <A, B> AndThenPartialOf<A>.map(f: (A) -> B): AndThenPartialOf<B> =
+    fix().map(f).unnest()
 }
 
 @extension
-interface AndThenMonad<X> : Monad<AndThenPartialOf<X>>, AndThenApplicative<X> {
-  override fun <A, B> AndThenOf<X, A>.flatMap(f: (A) -> AndThenOf<X, B>): AndThen<X, B> =
-    fix().flatMap(f)
+interface AndThenMonad : Monad<ForAndThen>, AndThenApplicative {
+  override fun <A, B> AndThenPartialOf<A>.flatMap(f: (A) -> AndThenPartialOf<B>): AndThenPartialOf<B> =
+    fix().flatMap(f).unnest()
 
-  override fun <A, B> tailRecM(a: A, f: (A) -> AndThenOf<X, Either<A, B>>): AndThen<X, B> =
-    AndThen.tailRecM(a, f)
+  override fun <A, B> tailRecM(a: A, f: (A) -> AndThenPartialOf<Either<A, B>>): AndThenPartialOf<B> =
+    AndThen.tailRecM(a, f).unnest()
 
-  override fun <A, B> AndThenOf<X, A>.map(f: (A) -> B): AndThen<X, B> =
-    fix().map(f)
+  override fun <A, B> AndThenPartialOf<A>.map(f: (A) -> B): AndThenPartialOf<B> =
+    fix().map(f).unnest()
 
-  override fun <A, B> AndThenOf<X, A>.ap(ff: AndThenOf<X, (A) -> B>): AndThen<X, B> =
-    fix().ap(ff)
+  override fun <A, B> AndThenPartialOf<A>.ap(ff: AndThenPartialOf<(A) -> B>): AndThenPartialOf<B> =
+    fix().ap(ff).unnest()
 }
 
 @extension
@@ -95,10 +92,10 @@ interface AndThenCategory : Category<ForAndThen> {
 }
 
 @extension
-interface AndThenContravariant<O> : Contravariant<Conested<ForAndThen, O>> {
+interface AndThenContravariant : Contravariant<ForAndThen> {
 
-  override fun <A, B> Kind<Conested<ForAndThen, O>, A>.contramap(f: (B) -> A): Kind<Conested<ForAndThen, O>, B> =
-    counnest().fix().contramap(f).conest()
+  override fun <A, B> AndThenPartialOf<A>.contramap(f: (B) -> A): AndThenPartialOf<B> =
+    nest<A>().fix().contramap(f).unnest()
 }
 
 @extension
