@@ -306,7 +306,6 @@ interface JvmMetaApi : MetaApi, TypeElementEncoder, ProcessorUtils, TypeDecoder 
    */
   override val TypeName.ParameterizedType.kinded: Boolean
     get() = typeArguments.isNotEmpty() &&
-      !typeArguments[0].simpleName.startsWith("Conested") &&
       rawType.fqName == "arrow.Kind" &&
       typeArguments.size == 2 &&
       (typeArguments[0] !is TypeName.TypeVariable)
@@ -560,11 +559,9 @@ interface JvmMetaApi : MetaApi, TypeElementEncoder, ProcessorUtils, TypeDecoder 
       val dataTypeDownKinded = downKind
       return when {
         this is TypeName.TypeVariable &&
-          (dataTypeDownKinded.simpleName.startsWith("arrow.Kind") ||
-            dataTypeDownKinded.simpleName.startsWith("arrow.typeclasses.Conested")) -> {
+          (dataTypeDownKinded.simpleName.startsWith("arrow.Kind")) -> {
           simpleName
             .substringAfterLast("arrow.Kind<")
-            .substringAfterLast("arrow.typeclasses.Conested<")
             .substringBefore(",")
             .substringBefore("<")
             .downKind().let { (pckg, simpleName) ->
@@ -630,7 +627,7 @@ interface JvmMetaApi : MetaApi, TypeElementEncoder, ProcessorUtils, TypeDecoder 
               if (dataTypeTypeArg is TypeName.TypeVariable && dataTypeTypeArg.name.contains("PartialOf<"))
                 TypeName.TypeVariable(dataTypeTypeArg.name.substringBefore("PartialOf<").substringAfter("<"))
               else dataTypeTypeArg
-            // profunctor and other cases are parametric to Kind2 values or Conested
+            // profunctor and other cases are parametric to Kind2 values
             val projectedCompanion = dataTypeName.projectedCompanion
             val dataTypeDownKinded = dataTypeName.downKind
             val dataType = dataTypeDownKinded.type

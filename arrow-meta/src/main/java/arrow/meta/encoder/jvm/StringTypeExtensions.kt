@@ -48,7 +48,7 @@ internal fun String.asClassy(): TypeName.Classy {
 }
 
 private val kindRegex: Regex =
-  "(arrow\\.Kind|arrow\\.typeclasses\\.Conested)<(.*), (.*)>".toRegex()
+  "(arrow\\.Kind)<(.*), (.*)>".toRegex()
 
 fun String.downKParts(): List<String> =
   when (val matchResult = kindRegex.find(this)) {
