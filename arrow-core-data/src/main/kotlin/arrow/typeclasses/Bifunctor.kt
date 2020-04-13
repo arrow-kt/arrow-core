@@ -101,7 +101,6 @@ private interface RightFunctor<F> : Functor<F> {
 
   override fun <A, B> Kind<F, A>.map(f: (A) -> B): Kind<F, B> =
     F.run { map(f) }
-
 }
 
 private interface LeftFunctor<F> : Functor<F> {
@@ -109,5 +108,4 @@ private interface LeftFunctor<F> : Functor<F> {
 
   override fun <A, B> Kind<F, A>.map(f: (A) -> B): Kind<F, B> =
     F.run { mapLeft(f) }.unnest()
-
 }

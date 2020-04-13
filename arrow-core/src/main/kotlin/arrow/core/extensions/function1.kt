@@ -16,7 +16,6 @@ import arrow.core.k
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Apply
 import arrow.typeclasses.Category
-import arrow.typeclasses.Conested
 import arrow.typeclasses.Contravariant
 import arrow.typeclasses.Decidable
 import arrow.typeclasses.Divide
@@ -27,8 +26,6 @@ import arrow.typeclasses.MonadSyntax
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Profunctor
 import arrow.typeclasses.Semigroup
-import arrow.typeclasses.conest
-import arrow.typeclasses.counnest
 
 @extension
 interface Function1Semigroup<A, B> : Semigroup<Function1<A, B>> {
@@ -47,68 +44,66 @@ interface Function1Monoid<A, B> : Monoid<Function1<A, B>>, Function1Semigroup<A,
 }
 
 @extension
-interface Function1Functor<I> : Functor<Function1PartialOf<I>> {
-  override fun <A, B> Function1Of<I, A>.map(f: (A) -> B): Function1<I, B> =
-    fix().map(f)
+interface Function1Functor : Functor<ForFunction1> {
+  override fun <A, B> Function1PartialOf<A>.map(f: (A) -> B): Function1PartialOf<B> =
+    fix().map(f).unnest()
 }
 
 @extension
-interface Function1Contravariant<O> : Contravariant<Conested<ForFunction1, O>> {
-  override fun <A, B> Kind<Conested<ForFunction1, O>, A>.contramap(f: (B) -> A): Kind<Conested<ForFunction1, O>, B> =
-    counnest().fix().contramap(f).conest()
+interface Function1Contravariant : Contravariant<ForFunction1> {
+  override fun <A, B> Function1PartialOf<A>.contramap(f: (B) -> A): Function1PartialOf<B> =
+    nest<A>().fix().contramap(f).unnest()
 
-  fun <A, B> Function1Of<A, O>.contramapC(f: (B) -> A): Function1Of<B, O> =
-    conest().contramap(f).counnest()
+//  fun <A, B, C> Function1Of<A, B>.contramapC(f: (C) -> A): Function1Of<C, B> =
+//    unnest<B>().contramap(f)
 }
 
 @extension
-interface Function1Divide<O> : Divide<Conested<ForFunction1, O>>, Function1Contravariant<O> {
+interface Function1Divide<O> : Divide<ForFunction1>, Function1Contravariant {
   fun MO(): Monoid<O>
 
-  override fun <A, B, Z> divide(fa: Kind<Conested<ForFunction1, O>, A>, fb: Kind<Conested<ForFunction1, O>, B>, f: (Z) -> Tuple2<A, B>): Kind<Conested<ForFunction1, O>, Z> =
+  override fun <A, B, Z> divide(fa: Function1PartialOf<A>, fb: Function1PartialOf<B>, f: (Z) -> Tuple2<A, B>): Kind<ForFunction1, Z> =
     Function1<Z, O> {
       val (a, b) = f(it)
 
       MO().run {
-        fa.counnest().invoke(a) +
-          fb.counnest().invoke(b)
+        fa.unnest<O>().invoke(a) +
+          fb.unnest<O>().invoke(b)
       }
-    }.conest()
+    }.unnest()
 
-  fun <A, B, Z> divideC(fa: Function1Of<A, O>, fb: Function1Of<A, O>, f: (Z) -> Tuple2<A, B>): Function1Of<Z, O> =
-    divide(fa.conest(), fb.conest(), f).counnest()
+//  fun <A, B, Z> divideC(fa: Function1Of<A, O>, fb: Function1Of<A, O>, f: (Z) -> Tuple2<A, B>): Function1Of<Z, O> =
+//    divide(fa.unnest(), fb.unnest(), f)
 }
 
 @extension
-interface Function1Divisible<O> : Divisible<Conested<ForFunction1, O>>, Function1Divide<O> {
-  override fun MO(): Monoid<O> = MOO()
-  fun MOO(): Monoid<O>
+interface Function1Divisible<O> : Divisible<ForFunction1>, Function1Divide<O> {
+  override fun MO(): Monoid<O>
 
-  override fun <A> conquer(): Kind<Conested<ForFunction1, O>, A> =
+  override fun <A> conquer(): Function1PartialOf<A> =
     Function1<A, O> {
-      MOO().empty()
-    }.conest()
+      MO().empty()
+    }.unnest()
 
   fun <A> conquerC(): Function1Of<A, O> =
-    conquer<A>().counnest()
+    conquer()
 }
 
 @extension
-interface Function1Decidable<O> : Decidable<Conested<ForFunction1, O>>, Function1Divisible<O> {
-  override fun MOO(): Monoid<O> = MOOO()
-  fun MOOO(): Monoid<O>
+interface Function1Decidable<O> : Decidable<ForFunction1>, Function1Divisible<O> {
+  override fun MO(): Monoid<O>
 
-  override fun <A, B, Z> choose(fa: Kind<Conested<ForFunction1, O>, A>, fb: Kind<Conested<ForFunction1, O>, B>, f: (Z) -> Either<A, B>): Kind<Conested<ForFunction1, O>, Z> =
+  override fun <A, B, Z> choose(fa: Function1PartialOf<A>, fb: Function1PartialOf<B>, f: (Z) -> Either<A, B>): Function1PartialOf<Z> =
     Function1<Z, O> {
       f(it).fold({
-        fa.counnest().invoke(it)
+        fa.unnest<O>().invoke(it)
       }, {
-        fb.counnest().invoke(it)
+        fb.unnest<O>().invoke(it)
       })
-    }.conest()
+    }.unnest()
 
   fun <A, B, Z> chooseC(fa: Function1Of<A, O>, fb: Function1Of<B, O>, f: (Z) -> Either<A, B>): Function1Of<Z, O> =
-    choose(fa.conest(), fb.conest(), f).counnest()
+    choose(fa.unnest(), fb.unnest(), f).unnest()
 }
 
 @extension
@@ -118,46 +113,46 @@ interface Function1Profunctor : Profunctor<ForFunction1> {
 }
 
 @extension
-interface Function1Apply<I> : Apply<Function1PartialOf<I>>, Function1Functor<I> {
+interface Function1Apply : Apply<ForFunction1>, Function1Functor {
 
-  override fun <A, B> Function1Of<I, A>.map(f: (A) -> B): Function1<I, B> =
-    fix().map(f)
+  override fun <A, B> Function1PartialOf<A>.map(f: (A) -> B): Function1PartialOf<B> =
+    fix().map(f).unnest()
 
-  override fun <A, B> Function1Of<I, A>.ap(ff: Function1Of<I, (A) -> B>): Function1<I, B> =
-    fix().ap(ff)
+  override fun <A, B> Function1PartialOf<A>.ap(ff: Function1PartialOf<(A) -> B>): Function1PartialOf<B> =
+    fix().ap(ff).unnest()
 }
 
 @extension
-interface Function1Applicative<I> : Applicative<Function1PartialOf<I>>, Function1Functor<I> {
+interface Function1Applicative : Applicative<ForFunction1>, Function1Functor {
 
-  override fun <A> just(a: A): Function1<I, A> =
-    Function1.just(a)
+  override fun <A> just(a: A): Function1PartialOf<A> =
+    Function1.just<Nothing, A>(a).unnest()
 
-  override fun <A, B> Function1Of<I, A>.map(f: (A) -> B): Function1<I, B> =
-    fix().map(f)
+  override fun <A, B> Function1PartialOf<A>.map(f: (A) -> B): Function1PartialOf<B> =
+    fix().map(f).unnest()
 
-  override fun <A, B> Function1Of<I, A>.ap(ff: Function1Of<I, (A) -> B>): Function1<I, B> =
-    fix().ap(ff)
+  override fun <A, B> Function1PartialOf<A>.ap(ff: Function1PartialOf<(A) -> B>): Function1PartialOf<B> =
+    fix().ap(ff).unnest()
 }
 
 @extension
-interface Function1Monad<I> : Monad<Function1PartialOf<I>>, Function1Applicative<I> {
+interface Function1Monad : Monad<ForFunction1>, Function1Applicative {
 
-  override fun <A, B> Function1Of<I, A>.map(f: (A) -> B): Function1<I, B> =
-    fix().map(f)
+  override fun <A, B> Function1PartialOf<A>.map(f: (A) -> B): Function1PartialOf<B> =
+    fix().map(f).unnest()
 
-  override fun <A, B> Function1Of<I, A>.ap(ff: Function1Of<I, (A) -> B>): Function1<I, B> =
-    fix().ap(ff)
+  override fun <A, B> Function1PartialOf<A>.ap(ff: Function1PartialOf<(A) -> B>): Function1PartialOf<B> =
+    fix().ap(ff).unnest()
 
-  override fun <A, B> Function1Of<I, A>.flatMap(f: (A) -> Function1Of<I, B>): Function1<I, B> =
-    fix().flatMap(f)
+  override fun <A, B> Function1PartialOf<A>.flatMap(f: (A) -> Function1PartialOf<B>): Function1PartialOf<B> =
+    fix().flatMap(f).unnest()
 
-  override fun <A, B> tailRecM(a: A, f: (A) -> Function1Of<I, Either<A, B>>): Function1<I, B> =
-    Function1.tailRecM(a, f)
+  override fun <A, B> tailRecM(a: A, f: (A) -> Function1PartialOf<Either<A, B>>): Function1PartialOf<B> =
+    Function1.tailRecM(a, f).unnest()
 }
 
-fun <A, B> Function1.Companion.fx(c: suspend MonadSyntax<Function1PartialOf<A>>.() -> B): Function1<A, B> =
-  Function1.monad<A>().fx.monad(c).fix()
+fun <A, B> Function1.Companion.fx(c: suspend MonadSyntax<ForFunction1>.() -> B): Function1<A, B> =
+  Function1.monad().fx.monad(c).fix()
 
 @extension
 interface Function1Category : Category<ForFunction1> {

@@ -1,7 +1,6 @@
 package arrow.core.extensions
 
 import arrow.Kind
-import arrow.Kind2
 import arrow.core.Either
 import arrow.core.Eval
 import arrow.core.ForValidated
@@ -36,57 +35,62 @@ import arrow.core.traverse as validatedTraverse
 
 @extension
 @undocumented
-interface ValidatedFunctor<E> : Functor<ValidatedPartialOf<E>> {
-  override fun <A, B> Kind<ValidatedPartialOf<E>, A>.map(f: (A) -> B): Validated<E, B> = fix().map(f)
+interface ValidatedFunctor : Functor<ForValidated> {
+  override fun <A, B> ValidatedPartialOf<A>.map(f: (A) -> B): ValidatedPartialOf<B> =
+    fix().map(f).unnest()
 }
 
 @extension
-interface ValidatedApplicative<E> : Applicative<ValidatedPartialOf<E>>, ValidatedFunctor<E> {
+interface ValidatedApplicative<E> : Applicative<ForValidated>, ValidatedFunctor {
 
   fun SE(): Semigroup<E>
 
-  override fun <A> just(a: A): Validated<E, A> = Valid(a)
+  override fun <A> just(a: A): ValidatedPartialOf<A> =
+    Valid(a).unnest()
 
-  override fun <A, B> Kind<ValidatedPartialOf<E>, A>.map(f: (A) -> B): Validated<E, B> = fix().map(f)
+  override fun <A, B> ValidatedPartialOf<A>.map(f: (A) -> B): ValidatedPartialOf<B> =
+    fix().map(f).unnest()
 
-  override fun <A, B> Kind<ValidatedPartialOf<E>, A>.ap(ff: Kind<ValidatedPartialOf<E>, (A) -> B>): Validated<E, B> = fix().ap(SE(), ff.fix())
+  override fun <A, B> ValidatedPartialOf<A>.ap(ff: ValidatedPartialOf<(A) -> B>): ValidatedPartialOf<B> =
+    fix().ap(SE(), ff.fix()).unnest()
 }
 
 @extension
-interface ValidatedSelective<E> : Selective<ValidatedPartialOf<E>>, ValidatedApplicative<E> {
+interface ValidatedSelective<E> : Selective<ForValidated>, ValidatedApplicative<E> {
 
   override fun SE(): Semigroup<E>
 
-  override fun <A, B> Kind<ValidatedPartialOf<E>, Either<A, B>>.select(f: Kind<ValidatedPartialOf<E>, (A) -> B>): Kind<ValidatedPartialOf<E>, B> =
-    fix().fold({ Invalid(it) }, { it.fold({ l -> f.map { ff -> ff(l) } }, { r -> just(r) }) })
+  override fun <A, B> ValidatedPartialOf<Either<A, B>>.select(f: ValidatedPartialOf<(A) -> B>): ValidatedPartialOf<B> =
+    fix().fold({ Invalid(it) }, { it.fold({ l -> f.map { ff -> ff(l) } }, { r -> just(r) }) }).unnest()
 }
 
 @extension
-interface ValidatedApplicativeError<E> : ApplicativeError<ValidatedPartialOf<E>, E>, ValidatedApplicative<E> {
+interface ValidatedApplicativeError<E> : ApplicativeError<ForValidated, E>, ValidatedApplicative<E> {
 
   override fun SE(): Semigroup<E>
 
-  override fun <A> raiseError(e: E): Validated<E, A> = Invalid(e)
+  override fun <A> raiseError(e: E): ValidatedPartialOf<A> =
+    Invalid(e).unnest()
 
-  override fun <A> Kind<ValidatedPartialOf<E>, A>.handleErrorWith(f: (E) -> Kind<ValidatedPartialOf<E>, A>): Validated<E, A> =
-    fix().validatedHandleErrorWith(f)
+  override fun <A> ValidatedPartialOf<A>.handleErrorWith(f: (E) -> ValidatedPartialOf<A>): ValidatedPartialOf<A> =
+    fix().validatedHandleErrorWith(f).unnest()
 }
 
 @extension
-interface ValidatedFoldable<E> : Foldable<ValidatedPartialOf<E>> {
+interface ValidatedFoldable : Foldable<ForValidated> {
 
-  override fun <A, B> Kind<ValidatedPartialOf<E>, A>.foldLeft(b: B, f: (B, A) -> B): B =
+  override fun <A, B> ValidatedPartialOf<A>.foldLeft(b: B, f: (B, A) -> B): B =
     fix().foldLeft(b, f)
 
-  override fun <A, B> Kind<ValidatedPartialOf<E>, A>.foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> =
+  override fun <A, B> ValidatedPartialOf<A>.foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> =
     fix().foldRight(lb, f)
 }
 
 @extension
-interface ValidatedTraverse<E> : Traverse<ValidatedPartialOf<E>>, ValidatedFoldable<E> {
+interface ValidatedTraverse : Traverse<ForValidated>, ValidatedFoldable {
 
-  override fun <G, A, B> Kind<ValidatedPartialOf<E>, A>.traverse(AP: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, Validated<E, B>> =
-    fix().validatedTraverse(AP, f)
+  override fun <G, A, B> ValidatedPartialOf<A>.traverse(AP: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, ValidatedPartialOf<B>> =
+    fix().validatedTraverse(AP, f).unnest()
 }
 
 @extension
@@ -103,19 +107,21 @@ interface ValidatedBitraverse : Bitraverse<ForValidated>, ValidatedBifoldable {
   override fun <G, A, B, C, D> ValidatedOf<A, B>.bitraverse(AP: Applicative<G>, f: (A) -> Kind<G, C>, g: (B) -> Kind<G, D>): Kind<G, ValidatedOf<C, D>> =
     fix().let {
       AP.run {
-        it.fold({ f(it).map { Invalid(it) } },
-          { g(it).map { Valid(it) } })
+        it.fold(
+          { f(it).map(::Invalid) },
+          { g(it).map(::Valid) }
+        )
       }
     }
 }
 
 @extension
-interface ValidatedSemigroupK<E> : SemigroupK<ValidatedPartialOf<E>> {
+interface ValidatedSemigroupK<E> : SemigroupK<ForValidated> {
 
   fun SE(): Semigroup<E>
 
-  override fun <B> Kind<ValidatedPartialOf<E>, B>.combineK(y: Kind<ValidatedPartialOf<E>, B>): Validated<E, B> =
-    fix().combineK(SE(), y)
+  override fun <B> ValidatedPartialOf<B>.combineK(y: ValidatedPartialOf<B>): ValidatedPartialOf<B> =
+    fix().combineK(SE(), y).unnest()
 }
 
 @extension
@@ -138,10 +144,10 @@ interface ValidatedEq<L, R> : Eq<Validated<L, R>> {
 }
 
 @extension
-interface ValidatedEqK<L> : EqK<ValidatedPartialOf<L>> {
+interface ValidatedEqK<L> : EqK<ForValidated> {
   fun EQL(): Eq<L>
 
-  override fun <R> Kind<ValidatedPartialOf<L>, R>.eqK(other: Kind<ValidatedPartialOf<L>, R>, EQ: Eq<R>): Boolean =
+  override fun <R> ValidatedPartialOf<R>.eqK(other: ValidatedPartialOf<R>, EQ: Eq<R>): Boolean =
     Validated.eq(EQL(), EQ).run {
       this@eqK.fix().eqv(other.fix())
     }
@@ -149,7 +155,7 @@ interface ValidatedEqK<L> : EqK<ValidatedPartialOf<L>> {
 
 @extension
 interface ValidatedEqK2 : EqK2<ForValidated> {
-  override fun <A, B> Kind2<ForValidated, A, B>.eqK(other: Kind2<ForValidated, A, B>, EQA: Eq<A>, EQB: Eq<B>): Boolean =
+  override fun <A, B> ValidatedOf<A, B>.eqK(other: ValidatedOf<A, B>, EQA: Eq<A>, EQB: Eq<B>): Boolean =
     (this.fix() to other.fix()).let {
       Validated.eq(EQA, EQB).run {
         it.first.eqv(it.second)

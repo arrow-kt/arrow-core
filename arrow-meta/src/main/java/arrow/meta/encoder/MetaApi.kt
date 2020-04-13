@@ -133,7 +133,7 @@ interface MetaApi {
   fun TypeName.Classy.asPlatform(): TypeName.Classy
 
   /**
-   * Returns a suitable companion for this type considering it's kinded or conested position.
+   * Returns a suitable companion for this type considering it's kinded position.
    * This is frequently use to project extensions or other static instances as needed via codegen
    */
   val TypeName.projectedCompanion: TypeName

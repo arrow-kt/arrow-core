@@ -2,6 +2,7 @@ package arrow.core.extensions
 
 import arrow.Kind
 import arrow.core.Eval
+import arrow.core.ForSortedMapK
 import arrow.core.Ior
 import arrow.core.SetK
 import arrow.core.SortedMapK
@@ -36,28 +37,28 @@ import arrow.typeclasses.Unalign
 import arrow.typeclasses.Unzip
 import arrow.typeclasses.Zip
 
-interface SortedMapKFunctor<A : Comparable<A>> : Functor<SortedMapKPartialOf<A>> {
-  override fun <B, C> SortedMapKOf<A, B>.map(f: (B) -> C): SortedMapK<A, C> =
-    fix().map(f)
+interface SortedMapKFunctor<A : Comparable<A>> : Functor<ForSortedMapK> {
+  override fun <B, C> SortedMapKPartialOf<B>.map(f: (B) -> C): SortedMapKPartialOf<C> =
+    fix().map(f).unnest()
 }
 
 fun <A : Comparable<A>> SortedMapK.Companion.functor(): SortedMapKFunctor<A> =
   object : SortedMapKFunctor<A> {}
 
-interface SortedMapKFoldable<A : Comparable<A>> : Foldable<SortedMapKPartialOf<A>> {
-  override fun <B, C> SortedMapKOf<A, B>.foldLeft(b: C, f: (C, B) -> C): C =
+interface SortedMapKFoldable<A : Comparable<A>> : Foldable<ForSortedMapK> {
+  override fun <B, C> SortedMapKPartialOf<B>.foldLeft(b: C, f: (C, B) -> C): C =
     fix().foldLeft(b, f)
 
-  override fun <B, C> SortedMapKOf<A, B>.foldRight(lb: Eval<C>, f: (B, Eval<C>) -> Eval<C>): Eval<C> =
+  override fun <B, C> SortedMapKPartialOf<B>.foldRight(lb: Eval<C>, f: (B, Eval<C>) -> Eval<C>): Eval<C> =
     fix().foldRight(lb, f)
 }
 
 fun <A : Comparable<A>> SortedMapK.Companion.foldable(): SortedMapKFoldable<A> =
   object : SortedMapKFoldable<A> {}
 
-interface SortedMapKTraverse<A : Comparable<A>> : Traverse<SortedMapKPartialOf<A>>, SortedMapKFoldable<A> {
-  override fun <G, B, C> SortedMapKOf<A, B>.traverse(AP: Applicative<G>, f: (B) -> Kind<G, C>): Kind<G, Kind<SortedMapKPartialOf<A>, C>> =
-    fix().traverse(AP, f)
+interface SortedMapKTraverse<A : Comparable<A>> : Traverse<ForSortedMapK>, SortedMapKFoldable<A> {
+  override fun <G, B, C> SortedMapKPartialOf<B>.traverse(AP: Applicative<G>, f: (B) -> Kind<G, C>): Kind<G, SortedMapKPartialOf<C>> =
+    fix().traverse(AP, f).unnest()
 }
 
 fun <A : Comparable<A>> SortedMapK.Companion.traverse(): SortedMapKTraverse<A> =
@@ -130,73 +131,76 @@ interface SortedMapKHash<K : Comparable<K>, A> : Hash<SortedMapK<K, A>>, SortedM
     }
 }
 
-interface SortedMapKSemialign<K : Comparable<K>> : Semialign<SortedMapKPartialOf<K>>, SortedMapKFunctor<K> {
+interface SortedMapKSemialign<K : Comparable<K>> : Semialign<ForSortedMapK>, SortedMapKFunctor<K> {
   override fun <A, B> align(
-    a: Kind<SortedMapKPartialOf<K>, A>,
-    b: Kind<SortedMapKPartialOf<K>, B>
-  ): Kind<SortedMapKPartialOf<K>, Ior<A, B>> {
+    a: SortedMapKPartialOf<A>,
+    b: SortedMapKPartialOf<B>
+  ): SortedMapKPartialOf<Ior<A, B>> {
     val l = a.fix()
     val r = b.fix()
     val keys = l.keys + r.keys
 
     return keys.map { key ->
       Ior.fromOptions(l[key].toOption(), r[key].toOption()).map { key to it }
-    }.flattenOption().toMap().toSortedMap().k()
+    }.flattenOption().toMap().toSortedMap().k().unnest()
   }
 }
 
 fun <K : Comparable<K>> SortedMapK.Companion.semialign(): SortedMapKSemialign<K> =
   object : SortedMapKSemialign<K> {}
 
-interface SortedMapKAlign<K : Comparable<K>> : Align<SortedMapKPartialOf<K>>, SortedMapKSemialign<K> {
-  override fun <A> empty(): Kind<SortedMapKPartialOf<K>, A> = emptyMap<K, A>().toSortedMap().k()
+interface SortedMapKAlign<K : Comparable<K>> : Align<ForSortedMapK>, SortedMapKSemialign<K> {
+  override fun <A> empty(): SortedMapKPartialOf<A> =
+    emptyMap<K, A>().toSortedMap().k().unnest()
 }
 
 fun <K : Comparable<K>> SortedMapK.Companion.align(): SortedMapKAlign<K> =
   object : SortedMapKAlign<K> {}
 
 @extension
-interface SortedMapKEqK<K : Comparable<K>> : EqK<SortedMapKPartialOf<K>> {
+interface SortedMapKEqK<K : Comparable<K>> : EqK<ForSortedMapK> {
   fun EQK(): Eq<K>
 
-  override fun <A> Kind<SortedMapKPartialOf<K>, A>.eqK(other: Kind<SortedMapKPartialOf<K>, A>, EQ: Eq<A>): Boolean =
-    SortedMapK.eq(EQK(), EQ).run { this@eqK.fix().eqv(other.fix()) }
+  override fun <A> SortedMapKPartialOf<A>.eqK(other: SortedMapKPartialOf<A>, EQ: Eq<A>): Boolean =
+    SortedMapK.eq(EQK(), EQ).run {
+      this@eqK.nest<K>().fix().eqv(other.nest<K>().fix())
+    }
 }
 
-interface SortedMapKUnalign<K : Comparable<K>> : Unalign<SortedMapKPartialOf<K>>, SortedMapKSemialign<K> {
-  override fun <A, B> unalign(ior: Kind<SortedMapKPartialOf<K>, Ior<A, B>>): Tuple2<Kind<SortedMapKPartialOf<K>, A>, Kind<SortedMapKPartialOf<K>, B>> =
+interface SortedMapKUnalign<K : Comparable<K>> : Unalign<ForSortedMapK>, SortedMapKSemialign<K> {
+  override fun <A, B> unalign(ior: SortedMapKPartialOf<Ior<A, B>>): Tuple2<SortedMapKPartialOf<A>, SortedMapKPartialOf<B>> =
     ior.fix().let { map ->
       map.entries.foldLeft(emptyMap<K, A>() toT emptyMap<K, B>()) { (ls, rs), (k, v) ->
         v.fold(
           { a -> ls.plus(k to a) toT rs },
           { b -> ls toT rs.plus(k to b) },
           { a, b -> ls.plus(k to a) toT rs.plus(k to b) })
-      }.bimap({ it.toSortedMap().k() }, { it.toSortedMap().k() })
+      }.bimap({ it.toSortedMap().k().unnest<A>() }, { it.toSortedMap().k().unnest<B>() })
     }
 }
 
 fun <K : Comparable<K>> SortedMapK.Companion.unalign() = object : SortedMapKUnalign<K> {}
 
-interface SortedMapKZip<K : Comparable<K>> : Zip<SortedMapKPartialOf<K>>, SortedMapKSemialign<K> {
-  override fun <A, B> Kind<SortedMapKPartialOf<K>, A>.zip(other: Kind<SortedMapKPartialOf<K>, B>): Kind<SortedMapKPartialOf<K>, Tuple2<A, B>> =
+interface SortedMapKZip<K : Comparable<K>> : Zip<ForSortedMapK>, SortedMapKSemialign<K> {
+  override fun <A, B> SortedMapKPartialOf<A>.zip(other: SortedMapKPartialOf<B>): SortedMapKPartialOf<Tuple2<A, B>> =
     (this.fix() to other.fix()).let { (ls, rs) ->
       val keys = (ls.keys.intersect(rs.keys))
 
       val values = keys.map { key -> ls.getOption(key).flatMap { l -> rs.getOption(key).map { key to (l toT it) } } }.flattenOption()
 
-      return values.toMap().toSortedMap().k()
+      return values.toMap().toSortedMap().k().unnest()
     }
 }
 
 fun <K : Comparable<K>> SortedMapK.Companion.zip() = object : SortedMapKZip<K> {}
 
-interface SortedMapKUnzip<K : Comparable<K>> : Unzip<SortedMapKPartialOf<K>>, SortedMapKZip<K> {
-  override fun <A, B> Kind<SortedMapKPartialOf<K>, Tuple2<A, B>>.unzip(): Tuple2<Kind<SortedMapKPartialOf<K>, A>, Kind<SortedMapKPartialOf<K>, B>> =
+interface SortedMapKUnzip<K : Comparable<K>> : Unzip<ForSortedMapK>, SortedMapKZip<K> {
+  override fun <A, B> SortedMapKPartialOf<Tuple2<A, B>>.unzip(): Tuple2<SortedMapKPartialOf<A>, SortedMapKPartialOf<B>> =
     this.fix().let { map ->
       map.entries.fold(emptyMap<K, A>() toT emptyMap<K, B>()) { (ls, rs), (k, v) ->
         ls.plus(k to v.a) toT rs.plus(k to v.b)
       }
-    }.bimap({ it.toSortedMap().k() }, { it.toSortedMap().k() })
+    }.bimap({ it.toSortedMap().k().unnest<A>() }, { it.toSortedMap().k().unnest<B>() })
 }
 
 fun <K : Comparable<K>> SortedMapK.Companion.unzip() = object : SortedMapKUnzip<K> {}

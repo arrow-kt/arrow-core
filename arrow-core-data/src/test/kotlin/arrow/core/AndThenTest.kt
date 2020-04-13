@@ -36,8 +36,8 @@ class AndThenTest : UnitSpec() {
   init {
 
     testLaws(
-      MonadLaws.laws(AndThen.monad(), AndThen.functor(), AndThen.applicative(), AndThen.monad(), AndThen.genK(), AndThen.eqK<Int>()),
-      MonoidLaws.laws(AndThen.monoid<Int, Int>(Int.monoid()), Gen.int().map { i -> AndThen<Int, Int> { i } }, EQ),
+      MonadLaws.laws(AndThen.monad(), AndThen.functor(), AndThen.applicative(), AndThen.monad(), AndThen.genK(), AndThen.eqK()),
+      MonoidLaws.laws(AndThen.monoid(Int.monoid()), Gen.int().map { i -> AndThen { i } }, EQ),
       ContravariantLaws.laws(AndThen.contravariant(), AndThen.genK(), AndThen.eqK()),
       ProfunctorLaws.laws(AndThen.profunctor(), AndThen.genK2(), AndThen.eqK2()),
       CategoryLaws.laws(AndThen.category(), AndThen.genK2(), AndThen.eqK2())
@@ -99,7 +99,7 @@ class AndThenTest : UnitSpec() {
 
     "flatMap is stacksafe" {
       val result = (0 until count).toList().foldLeft(AndThen<Int, Int>(::identity)) { acc, _ ->
-        acc.flatMap { i -> AndThen<Int, Int> { i + it } }
+        acc.flatMap { i -> AndThen { i + it } }
       }.invoke(1)
 
       result shouldBe (count + 1)
@@ -111,7 +111,7 @@ private fun AndThen.Companion.eqK() = object : EqK<ForAndThen> {
   override fun <A> AndThenPartialOf<A>.eqK(other: AndThenPartialOf<A>, EQ: Eq<A>): Boolean =
     (this.unnest<A>() to other.unnest<A>()).let { (ls, rs) ->
       EQ.run {
-        ls(1).eqv(rs(1))
+        ls(Unit).eqv(rs(Unit))
       }
     }
 }
@@ -127,7 +127,7 @@ private fun AndThen.Companion.eqK2() = object : EqK2<ForAndThen> {
 
 private fun AndThen.Companion.genK() = object : GenK<ForAndThen> {
   override fun <A> genK(gen: Gen<A>): Gen<Kind<ForAndThen, A>> = gen.map {
-    just<Int, A>(it).unnest()
+    just<Unit, A>(it).unnest()
   }
 }
 

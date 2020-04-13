@@ -90,7 +90,7 @@ interface EvalBimonad : Bimonad<ForEval> {
   override fun <A, B> EvalOf<A>.flatMap(f: (A) -> EvalOf<B>): Eval<B> =
     fix().flatMap(f)
 
-  override fun <A, B> tailRecM(a: A, f: kotlin.Function1<A, EvalOf<Either<A, B>>>): Eval<B> =
+  override fun <A, B> tailRecM(a: A, f: (A) -> EvalOf<Either<A, B>>): EvalOf<B> =
     Eval.tailRecM(a, f)
 
   override fun <A, B> EvalOf<A>.map(f: (A) -> B): Eval<B> =

@@ -1,4 +1,4 @@
-@file:Suppress("UnusedImports")
+@file:Suppress("UnusedImports", "FunctionName")
 
 package arrow.core.extensions
 
@@ -44,56 +44,50 @@ import arrow.core.extensions.traverse as tuple2Traverse
 // TODO @arities(fromTupleN = 2, toTupleN = 22 | fromHListN = 1, toHListN = 22)
 
 @extension
-interface Tuple2Functor<F> : Functor<Tuple2PartialOf<F>> {
-  override fun <A, B> Tuple2Of<F, A>.map(f: (A) -> B) =
-    fix().map(f)
+interface Tuple2Functor : Functor<ForTuple2> {
+  override fun <A, B> Tuple2PartialOf<A>.map(f: (A) -> B): Tuple2PartialOf<B> =
+    fix().map(f).unnest()
 }
 
 @extension
-interface Tuple2Apply<F> : Apply<Tuple2PartialOf<F>>, Tuple2Functor<F> {
+interface Tuple2Apply : Apply<ForTuple2>, Tuple2Functor {
 
-  override fun <A, B> Tuple2Of<F, A>.map(f: (A) -> B) =
-    fix().map(f)
-
-  override fun <A, B> Tuple2Of<F, A>.ap(ff: Tuple2Of<F, (A) -> B>) =
-    fix().ap(ff.fix())
+  override fun <A, B> Tuple2PartialOf<A>.ap(ff: Tuple2PartialOf<(A) -> B>): Tuple2PartialOf<B> =
+    fix().ap(ff.fix()).unnest()
 }
 
 @extension
-interface Tuple2Applicative<F> : Applicative<Tuple2PartialOf<F>>, Tuple2Functor<F> {
+interface Tuple2Applicative<F> : Applicative<ForTuple2>, Tuple2Apply {
   fun MF(): Monoid<F>
 
-  override fun <A, B> Tuple2Of<F, A>.map(f: (A) -> B) =
-    fix().map(f)
+  override fun <A, B> Tuple2PartialOf<A>.map(f: (A) -> B): Tuple2PartialOf<B> =
+    fix().map(f).unnest()
 
-  override fun <A, B> Tuple2Of<F, A>.ap(ff: Tuple2Of<F, (A) -> B>) =
-    fix().ap(ff.fix())
-
-  override fun <A> just(a: A) =
-    MF().empty() toT a
+  override fun <A> just(a: A): Tuple2PartialOf<A> =
+    (MF().empty() toT a).unnest()
 }
 
 @extension
-interface Tuple2Monad<F> : Monad<Tuple2PartialOf<F>>, Tuple2Applicative<F> {
+interface Tuple2Monad<F> : Monad<ForTuple2>, Tuple2Applicative<F> {
 
   override fun MF(): Monoid<F>
 
-  override fun <A, B> Tuple2Of<F, A>.map(f: (A) -> B) =
-    fix().map(f)
+  override fun <A, B> Tuple2PartialOf<A>.flatMap(f: (A) -> Tuple2PartialOf<B>): Tuple2PartialOf<B> =
+    fix().flatMap { f(it).fix() }.unnest()
 
-  override fun <A, B> Tuple2Of<F, A>.ap(ff: Tuple2Of<F, (A) -> B>) =
-    fix().ap(ff)
-
-  override fun <A, B> Tuple2Of<F, A>.flatMap(f: (A) -> Tuple2Of<F, B>) =
-    fix().flatMap { f(it).fix() }
-
-  override tailrec fun <A, B> tailRecM(a: A, f: (A) -> Tuple2Of<F, Either<A, B>>): Tuple2<F, B> {
+  override tailrec fun <A, B> tailRecM(a: A, f: (A) -> Tuple2PartialOf<Either<A, B>>): Tuple2PartialOf<B> {
     val b = f(a).fix().b
     return when (b) {
       is Left -> tailRecM(b.a, f)
       is Right -> just(b.b)
     }
   }
+
+  override fun <A, B> Tuple2PartialOf<A>.map(f: (A) -> B): Tuple2PartialOf<B> =
+    fix().map(f).unnest()
+
+  override fun <A, B> Tuple2PartialOf<A>.ap(ff: Tuple2PartialOf<(A) -> B>): Tuple2PartialOf<B> =
+    fix().ap(ff.fix()).unnest()
 }
 
 @extension
@@ -101,30 +95,31 @@ interface Tuple2Bifunctor : Bifunctor<ForTuple2> {
   override fun <A, B, C, D> Tuple2Of<A, B>.bimap(
     fl: (A) -> C,
     fr: (B) -> D
-  ) = fix().bimap(fl, fr)
+  ): Tuple2<C, D> = fix().bimap(fl, fr)
 }
 
 @extension
-interface Tuple2Comonad<F> : Comonad<Tuple2PartialOf<F>>, Tuple2Functor<F> {
-  override fun <A, B> Tuple2Of<F, A>.coflatMap(f: (Tuple2Of<F, A>) -> B) =
-    fix().coflatMap(f)
+interface Tuple2Comonad : Comonad<ForTuple2>, Tuple2Functor {
+  override fun <A, B> Tuple2PartialOf<A>.coflatMap(f: (Tuple2PartialOf<A>) -> B): Tuple2PartialOf<B> =
+    nest<A>().fix().coflatMap { f(it.unnest()) }.unnest()
 
-  override fun <A> Tuple2Of<F, A>.extract() =
+  override fun <A> Tuple2PartialOf<A>.extract(): A =
     fix().extract()
 }
 
 @extension
-interface Tuple2Foldable<F> : Foldable<Tuple2PartialOf<F>> {
-  override fun <A, B> Tuple2Of<F, A>.foldLeft(b: B, f: (B, A) -> B) =
+interface Tuple2Foldable<F> : Foldable<ForTuple2> {
+  override fun <A, B> Tuple2PartialOf<A>.foldLeft(b: B, f: (B, A) -> B): B =
     fix().foldL(b, f)
 
-  override fun <A, B> Tuple2Of<F, A>.foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) =
+  override fun <A, B> Tuple2PartialOf<A>.foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> =
     fix().foldR(lb, f)
 }
 
 @extension
 interface Tuple2Bifoldable : Bifoldable<ForTuple2> {
-  override fun <A, B, C> Tuple2Of<A, B>.bifoldLeft(c: C, f: (C, A) -> C, g: (C, B) -> C): C = fix().let { g(f(c, it.a), it.b) }
+  override fun <A, B, C> Tuple2Of<A, B>.bifoldLeft(c: C, f: (C, A) -> C, g: (C, B) -> C): C =
+    fix().let { g(f(c, it.a), it.b) }
 
   override fun <A, B, C> Tuple2Of<A, B>.bifoldRight(c: Eval<C>, f: (A, Eval<C>) -> Eval<C>, g: (B, Eval<C>) -> Eval<C>): Eval<C> =
     fix().let { f(it.a, g(it.b, c)) }
@@ -138,10 +133,10 @@ fun <F, G, A> Tuple2Of<F, Kind<G, A>>.sequence(GA: Applicative<G>): Kind<G, Tupl
   fix().tuple2Traverse(GA, ::identity)
 
 @extension
-interface Tuple2Traverse<F> : Traverse<Tuple2PartialOf<F>>, Tuple2Foldable<F> {
+interface Tuple2Traverse<F> : Traverse<ForTuple2>, Tuple2Foldable<F> {
 
-  override fun <G, A, B> Tuple2Of<F, A>.traverse(AP: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, Tuple2<F, B>> =
-    tuple2Traverse(AP, f)
+  override fun <G, A, B> Tuple2PartialOf<A>.traverse(AP: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, Tuple2PartialOf<B>> =
+    tuple2Traverse(AP, f).unnest()
 }
 
 @extension

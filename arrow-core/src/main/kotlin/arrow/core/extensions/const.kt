@@ -5,6 +5,7 @@ import arrow.core.Const
 import arrow.core.ConstOf
 import arrow.core.ConstPartialOf
 import arrow.core.Eval
+import arrow.core.ForConst
 import arrow.core.Option
 import arrow.core.Tuple2
 import arrow.core.extensions.const.eq.eq
@@ -31,92 +32,96 @@ import arrow.core.ap as constAp
 import arrow.core.combine as combineAp
 
 @extension
-interface ConstInvariant<A> : Invariant<ConstPartialOf<A>> {
-  override fun <T, U> ConstOf<A, T>.imap(f: (T) -> U, g: (U) -> T): Const<A, U> =
-    fix().retag()
+interface ConstInvariant : Invariant<ForConst> {
+  override fun <T, U> ConstPartialOf<T>.imap(f: (T) -> U, g: (U) -> T): ConstPartialOf<U> =
+    fix().retag<U>().unnest()
 }
 
 @extension
-interface ConstContravariant<A> : Contravariant<ConstPartialOf<A>> {
-  override fun <T, U> ConstOf<A, T>.contramap(f: (U) -> T): Const<A, U> =
-    fix().retag()
+interface ConstContravariant : Contravariant<ForConst> {
+  override fun <T, U> ConstPartialOf<T>.contramap(f: (U) -> T): ConstPartialOf<U> =
+    fix().retag<U>().unnest()
 }
 
 @extension
-interface ConstDivideInstance<O> : Divide<ConstPartialOf<O>>, ConstContravariant<O> {
+interface ConstDivideInstance<O> : Divide<ForConst>, ConstContravariant {
   fun MO(): Monoid<O>
-  override fun <A, B, Z> divide(fa: Kind<ConstPartialOf<O>, A>, fb: Kind<ConstPartialOf<O>, B>, f: (Z) -> Tuple2<A, B>): Kind<ConstPartialOf<O>, Z> =
-    Const(
+
+  override fun <A, B, Z> divide(fa: ConstPartialOf<A>, fb: ConstPartialOf<B>, f: (Z) -> Tuple2<A, B>): ConstPartialOf<Z> =
+    Const<O, Z>(
       MO().run { fa.value() + fb.value() }
-    )
+    ).unnest()
 }
 
 @extension
-interface ConstDivisibleInstance<O> : Divisible<ConstPartialOf<O>>, ConstDivideInstance<O> {
-  fun MOO(): Monoid<O>
-  override fun MO(): Monoid<O> = MOO()
+interface ConstDivisibleInstance<O> : Divisible<ForConst>, ConstDivideInstance<O> {
+  override fun MO(): Monoid<O>
 
-  override fun <A> conquer(): Kind<ConstPartialOf<O>, A> =
-    Const(MOO().empty())
+  override fun <A> conquer(): ConstPartialOf<A> =
+    Const<O, A>(MO().empty()).unnest()
 }
 
 @extension
-interface ConstFunctor<A> : Functor<ConstPartialOf<A>> {
-  override fun <T, U> ConstOf<A, T>.map(f: (T) -> U): Const<A, U> =
-    fix().retag()
+interface ConstFunctor : Functor<ForConst> {
+  override fun <T, U> ConstPartialOf<T>.map(f: (T) -> U): ConstPartialOf<U> =
+    fix().retag<U>().unnest()
 }
 
 @extension
-interface ConstApply<A> : Apply<ConstPartialOf<A>> {
+interface ConstApply<A> : Apply<ForConst> {
 
   fun MA(): Monoid<A>
 
-  override fun <T, U> ConstOf<A, T>.map(f: (T) -> U): Const<A, U> = fix().retag()
+  override fun <T, U> ConstPartialOf<T>.map(f: (T) -> U): ConstPartialOf<U> =
+    fix().retag<U>().unnest()
 
-  override fun <T, U> ConstOf<A, T>.ap(ff: ConstOf<A, (T) -> U>): Const<A, U> =
-    constAp(MA(), ff)
+  override fun <T, U> ConstPartialOf<T>.ap(ff: ConstPartialOf<(T) -> U>): ConstPartialOf<U> =
+    constAp(MA(), ff).unnest()
 }
 
 @extension
-interface ConstApplicative<A> : Applicative<ConstPartialOf<A>> {
+interface ConstApplicative<A> : Applicative<ForConst> {
 
   fun MA(): Monoid<A>
 
-  override fun <T, U> ConstOf<A, T>.map(f: (T) -> U): Const<A, U> = fix().retag()
+  override fun <T, U> ConstPartialOf<T>.map(f: (T) -> U): ConstPartialOf<U> =
+    fix().retag<U>().unnest()
 
-  override fun <T> just(a: T): Const<A, T> = object : ConstMonoid<A, T> {
+  override fun <T> just(a: T): ConstPartialOf<T> = object : ConstMonoid<A, T> {
     override fun SA(): Semigroup<A> = MA()
     override fun MA(): Monoid<A> = this@ConstApplicative.MA()
-  }.empty().fix()
+  }.empty().fix().unnest()
 
-  override fun <T, U> ConstOf<A, T>.ap(ff: ConstOf<A, (T) -> U>): Const<A, U> =
-    constAp(MA(), ff)
+  override fun <T, U> ConstPartialOf<T>.ap(ff: ConstPartialOf<(T) -> U>): ConstPartialOf<U> =
+    constAp(MA(), ff).unnest()
 }
 
 @extension
-interface ConstFoldable<A> : Foldable<ConstPartialOf<A>> {
+interface ConstFoldable : Foldable<ForConst> {
 
-  override fun <T, U> ConstOf<A, T>.foldLeft(b: U, f: (U, T) -> U): U = b
+  override fun <T, U> ConstPartialOf<T>.foldLeft(b: U, f: (U, T) -> U): U = b
 
-  override fun <T, U> ConstOf<A, T>.foldRight(lb: Eval<U>, f: (T, Eval<U>) -> Eval<U>): Eval<U> = lb
+  override fun <T, U> ConstPartialOf<T>.foldRight(lb: Eval<U>, f: (T, Eval<U>) -> Eval<U>): Eval<U> = lb
 }
 
 @extension
-interface ConstTraverse<X> : Traverse<ConstPartialOf<X>>, ConstFoldable<X> {
+interface ConstTraverse : Traverse<ForConst>, ConstFoldable {
 
-  override fun <T, U> ConstOf<X, T>.map(f: (T) -> U): Const<X, U> = fix().retag()
+  override fun <T, U> ConstPartialOf<T>.map(f: (T) -> U): ConstPartialOf<U> =
+    fix().retag<U>().unnest()
 
-  override fun <G, A, B> ConstOf<X, A>.traverse(AP: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, ConstOf<X, B>> =
-    fix().traverse(AP, f)
+  override fun <G, A, B> ConstPartialOf<A>.traverse(AP: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, ConstPartialOf<B>> =
+    fix().traverse(AP, f).unnest()
 }
 
 @extension
-interface ConstTraverseFilter<X> : TraverseFilter<ConstPartialOf<X>>, ConstTraverse<X> {
+interface ConstTraverseFilter : TraverseFilter<ForConst>, ConstTraverse {
 
-  override fun <T, U> Kind<ConstPartialOf<X>, T>.map(f: (T) -> U): Const<X, U> = fix().retag()
+  override fun <T, U> ConstPartialOf<T>.map(f: (T) -> U): ConstPartialOf<U> =
+    fix().retag<U>().unnest()
 
-  override fun <G, A, B> Kind<ConstPartialOf<X>, A>.traverseFilter(AP: Applicative<G>, f: (A) -> Kind<G, Option<B>>): Kind<G, ConstOf<X, B>> =
-    fix().traverseFilter(AP, f)
+  override fun <G, A, B> ConstPartialOf<A>.traverseFilter(AP: Applicative<G>, f: (A) -> Kind<G, Option<B>>): Kind<G, ConstPartialOf<B>> =
+    fix().traverseFilter(AP, f).unnest()
 }
 
 @extension
@@ -148,16 +153,13 @@ interface ConstEq<A, T> : Eq<Const<A, T>> {
 }
 
 @extension
-interface ConstEqK<A> : EqK<ConstPartialOf<A>> {
+interface ConstEqK<A> : EqK<ForConst> {
 
   fun EQA(): Eq<A>
 
-  override fun <T> Kind<ConstPartialOf<A>, T>.eqK(other: Kind<ConstPartialOf<A>, T>, EQ: Eq<T>): Boolean =
-    (this.fix() to other.fix()).let {
-
-      Const.eq<A, T>(EQA()).run {
-        it.first.eqv(it.second)
-      }
+  override fun <T> ConstPartialOf<T>.eqK(other: ConstPartialOf<T>, EQ: Eq<T>): Boolean =
+    Const.eq<A, T>(EQA()).run {
+      this@eqK.nest<A>().fix().eqv(other.nest<A>().fix())
     }
 }
 

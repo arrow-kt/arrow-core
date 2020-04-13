@@ -1,6 +1,5 @@
 package arrow.core
 
-import arrow.Kind
 import arrow.Kind2
 import arrow.core.Either.Left
 import arrow.core.Either.Right

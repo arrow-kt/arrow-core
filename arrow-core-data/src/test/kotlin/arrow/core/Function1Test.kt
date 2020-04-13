@@ -20,32 +20,23 @@ import arrow.core.test.laws.DivisibleLaws
 import arrow.core.test.laws.MonadLaws
 import arrow.core.test.laws.MonoidLaws
 import arrow.core.test.laws.ProfunctorLaws
-import arrow.typeclasses.Conested
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.EqK2
-import arrow.typeclasses.conest
-import arrow.typeclasses.counnest
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 
 class Function1Test : UnitSpec() {
 
-  val conestedEQK = object : EqK<Conested<ForFunction1, Int>> {
-    override fun <A> Kind<Conested<ForFunction1, Int>, A>.eqK(other: Kind<Conested<ForFunction1, Int>, A>, EQ: Eq<A>): Boolean {
-      return this.counnest().invoke(1) == other.counnest().invoke(1)
-    }
-  }
-
   val EQ: Eq<Function1Of<Int, Int>> = Eq { a, b ->
     a(1) == b(1)
   }
 
-  fun <A> eqK(a: A) = object : EqK<Function1PartialOf<A>> {
-    override fun <B> Kind<Function1PartialOf<A>, B>.eqK(other: Kind<Function1PartialOf<A>, B>, EQ: Eq<B>): Boolean =
+  fun eqK() = object : EqK<ForFunction1> {
+    override fun <A> Function1PartialOf<A>.eqK(other: Kind<ForFunction1, A>, EQ: Eq<A>): Boolean =
       (this.fix() to other.fix()).let { (ls, rs) ->
         EQ.run {
-          ls(a).eqv(rs(a))
+          ls(Unit).eqv(rs(Unit))
         }
       }
   }
@@ -53,37 +44,29 @@ class Function1Test : UnitSpec() {
   fun eqK2() = object : EqK2<ForFunction1> {
     override fun <A, B> Kind2<ForFunction1, A, B>.eqK(other: Kind2<ForFunction1, A, B>, EQA: Eq<A>, EQB: Eq<B>): Boolean =
       (this.fix() to other.fix()).let { (ls, rs) ->
-        EQB.run {
-          ls(1).eqv(rs(1))
+        eqK().run {
+          ls.unnest<B>().eqK(rs.unnest(), EQB)
         }
       }
   }
 
-  fun conestedGENK() = object : GenK<Conested<ForFunction1, Int>> {
-    override fun <A> genK(gen: Gen<A>): Gen<Kind<Conested<ForFunction1, Int>, A>> =
-      gen.map {
-        Function1.just<Int, A>(it).conest()
-      } as Gen<Kind<Conested<ForFunction1, Int>, A>>
-  }
-
-  fun <A> genK() = object : GenK<Function1PartialOf<A>> {
-    override fun <B> genK(gen: Gen<B>): Gen<Kind<Function1PartialOf<A>, B>> = gen.map {
-      Function1.just<A, B>(it)
+  fun genK() = object : GenK<ForFunction1> {
+    override fun <B> genK(gen: Gen<B>): Gen<Kind<ForFunction1, B>> = gen.map {
+      Function1.just<Unit, B>(it).unnest()
     }
   }
 
   fun genK2() = object : GenK2<ForFunction1> {
-    override fun <A, B> genK(genA: Gen<A>, genB: Gen<B>): Gen<Kind2<ForFunction1, A, B>> = genB.map {
-      Function1.just<A, B>(it)
-    }
+    override fun <A, B> genK(genA: Gen<A>, genB: Gen<B>): Gen<Kind2<ForFunction1, A, B>> =
+      genK().genK(genB).map { it.nest() }
   }
 
   init {
     testLaws(
       MonoidLaws.laws(Function1.monoid<Int, Int>(Int.monoid()), Gen.constant({ a: Int -> a + 1 }.k()), EQ),
-      DivisibleLaws.laws(Function1.divisible(Int.monoid()), conestedGENK(), conestedEQK),
+      DivisibleLaws.laws(Function1.divisible(Int.monoid()), genK(), eqK()),
       ProfunctorLaws.laws(Function1.profunctor(), genK2(), eqK2()),
-      MonadLaws.laws(Function1.monad(), Function1.functor(), Function1.applicative(), Function1.monad(), genK(), eqK(5150)),
+      MonadLaws.laws(Function1.monad(), Function1.functor(), Function1.applicative(), Function1.monad(), genK(), eqK()),
       CategoryLaws.laws(Function1.category(), genK2(), eqK2())
     )
 

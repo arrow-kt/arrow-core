@@ -67,23 +67,23 @@ interface EitherSemigroup<L, R> : Semigroup<Either<L, R>> {
   fun SGL(): Semigroup<L>
   fun SGR(): Semigroup<R>
 
-  override fun Either<L, R>.combine(b: Either<L, R>): Either<L, R> = fix().combine(SGL(), SGR(), b)
+  override fun Either<L, R>.combine(b: Either<L, R>): Either<L, R> =
+    fix().combine(SGL(), SGR(), b)
 }
 
 @extension
 interface EitherMonoid<L, R> : Monoid<Either<L, R>>, EitherSemigroup<L, R> {
-  fun MOL(): Monoid<L>
-  fun MOR(): Monoid<R>
+  override fun SGL(): Monoid<L>
+  override fun SGR(): Monoid<R>
 
-  override fun SGL(): Semigroup<L> = MOL()
-  override fun SGR(): Semigroup<R> = MOR()
-
-  override fun empty(): Either<L, R> = Right(MOR().empty())
+  override fun empty(): Either<L, R> =
+    Right(SGR().empty())
 }
 
 @extension
-interface EitherFunctor<L> : Functor<EitherPartialOf<L>> {
-  override fun <A, B> EitherOf<L, A>.map(f: (A) -> B): Either<L, B> = fix().map(f)
+interface EitherFunctor : Functor<ForEither> {
+  override fun <A, B> EitherPartialOf<A>.map(f: (A) -> B): EitherPartialOf<B> =
+    fix().map(f).unnest()
 }
 
 @extension
@@ -93,69 +93,73 @@ interface EitherBifunctor : Bifunctor<ForEither> {
 }
 
 @extension
-interface EitherApply<L> : Apply<EitherPartialOf<L>>, EitherFunctor<L> {
+interface EitherApply : Apply<ForEither>, EitherFunctor {
 
-  override fun <A, B> EitherOf<L, A>.map(f: (A) -> B): Either<L, B> = fix().map(f)
+  override fun <A, B> EitherPartialOf<A>.apEval(ff: Eval<EitherPartialOf<(A) -> B>>): Eval<EitherPartialOf<B>> =
+    fix().fold(
+      { l -> Eval.now(l.left().unnest()) },
+      { r -> ff.map { it.fix().map { f -> f(r) }.unnest<B>() } }
+    )
 
-  override fun <A, B> Kind<EitherPartialOf<L>, A>.apEval(ff: Eval<Kind<EitherPartialOf<L>, (A) -> B>>): Eval<Kind<EitherPartialOf<L>, B>> =
-    fix().fold({ l -> Eval.now(l.left()) }, { r -> ff.map { it.fix().map { f -> f(r) } } })
-
-  override fun <A, B> EitherOf<L, A>.ap(ff: EitherOf<L, (A) -> B>): Either<L, B> =
-    fix().eitherAp(ff)
+  override fun <A, B> EitherPartialOf<A>.ap(ff: EitherPartialOf<(A) -> B>): EitherPartialOf<B> =
+    fix().eitherAp(ff).unnest()
 }
 
 @extension
-interface EitherApplicative<L> : Applicative<EitherPartialOf<L>>, EitherApply<L> {
+interface EitherApplicative : Applicative<ForEither>, EitherApply {
 
-  override fun <A> just(a: A): Either<L, A> = Right(a)
+  override fun <A> just(a: A): EitherPartialOf<A> =
+    Right(a).unnest()
 
-  override fun <A, B> EitherOf<L, A>.map(f: (A) -> B): Either<L, B> = fix().map(f)
+  override fun <A, B> EitherPartialOf<A>.map(f: (A) -> B): EitherPartialOf<B> =
+    fix().map(f).unnest()
 }
 
 @extension
-interface EitherMonad<L> : Monad<EitherPartialOf<L>>, EitherApplicative<L> {
+interface EitherMonad : Monad<ForEither>, EitherApplicative {
 
-  override fun <A, B> EitherOf<L, A>.map(f: (A) -> B): Either<L, B> = fix().map(f)
+  override fun <A, B> EitherPartialOf<A>.map(f: (A) -> B): EitherPartialOf<B> =
+    fix().map(f).unnest()
 
-  override fun <A, B> EitherOf<L, A>.ap(ff: EitherOf<L, (A) -> B>): Either<L, B> =
-    fix().eitherAp(ff)
+  override fun <A, B> EitherPartialOf<A>.ap(ff: EitherPartialOf<(A) -> B>): EitherPartialOf<B> =
+    fix().eitherAp(ff).unnest()
 
-  override fun <A, B> EitherOf<L, A>.flatMap(f: (A) -> EitherOf<L, B>): Either<L, B> =
-    fix().eitherFlatMap { f(it).fix() }
+  override fun <A, B> EitherPartialOf<A>.flatMap(f: (A) -> EitherPartialOf<B>): EitherPartialOf<B> =
+    fix().eitherFlatMap { f(it).fix() }.unnest()
 
-  override fun <A, B> tailRecM(a: A, f: (A) -> EitherOf<L, Either<A, B>>): Either<L, B> =
-    Either.tailRecM(a, f)
+  override fun <A, B> tailRecM(a: A, f: (A) -> EitherPartialOf<Either<A, B>>): EitherPartialOf<B> =
+    Either.tailRecM(a, f).unnest()
 
-  @Suppress("UNCHECKED_CAST")
-  override val fx: MonadFx<EitherPartialOf<L>>
-    get() = EitherMonadFx as MonadFx<EitherPartialOf<L>>
+  override val fx: MonadFx<ForEither>
+    get() = EitherMonadFx
 }
 
-internal object EitherMonadFx : MonadFx<EitherPartialOf<Any?>> {
-  override val M: Monad<EitherPartialOf<Any?>> = Either.monad()
-  override fun <A> monad(c: suspend MonadSyntax<EitherPartialOf<Any?>>.() -> A): Either<Any?, A> =
-    super.monad(c).fix()
-}
-
-@extension
-interface EitherApplicativeError<L> : ApplicativeError<EitherPartialOf<L>, L>, EitherApplicative<L> {
-
-  override fun <A> raiseError(e: L): Either<L, A> = Left(e)
-
-  override fun <A> EitherOf<L, A>.handleErrorWith(f: (L) -> EitherOf<L, A>): Either<L, A> =
-    fix().eitherHandleErrorWith(f)
+internal object EitherMonadFx : MonadFx<ForEither> {
+  override val M: Monad<ForEither> = Either.monad()
+  override fun <A> monad(c: suspend MonadSyntax<ForEither>.() -> A): EitherPartialOf<A> =
+    super.monad(c).fix().unnest()
 }
 
 @extension
-interface EitherMonadError<L> : MonadError<EitherPartialOf<L>, L>, EitherApplicativeError<L>, EitherMonad<L>
+interface EitherApplicativeError<L> : ApplicativeError<ForEither, L>, EitherApplicative {
+
+  override fun <A> raiseError(e: L): EitherPartialOf<A> =
+    Left(e).unnest()
+
+  override fun <A> EitherPartialOf<A>.handleErrorWith(f: (L) -> EitherPartialOf<A>): Kind<ForEither, A> =
+    fix().eitherHandleErrorWith(f).unnest()
+}
 
 @extension
-interface EitherFoldable<L> : Foldable<EitherPartialOf<L>> {
+interface EitherMonadError<L> : MonadError<ForEither, L>, EitherApplicativeError<L>, EitherMonad
 
-  override fun <A, B> EitherOf<L, A>.foldLeft(b: B, f: (B, A) -> B): B =
+@extension
+interface EitherFoldable : Foldable<ForEither> {
+
+  override fun <A, B> EitherPartialOf<A>.foldLeft(b: B, f: (B, A) -> B): B =
     fix().foldLeft(b, f)
 
-  override fun <A, B> EitherOf<L, A>.foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> =
+  override fun <A, B> EitherPartialOf<A>.foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> =
     fix().foldRight(lb, f)
 }
 
@@ -171,10 +175,10 @@ fun <G, A, B, C> EitherOf<A, B>.traverse(GA: Applicative<G>, f: (B) -> Kind<G, C
   fix().fold({ GA.just(Either.Left(it)) }, { GA.run { f(it).map { Either.Right(it) } } })
 
 @extension
-interface EitherTraverse<L> : Traverse<EitherPartialOf<L>>, EitherFoldable<L> {
+interface EitherTraverse<L> : Traverse<ForEither>, EitherFoldable {
 
-  override fun <G, A, B> EitherOf<L, A>.traverse(AP: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, EitherOf<L, B>> =
-    fix().eitherTraverse(AP, f)
+  override fun <G, A, B> EitherPartialOf<A>.traverse(AP: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, EitherPartialOf<B>> =
+    fix().eitherTraverse(AP, f).unnest()
 }
 
 @extension
@@ -184,10 +188,10 @@ interface EitherBitraverse : Bitraverse<ForEither>, EitherBifoldable {
 }
 
 @extension
-interface EitherSemigroupK<L> : SemigroupK<EitherPartialOf<L>> {
+interface EitherSemigroupK : SemigroupK<ForEither> {
 
-  override fun <A> EitherOf<L, A>.combineK(y: EitherOf<L, A>): Either<L, A> =
-    fix().eitherCombineK(y)
+  override fun <A> EitherPartialOf<A>.combineK(y: EitherPartialOf<A>): EitherPartialOf<A> =
+    fix().eitherCombineK(y).unnest()
 }
 
 @extension
@@ -210,10 +214,10 @@ interface EitherEq<in L, in R> : Eq<Either<L, R>> {
 }
 
 @extension
-interface EitherEqK<L> : EqK<EitherPartialOf<L>> {
+interface EitherEqK<L> : EqK<ForEither> {
   fun EQL(): Eq<L>
 
-  override fun <R> Kind<EitherPartialOf<L>, R>.eqK(other: Kind<EitherPartialOf<L>, R>, EQ: Eq<R>): Boolean =
+  override fun <R> EitherPartialOf<R>.eqK(other: EitherPartialOf<R>, EQ: Eq<R>): Boolean =
     Either.eq(EQL(), EQ).run {
       this@eqK.fix().eqv(other.fix())
     }
@@ -253,8 +257,8 @@ interface EitherHash<L, R> : Hash<Either<L, R>>, EitherEq<L, R> {
   })
 }
 
-fun <L, R> Either.Companion.fx(c: suspend MonadSyntax<EitherPartialOf<L>>.() -> R): Either<L, R> =
-  Either.monad<L>().fx.monad(c).fix()
+fun <L, R> Either.Companion.fx(c: suspend MonadSyntax<ForEither>.() -> R): Either<L, R> =
+  Either.monad().fx.monad(c).fix()
 
 @extension
 interface EitherBicrosswalk : Bicrosswalk<ForEither>, EitherBifunctor, EitherBifoldable {

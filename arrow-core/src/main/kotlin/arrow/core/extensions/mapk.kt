@@ -2,9 +2,9 @@ package arrow.core.extensions
 
 import arrow.Kind
 import arrow.core.Eval
+import arrow.core.ForMapK
 import arrow.core.Ior
 import arrow.core.MapK
-import arrow.core.MapKOf
 import arrow.core.MapKPartialOf
 import arrow.core.Option
 import arrow.core.SetK
@@ -46,26 +46,28 @@ import arrow.undocumented
 
 @extension
 @undocumented
-interface MapKFunctor<K> : Functor<MapKPartialOf<K>> {
-  override fun <A, B> Kind<MapKPartialOf<K>, A>.map(f: (A) -> B): MapK<K, B> = fix().map(f)
+interface MapKFunctor : Functor<ForMapK> {
+  override fun <A, B> MapKPartialOf<A>.map(f: (A) -> B): MapKPartialOf<B> =
+    fix().map(f).unnest()
 }
 
 @extension
 @undocumented
-interface MapKFoldable<K> : Foldable<MapKPartialOf<K>> {
+interface MapKFoldable : Foldable<ForMapK> {
 
-  override fun <A, B> Kind<MapKPartialOf<K>, A>.foldLeft(b: B, f: (B, A) -> B): B = fix().foldLeft(b, f)
+  override fun <A, B> MapKPartialOf<A>.foldLeft(b: B, f: (B, A) -> B): B =
+    fix().foldLeft(b, f)
 
-  override fun <A, B> Kind<MapKPartialOf<K>, A>.foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> =
+  override fun <A, B> MapKPartialOf<A>.foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> =
     fix().foldRight(lb, f)
 }
 
 @extension
 @undocumented
-interface MapKTraverse<K> : Traverse<MapKPartialOf<K>>, MapKFoldable<K> {
+interface MapKTraverse<K> : Traverse<ForMapK>, MapKFoldable {
 
-  override fun <G, A, B> MapKOf<K, A>.traverse(AP: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, MapKOf<K, B>> =
-    fix().traverse(AP, f)
+  override fun <G, A, B> MapKPartialOf<A>.traverse(AP: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, MapKPartialOf<B>> =
+    fix().traverse(AP, f).unnest()
 }
 
 @extension
@@ -80,21 +82,21 @@ interface MapKSemigroup<K, A> : Semigroup<MapK<K, A>> {
 }
 
 @extension
-interface MapKFunctorFilter<K> : FunctorFilter<MapKPartialOf<K>> {
-  override fun <A, B> Kind<MapKPartialOf<K>, A>.filterMap(f: (A) -> Option<B>): Kind<MapKPartialOf<K>, B> =
-    fix().map(f).sequence(Option.applicative()).fix().fold({ emptyMap<K, B>().k() }, ::identity)
+interface MapKFunctorFilter<K> : FunctorFilter<ForMapK> {
+  override fun <A, B> MapKPartialOf<A>.filterMap(f: (A) -> Option<B>): MapKPartialOf<B> =
+    fix().map(f).sequence(Option.applicative()).fix().fold({ emptyMap<K, B>().k() }, ::identity).unnest()
 
-  override fun <A, B> Kind<MapKPartialOf<K>, A>.map(f: (A) -> B): Kind<MapKPartialOf<K>, B> =
-    fix().map(f)
+  override fun <A, B> MapKPartialOf<A>.map(f: (A) -> B): MapKPartialOf<B> =
+    fix().map(f).unnest()
 }
 
 @extension
-interface MapKApply<K> : Apply<MapKPartialOf<K>> {
-  override fun <A, B> Kind<MapKPartialOf<K>, A>.ap(ff: Kind<MapKPartialOf<K>, (A) -> B>): Kind<MapKPartialOf<K>, B> =
-    fix().ap(ff.fix())
+interface MapKApply : Apply<ForMapK> {
+  override fun <A, B> MapKPartialOf<A>.ap(ff: MapKPartialOf<(A) -> B>): MapKPartialOf<B> =
+    fix().ap(ff.fix()).unnest()
 
-  override fun <A, B> Kind<MapKPartialOf<K>, A>.map(f: (A) -> B): Kind<MapKPartialOf<K>, B> =
-    fix().map(f)
+  override fun <A, B> MapKPartialOf<A>.map(f: (A) -> B): MapKPartialOf<B> =
+    fix().map(f).unnest()
 }
 
 @extension
@@ -145,68 +147,69 @@ interface MapKHash<K, A> : Hash<MapK<K, A>>, MapKEq<K, A> {
 }
 
 @extension
-interface MapKSemialign<K> : Semialign<MapKPartialOf<K>>, MapKFunctor<K> {
+interface MapKSemialign<K> : Semialign<ForMapK>, MapKFunctor {
   override fun <A, B> align(
-    a: Kind<MapKPartialOf<K>, A>,
-    b: Kind<MapKPartialOf<K>, B>
-  ): Kind<MapKPartialOf<K>, Ior<A, B>> {
+    a: MapKPartialOf<A>,
+    b: MapKPartialOf<B>
+  ): MapKPartialOf<Ior<A, B>> {
     val l = a.fix()
     val r = b.fix()
     val keys = l.keys + r.keys
 
     return keys.map { key ->
       Ior.fromOptions(l[key].toOption(), r[key].toOption()).map { key toT it }
-    }.flattenOption().toMap().k()
+    }.flattenOption().toMap().k().unnest()
   }
 }
 
 @extension
-interface MapKAlign<K> : Align<MapKPartialOf<K>>, MapKSemialign<K> {
-  override fun <A> empty(): Kind<MapKPartialOf<K>, A> = emptyMap<K, A>().k()
+interface MapKAlign<K> : Align<ForMapK>, MapKSemialign<K> {
+  override fun <A> empty(): MapKPartialOf<A> =
+    emptyMap<K, A>().k().unnest()
 }
 
 @extension
-interface MapKUnalign<K> : Unalign<MapKPartialOf<K>>, MapKSemialign<K> {
-  override fun <A, B> unalign(ior: Kind<MapKPartialOf<K>, Ior<A, B>>): Tuple2<Kind<MapKPartialOf<K>, A>, Kind<MapKPartialOf<K>, B>> =
+interface MapKUnalign<K> : Unalign<ForMapK>, MapKSemialign<K> {
+  override fun <A, B> unalign(ior: MapKPartialOf<Ior<A, B>>): Tuple2<MapKPartialOf<A>, MapKPartialOf<B>> =
     ior.fix().let { map ->
       map.entries.foldLeft(emptyMap<K, A>() toT emptyMap<K, B>()) { (ls, rs), (k, v) ->
         v.fold(
           { a -> ls.plus(k to a) toT rs },
           { b -> ls toT rs.plus(k to b) },
           { a, b -> ls.plus(k to a) toT rs.plus(k to b) })
-      }.bimap({ it.k() }, { it.k() })
+      }.bimap({ it.k().unnest<A>() }, { it.k().unnest<B>() })
     }
 }
 
 @extension
-interface MapKZip<K> : Zip<MapKPartialOf<K>>, MapKSemialign<K> {
-  override fun <A, B> Kind<MapKPartialOf<K>, A>.zip(other: Kind<MapKPartialOf<K>, B>): Kind<MapKPartialOf<K>, Tuple2<A, B>> =
+interface MapKZip<K> : Zip<ForMapK>, MapKSemialign<K> {
+  override fun <A, B> MapKPartialOf<A>.zip(other: MapKPartialOf<B>): MapKPartialOf<Tuple2<A, B>> =
     (this.fix() to other.fix()).let { (ls, rs) ->
       val keys = (ls.keys.intersect(rs.keys))
 
       val values = keys.map { key -> ls.getOption(key).flatMap { l -> rs.getOption(key).map { key to (l toT it) } } }.flattenOption()
 
-      return values.toMap().k()
+      return values.toMap().k().unnest()
     }
 }
 
 @extension
-interface MapKUnzip<K> : Unzip<MapKPartialOf<K>>, MapKZip<K> {
-  override fun <A, B> Kind<MapKPartialOf<K>, Tuple2<A, B>>.unzip(): Tuple2<Kind<MapKPartialOf<K>, A>, Kind<MapKPartialOf<K>, B>> =
+interface MapKUnzip<K> : Unzip<ForMapK>, MapKZip<K> {
+  override fun <A, B> MapKPartialOf<Tuple2<A, B>>.unzip(): Tuple2<MapKPartialOf<A>, MapKPartialOf<B>> =
     this.fix().let { map ->
       map.entries.fold(emptyMap<K, A>() toT emptyMap<K, B>()) { (ls, rs), (k, v) ->
         ls.plus(k to v.a) toT rs.plus(k to v.b)
       }
-    }.bimap({ it.k() }, { it.k() })
+    }.bimap({ it.k().unnest<A>() }, { it.k().unnest<B>() })
 }
 
 @extension
-interface MapKEqK<K> : EqK<MapKPartialOf<K>> {
+interface MapKEqK<K> : EqK<ForMapK> {
 
   fun EQK(): Eq<K>
 
-  override fun <A> Kind<MapKPartialOf<K>, A>.eqK(other: Kind<MapKPartialOf<K>, A>, EQ: Eq<A>): Boolean =
+  override fun <A> MapKPartialOf<A>.eqK(other: MapKPartialOf<A>, EQ: Eq<A>): Boolean =
     MapK.eq(EQK(), EQ).run {
-      this@eqK.fix().eqv(other.fix())
+      this@eqK.nest<K>().fix().eqv(other.nest<K>().fix())
     }
 }

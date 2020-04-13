@@ -17,7 +17,8 @@ interface Applicative<F> : Apply<F> {
   fun unit(): Kind<F, Unit> =
     just(Unit)
 
-  override fun <A, B> Kind<F, A>.map(f: (A) -> B): Kind<F, B> = ap(just(f))
+  override fun <A, B> Kind<F, A>.map(f: (A) -> B): Kind<F, B> =
+    mapN(this, just(f)) { (a, f) -> f(a) }
 
   fun <A> Kind<F, A>.replicate(n: Int): Kind<F, List<A>> =
     if (n <= 0) just(emptyList())

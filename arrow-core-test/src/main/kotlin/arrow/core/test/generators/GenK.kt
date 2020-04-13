@@ -5,6 +5,7 @@ import arrow.core.Const
 import arrow.core.ConstPartialOf
 import arrow.core.Either
 import arrow.core.EitherPartialOf
+import arrow.core.ForConst
 import arrow.core.ForId
 import arrow.core.ForListK
 import arrow.core.ForNonEmptyList
@@ -99,10 +100,10 @@ fun <E> Validated.Companion.genK(genE: Gen<E>) =
       Gen.validated(genE, gen) as Gen<Kind<ValidatedPartialOf<E>, A>>
   }
 
-fun <A> Const.Companion.genK(genA: Gen<A>) = object : GenK<ConstPartialOf<A>> {
-  override fun <T> genK(gen: Gen<T>): Gen<Kind<ConstPartialOf<A>, T>> =
+fun <A> Const.Companion.genK(genA: Gen<A>) = object : GenK<ForConst> {
+  override fun <T> genK(gen: Gen<T>): Gen<ConstPartialOf<T>> =
     genA.map {
-      Const<A, T>(it)
+      Const<A, T>(it).unnest()
     }
 }
 
