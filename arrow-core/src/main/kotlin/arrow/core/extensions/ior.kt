@@ -204,10 +204,14 @@ interface IorShow<L, R> : Show<IorOf<L, R>> {
 }
 
 @extension
-interface IorHash<L, R> : Hash<IorOf<L, R>> {
+interface IorHash<L, R> : Hash<IorOf<L, R>>, IorEq<L, R> {
 
   fun HL(): Hash<L>
   fun HR(): Hash<R>
+
+  override fun EQL(): Eq<L> = HL()
+  override fun EQR(): Eq<R> = HR()
+
 
   override fun IorOf<L, R>.hash(): Int = when (val a = this.fix()) {
     is Ior.Left -> HL().run { a.value.hash() }

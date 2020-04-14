@@ -202,7 +202,8 @@ class ExtensionProcessor : MetaProcessor<extension>(extension::class), PolyTempl
       }
       .map { it.removeConstrains(keepModifiers = setOf(Modifier.Infix, Modifier.Operator, Modifier.Suspend)) }
       .map { f ->
-        val func = f.removeDummyArgs().downKindReturnType().wrap(wrappedType)
+        //TODO re-enable when downKind is fixed for return types, ideally respecting typealiases
+        val func = f.removeDummyArgs()/*.downKindReturnType()*/.wrap(wrappedType)
         val dummyArgsCount = f.countDummyArgs()
         val allArgs = requiredParameters + func.parameters
         val typeVariables = extensionTypeVariables(func)

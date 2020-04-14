@@ -48,7 +48,7 @@ internal fun String.asClassy(): TypeName.Classy {
 }
 
 private val kindRegex: Regex =
-  "(arrow\\.Kind)<(.*), (.*)>".toRegex()
+  "(arrow\\.Kind\\d+)<(.+,)+ (.+)>".toRegex()
 
 fun String.downKParts(): List<String> =
   when (val matchResult = kindRegex.find(this)) {
@@ -66,6 +66,7 @@ data class DownKindReduction(
   val additionalTypeArgs: List<String> = emptyList()
 )
 
+// TODO properly fix this function for return types
 internal fun String.downKind(): DownKindReduction {
   val parts = downKParts()
   return if (parts.isEmpty()) {

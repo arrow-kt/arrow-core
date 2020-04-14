@@ -130,12 +130,6 @@ interface ListKMonad : Monad<ForListK> {
   override fun <A, B> Kind<ForListK, A>.map(f: (A) -> B): ListK<B> =
     fix().map(f)
 
-  // Special case, since the extension is built with List<List<A>>, then wrapped to ListK<List<A>>, there's no way for that to
-  // call the default flatten which is defined for ListK<ListK<A>> due to the inner list, therefore we need to map and redirect.
-  fun <A> Kind<ForListK, List<A>>.flatten(dummy: Unit = Unit): Kind<ForListK, A> =
-    // explicit cast for proper resolution as ListK extends List
-    (map { it.k() } as Kind<ForListK, Kind<ForListK, A>>).flatten()
-
   override fun <A, B, Z> Kind<ForListK, A>.map2(fb: Kind<ForListK, B>, f: (Tuple2<A, B>) -> Z): ListK<Z> =
     fix().map2(fb, f)
 
