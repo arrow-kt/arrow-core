@@ -212,7 +212,6 @@ interface IorHash<L, R> : Hash<IorOf<L, R>>, IorEq<L, R> {
   override fun EQL(): Eq<L> = HL()
   override fun EQR(): Eq<R> = HR()
 
-
   override fun IorOf<L, R>.hash(): Int = when (val a = this.fix()) {
     is Ior.Left -> HL().run { a.value.hash() }
     is Ior.Right -> HR().run { a.value.hash() }
