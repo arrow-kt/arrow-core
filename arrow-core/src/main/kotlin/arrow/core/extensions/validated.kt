@@ -17,6 +17,7 @@ import arrow.extension
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.ApplicativeError
 import arrow.typeclasses.Bifoldable
+import arrow.typeclasses.Bifunctor
 import arrow.typeclasses.Bitraverse
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
@@ -38,6 +39,12 @@ import arrow.core.traverse as validatedTraverse
 interface ValidatedFunctor : Functor<ForValidated> {
   override fun <A, B> ValidatedPartialOf<A>.map(f: (A) -> B): ValidatedPartialOf<B> =
     fix().map(f).unnest()
+}
+
+@extension
+interface ValidatedBifunctor : Bifunctor<ForValidated> {
+  override fun <A, B, C, D> ValidatedOf<A, B>.bimap(fl: (A) -> C, fr: (B) -> D): Validated<C, D> =
+    fix().bimap(fl, fr)
 }
 
 @extension

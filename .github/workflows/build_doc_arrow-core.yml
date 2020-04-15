@@ -1,9 +1,6 @@
 name: "arrow-core: build documentation"
 
-on:
-  pull_request:
-    branches-ignore:
-    - release/0.11.0
+on: pull_request
 
 jobs:
   arrow-core_build_documentation:
@@ -11,8 +8,9 @@ jobs:
     env:
       BASEDIR: ${{github.workspace}}/..
       JAVA_OPTS: -Xms512m -Xmx1024m
+      ARROW_LIB: arrow-core
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
 
     steps:
     - uses: actions/checkout@v1
