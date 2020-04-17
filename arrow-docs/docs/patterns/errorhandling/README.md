@@ -151,6 +151,7 @@ fun takeFoodFromRefrigerator(): Option<Lettuce> = None
 fun getKnife(): Option<Knife> = None
 fun prepare(tool: Knife, ingredient: Lettuce): Option<Salad> = Some(Salad)
 
+//sampleStart
 fun prepareLunchOption(): Option<Salad> =
   Option.fx {
     val lettuce = takeFoodFromRefrigerator().bind()
@@ -158,6 +159,7 @@ fun prepareLunchOption(): Option<Salad> =
     val salad = prepare(knife, lettuce).bind()
     salad
   }
+//sampleEnd
 
 prepareLunchOption()
 //None
@@ -233,7 +235,7 @@ fun takeFoodFromRefrigerator(): Either<NastyLettuce, Lettuce> = Right(Lettuce)
 fun getKnife(): Either<KnifeIsDull, Knife> = Right(Knife)
 fun lunch(knife: Knife, food: Lettuce): Either<InsufficientAmountOfLettuce, Salad> = Left(InsufficientAmountOfLettuce(5))
 
-
+//sampleStart
 fun prepareEither(): Either<CookingException, Salad> =
   Either.fx {
     val lettuce = takeFoodFromRefrigerator().bind()
@@ -241,6 +243,7 @@ fun prepareEither(): Either<CookingException, Salad> =
     val salad = lunch(knife, lettuce).bind()
     salad
   }
+//sampleEnd
 
 prepareEither()
 //Left(InsufficientAmountOfLettuce(5))
