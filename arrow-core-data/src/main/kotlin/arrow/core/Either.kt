@@ -865,27 +865,27 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
       }
     }
 
-		@Deprecated(
-			message = "use conditionally as parameters are consistent with Either class",
-			replaceWith = ReplaceWith(
-				"Either.conditionally(test, ifFalse, ifTrue)",
-				"arrow.core.Either.conditionally"
-			)
-		)
+    @Deprecated(
+      message = "use conditionally as parameters are consistent with Either class",
+      replaceWith = ReplaceWith(
+        "Either.conditionally(test, ifFalse, ifTrue)",
+        "arrow.core.Either.conditionally"
+      )
+    )
     fun <L, R> cond(test: Boolean, ifTrue: () -> R, ifFalse: () -> L): Either<L, R> = conditionally(test, ifFalse, ifTrue)
 
-		/**
-		 * Will create an [Either] from the result of evaluating the first parameter using the functions
-		 * provided on second and third parameters. Second parameter represents function for creating
-		 * an [Either.Left] in case of a false result of evaluation and third parameter will be used
-		 * to create a [Either.Right] in case of a true result.
-		 *
-		 * @param test expression to evaluate and build an [Either]
-		 * @param ifFalse function to create a [Either.Left] in case of false result of test
-		 * @param ifTrue function to create a [Either.Right] in case of true result of test
-		 *
-		 * @return [Either.Right] if evaluation succeed, [Either.Left] otherwise
-		 */
+    /**
+     * Will create an [Either] from the result of evaluating the first parameter using the functions
+     * provided on second and third parameters. Second parameter represents function for creating
+     * an [Either.Left] in case of a false result of evaluation and third parameter will be used
+     * to create a [Either.Right] in case of a true result.
+     *
+     * @param test expression to evaluate and build an [Either]
+     * @param ifFalse function to create a [Either.Left] in case of false result of test
+     * @param ifTrue function to create a [Either.Right] in case of true result of test
+     *
+     * @return [Either.Right] if evaluation succeed, [Either.Left] otherwise
+     */
     fun <L, R> conditionally(test: Boolean, ifFalse: () -> L, ifTrue: () -> R): Either<L, R> = if (test) right(ifTrue()) else left(ifFalse())
 
     suspend fun <R> catch(f: suspend () -> R): Either<Throwable, R> =
