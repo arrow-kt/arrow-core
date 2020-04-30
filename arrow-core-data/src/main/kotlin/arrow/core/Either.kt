@@ -866,7 +866,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     }
 
     @Deprecated(
-      message = "use conditionally as parameters order is consistent with Either class",
+      message = "use conditionally as parameter order is consistent with Either class",
       replaceWith = ReplaceWith(
         "Either.conditionally(test, ifFalse, ifTrue)",
         "arrow.core.Either.conditionally"
