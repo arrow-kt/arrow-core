@@ -416,14 +416,14 @@ import arrow.typeclasses.Show
  * }
  * ```
  *
- * For creating Either instance based on a predicate, use `Either.cond()` method :
+ * For creating Either instance based on a predicate, use `Either.conditionally()` method :
  *
  * ```kotlin:ank:playground
  * import arrow.core.Either
  *
  * val value =
  * //sampleStart
- *  Either.cond(true, { 42 }, { "Error" })
+ *  Either.conditionally(true, { "Error" }, { 42 })
  * //sampleEnd
  * fun main() {
  *  println(value)
@@ -435,7 +435,7 @@ import arrow.typeclasses.Show
  *
  * val value =
  * //sampleStart
- *  Either.cond(false, { 42 }, { "Error" })
+ *  Either.conditionally(false, { "Error" }, { 42 })
  * //sampleEnd
  * fun main() {
  *  println(value)
@@ -863,7 +863,9 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
       }
     }
 
-    fun <L, R> cond(test: Boolean, ifTrue: () -> R, ifFalse: () -> L): Either<L, R> = if (test) right(ifTrue()) else left(ifFalse())
+    fun <L, R> cond(test: Boolean, ifTrue: () -> R, ifFalse: () -> L): Either<L, R> = conditionally(test, ifFalse, ifTrue)
+
+    fun <L, R> conditionally(test: Boolean, ifFalse: () -> L, ifTrue: () -> R): Either<L, R> = if (test) right(ifTrue()) else left(ifFalse())
 
     suspend fun <R> catch(f: suspend () -> R): Either<Throwable, R> =
       catch(::identity, f)
