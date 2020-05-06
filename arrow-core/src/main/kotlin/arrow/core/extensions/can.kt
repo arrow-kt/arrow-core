@@ -20,6 +20,7 @@ import arrow.core.extensions.can.monad.monad
 import arrow.core.fix
 import arrow.core.flatMap
 import arrow.core.leftCan
+import arrow.core.toCan
 import arrow.extension
 import arrow.typeclasses.Align
 import arrow.typeclasses.Applicative
@@ -42,34 +43,34 @@ import arrow.typeclasses.Show
 import arrow.typeclasses.Traverse
 import arrow.core.extensions.traverse as canTraverse
 
-fun <L, R> Can<L, R>.combine(SGL: Semigroup<L>, SGR: Semigroup<R>, b: Can<L, R>): Can<L, R> {
-  val a = this
-
-  return when (a) {
-    is None -> when (b) {
-      is None -> a
-      is Left -> b
-      is Right -> a
-      is Both -> b
-    }
-    is Left -> when (b) {
-      is None -> a
-      is Left -> Left(SGL.run { a.a.combine(b.a) })
-      is Right -> b
-      is Both -> Both(SGL.run { a.a.combine(b.a) }, b.b)
-    }
-    is Right -> when (b) {
-      is None -> a
-      is Left -> Both(b.a, a.b)
-      is Right -> Right(SGR.run { a.b.combine(b.b) })
-      is Both -> Both(b.a, SGR.run { a.b.combine(b.b) })
-    }
-    is Both -> when (b) {
-      is None -> a
-      is Left -> Both(SGL.run { a.a.combine(a.a) }, a.b)
-      is Right -> Both(a.a, SGR.run { a.b.combine(b.b) })
-      is Both -> Both(SGL.run { a.a.combine(b.a) }, SGR.run { a.b.combine(b.b) })
-    }
+fun <L, R> Can<L, R>.combine(
+  SGL: Semigroup<L>,
+  SGR: Semigroup<R>,
+  b: Can<L, R>
+): Can<L, R> = when (val a = this) {
+  is None -> when (b) {
+    is None -> a
+    is Left -> b
+    is Right -> a
+    is Both -> b
+  }
+  is Left -> when (b) {
+    is None -> a
+    is Left -> Left(SGL.run { a.a.combine(b.a) })
+    is Right -> b
+    is Both -> Both(SGL.run { a.a.combine(b.a) }, b.b)
+  }
+  is Right -> when (b) {
+    is None -> a
+    is Left -> Both(b.a, a.b)
+    is Right -> Right(SGR.run { a.b.combine(b.b) })
+    is Both -> Both(b.a, SGR.run { a.b.combine(b.b) })
+  }
+  is Both -> when (b) {
+    is None -> a
+    is Left -> Both(SGL.run { a.a.combine(a.a) }, a.b)
+    is Right -> Both(a.a, SGR.run { a.b.combine(b.b) })
+    is Both -> Both(SGL.run { a.a.combine(b.a) }, SGR.run { a.b.combine(b.b) })
   }
 }
 
@@ -181,12 +182,7 @@ interface CanBifoldable : Bifoldable<ForCan> {
 }
 
 fun <G, A, B, C> CanOf<A, B>.traverse(GA: Applicative<G>, f: (B) -> Kind<G, C>): Kind<G, Can<A, C>> = GA.run {
-  fix().fold(
-    ifNone = { just(None) },
-    ifLeft = { just(Left(it)) },
-    ifRight = { b -> f(b).map(::Right) },
-    ifBoth = { _, b -> f(b).map(::Right) }
-  )
+  fix().fold({ just(None) }, { just(Left(it)) }, { b -> f(b).map(::Right) }, { _, b -> f(b).map(::Right) })
 }
 
 @extension
@@ -284,6 +280,6 @@ interface CanBicrosswalk : Bicrosswalk<ForCan>, CanBifunctor, CanBifoldable {
       is None -> ALIGN.empty()
       is Left -> ALIGN.run { fa(can.a).map(::Left) }
       is Right -> ALIGN.run { fb(can.b).map(::Right) }
-      is Both -> ALIGN.alignWith(fa(can.a), fb(can.b)) { Can(it) }
+      is Both -> ALIGN.alignWith(fa(can.a), fb(can.b)) { it.toCan() }
     }
 }

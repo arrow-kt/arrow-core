@@ -46,7 +46,60 @@ import arrow.typeclasses.Show
  *
  */
 @higherkind
-sealed class Can<out A, out B> : CanOf<A, B> {
+sealed class Can<out A, out B>(
+  /**
+   * Returns true if the option is [Can.None], false otherwise.
+   * @note Used only for performance instead of fold.
+   *
+   * Example:
+   * ```
+   * Can.None.isEmpty                      // Result: true
+   * Can.Left("tulip").isEmpty             // Result: false
+   * Can.Right("venus fly-trap").isEmpty   // Result: false
+   * Can.Both("venus", "fly-trap").isEmpty // Result: false
+   * ```
+   */
+  val isEmpty: Boolean = false,
+  /**
+   * `true` if this is a [Can.Right], `false` otherwise.
+   * @note Used only for performance instead of fold.
+   *
+   * Example:
+   * ```
+   * Can.None.isRight                      // Result: false
+   * Can.Left("tulip").isRight             // Result: false
+   * Can.Right("venus fly-trap").isRight   // Result: true
+   * Can.Both("venus", "fly-trap").isRight // Result: false
+   * ```
+   */
+  val isLeft: Boolean = false,
+  /**
+   * `true` if this is a [Can.Left], `false` otherwise.
+   * @note Used only for performance instead of fold.
+   *
+   * Example:
+   * ```
+   * Can.None.isLeft                      // Result: false
+   * Can.Left("tulip").isLeft             // Result: true
+   * Can.Right("venus fly-trap").isLeft   // Result: false
+   * Can.Both("venus", "fly-trap").isLeft // Result: false
+   * ```
+   */
+  val isRight: Boolean = false,
+  /**
+   * `true` if this is a [Can.Both], `false` otherwise.
+   * @note Used only for performance instead of fold.
+   *
+   * Example:
+   * ```
+   * Can.None.isBoth                      // Result: false
+   * Can.Left("tulip").isBoth             // Result: false
+   * Can.Right("venus fly-trap").isBoth   // Result: false
+   * Can.Both("venus", "fly-trap").isBoth // Result: true
+   * ```
+   */
+  val isBoth: Boolean = false
+) : CanOf<A, B> {
 
   companion object {
 
@@ -59,24 +112,22 @@ sealed class Can<out A, out B> : CanOf<A, B> {
      * @return [None] if both [oa] and [ob] are [None]. Otherwise [Some] wrapping
      * an [Ior.Left], [Ior.Right], or [Ior.Both] if [oa], [ob], or both are defined (respectively).
      */
+    fun <A, B> fromOptions(oa: Option<A>, ob: Option<B>): Can<A, B> = fromNullables(oa.orNull(), ob.orNull())
 
-    fun <A, B> fromOptions(oa: Option<A>, ob: Option<B>): Can<A, B> = when (oa) {
-      is Some -> when (ob) {
-        is Some -> Both(oa.t, ob.t)
-        is arrow.core.None -> Left(oa.t)
-      }
-      is arrow.core.None -> when (ob) {
-        is Some -> Right(ob.t)
-        is arrow.core.None -> None
-      }
+    /**
+     * The same as [fromOptions] but with nullable inputs.
+     */
+    fun <A, B> fromNullables(a: A?, b: B?): Can<A, B> = when {
+      a != null && b != null -> Both(a, b)
+      b != null -> Right(b)
+      a != null -> Left(a)
+      else -> None
     }
 
     fun none(): Can<Nothing, Nothing> = None
     fun <A> left(left: A): Can<A, Nothing> = Left(left)
     fun <B> right(right: B): Can<Nothing, B> = Right(right)
     fun <A, B> both(left: A, right: B): Can<A, B> = Both(left, right)
-
-    operator fun <A, B> invoke(ior: Ior<A, B>): Can<A, B> = ior.fold(::Left, ::Right, ::Both)
 
     private tailrec fun <A2, A, B> Semigroup<A2>.loop(v: Can<A2, Either<A, B>>, f: (A) -> CanOf<A2, Either<A, B>>): Can<A2, B> = when (v) {
       is None -> None
@@ -99,62 +150,6 @@ sealed class Can<out A, out B> : CanOf<A, B> {
     fun <A2, A, B> tailRecM(a: A, f: (A) -> CanOf<A2, Either<A, B>>, SL: Semigroup<A2>): Can<A2, B> =
       SL.run { loop(f(a).fix(), f) }
   }
-
-  /**
-   * Returns true if the option is [Can.None], false otherwise.
-   * @note Used only for performance instead of fold.
-   */
-  abstract val isEmpty: Boolean
-
-  /**
-   * Returns `true` if this is a [Can.Right], `false` otherwise.
-   *
-   * Example:
-   * ```
-   * Can.None.isRight                      // Result: false
-   * Can.Left("tulip").isRight             // Result: false
-   * Can.Right("venus fly-trap").isRight   // Result: true
-   * Can.Both("venus", "fly-trap").isRight // Result: false
-   * ```
-   */
-  abstract val isRight: Boolean
-
-  /**
-   * Returns `true` if this is a [Can.Left], `false` otherwise.
-   *
-   * Example:
-   * ```
-   * Can.None.isLeft                      // Result: false
-   * Can.Left("tulip").isLeft             // Result: true
-   * Can.Right("venus fly-trap").isLeft   // Result: false
-   * Can.Both("venus", "fly-trap").isLeft // Result: false
-   * ```
-   */
-  abstract val isLeft: Boolean
-
-  /**
-   * Returns `true` if this is a [Can.Both], `false` otherwise.
-   *
-   * Example:
-   * ```
-   * Can.None.isBoth                      // Result: false
-   * Can.Left("tulip").isBoth             // Result: false
-   * Can.Right("venus fly-trap").isBoth   // Result: false
-   * Can.Both("venus", "fly-trap").isBoth // Result: true
-   * ```
-   */
-  abstract val isBoth: Boolean
-
-  /**
-   * alias for [isDefined]
-   */
-  fun nonEmpty(): Boolean = isDefined()
-
-  /**
-   * Returns true if it's [Left], [Right] or [Both], false otherwise.
-   * @note Used only for performance instead of fold.
-   */
-  fun isDefined(): Boolean = !isEmpty
 
   /**
    * Transforms the right side from [B] to [C].
@@ -244,12 +239,8 @@ sealed class Can<out A, out B> : CanOf<A, B> {
    *
    * @param predicate the predicate used for testing.
    */
-  fun exists(predicate: Predicate<B>): Boolean = fold(
-    ifNone = { false },
-    ifLeft = { false },
-    ifRight = { predicate(it) },
-    ifBoth = { _, b -> predicate(b) }
-  )
+  fun exists(predicate: Predicate<B>): Boolean =
+    fold({ false }, { false }, { predicate(it) }, { _, b -> predicate(b) })
 
   fun <C> foldLeft(c: C, f: (C, B) -> C): C =
     fold({ c }, { c }, { f(c, it) }, { _, b -> f(c, b) })
@@ -266,12 +257,8 @@ sealed class Can<out A, out B> : CanOf<A, B> {
   /**
    * Return the isomorphic [Option]<[Ior]> of this [Can]
    */
-  fun unwrap(): Option<Ior<A, B>> = fold(
-    ifNone = { Option.empty() },
-    ifLeft = { Option.just(Ior.Left(it)) },
-    ifRight = { Option.just(Ior.Right(it)) },
-    ifBoth = { a, b -> Option.just(Ior.Both(a, b)) }
-  )
+  fun unwrap(): Option<Ior<A, B>> =
+    fold({ Option.empty() }, { Some(Ior.Left(it)) }, { Some(Ior.Right(it)) }, { a, b -> Some(Ior.Both(a, b)) })
 
   /**
    * Inverts the components:
@@ -282,24 +269,23 @@ sealed class Can<out A, out B> : CanOf<A, B> {
    *
    * Example:
    * ```
-   * None.swap()                  // Result: None
-   * Left("left").swap()          // Result: Right("left")
-   * Right("right").swap()        // Result: Left("right")
-   * Both("left", "right").swap() // Result: Both("right", "left")
+   * Can.None.swap()                  // Result: None
+   * Can.Left("left").swap()          // Result: Right("left")
+   * Can.Right("right").swap()        // Result: Left("right")
+   * Can.Both("left", "right").swap() // Result: Both("right", "left")
    * ```
    */
-  fun swap(): Can<B, A> =
-    fold({ None }, { Right(it) }, { Left(it) }, { a, b -> Both(b, a) })
+  fun swap(): Can<B, A> = fold({ None }, { Right(it) }, { Left(it) }, { a, b -> Both(b, a) })
 
   /**
    * Return this [Can] as [Pair] of [Option]
    *
    * Example:
    * ```
-   * None.pad()               // Result: Pair(None, None)
-   * Right(12).pad()          // Result: Pair(None, Some(12))
-   * Left(12).pad()           // Result: Pair(Some(12), None)
-   * Both("power", 12).pad()  // Result: Pair(Some("power"), Some(12))
+   * Can.None.pad()               // Result: Pair(None, None)
+   * Can.Right(12).pad()          // Result: Pair(None, Some(12))
+   * Can.Left(12).pad()           // Result: Pair(Some(12), None)
+   * Can.Both("power", 12).pad()  // Result: Pair(Some("power"), Some(12))
    * ```
    */
   fun pad(): Pair<Option<A>, Option<B>> = fold(
@@ -310,113 +296,56 @@ sealed class Can<out A, out B> : CanOf<A, B> {
   )
 
   /**
-   * Returns a [Either.Right] containing the [Right] value or `B` if this is [Right] or [Both]
-   * and [Either.Left] if this is a [Left].
-   *
-   * Example:
-   * ```
-  //   * Right(12).toEither() // Result: Either.Right(12)
-  //   * Left(12).toEither()  // Result: Either.Left(12)
-  //   * Both("power", 12).toEither()  // Result: Either.Right(12)
-   * ```
-   */
-  fun toEither(): Option<Either<A, B>> =
-    fold({ Option.empty() }, { Option.just(Either.Left(it)) }, { Option.just(Either.Right(it)) }, { _, b -> Option.just(Either.Right(b)) })
-
-  /**
-   * Returns a [Some] containing the [Right] value or `B` if this is [Right] or [Both]
-   * and [None] if this is a [Left].
-   *
-   * Example:
-   * ```
-  //   * Right(12).toOption() // Result: Some(12)
-  //   * Left(12).toOption()  // Result: None
-  //   * Both(12, "power").toOption()  // Result: Some("power")
-   * ```
-   */
-  fun toOption(): Option<B> =
-    fold({ Option.empty() }, { Option.empty() }, { Some(it) }, { _, b -> Some(b) })
-
-  /**
-   * Returns a [Some] containing the [Left] value or `A` if this is [Left] or [Both]
-   * and [None] if this is a [Right].
-   *
-   * Example:
-   * ```
-  //   * Right(12).toLeftOption() // Result: None
-  //   * Left(12).toLeftOption()  // Result: Some(12)
-  //   * Both(12, "power").toLeftOption()  // Result: Some(12)
-   * ```
-   */
-  fun toLeftOption(): Option<A> =
-    fold({ Option.empty() }, { Some(it) }, { Option.empty() }, { a, _ -> Option.just(a) })
-
-  /**
-   * Returns a [Validated.Valid] containing the [Right] value or `B` if this is [Right] or [Both]
-   * and [Validated.Invalid] if this is a [Left].
-   *
-   * Example:
-   * ```
-  //   * Right(12).toValidated() // Result: Valid(12)
-  //   * Left(12).toValidated()  // Result: Invalid(12)
-  //   * Both(12, "power").toValidated()  // Result: Valid("power")
-   * ```
-   */
-  fun toValidated(): Validated<A, B> =
-    fold({ TODO() }, { Invalid(it) }, { Valid(it) }, { _, b -> Valid(b) })
-
-  /**
    * Provides a printable description of [Can] given the relevant [Show] instances.
    */
-  fun <A, B> CanOf<A, B>.show(SL: Show<A>, SR: Show<B>): String =
-    fix().fold(
-      ifNone = { "None" },
-      ifLeft = { "Left(${SL.run { it.show() }})" },
-      ifRight = { "Right(${SR.run { it.show() }})" },
-      ifBoth = { a, b -> "Both(left=${SL.run { a.show() }}, right=${SR.run { b.show() }})" }
-    )
+  fun show(SL: Show<A>, SR: Show<B>): String = fold(
+    { "None" },
+    { "Left(${SL.run { it.show() }})" },
+    { "Right(${SR.run { it.show() }})" },
+    { a, b -> "Both(left=${SL.run { a.show() }}, right=${SR.run { b.show() }})" }
+  )
 
-  object None : Can<Nothing, Nothing>() {
-    override val isEmpty: Boolean = true
-    override val isRight: Boolean = false
-    override val isLeft: Boolean = false
-    override val isBoth: Boolean = false
+  override fun toString(): String = show(Show.any(), Show.any())
 
-    override fun toString(): String = show(Show.any(), Show.any())
-  }
-
-  data class Left<A>(val a: A) : Can<A, Nothing>() {
-    override val isEmpty: Boolean = false
-    override val isRight: Boolean = false
-    override val isLeft: Boolean = true
-    override val isBoth: Boolean = false
-
-    override fun toString(): String = show(Show.any(), Show.any())
-  }
-
-  data class Right<B>(val b: B) : Can<Nothing, B>() {
-    override val isEmpty: Boolean = false
-    override val isRight: Boolean = true
-    override val isLeft: Boolean = false
-    override val isBoth: Boolean = false
-
-    override fun toString(): String = show(Show.any(), Show.any())
-  }
-
-  data class Both<A, B>(val a: A, val b: B) : Can<A, B>() {
-    override val isEmpty: Boolean = false
-    override val isRight: Boolean = false
-    override val isLeft: Boolean = false
-    override val isBoth: Boolean = true
-
-    override fun toString(): String = show(Show.any(), Show.any())
-  }
+  object None : Can<Nothing, Nothing>(isEmpty = true)
+  data class Left<out A>(val a: A) : Can<A, Nothing>(isLeft = true)
+  data class Right<out B>(val b: B) : Can<Nothing, B>(isRight = true)
+  data class Both<out A, out B>(val a: A, val b: B) : Can<A, B>(isBoth = true)
 }
 
-// TODO(pabs): map2, maybe?
+/**
+ * Returns a [Validated.Valid] containing the [Right] value or `B` if this is [Right] or [Both]
+ * and [Validated.Invalid] if this is a [Left].
+ *
+ * Example:
+ * ```
+ * Can.None.toValidated { Invalid(-1) } // Result: Invalid(-1)
+ * Can.Right(12).toValidated()          // Result: Valid(12)
+ * Can.Left(12).toValidated()           // Result: Invalid(12)
+ * Can.Both(12, "power").toValidated()  // Result: Valid("power")
+ * ```
+ * @param ifEmpty used to source an intance of [Validated]
+ */
+fun <A, B> CanOf<A, B>.toValidated(ifEmpty: () -> Validated<A, B>): Validated<A, B> =
+  fix().fold(ifEmpty, ::Invalid, ::Valid, { _, b -> Valid(b) })
 
 /**
- * Similar to [Can.unwrap] but transforming to [Ior] with an alternative in case of working with an instance of [Can.None]
+ * Similar to [toValidated] but returning [None] if there is nothing to validate.
+ *
+ * Examples:
+ * ```
+ * Can.None.toValidated()               // Result: None
+ * Can.Right(12).toValidated()          // Result: Some(Valid(12))
+ * Can.Left(12).toValidated()           // Result: Some(Invalid(12))
+ * Can.Both(12, "power").toValidated()  // Result: Some(Valid("power"))
+ * ```
+ * @return [None] if the [Can] is [Can.None], otherwise the result from [toValidated] inside [Some]
+ */
+fun <A, B> CanOf<A, B>.toValidated(): Option<Validated<A, B>> =
+  fix().fold({ None }, { Option.just(Invalid(it)) }, { Option.just(Valid(it)) }) { _: A, b: B -> Option.just(Valid(b)) }
+
+/**
+ * Similar to [Can.unwrap] with a fallback alternative in case of working with an instance of [Can.None]
  */
 fun <A, B> CanOf<A, B>.toIor(ifNone: () -> IorOf<A, B>): Ior<A, B> =
   fix().unwrap().getOrElse(ifNone).fix()
@@ -427,52 +356,141 @@ fun <A, B> CanOf<A, B>.toIor(ifNone: () -> IorOf<A, B>): Ior<A, B> =
  * @param f The function to bind across [Can.Right] or [Can.Both].
  */
 fun <A, B, C> CanOf<A, B>.flatMap(SG: Semigroup<A>, f: (B) -> CanOf<A, C>): Can<A, C> =
-  fix().fold(
-    ifNone = Can.Companion::none,
-    ifLeft = { Can.Left(it) },
-    ifRight = { f(it).fix() },
-    ifBoth = { l, r ->
-      with(SG) {
-        f(r).fix().fold(
-          ifNone = Can.Companion::none,
-          ifLeft = { Can.Left(l.combine(it)) },
-          ifRight = { Can.Both(l, it) },
-          ifBoth = { ll, rr -> Can.Both(l.combine(ll), rr) }
-        )
-      }
-    }
-  )
+  fix().fold({ Can.None }, { Can.Left(it) }, { f(it).fix() }, { a, b -> SG.flatMapCombine(a, b, f) })
 
-fun <A, B> Can<A, B>.getOrElse(default: () -> B): B =
-  fold({ default() }, { default() }, ::identity, { _, b -> b })
+private fun <A, B, C> Semigroup<A>.flatMapCombine(a: A, b: B, f: (B) -> CanOf<A, C>) =
+  f(b).fix().fold({ Can.None }, { Can.Left(a.combine(it)) }, { Can.Both(a, it) }, { ll, rr -> Can.Both(a.combine(ll), rr) })
 
+/**
+ * Safe unwrapping of the right side.
+ *
+ * @return [B] if [Can] is [Right] or [Both], otherwise the result from [default].
+ */
+fun <A, B> CanOf<A, B>.getOrElse(default: () -> B): B =
+  fix().fold({ default() }, { default() }, ::identity, { _, b -> b })
+
+/**
+ * Safe unwrapping of the left side.
+ *
+ * @return [A] if [Can] is [Left] or [Both], otherwise the result from [default].
+ */
+fun <A, B> CanOf<A, B>.getLeftOrElse(default: () -> A): A =
+  fix().fold({ default() }, ::identity, { default() }, { a, _ -> a })
+
+/**
+ * Applies the provided "[Can]ned" function given the Semigroup definition provided by [SG]
+ *
+ * @return The result of applying this [Can] to the function encapsulated [ff]
+ */
 fun <A, B, C> CanOf<A, B>.ap(SG: Semigroup<A>, ff: CanOf<A, (B) -> C>): Can<A, C> =
-  fix().flatMap(SG) { a -> ff.fix().map { f -> f(a) } }
+  flatMap(SG) { a -> ff.fix().map { f: (B) -> C -> f(a) } }
 
+/**
+ * Converts the receiver [Pair]<`A`, `B`> into an instance of [Can].
+ *
+ * @return always an instance of [Can.Both]
+ */
 fun <A, B> Pair<A, B>.bothCan(): Can<A, B> = Can.Both(first, second)
 
+/**
+ * Converts the receiver [Tuple2]<`A`, `B`> into an instance of [Can].
+ *
+ * @return always an instance of [Can.Both]
+ */
 fun <A, B> Tuple2<A, B>.bothCan(): Can<A, B> = Can.Both(a, b)
 
-fun <A> A.leftCan(): Can<A, Nothing> = Can.Left(this)
+/**
+ * Converts a, potentially nullable, instance of [A] into an instance of [Can]
+ *
+ * @return [None] when `null` or [Can.Left]<`A`> otherwise
+ */
+fun <A> A?.leftCan(): Can<A, Nothing> =
+  if (this == null) Can.None else Can.Left(this)
 
-fun <B> B.rightCan(): Can<Nothing, B> = Can.Right(this)
+/**
+ * Same as [Option.rightCan] but for nullable values
+ */
+fun <B> B?.rightCan(): Can<Nothing, B> =
+  if (this == null) Can.None else Can.Right(this)
 
+/**
+ * Converts a instance of [Option]<[A]> into an instance of [Can]<[A]>
+ *
+ * @return [Can.None] when [None] or [Can.Right]<[A]> when [Some]<[A]>
+ */
+fun <A> OptionOf<A>.leftCan(): Can<A, Nothing> =
+  fix().fold({ Can.None }, { a -> Can.Left(a) })
+
+/**
+ * Converts a instance of [Option]<[B]> into an instance of [Can]<[B]>
+ *
+ * @return [Can.None] when [None] or [Can.Right]<[B]> when [Some]<[B]>
+ */
+fun <B> OptionOf<B>.rightCan(): Can<Nothing, B> =
+  fix().fold({ Can.None }, { b -> Can.Right(b) })
+
+/**
+ * Converts a given [Ior]<[A], [B]> instance into a [Can]<[A], [B]> instance.
+ *
+ * Mapping:
+ * - Never       -> [Can.None]
+ * - [Ior.Left]  -> [Can.Left]
+ * - [Ior.Right] -> [Can.Right]
+ * - [Ior.Both]  -> [Can.Both]
+ *
+ * @return Either [Can.Left], [Can.Right], or [Can.Both], never [Can.None]
+ */
+fun <A, B> IorOf<A, B>.toCan(): Can<A, B> =
+  fix().fold({ Can.Left(it) }, { Can.Right(it) }) { a, b -> Can.Both(a, b) }
+
+/**
+ * Extraction of the left value, if present.
+ *
+ * Mapping:
+ * - [Can.None] -> [None]
+ * - [Can.Left] -> [Some]<`A`>
+ * - [Can.Right] -> [None]
+ * - [Can.Left] -> [Some]<`A`>
+ *
+ * @return [Some]<`A`> if we have [Left] or [Both], otherwise [None]
+ */
 fun <A, B> CanOf<A, B>.left(): Option<A> =
-  fix().fold(
-    ifNone = { None },
-    ifLeft = { Option.just(it) },
-    ifRight = { None },
-    ifBoth = { l, _ -> Option.just(l) }
-  )
+  fix().fold({ None }, { Option.just(it) }, { None }, { l, _ -> Option.just(l) })
 
+/**
+ * Deconstruction of the left side of this [Can]
+ *
+ * example:
+ * ```
+ * fun currentUserAndOrg() : Can<User, Org>
+ *
+ * val (user, org) = currentUserAndOrg()
+ * ```
+ */
 operator fun <A, B> CanOf<A, B>.component1(): Option<A> = left()
 
+/**
+ * Extraction of the right value, if present.
+ *
+ * Mapping:
+ * - [Can.None] -> [None]
+ * - [Can.Left] -> [None]
+ * - [Can.Right] -> [Some]<`A`>
+ * - [Can.Left] -> [Some]<`A`>
+ *
+ * @return [Some]<`A`> if we have [Right] or [Both], otherwise [None]
+ */
 fun <A, B> CanOf<A, B>.right(): Option<B> =
-  fix().fold(
-    ifNone = { None },
-    ifLeft = { None },
-    ifRight = { Option.just(it) },
-    ifBoth = { _, r -> Option.just(r) }
-  )
+  fix().fold({ None }, { None }, { Some(it) }, { _, r -> Some(r) })
 
+/**
+ * Deconstruction of the right side of this [Can]
+ *
+ * example:
+ * ```
+ * fun currentUserAndOrg() : Can<User, Org>
+ *
+ * val (user, org) = currentUserAndOrg()
+ * ```
+ */
 operator fun <A, B> CanOf<A, B>.component2(): Option<B> = right()

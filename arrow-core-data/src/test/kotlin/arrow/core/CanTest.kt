@@ -109,27 +109,12 @@ class CanTest : UnitSpec() {
       }
     }
 
-    "toEither() should convert values into a valid Either" {
-      forAll { a: Int, b: String ->
-        Can.Left(a).toEither() == Option.just(Either.Left(a)) &&
-          Can.Right(b).toEither() == Option.just(Either.Right(b)) &&
-          Can.Both(a, b).toEither() == Option.just(Either.Right(b))
-      }
-    }
-
-    "toOption() should convert values into a valid Option" {
-      forAll { a: Int, b: String ->
-        Can.Left(a).toOption() == None &&
-          Can.Right(b).toOption() == Some(b) &&
-          Can.Both(a, b).toOption() == Some(b)
-      }
-    }
-
     "toValidated() should convert values into a valid Validated" {
       forAll { a: Int, b: String ->
-        Can.Left(a).toValidated() == Invalid(a) &&
-          Can.Right(b).toValidated() == Valid(b) &&
-          Can.Both(a, b).toValidated() == Valid(b)
+        Can.None.toValidated() == None &&
+        Can.Left(a).toValidated() == Some(Invalid(a)) &&
+          Can.Right(b).toValidated() == Some(Valid(b)) &&
+          Can.Both(a, b).toValidated() == Some(Valid(b))
       }
     }
 
