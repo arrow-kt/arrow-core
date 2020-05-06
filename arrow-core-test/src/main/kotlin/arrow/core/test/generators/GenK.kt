@@ -1,6 +1,8 @@
 package arrow.core.test.generators
 
 import arrow.Kind
+import arrow.core.Can
+import arrow.core.CanPartialOf
 import arrow.core.Const
 import arrow.core.ConstPartialOf
 import arrow.core.Either
@@ -85,6 +87,12 @@ fun <A> Ior.Companion.genK(kgen: Gen<A>) =
   object : GenK<IorPartialOf<A>> {
     override fun <B> genK(gen: Gen<B>): Gen<Kind<IorPartialOf<A>, B>> =
       Gen.ior(kgen, gen) as Gen<Kind<IorPartialOf<A>, B>>
+  }
+
+fun <A> Can.Companion.genK(kgen: Gen<A>) =
+  object : GenK<CanPartialOf<A>> {
+    override fun <B> genK(gen: Gen<B>): Gen<Kind<CanPartialOf<A>, B>> =
+      Gen.can(kgen, gen) as Gen<Kind<CanPartialOf<A>, B>>
   }
 
 fun <A> Either.Companion.genK(genA: Gen<A>) =

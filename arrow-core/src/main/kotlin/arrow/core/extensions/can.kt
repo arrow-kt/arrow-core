@@ -14,17 +14,15 @@ import arrow.core.CanPartialOf
 import arrow.core.Either
 import arrow.core.Eval
 import arrow.core.ForCan
-import arrow.core.Ior
+import arrow.core.ap
 import arrow.core.extensions.can.eq.eq
 import arrow.core.extensions.can.monad.monad
 import arrow.core.fix
-import arrow.core.fold
+import arrow.core.flatMap
 import arrow.core.leftCan
-import arrow.core.show
 import arrow.extension
 import arrow.typeclasses.Align
 import arrow.typeclasses.Applicative
-import arrow.typeclasses.ApplicativeError
 import arrow.typeclasses.Apply
 import arrow.typeclasses.Bicrosswalk
 import arrow.typeclasses.Bifoldable
@@ -37,19 +35,12 @@ import arrow.typeclasses.Foldable
 import arrow.typeclasses.Functor
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monad
-import arrow.typeclasses.MonadError
-import arrow.typeclasses.MonadFx
 import arrow.typeclasses.MonadSyntax
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.Traverse
-import arrow.core.ap as canAp
-import arrow.core.bimap as canBimap
 import arrow.core.extensions.traverse as canTraverse
-import arrow.core.flatMap as canFlatMap
-import arrow.core.handleErrorWith as canHandleErrorWith
-import arrow.core.map as canMap
 
 fun <L, R> Can<L, R>.combine(SGL: Semigroup<L>, SGR: Semigroup<R>, b: Can<L, R>): Can<L, R> {
   val a = this
@@ -104,13 +95,13 @@ interface CanMonoid<L, R> : Monoid<Can<L, R>>, CanSemigroup<L, R> {
 
 @extension
 interface CanFunctor<L> : Functor<CanPartialOf<L>> {
-  override fun <A, B> CanOf<L, A>.map(f: (A) -> B): Can<L, B> = fix().canMap(f)
+  override fun <A, B> CanOf<L, A>.map(f: (A) -> B): Can<L, B> = fix().map(f)
 }
 
 @extension
 interface CanBifunctor : Bifunctor<ForCan> {
   override fun <A, B, C, D> CanOf<A, B>.bimap(fl: (A) -> C, fr: (B) -> D): Can<C, D> =
-    fix().canBimap(fl, fr)
+    fix().bimap(fl, fr)
 }
 
 @extension
@@ -138,7 +129,7 @@ interface CanApply<L> : Apply<CanPartialOf<L>>, CanFunctor<L> {
     )
 
   override fun <A, B> CanOf<L, A>.ap(ff: CanOf<L, (A) -> B>): Can<L, B> =
-    fix().canAp(SL(), ff)
+    fix().ap(SL(), ff)
 }
 
 @extension
@@ -148,11 +139,10 @@ interface CanApplicative<L> : Applicative<CanPartialOf<L>>, CanApply<L> {
 
   override fun <A> just(a: A): Can<L, A> = Right(a)
 
-  override fun <A, B> CanOf<L, A>.map(f: (A) -> B): Can<L, B> = fix().canMap(f)
+  override fun <A, B> CanOf<L, A>.map(f: (A) -> B): Can<L, B> = fix().map(f)
 
   override fun <A, B> Kind<CanPartialOf<L>, A>.ap(ff: Kind<CanPartialOf<L>, (A) -> B>): Can<L, B> =
-    fix().canAp(SL(), ff)
-
+    fix().ap(SL(), ff)
 }
 
 @extension
@@ -163,14 +153,13 @@ interface CanMonad<L> : Monad<CanPartialOf<L>>, CanApplicative<L> {
   override fun <A, B> CanOf<L, A>.map(f: (A) -> B): Can<L, B> = fix().map(f)
 
   override fun <A, B> CanOf<L, A>.ap(ff: CanOf<L, (A) -> B>): Can<L, B> =
-    fix().canAp(SL(), ff)
+    fix().ap(SL(), ff)
 
   override fun <A, B> CanOf<L, A>.flatMap(f: (A) -> CanOf<L, B>): Can<L, B> =
-    fix().canFlatMap { f(it).fix() }
+    fix().flatMap(SL()) { f(it).fix() }
 
   override fun <A, B> tailRecM(a: A, f: (A) -> Kind<CanPartialOf<L>, Either<A, B>>): Kind<CanPartialOf<L>, B> =
     Can.tailRecM(a, f, SL())
-
 }
 
 @extension
@@ -295,6 +284,6 @@ interface CanBicrosswalk : Bicrosswalk<ForCan>, CanBifunctor, CanBifoldable {
       is None -> ALIGN.empty()
       is Left -> ALIGN.run { fa(can.a).map(::Left) }
       is Right -> ALIGN.run { fb(can.b).map(::Right) }
-      is Both -> ALIGN.alignWith(fa(can.a), fb(can.b)) { ior -> Can(ior) }
+      is Both -> ALIGN.alignWith(fa(can.a), fb(can.b)) { Can(it) }
     }
 }

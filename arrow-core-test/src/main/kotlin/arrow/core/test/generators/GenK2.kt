@@ -1,7 +1,9 @@
 package arrow.core.test.generators
 
 import arrow.Kind2
+import arrow.core.Can
 import arrow.core.Either
+import arrow.core.ForCan
 import arrow.core.ForEither
 import arrow.core.ForIor
 import arrow.core.ForValidated
@@ -26,6 +28,12 @@ fun Ior.Companion.genK2() =
   object : GenK2<ForIor> {
     override fun <A, B> genK(genA: Gen<A>, genB: Gen<B>): Gen<Kind2<ForIor, A, B>> =
       Gen.ior(genA, genB) as Gen<Kind2<ForIor, A, B>>
+  }
+
+fun Can.Companion.genK2() =
+  object : GenK2<ForCan> {
+    override fun <A, B> genK(genA: Gen<A>, genB: Gen<B>): Gen<Kind2<ForCan, A, B>> =
+      Gen.can(genA, genB) as Gen<Kind2<ForCan, A, B>>
   }
 
 fun Validated.Companion.genK2() =

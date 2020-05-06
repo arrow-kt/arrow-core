@@ -1,6 +1,7 @@
 package arrow.core.test.generators
 
 import arrow.Kind
+import arrow.core.Can
 import arrow.core.Const
 import arrow.core.Either
 import arrow.core.Endo
@@ -32,6 +33,7 @@ import arrow.core.Validated
 import arrow.core.extensions.sequence.functorFilter.filterMap
 import arrow.core.extensions.sequencek.apply.apply
 import arrow.core.extensions.sequencek.functorFilter.filterMap
+import arrow.core.extensions.sequencek.monad.map
 import arrow.core.k
 import arrow.core.toOption
 import arrow.typeclasses.Applicative
@@ -190,6 +192,23 @@ fun <A, B> Gen.Companion.ior(genA: Gen<A>, genB: Gen<B>): Gen<Ior<A, B>> =
       (Gen.option(genA).random() to Gen.option(genB).random()).let { (ls, rs) ->
         ls.zip(rs).filterMap {
           Ior.fromOptions(it.first, it.second)
+        }
+      }
+  }
+
+fun <A, B> Gen.Companion.can(genA: Gen<A>, genB: Gen<B>): Gen<Can<A, B>> =
+  object : Gen<Can<A, B>> {
+    override fun constants(): Iterable<Can<A, B>> =
+      (genA.orNull().constants().asSequence().k() to genB.orNull().constants().asSequence().k()).let { (ls, rs) ->
+        SequenceK.apply().run { ls.product(rs) }.map {
+          Can.fromOptions(Option.fromNullable(it.a), Option.fromNullable(it.b))
+        }.asIterable()
+      }
+
+    override fun random(): Sequence<Can<A, B>> =
+      (Gen.option(genA).random() to Gen.option(genB).random()).let { (ls, rs) ->
+        ls.zip(rs).map {
+          Can.fromOptions(it.first, it.second)
         }
       }
   }
