@@ -34,7 +34,6 @@ class AtomicRefW<A>(a: A) {
     value.toString()
 }
 
-
 class AtomicBooleanW(a: Boolean) {
   private val atomicRef = atomic(a)
 
