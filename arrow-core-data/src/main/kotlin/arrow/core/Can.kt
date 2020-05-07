@@ -1,6 +1,5 @@
 package arrow.core
 
-import arrow.core.Can.Right
 import arrow.higherkind
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
@@ -30,14 +29,14 @@ import arrow.typeclasses.Show
  *             B (Right)
  * ```
  *
- * An instance of [Can]<`A`,`B`> can be one of:
+ * An instance of [Can]<[A],[B]> can be one of:
  *  - [Can.Neither]
- *  - [Can.Left] <`A`>
- *  - [Can.Right] <`B`>
- *  - [Can.Both]<`A`,`B`>
+ *  - [Can.Left] <[A]>
+ *  - [Can.Right] <[B]>
+ *  - [Can.Both]<[A],[B]>
  *
  * Similarly to [Ior], [Can] differs from [Either] in that it can contain both [A] and [B]. On top of that it can contain neither of them.
- * This means that it's isomorphic to using [Option]<[Ior]<`A`, `B`>>.
+ * This means that it's isomorphic to using [Option]<[Ior]<[A], [B]>>.
  *
  * Operations available are biased towards [B].
  *
@@ -60,7 +59,7 @@ sealed class Can<out A, out B>(
    * Can.Both("venus", "fly-trap").isEmpty // Result: false
    * ```
    */
-  val isEmpty: Boolean = false,
+  val isNeither: Boolean = false,
   /**
    * `true` if this is a [Can.Right], `false` otherwise.
    * @note Used only for performance instead of fold.
@@ -167,7 +166,7 @@ sealed class Can<out A, out B>(
     fold({ Neither }, { Left(it) }, { Right(f(it)) }, { a, b -> Both(a, f(b)) })
 
   /**
-   * The given function is applied if this is a [Can.Left] or [Can.Both] to `A`.
+   * The given function is applied if this is a [Can.Left] or [Can.Both] to [A].
    *
    * Example:
    * ```
@@ -194,10 +193,66 @@ sealed class Can<out A, out B>(
   }
 
   /**
-   * Similar to [map] but results in a [Neither] if the result fo [f] is null.
+   * Similar to [map] but removes the right value if the result of [f] is null.
+   * This destruction means that, when [f] results in a `null` value then [Can.Right]
+   * becomes [Can.Neither] and [Can.Both] becomes [Can.Left], the rest remain the same.
+   *
+   * Example:
+   * ```
+   * Can.Neither.mapNotNull { null }           // Result: Can.Neither
+   * Can.Left(12).mapNotNull { null }          // Result: Can.Left(12)
+   * Can.Right("power").mapNotNull { null }    // Result: Can.Neither
+   * Can.Both(12, "power").mapNotNull { null } // Result: Can.Left(12)
+   * ```
    */
   fun <C> mapNotNull(f: (B) -> C?): Can<A, C> =
     fromNullables(leftOrNull(), rightOrNull()?.let(f))
+
+  /**
+   * Similar to [mapLeft] but removes the left value if the result of [f] is `null`.
+   * This destruction means that, when [f] results in a `null` value then [Can.Left]
+   * becomes [Can.Neither] and [Can.Both] becomes [Can.Right], the rest remain the same.
+   *
+   * Example:
+   * ```
+   * Can.Neither.mapLeftNotNull { null }           // Result: Can.Neither
+   * Can.Left(12).mapLeftNotNull { null }          // Result: Can.Neither
+   * Can.Right("power").mapLeftNotNull { null }    // Result: Can.Right("power")
+   * Can.Both(12, "power").mapLeftNotNull { null } // Result: Can.Right("power")
+   *
+   * Can.Neither.mapLeftNotNull { it + 30 }           // Result: Can.Neither
+   * Can.Left(12).mapLeftNotNull { it + 30 }          // Result: Can.Left(42)
+   * Can.Right("power").mapLeftNotNull { it + 30 }    // Result: Can.Right("power")
+   * Can.Both(12, "power").mapLeftNotNull { it + 30 } // Result: Can.Both(42, "power")
+   * ```
+   */
+  fun <C> mapLeftNotNull(f: (A) -> C?): Can<C, B> =
+    fromNullables(leftOrNull()?.let(f), rightOrNull())
+
+  /**
+   * Similar to [mapLeft] but removes the left value if the result of [fa] is `null`
+   * and/or the right value if the result from [fb] is null.
+   *
+   * Example:
+   * ```
+   * Can.Neither.bimapNotNull({ null }, { null })           // Result: Can.Neither
+   * Can.Left(12).bimapNotNull({ null }, { null })          // Result: Can.Neither
+   * Can.Right("power").bimapNotNull({ null }, { null })    // Result: Can.Neither
+   * Can.Both(12, "power").bimapNotNull({ null }, { null }) // Result: Can.Neither
+   *
+   * Can.Neither.bimapNotNull({ null }, { "max $it" })           // Result: Can.Neither
+   * Can.Left(12).bimapNotNull({ null }, { "max $it" })          // Result: Can.Neither
+   * Can.Right("power").bimapNotNull({ null }, { "max $it" })    // Result: Can.Right("max power")
+   * Can.Both(12, "power").bimapNotNull({ null }, { "max $it" }) // Result: Can.Right("max power")
+   *
+   * Can.Neither.bimapNotNull({ it + 30 }, { null })           // Result: Can.Neither
+   * Can.Left(12).bimapNotNull({ it + 30 }, { null })          // Result: Can.Left(42)
+   * Can.Right("power").bimapNotNull({ it + 30 }, { null })    // Result: Can.Neither
+   * Can.Both(12, "power").bimapNotNull({ it + 30 }, { null }) // Result: Can.Left(42)
+   * ```
+   */
+  fun <C, D> bimapNotNull(fa: (A) -> C?, fb: (B) -> D?): Can<C, D> =
+    fromNullables(leftOrNull()?.let(fa), rightOrNull()?.let(fb))
 
   /**
    * Returns this if the predicate over [B] passes, or [Neither] otherwise
@@ -268,9 +323,9 @@ sealed class Can<out A, out B>(
   /**
    * Inverts the components:
    *  - If [Neither] is remains [Neither]
-   *  - If [Left]<`A`> it returns [Right]<`A`>
-   *  - If [Right]<`B`> it returns [Left]<`B`>
-   *  - If [Both]<`A`, `B`> it returns [Both]<`B`, `A`>
+   *  - If [Left]<[A]> it returns [Right]<[A]>
+   *  - If [Right]<[B]> it returns [Left]<[B]>
+   *  - If [Both]<[A], [B]> it returns [Both]<[B], [A]>
    *
    * Example:
    * ```
@@ -308,20 +363,20 @@ sealed class Can<out A, out B>(
 
   override fun toString(): String = show(Show.any(), Show.any())
 
-  object Neither : Can<Nothing, Nothing>(isEmpty = true)
+  object Neither : Can<Nothing, Nothing>(isNeither = true)
   data class Left<out A>(val a: A) : Can<A, Nothing>(isLeft = true)
   data class Right<out B>(val b: B) : Can<Nothing, B>(isRight = true)
   data class Both<out A, out B>(val a: A, val b: B) : Can<A, B>(isBoth = true)
 }
 
 /**
- * Returns a [Validated.Valid] containing the [Can.Right] value or `B` if this is [Can.Right] or [Can.Both]
+ * Returns a [Validated.Valid] containing the [Can.Right] value or [B] if this is [Can.Right] or [Can.Both]
  * and [Validated.Invalid] if this is a [Can.Left].
  *
  * Example:
  * ```
  * Can.Neither.toValidated { Invalid(-1) } // Result: Invalid(-1)
- * Can.Right(12).toValidated()             // Result: Valid(12)
+ * Can.Right("power").toValidated()        // Result: Valid("power")
  * Can.Left(12).toValidated()              // Result: Invalid(12)
  * Can.Both(12, "power").toValidated()     // Result: Valid("power")
  * ```
@@ -331,12 +386,28 @@ fun <A, B> CanOf<A, B>.toValidated(ifNeither: () -> Validated<A, B>): Validated<
   fix().fold(ifNeither, ::Invalid, ::Valid, { _, b -> Valid(b) })
 
 /**
+ * Returns a [Validated.Valid] containing the [Can.Left] value or [A] if this is [Can.Left] or [Can.Both]
+ * and [Validated.Invalid] if this is a [Can.Right].
+ *
+ * Example:
+ * ```
+ * Can.Neither.toValidatedLeft { Invalid(-1) } // Result: Invalid(-1)
+ * Can.Right("power").toValidatedLeft()        // Result: Invalid("power")
+ * Can.Left(12).toValidatedLeft()              // Result: Valid(12)
+ * Can.Both(12, "power").toValidatedLeft()     // Result: Valid(12)
+ * ```
+ * @param ifNeither used to source an intance of [Validated]
+ */
+fun <A, B> CanOf<A, B>.toValidatedLeft(ifNeither: () -> Validated<B, A>): Validated<B, A> =
+  fix().fold(ifNeither, ::Valid, ::Invalid, { a, _ -> Valid(a) })
+
+/**
  * Similar to [toValidated] but returning [None] if there is nothing to validate.
  *
  * Examples:
  * ```
  * Can.Neither.toValidated()               // Result: None
- * Can.Right(12).toValidated()             // Result: Some(Valid(12))
+ * Can.Right("power").toValidated()        // Result: Some(Valid("power"))
  * Can.Left(12).toValidated()              // Result: Some(Invalid(12))
  * Can.Both(12, "power").toValidated()     // Result: Some(Valid("power"))
  * ```
@@ -344,6 +415,21 @@ fun <A, B> CanOf<A, B>.toValidated(ifNeither: () -> Validated<A, B>): Validated<
  */
 fun <A, B> CanOf<A, B>.toValidated(): Option<Validated<A, B>> =
   fix().fold({ None }, { Some(Invalid(it)) }, { Some(Valid(it)) }) { _: A, b: B -> Some(Valid(b)) }
+
+/**
+ * Similar to [toValidatedLeft] but returning [None] if there is nothing to validate.
+ *
+ * Examples:
+ * ```
+ * Can.Neither.toValidatedLeft()           // Result: None
+ * Can.Right(12).toValidatedLeft()         // Result: Some(Valid(12))
+ * Can.Left("power").toValidatedLeft()     // Result: Some(Invalid("power"))
+ * Can.Both(12, "power").toValidatedLeft() // Result: Some(Valid(12))
+ * ```
+ * @return [None] if the [Can] is [Can.Neither], otherwise the result from [toValidatedLeft] inside [Some]
+ */
+fun <A, B> CanOf<A, B>.toValidatedLeft(): Option<Validated<B, A>> =
+  fix().fold({ None }, { Some(Valid(it)) }, { Some(Invalid(it)) }) { a: A, _: B -> Some(Valid(a)) }
 
 /**
  * Similar to [Can.unwrap] with a fallback alternative in case of working with an instance of [Can.Neither]
@@ -359,6 +445,9 @@ fun <A, B> CanOf<A, B>.toIor(ifNone: () -> IorOf<A, B>): Ior<A, B> =
 fun <A, B, C> CanOf<A, B>.flatMap(SG: Semigroup<A>, f: (B) -> CanOf<A, C>): Can<A, C> =
   fix().fold({ Can.Neither }, { Can.Left(it) }, { f(it).fix() }, { a, b -> SG.flatMapCombine(a, b, f) })
 
+/**
+ * Used internally by [flatMap] for the [Can.Both] case.
+ */
 private fun <A, B, C> Semigroup<A>.flatMapCombine(a: A, b: B, f: (B) -> CanOf<A, C>) =
   f(b).fix().fold({ Can.Neither }, { Can.Left(a.combine(it)) }, { Can.Both(a, it) }, { ll, rr -> Can.Both(a.combine(ll), rr) })
 
@@ -385,32 +474,30 @@ fun <A, B, C> CanOf<A, B>.ap(SG: Semigroup<A>, ff: CanOf<A, (B) -> C>): Can<A, C
   flatMap(SG) { a -> ff.fix().map { f: (B) -> C -> f(a) } }
 
 /**
- * Converts the receiver [Pair]<`A`, `B`> into an instance of [Can].
+ * Converts the nullable receiver of [Pair]<[A], [B]> into an instance of [Can].
  *
- * @return always an instance of [Can.Both]
+ * @return an instance of [Can.Both] when not null, or [Can.Neither] otherwise
  */
 fun <A, B> Pair<A, B>.toCan(): Can<A, B> = Can.Both(first, second)
 
 /**
- * Converts the receiver [Tuple2]<`A`, `B`> into an instance of [Can].
+ * Converts the nullable receiver of [Tuple2]<[A], [B]> into an instance of [Can].
  *
- * @return always an instance of [Can.Both]
+ * @return an instance of [Can.Both] when not null, or [Can.Neither] otherwise
  */
 fun <A, B> Tuple2<A, B>.toCan(): Can<A, B> = Can.Both(a, b)
 
 /**
  * Converts a, potentially nullable, instance of [A] into an instance of [Can]
  *
- * @return [None] when `null` or [Can.Left]<`A`> otherwise
+ * @return [None] when `null` or [Can.Left]<[A]> otherwise
  */
-fun <A> A?.toLeftCan(): Can<A, Nothing> =
-  if (this == null) Can.Neither else Can.Left(this)
+fun <A> A.toLeftCan(): Can<A, Nothing> = Can.Left(this)
 
 /**
  * Same as [Option.toRightCan] but for nullable values
  */
-fun <B> B?.toRightCan(): Can<Nothing, B> =
-  if (this == null) Can.Neither else Can.Right(this)
+fun <B> B.toRightCan(): Can<Nothing, B> = Can.Right(this)
 
 /**
  * Converts a instance of [Option]<[A]> into an instance of [Can]<[A]>
@@ -447,15 +534,23 @@ fun <A, B> IorOf<A, B>.toCan(): Can<A, B> =
  *
  * Mapping:
  * - [Can.Neither] -> [None]
- * - [Can.Left]    -> [Some]<`A`>
+ * - [Can.Left]    -> [Some]<[A]>
  * - [Can.Right]   -> [None]
- * - [Can.Left]    -> [Some]<`A`>
+ * - [Can.Both]    -> [Some]<[A]>
  *
- * @return [Some]<`A`> if we have [Can.Left] or [Can.Both], otherwise [None]
+ * @return [Some]<[A]> if we have [Can.Left] or [Can.Both], otherwise [None]
  */
-fun <A, B> CanOf<A, B>.left(): Option<A> =
-  leftOrNull().toOption()
+fun <A, B> CanOf<A, B>.left(): Option<A> = leftOrNull().toOption()
 
+/**
+ * Same as [left] but returning a nullable value instead of an [Option]
+ *
+ * Mapping:
+ * - [Can.Neither] -> `null`
+ * - [Can.Left]    -> [A]
+ * - [Can.Right]   -> `null`
+ * - [Can.Both]    -> [A]
+ */
 fun <A, B> CanOf<A, B>.leftOrNull(): A? =
   when(val can = fix()) {
     is Can.Left -> can.a 
@@ -481,14 +576,22 @@ operator fun <A, B> CanOf<A, B>.component1(): Option<A> = left()
  * Mapping:
  * - [Can.Neither] -> [None]
  * - [Can.Left] -> [None]
- * - [Can.Right] -> [Some]<`A`>
- * - [Can.Left] -> [Some]<`A`>
+ * - [Can.Right] -> [Some]<[A]>
+ * - [Can.Both] -> [Some]<[A]>
  *
- * @return [Some]<`A`> if we have [Can.Right] or [Can.Both], otherwise [None]
+ * @return [Some]<[A]> if we have [Can.Right] or [Can.Both], otherwise [None]
  */
-fun <A, B> CanOf<A, B>.right(): Option<B> =
-  rightOrNull().toOption()
+fun <A, B> CanOf<A, B>.right(): Option<B> = rightOrNull().toOption()
 
+/**
+ * Same as [right] but returning a nullable value instead of an [Option]
+ *
+ * Mapping:
+ * - [Can.Neither] -> `null`
+ * - [Can.Left]    -> [B]
+ * - [Can.Right]   -> `null`
+ * - [Can.Both]    -> [B]
+ */
 fun <A, B> CanOf<A, B>.rightOrNull(): B? = when(val can = fix()) {
   is Can.Right -> can.b
   is Can.Both -> can.b
