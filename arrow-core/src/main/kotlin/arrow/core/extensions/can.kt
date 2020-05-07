@@ -7,7 +7,7 @@ import arrow.Kind2
 import arrow.core.Can
 import arrow.core.Can.Both
 import arrow.core.Can.Left
-import arrow.core.Can.None
+import arrow.core.Can.Neither
 import arrow.core.Can.Right
 import arrow.core.CanOf
 import arrow.core.CanPartialOf
@@ -19,7 +19,7 @@ import arrow.core.extensions.can.eq.eq
 import arrow.core.extensions.can.monad.monad
 import arrow.core.fix
 import arrow.core.flatMap
-import arrow.core.leftCan
+import arrow.core.toLeftCan
 import arrow.core.toCan
 import arrow.extension
 import arrow.typeclasses.Align
@@ -48,26 +48,26 @@ fun <L, R> Can<L, R>.combine(
   SGR: Semigroup<R>,
   b: Can<L, R>
 ): Can<L, R> = when (val a = this) {
-  is None -> when (b) {
-    is None -> a
+  is Neither -> when (b) {
+    is Neither -> a
     is Left -> b
     is Right -> a
     is Both -> b
   }
   is Left -> when (b) {
-    is None -> a
+    is Neither -> a
     is Left -> Left(SGL.run { a.a.combine(b.a) })
     is Right -> b
     is Both -> Both(SGL.run { a.a.combine(b.a) }, b.b)
   }
   is Right -> when (b) {
-    is None -> a
+    is Neither -> a
     is Left -> Both(b.a, a.b)
     is Right -> Right(SGR.run { a.b.combine(b.b) })
     is Both -> Both(b.a, SGR.run { a.b.combine(b.b) })
   }
   is Both -> when (b) {
-    is None -> a
+    is Neither -> a
     is Left -> Both(SGL.run { a.a.combine(a.a) }, a.b)
     is Right -> Both(a.a, SGR.run { a.b.combine(b.b) })
     is Both -> Both(SGL.run { a.a.combine(b.a) }, SGR.run { a.b.combine(b.b) })
@@ -91,7 +91,7 @@ interface CanMonoid<L, R> : Monoid<Can<L, R>>, CanSemigroup<L, R> {
   override fun SGL(): Semigroup<L> = MOL()
   override fun SGR(): Semigroup<R> = MOR()
 
-  override fun empty(): Can<L, R> = None
+  override fun empty(): Can<L, R> = Neither
 }
 
 @extension
@@ -114,14 +114,14 @@ interface CanApply<L> : Apply<CanPartialOf<L>>, CanFunctor<L> {
 
   override fun <A, B> Kind<CanPartialOf<L>, A>.apEval(ff: Eval<Kind<CanPartialOf<L>, (A) -> B>>): Eval<Kind<CanPartialOf<L>, B>> =
     fix().fold(
-      ifNone = { Eval.now(None) },
+      ifNone = { Eval.now(Neither) },
       ifLeft = { l -> Eval.now(Left(l)) },
       ifRight = { r -> ff.map { it.fix().map { f -> f(r) } } },
       ifBoth = { l, r ->
         ff.map { partial ->
           partial.fix().fold(
-            ifNone = Can.Companion::none,
-            ifLeft = { ll -> SL().run { l + ll }.leftCan() },
+            ifNone = Can.Companion::neither,
+            ifLeft = { ll -> SL().run { l + ll }.toLeftCan() },
             ifRight = { f -> Both(l, f(r)) },
             ifBoth = { ll, f -> Both(SL().run { l + ll }, f(r)) }
           )
@@ -182,7 +182,7 @@ interface CanBifoldable : Bifoldable<ForCan> {
 }
 
 fun <G, A, B, C> CanOf<A, B>.traverse(GA: Applicative<G>, f: (B) -> Kind<G, C>): Kind<G, Can<A, C>> = GA.run {
-  fix().fold({ just(None) }, { just(Left(it)) }, { b -> f(b).map(::Right) }, { _, b -> f(b).map(::Right) })
+  fix().fold({ just(Neither) }, { just(Left(it)) }, { b -> f(b).map(::Right) }, { _, b -> f(b).map(::Right) })
 }
 
 @extension
@@ -200,7 +200,7 @@ interface CanBitraverse : Bitraverse<ForCan>, CanBifoldable {
     g: (B) -> Kind<G, D>
   ): Kind<G, CanOf<C, D>> = AP.run {
     fix().fold(
-      ifNone = { just(None) },
+      ifNone = { just(Neither) },
       ifLeft = { f(it).map(::Left) },
       ifRight = { g(it).map(::Right) },
       ifBoth = { a, b -> mapN(f(a), g(b)) { Both(it.a, it.b) } }
@@ -216,7 +216,7 @@ interface CanEq<in L, in R> : Eq<Can<L, R>> {
   fun EQR(): Eq<R>
 
   override fun Can<L, R>.eqv(b: Can<L, R>): Boolean = when (this) {
-    is None -> b is None
+    is Neither -> b is Neither
     is Left -> b is Left && EQL().run { a.eqv(b.a) }
     is Right -> b is Right && EQR().run { this@eqv.b.eqv(b.b) }
     is Both -> b is Both && EQL().run { a.eqv(b.a) } && EQR().run { this@eqv.b.eqv(b.b) }
@@ -277,7 +277,7 @@ interface CanBicrosswalk : Bicrosswalk<ForCan>, CanBifunctor, CanBifoldable {
     fb: (B) -> Kind<F, D>
   ): Kind<F, Kind2<ForCan, C, D>> =
     when (val can = tab.fix()) {
-      is None -> ALIGN.empty()
+      is Neither -> ALIGN.empty()
       is Left -> ALIGN.run { fa(can.a).map(::Left) }
       is Right -> ALIGN.run { fb(can.b).map(::Right) }
       is Both -> ALIGN.alignWith(fa(can.a), fb(can.b)) { it.toCan() }
