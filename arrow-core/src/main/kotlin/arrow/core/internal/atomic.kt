@@ -2,6 +2,7 @@ package arrow.core.internal
 
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.updateAndGet
+import kotlinx.atomicfu.getAndUpdate
 
 /**
  * Internal wrapper for Atomic-FU Atomics to be used as local variables
