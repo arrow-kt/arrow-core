@@ -18,10 +18,10 @@ class AtomicRefW<A>(a: A) {
   fun getAndSet(a: A): A =
     atomicRef.getAndSet(a)
 
-  inline fun updateAndGet(function: (A) -> A): A =
+  fun updateAndGet(function: (A) -> A): A =
     atomicRef.updateAndGet(function)
 
-  inline fun getAndUpdate(f: (A) -> A): A =
+  fun getAndUpdate(f: (A) -> A): A =
     atomicRef.getAndUpdate(f)
 
   fun compareAndSet(expect: A, update: A): Boolean =
@@ -46,10 +46,10 @@ class AtomicBooleanW(a: Boolean) {
   fun getAndSet(a: Boolean): Boolean =
     atomicRef.getAndSet(a)
 
-  inline fun updateAndGet(function: (Boolean) -> Boolean): Boolean =
+  fun updateAndGet(function: (Boolean) -> Boolean): Boolean =
     atomicRef.updateAndGet(function)
 
-  inline fun getAndUpdate(f: (Boolean) -> Boolean): Boolean =
+  fun getAndUpdate(f: (Boolean) -> Boolean): Boolean =
     atomicRef.getAndUpdate(f)
 
   fun compareAndSet(expect: Boolean, update: Boolean): Boolean =
@@ -92,10 +92,10 @@ class AtomicIntW(a: Int) {
   fun decrementAndGet(): Int =
     atomicRef.decrementAndGet()
 
-  inline fun updateAndGet(function: (Int) -> Int): Int =
+  fun updateAndGet(function: (Int) -> Int): Int =
     atomicRef.updateAndGet(function)
 
-  inline fun getAndUpdate(f: (Int) -> Int): Int =
+  fun getAndUpdate(f: (Int) -> Int): Int =
     atomicRef.getAndUpdate(f)
 
   fun compareAndSet(expect: Int, update: Int): Boolean =
