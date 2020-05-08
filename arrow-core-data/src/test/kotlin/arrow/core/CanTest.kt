@@ -277,6 +277,109 @@ class CanTest : UnitSpec() {
       )
     }
 
+    "bimapNotNull() collapses null transformations" {
+      allEqual<Int, String>(
+        { neither.bimapNotNull({ null }, { null }) to neither },
+        { left.bimapNotNull({ null }, { null }) to neither },
+        { right.bimapNotNull({ null }, { null }) to neither },
+        { both.bimapNotNull({ null }, { null }) to neither },
+
+        { neither.bimapNotNull({ null }, { "max $it" }) to neither },
+        { left.bimapNotNull({ null }, { "max $it" }) to neither },
+        { right.bimapNotNull({ null }, { "max $it" }) to Can.Right("max $b") },
+        { both.bimapNotNull({ null }, { "max $it" }) to Can.Right("max $b") },
+
+        { neither.bimapNotNull({ it + 30 }, { null }) to neither },
+        { left.bimapNotNull({ it + 30 }, { null }) to Can.Left(a + 30) },
+        { right.bimapNotNull({ it + 30 }, { null }) to neither },
+        { both.bimapNotNull({ it + 30 }, { null }) to Can.Left(a + 30) }
+      )
+    }
+
+    "filter() removes right side when predicate fails" {
+      allEqual<Int, String>(
+        { neither.filter { false } to neither },
+        { left.filter { false } to left },
+        { right.filter { false } to neither },
+        { both.filter { false } to left },
+
+        { neither.filter { true } to neither },
+        { left.filter { true } to left },
+        { right.filter { true } to right },
+        { both.filter { true } to both }
+      )
+    }
+
+    "filterNot() removes right side when predicate passes" {
+      allEqual<Int, String>(
+        { neither.filterNot { false } to neither },
+        { left.filterNot { false } to left },
+        { right.filterNot { false } to right },
+        { both.filterNot { false } to both },
+
+        { neither.filterNot { true } to neither },
+        { left.filterNot { true } to left },
+        { right.filterNot { true } to neither },
+        { both.filterNot { true } to left }
+      )
+    }
+
+    "filterLeft() removes left side when predicate fails" {
+      allEqual<Int, String>(
+        { neither.filterLeft { false } to neither },
+        { left.filterLeft { false } to neither },
+        { right.filterLeft { false } to right },
+        { both.filterLeft { false } to right },
+
+        { neither.filterLeft { true } to neither },
+        { left.filterLeft { true } to left },
+        { right.filterLeft { true } to right },
+        { both.filterLeft { true } to both }
+      )
+    }
+
+    "filterNotLeft() removes left side when predicate passes" {
+      allEqual<Int, String>(
+        { neither.filterNotLeft { false } to neither },
+        { left.filterNotLeft { false } to left },
+        { right.filterNotLeft { false } to right },
+        { both.filterNotLeft { false } to both },
+
+        { neither.filterNotLeft { true } to neither },
+        { left.filterNotLeft { true } to neither },
+        { right.filterNotLeft { true } to right },
+        { both.filterNotLeft { true } to right }
+      )
+    }
+
+    "exists(Predicate<B>) is true when right passes predicate" {
+      allEqual<Int, String>(
+        { neither.exists { false } to false },
+        { left.exists { false } to false },
+        { right.exists { false } to false },
+        { both.exists { false } to false },
+
+        { neither.exists { true } to false },
+        { left.exists { true } to false },
+        { right.exists { true } to true },
+        { both.exists { true } to true }
+      )
+    }
+
+    "existsLeft(Predicate<A>) is true when left passes predicate" {
+      allEqual<Int, String>(
+        { neither.existsLeft { false } to false },
+        { left.existsLeft { false } to false },
+        { right.existsLeft { false } to false },
+        { both.existsLeft { false } to false },
+
+        { neither.existsLeft { true } to false },
+        { left.existsLeft { true } to true },
+        { right.existsLeft { true } to false },
+        { both.existsLeft { true } to true }
+      )
+    }
+
   }
 }
 

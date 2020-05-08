@@ -179,14 +179,32 @@ sealed class Can<out A, out B>(
   fun <C> mapLeft(fa: (A) -> C): Can<C, B> =
     fold({ Neither }, { Left(fa(it)) }, { Right((it)) }, { a, b -> Both(fa(a), b) })
 
+  /**
+   * Transforms either or both [A] and/or [B] tp [C] and/or [D] respectively.
+   *
+   * Example:
+   * ```
+   * Can.Neither.bimap({ 12 }, { "flower $it" })        // Result: Can.Neither
+   * Can.Left(12).bimap({ 12 }, { "flower $it" })       // Result: Left("flower power")
+   * Can.Right("power").bimap({ 12 }, { "flower $it" }) // Result: Can.Right(12)
+   * Can.Both(12, "power").bimap({ 12 }, { "flower" })  // Result: Both(12, "flower power")
+   * ```
+   * @param fa tranforms left [A] to [C] on [Can.Left] or [Can.Both]
+   * @param fb tranforms left [B] to [D] on [Can.Right] or [Can.Both]
+   */
   fun <C, D> bimap(fa: (A) -> C, fb: (B) -> D): Can<C, D> =
     fold({ Neither }, { Left(fa(it)) }, { Right(fb(it)) }, { l, r -> Both(fa(l), fb(r)) })
 
   /**
    * Transforms this into an instance of [C] depending on the case.
+   *
+   * @param ifNeither produces a value for [C] on [Neither]
+   * @param ifLeft transforms from left [A] to [C]
+   * @param ifRight transforms from right [B] to [C]
+   * @param ifBoth transforms both [A] and [B] to [C]
    */
-  fun <C> fold(ifNone: () -> C, ifLeft: (A) -> C, ifRight: (B) -> C, ifBoth: (A, B) -> C): C = when (this) {
-    is Neither -> ifNone()
+  fun <C> fold(ifNeither: () -> C, ifLeft: (A) -> C, ifRight: (B) -> C, ifBoth: (A, B) -> C): C = when (this) {
+    is Neither -> ifNeither()
     is Left -> ifLeft(a)
     is Right -> ifRight(b)
     is Both -> ifBoth(a, b)
@@ -204,6 +222,8 @@ sealed class Can<out A, out B>(
    * Can.Right("power").mapNotNull { null }    // Result: Can.Neither
    * Can.Both(12, "power").mapNotNull { null } // Result: Can.Left(12)
    * ```
+   *
+   * @param f transformation for right side
    */
   fun <C> mapNotNull(f: (B) -> C?): Can<A, C> =
     fromNullables(leftOrNull(), rightOrNull()?.let(f))
@@ -225,6 +245,8 @@ sealed class Can<out A, out B>(
    * Can.Right("power").mapLeftNotNull { it + 30 }    // Result: Can.Right("power")
    * Can.Both(12, "power").mapLeftNotNull { it + 30 } // Result: Can.Both(42, "power")
    * ```
+   *
+   * @param f transformation for left side
    */
   fun <C> mapLeftNotNull(f: (A) -> C?): Can<C, B> =
     fromNullables(leftOrNull()?.let(f), rightOrNull())
@@ -250,12 +272,28 @@ sealed class Can<out A, out B>(
    * Can.Right("power").bimapNotNull({ it + 30 }, { null })    // Result: Can.Neither
    * Can.Both(12, "power").bimapNotNull({ it + 30 }, { null }) // Result: Can.Left(42)
    * ```
+   *
+   * @param fa transformation for left side
+   * @param fb transformation for right side
    */
   fun <C, D> bimapNotNull(fa: (A) -> C?, fb: (B) -> D?): Can<C, D> =
     fromNullables(leftOrNull()?.let(fa), rightOrNull()?.let(fb))
 
   /**
-   * Returns this if the predicate over [B] passes, or [Neither] otherwise
+   * Removes the right side if it doesn't pass the test from [predicate]
+   *
+   * Example:
+   * ```
+   * Can.Neither.filter { false }           // Result: Can.Neither
+   * Can.Left(12).filter { false }          // Result: Can.Left(12)
+   * Can.Right("power").filter { false }    // Result: Can.Neither
+   * Can.Both(12, "power").filter { false } // Result: Can.Left(12)
+   *
+   * Can.Neither.filter { true }            // Result: Can.Neither
+   * Can.Left(12).filter { true }           // Result: Can.Left(12)
+   * Can.Right("power").filter { true }     // Result: Can.Right("power")
+   * Can.Both(12, "power").filter { true }  // Result: Can.Both(12, "power")
+   * ```
    *
    * @param predicate the predicate used for testing.
    */
@@ -263,7 +301,20 @@ sealed class Can<out A, out B>(
     fromNullables(leftOrNull(), rightOrNull()?.takeIf(predicate))
 
   /**
-   * Opposite of [filter]
+   * Removes the right side if it doesn't pass the test from [predicate]
+   *
+   * Example:
+   * ```
+   * Can.Neither.filterNot { false }           // Result: Can.Neither
+   * Can.Left(12).filterNot { false }          // Result: Can.Left(12)
+   * Can.Right("power").filterNot { false }    // Result: Can.Right("power")
+   * Can.Both(12, "power").filterNot { false } // Result: Can.Both(12, "power")
+   *
+   * Can.Neither.filterNot { true }            // Result: Can.Neither
+   * Can.Left(12).filterNot { true }           // Result: Can.Left(12)
+   * Can.Right("power").filterNot { true }     // Result: Can.Neither
+   * Can.Both(12, "power").filterNot { true }  // Result: Can.Left(12)
+   * ```
    *
    * @param predicate the predicate used for testing.
    */
@@ -284,7 +335,7 @@ sealed class Can<out A, out B>(
    * @param predicate the predicate used for testing.
    */
   fun filterNotLeft(predicate: Predicate<A>): Can<A, B> =
-    fromNullables(leftOrNull()?.takeIf(predicate), rightOrNull())
+    fromNullables(leftOrNull()?.takeUnless(predicate), rightOrNull())
 
   /**
    * Returns true if [B] passes the provided predicate for [Can.Right], or [Can.Both] instances.
@@ -315,13 +366,13 @@ sealed class Can<out A, out B>(
     fold({ c }, { f(it, c) }, { g(it, c) }, { a, b -> f(a, g(b, c)) })
 
   /**
-   * Return the isomorphic [Option]<[Ior]> of this [Can]
+   * Return the isomorphic [Option]<[Ior]<[A], [B]>> of this [Can]<[A], [B]>
    */
   fun unwrap(): Option<Ior<A, B>> =
     fold({ None }, { Some(Ior.Left(it)) }, { Some(Ior.Right(it)) }, { a, b -> Some(Ior.Both(a, b)) })
 
   /**
-   * Inverts the components:
+   * Inverts components:
    *  - If [Neither] is remains [Neither]
    *  - If [Left]<[A]> it returns [Right]<[A]>
    *  - If [Right]<[B]> it returns [Left]<[B]>
@@ -355,7 +406,7 @@ sealed class Can<out A, out B>(
    * Provides a printable description of [Can] given the relevant [Show] instances.
    */
   fun show(SL: Show<A>, SR: Show<B>): String = fold(
-    { "None" },
+    { "Neither" },
     { "Left(${SL.run { it.show() }})" },
     { "Right(${SR.run { it.show() }})" },
     { a, b -> "Both(left=${SL.run { a.show() }}, right=${SR.run { b.show() }})" }

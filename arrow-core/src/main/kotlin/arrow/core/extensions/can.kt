@@ -114,13 +114,13 @@ interface CanApply<L> : Apply<CanPartialOf<L>>, CanFunctor<L> {
 
   override fun <A, B> Kind<CanPartialOf<L>, A>.apEval(ff: Eval<Kind<CanPartialOf<L>, (A) -> B>>): Eval<Kind<CanPartialOf<L>, B>> =
     fix().fold(
-      ifNone = { Eval.now(Neither) },
+      ifNeither = { Eval.now(Neither) },
       ifLeft = { l -> Eval.now(Left(l)) },
       ifRight = { r -> ff.map { it.fix().map { f -> f(r) } } },
       ifBoth = { l, r ->
         ff.map { partial ->
           partial.fix().fold(
-            ifNone = Can.Companion::neither,
+            ifNeither = Can.Companion::neither,
             ifLeft = { ll -> SL().run { l + ll }.toLeftCan() },
             ifRight = { f -> Both(l, f(r)) },
             ifBoth = { ll, f -> Both(SL().run { l + ll }, f(r)) }
@@ -200,7 +200,7 @@ interface CanBitraverse : Bitraverse<ForCan>, CanBifoldable {
     g: (B) -> Kind<G, D>
   ): Kind<G, CanOf<C, D>> = AP.run {
     fix().fold(
-      ifNone = { just(Neither) },
+      ifNeither = { just(Neither) },
       ifLeft = { f(it).map(::Left) },
       ifRight = { g(it).map(::Right) },
       ifBoth = { a, b -> mapN(f(a), g(b)) { Both(it.a, it.b) } }
@@ -258,7 +258,7 @@ interface CanHash<L, R> : Hash<Can<L, R>>, CanEq<L, R> {
 
   override fun Can<L, R>.hash(): Int =
     fold(
-      ifNone = { 0 },
+      ifNeither = { 0 },
       ifLeft = { HL().run { it.hash() } },
       ifRight = { HR().run { it.hash() } },
       ifBoth = { a, b -> 31 * HL().run { a.hash() } + HR().run { b.hash() } }
