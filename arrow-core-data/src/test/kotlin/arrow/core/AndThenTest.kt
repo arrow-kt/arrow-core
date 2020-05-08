@@ -30,22 +30,8 @@ import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 
+
 class AndThenTest : UnitSpec() {
-
-  val EQ: Eq<AndThenOf<Int, Int>> = Eq { a, b ->
-    a(1) == b(1)
-  }
-
-  val conestedEQK = object : EqK<Conested<ForAndThen, Int>> {
-    override fun <A> Kind<Conested<ForAndThen, Int>, A>.eqK(other: Kind<Conested<ForAndThen, Int>, A>, EQ: Eq<A>): Boolean =
-      this@eqK.counnest().invoke(1) == other.counnest().invoke(1)
-  }
-
-  fun conestedGENK() = object : GenK<Conested<ForAndThen, Int>> {
-    override fun <A> genK(gen: Gen<A>): Gen<Kind<Conested<ForAndThen, Int>, A>> = gen.map {
-      AndThen.just<Int, A>(it).conest()
-    } as Gen<Kind<Conested<ForAndThen, Int>, A>>
-  }
 
   init {
 
@@ -149,4 +135,19 @@ private fun <A> AndThen.Companion.genK() = object : GenK<AndThenPartialOf<A>> {
 private fun AndThen.Companion.genK2() = object : GenK2<ForAndThen> {
   override fun <A, B> genK(genA: Gen<A>, genB: Gen<B>): Gen<Kind2<ForAndThen, A, B>> =
     AndThen.genK<A>().genK(genB)
+}
+
+val EQ: Eq<AndThenOf<Int, Int>> = Eq { a, b ->
+  a(1) == b(1)
+}
+
+val conestedEQK = object : EqK<Conested<ForAndThen, Int>> {
+  override fun <A> Kind<Conested<ForAndThen, Int>, A>.eqK(other: Kind<Conested<ForAndThen, Int>, A>, EQ: Eq<A>): Boolean =
+    this@eqK.counnest().invoke(1) == other.counnest().invoke(1)
+}
+
+fun conestedGENK() = object : GenK<Conested<ForAndThen, Int>> {
+  override fun <A> genK(gen: Gen<A>): Gen<Kind<Conested<ForAndThen, Int>, A>> = gen.map {
+    AndThen.just<Int, A>(it).conest()
+  } as Gen<Kind<Conested<ForAndThen, Int>, A>>
 }
