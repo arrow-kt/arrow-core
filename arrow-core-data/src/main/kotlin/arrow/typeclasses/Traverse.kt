@@ -352,6 +352,7 @@ import arrow.core.ValidatedNel
  * import arrow.fx.IO
  * import arrow.fx.extensions.fx
  * import arrow.fx.extensions.io.concurrent.parTraverse
+ * import arrow.fx.unsafeRunSync
  *
  * interface Profile
  * interface User
