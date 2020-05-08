@@ -352,8 +352,6 @@ import arrow.core.ValidatedNel
  * import arrow.fx.IO
  * import arrow.fx.extensions.fx
  * import arrow.fx.extensions.io.concurrent.parTraverse
- * import arrow.fx.extensions.runBlocking
- * import arrow.unsafe
  *
  * interface Profile
  * interface User
@@ -374,7 +372,7 @@ import arrow.core.ValidatedNel
  * }
  * //sampleEnd
  * fun main() {
- *   unsafe { runBlocking { program() } }
+ *   program().unsafeRunSync()
  * }
  * ```
  *
