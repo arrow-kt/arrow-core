@@ -29,18 +29,18 @@ import arrow.typeclasses.Show
  *             B (Right)
  * ```
  *
- * An instance of [Can]<[A],[B]> can be one of:
+ * An instance of [Can]<[A], [B]> can be one of:
  *  - [Can.Neither]
  *  - [Can.Left] <[A]>
  *  - [Can.Right] <[B]>
- *  - [Can.Both]<[A],[B]>
+ *  - [Can.Both]<[A], [B]>
  *
  * Similarly to [Ior], [Can] differs from [Either] in that it can contain both [A] and [B]. On top of that it can contain neither of them.
  * This means that it's isomorphic to using [Option]<[Ior]<[A], [B]>>.
  *
  * Operations available are biased towards [B].
  *
- * Implementation Notes: 
+ * Implementation Notes:
  *  - The names of [Can.Left] and [Can.Right] were used instead of the original `One` and `Eno` to match other data classes like [Either] or [Ior]
  *  - The name [Can.Neither] was used instead of `None` to avoid clashing with [None]
  *
@@ -112,7 +112,7 @@ sealed class Can<out A, out B>(
      * @return [Can.Neither] if both [a] and [b] are [None]. Otherwise [Some] wrapping
      * an [Can.Left], [Can.Right], or [Can.Both] if [a], [b], or both are defined (respectively).
      */
-    fun <A, B> fromOptions(a: Option<A>, b: Option<B>): Can<A, B> = 
+    fun <A, B> fromOptions(a: Option<A>, b: Option<B>): Can<A, B> =
       fromNullables(a.orNull(), b.orNull())
 
     /**
@@ -603,8 +603,8 @@ fun <A, B> CanOf<A, B>.left(): Option<A> = leftOrNull().toOption()
  * - [Can.Both]    -> [A]
  */
 fun <A, B> CanOf<A, B>.leftOrNull(): A? =
-  when(val can = fix()) {
-    is Can.Left -> can.a 
+  when (val can = fix()) {
+    is Can.Left -> can.a
     is Can.Both -> can.a
     else -> null
   }
@@ -643,7 +643,7 @@ fun <A, B> CanOf<A, B>.right(): Option<B> = rightOrNull().toOption()
  * - [Can.Right]   -> `null`
  * - [Can.Both]    -> [B]
  */
-fun <A, B> CanOf<A, B>.rightOrNull(): B? = when(val can = fix()) {
+fun <A, B> CanOf<A, B>.rightOrNull(): B? = when (val can = fix()) {
   is Can.Right -> can.b
   is Can.Both -> can.b
   else -> null
