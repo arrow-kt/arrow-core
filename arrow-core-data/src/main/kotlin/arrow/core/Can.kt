@@ -277,54 +277,6 @@ import arrow.typeclasses.Show
  *  - The name [Can.Neither] was used instead of `None` to avoid clashing with [None]
  *
  */
-
-//sealed class Milk {
-//  object LowFat : Milk()
-//  object Semi : Milk()
-//  object Whole : Milk()
-//}
-//
-//data class Sugar(val spoons: Int)
-//
-//typealias CoffeeInstructions = Can<Milk, Sugar>
-//
-//class CoffeeUi {
-//
-//  private var instructions: CoffeeInstructions = CoffeeInstructions.neither()
-//
-//  sealed class UserAction {
-//    object AddSugar : UserAction()
-//    object RemoveSugar : UserAction()
-//    data class AddMilk(val milk: Milk) : UserAction()
-//    object RemoveMilk : UserAction()
-//  }
-//
-//  fun CoffeeInstructions.modify(action: UserAction): CoffeeInstructions =
-//    when (action) {
-//      is UserAction.AddSugar -> incrementSugar()
-//      is UserAction.RemoveSugar -> decreaseSugar()
-//      is UserAction.AddMilk -> addMilk(action.milk)
-//      is UserAction.RemoveMilk -> removeMilk()
-//    }
-//
-//  fun CoffeeInstructions.incrementSugar(): CoffeeInstructions = let { (milk, sugar) ->
-//    CoffeeInstructions.fromOptions(milk, Some(sugar.fold({ Sugar(spoons = 1) }, { it.copy(spoons = it.spoons + 1) })))
-//  }
-//
-//  fun CoffeeInstructions.decreaseSugar(): CoffeeInstructions = let { (milk, sugar) ->
-//    CoffeeInstructions.fromOptions(milk, sugar.map { it.copy(spoons = it.spoons - 1) }.filter { it.spoons > 0 })
-//  }
-//
-//  fun CoffeeInstructions.addMilk(milk: Milk): CoffeeInstructions = let { (_, sugar) ->
-//    CoffeeInstructions.fromOptions(Some(milk), sugar)
-//  }
-//
-//  fun CoffeeInstructions.removeMilk(): CoffeeInstructions = let { (_, sugar) ->
-//    CoffeeInstructions.fromOptions(None, sugar)
-//  }
-//
-//}
-
 @higherkind
 sealed class Can<out A, out B>(
   /**
