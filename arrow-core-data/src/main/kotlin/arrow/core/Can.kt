@@ -9,7 +9,239 @@ import arrow.typeclasses.Show
  *
  * Implementation of Haskell's [Can](https://hackage.haskell.org/package/smash-0.1.1.0/docs/Data-Can.html)
  *
- * Represents a right-biased disjunction of either [A], [B], both [A] and [B] or none of them.
+ * It's rare, but you may have come across a situation when you need to represent whether you have one of two values or both at the same time.
+ * If that's the case, then [Ior] is the ADT for you.
+ *
+ * However, sometimes you may also want to represent those cases as well as none of them. This is where [Can] comes in handy.
+ *
+ * ### The coffee maker use case
+ *
+ * Imagine you are working on a Smart Coffee maker. You are working on an MVP that takes instructions from the server about how to make the nest coffee.
+ * You have to define an API that takes optional milk and/or sugar to be added to the coffee.
+ *
+ * ```kotlin:ank
+ * sealed class Milk {
+ *   object LowFat : Milk()
+ *   object Semi : Milk()
+ *   object Whole : Milk()
+ * }
+ * data class Sugar(val spoons: Int)
+ * ```
+ *
+ * The coffee instructions could be defined using [Can]
+ *
+ * ```kotlin:ank
+ * import arrow.core.Can
+ *
+ * //sampleStart
+ * typealias CoffeeInstructions = Can<Milk, Sugar>
+ * ```
+ *
+ * This means that the called of our API can define what type of milk they want, how many spoons of sugar or neither of them if they prefer to have plain coffee.
+ *
+ * ```kotlin:ank
+ *
+ * typealias CoffeeInstructions = Can<Milk, Sugar>
+ *
+ * data class Coffee(val milkName: String = "", val sugarInGrams : Double = 0.0)
+ *
+ * //sampleStart
+ *  fun prepareCoffee(instructions: CoffeeInstructions): Coffee =
+ *    instructions.bifoldLeft(
+ *      Coffee(),
+ *      { coffee, milk -> coffee.copy(milkName = milk.toString()) },
+ *      { coffee, sugar -> coffee.copy(sugarInGrams = sugar.spoons * 4.2) }
+ *    )
+ * ```
+ *
+ * From the perspective of the client, be it a terminal on the machine or a remote client, you can create functions to modify the instructions depending on the input from the user:
+ *
+ * ```kotlin:ank
+ * import arrow.core.component1
+ * import arrow.core.component2
+ * import arrow.core.Some
+ * import arrow.core.Can.Companion.fromOptions
+ *
+ * //sampleStart
+ * fun CoffeeInstructions.incrementSugar(): CoffeeInstructions = let { (milk, sugar) ->
+ *   CoffeeInstructions.fromOptions(milk, Some(sugar.fold({ Sugar(spoons = 1) }, { it.copy(spoons = it.spoons + 1) })))
+ * }
+ * ```
+ * Thanks to the provided deconstructing operators ([component1] and [component2]) you can easily split both sizes in a safe manner.
+ * Both of these components return instances of [Option]<[A]> and [Option]<B> respectively.
+ *
+ * Then, we apply a [Option.fold] on the current sugar. If absent you create a new sugar instance with one spoon, otherwise you increment the current number of spoons
+ *
+ * As for decreasing the number of sugar spoon:
+ *
+ * ```kotlin:ank
+ * import arrow.core.component1
+ * import arrow.core.component2
+ * import arrow.core.Can.Companion.fromOptions
+ *
+ * //sampleStart
+ * fun CoffeeInstructions.decreaseSugar(): CoffeeInstructions = let { (milk, sugar) ->
+ *   CoffeeInstructions.fromOptions(milk, sugar.map { it.copy(spoons = it.spoons - 1) }.filter { it.spoons > 0 })
+ * }
+ * ```
+ *
+ * In this case you also want to make sure that there is no [Can.Right] of sugar if there are no spoons so you need to add a filter at the end that removes the sugar if `spoons` is less than 1.
+ *
+ * For the milk operations it's a bit simpler:
+ *
+ * ```kotlin:ank
+ * import arrow.core.Can.Companion.fromOptions
+ * import arrow.core.component1
+ * import arrow.core.component2
+ * import arrow.core.Some
+ * import arrow.core.None
+ *
+ * //sampleStart
+ * fun CoffeeInstructions.addMilk(milk: Milk): CoffeeInstructions = let { (_, sugar) ->
+ *   CoffeeInstructions.fromOptions(Some(milk), sugar)
+ * }
+ *
+ * fun CoffeeInstructions.removeMilk(): CoffeeInstructions = let { (_, sugar) ->
+ *   CoffeeInstructions.fromOptions(None, sugar)
+ * }
+ * ```
+ *
+ * Here you can just replace the current milk with either [Some] of the provided milk or [None]
+ *
+ * ## Constructing [Can] instances
+ *
+ * All these assume that you have an existing instance of [Can] if you want to create a new one there are a few options:
+ *
+ *  - fromOptions(Option<A>, Option<B>)
+ *  - fromNullables(A?, B?)
+ *  - neither()
+ *  - left(A)
+ *  - right(B)
+ *  - both(A, B)
+ *
+ *  The first two take either an [Option] or nullable values and creates the appropriate instance:
+ *  - Both absent -> [Can.Neither]
+ *  - Only A present -> [Can.Left]<[A]>
+ *  - Only B present -> [Can.Right]<[B]>
+ *  - Both present -> [Can.Both]<[A], [B]>
+ *
+ *  These are used on the previous example to create new instances with the new coffee making instructions.
+ *
+ * ### Extension functions
+ *
+ * There are a few extra factory extension functions that can be used to create instances of [Can]:
+ *
+ * - [Pair]<[A], [B]>.toCan(): [Can.Both]<[A], [B]>
+ * ``` kotlin:ank
+ * import arrow.core.toCan
+ *
+ * //sampleStart
+ * check(("Over" to 9000).toCan() == Can.Both("Over", 9000))
+ * ```
+ * - [Tuple2]<[A], [B]>.toCan(): [Can]<[A], [B]>
+ * ``` kotlin:ank
+ * import arrow.core.toT
+ *
+ * //sampleStart
+ * check(("Over" toT 9000).toCan() == Can.Both("Over", 9000))
+ * ```
+ * - [A].toLeftCan(): [Can]<[A], [Nothing]>
+ * ```kotlin:ank
+ * import arrow.core.toLeftCan
+ *
+ * //sampleStart
+ * check(Milk.Semi.toLeftCan() == Can.Left(Milk.Semi))
+ * ```
+ * - [B].toRightCan(): [Can]<[Nothing], [B]>
+ * ```kotlin:ank
+ * import arrow.core.toRightCan
+ *
+ * //sampleStart
+ * check(Sugar(spoons = 2).toRightCan() == Can.Right(Sugar(spoons = 2)))
+ * ```
+ * - [Option]<[A]>.toLeftCan(): [Can]<[A], [Nothing]>
+ * ```kotlin:ank
+ * check(Some(Milk.Semi).toLeftCan() == Can.Left(Milk.Semi))
+ * check(None.toLeftCan<Milk>() == Can.Neither)
+ * ```
+ * - [Option]<[B]>.toRightCan(): [Can]<[Nothing], [B]>
+ * ```kotlin:ank
+ * check(Some(Sugar(spoons = 2)).toRightCan() == Can.Right(Sugar(spoons = 2)))
+ * check(None.toRightCan<Sugar>() == Can.Neither)
+ * ```
+ *
+ * ## Safe access values
+ *
+ * Most of the time you'll be transforming the contents of a [Can]. However, there are several ways you can also look into the contents of a [Can].
+ *
+ * You've already seen that it's possible to deconstruct a [Can] using the component operations:
+ *
+ * With both sides present:
+ * ```kotlin:ank
+ * val (left, right) = Can.both("Over", 9000)
+ * check(left == Some("Over"))
+ * check(right == Some(9000))
+ * ```
+ *
+ * If you are only interested on one side, it possible to get them separately:
+ *
+ * - [Can]<[A], [B]>.left(): [Option]<[A]>
+ * ```kotlin:ank
+ * import arrow.core.left
+ *
+ * //sampleStart
+ * check(Can.both("Over", 9000).left() == Some("Over"))
+ * check(Can.right("not this").left() == None)
+ * ```
+ * - [Can]<[A], [B]>.right(): [Option]<[A]>
+ * ```kotlin:ank
+ * import arrow.core.right
+ *
+ * //sampleStart
+ * check(Can.both("Over", 9000).right() == Some(9000))
+ * check(Can.left(42).right() == None)
+ * ```
+ * - [Can]<[A], [B]>.leftOrNull(): [A]?
+ * ```kotlin:ank
+ * import arrow.core.leftOrNull
+ *
+ * //sampleStart
+ * check(Can.both("Over", 9000).leftOrNull() == "Over")
+ * check(Can.right("not this").leftOrNull() == null)
+ * ```
+ * - [Can]<[A], [B]>.rightOrNull(): [B]?
+ * ```kotlin:ank
+ * import arrow.core.rightOrNull
+ *
+ * //sampleStart
+ * check(Can.both("Over", 9000).rightOrNull() == 9000)
+ * check(Can.left(42).rightOrNull() == null)
+ * ```
+ *
+ * If you want to provide an alternative in case that the side you are looking for is not present you can use:
+ *
+ * - [Can]<[A], [B]>.getOrElse(f: () -> [A]): [A]
+ * ```kotlin:ank
+ * import arrow.core.getOrElse
+ *
+ * //sampleStart
+ * check(Can.Both("Over", 9000).getOrElse { "not this" } == 9000)
+ * check(Can.Right("this").getOrElse { "not this" } == "this")
+ * check(Can.Left("not this").getOrElse { "this" } == "this")
+ * ```
+ * - [Can]<[A], [B]>.getLeftOrElse(f: () -> [B]): [B]
+ * ```kotlin:ank
+ * import arrow.core.getLeftOrElse
+ *
+ * //sampleStart
+ * check(Can.Both("Over", 9000).getLeftOrElse { "not this" } == "Over")
+ * check(Can.Left("this").getLeftOrElse { "not this" } == "this")
+ * check(Can.Right("not this").getLeftOrElse { "this" } == "this")
+ * ```
+ *
+ * ## Mathematical explanation:
+ *
+ * [Can] Represents a right-biased disjunction of either [A], [B], both [A] and [B] or none of them.
  *
  * This can be represented mathematically as the product of two components that are optional (see: [Option]):
  *
@@ -17,7 +249,7 @@ import arrow.typeclasses.Show
  * (1 + a) * (1 + b)   // (1 + a) is the union of an empty case (None) and a base case (Some)
  * ~ 1 + a + b + a*b   // This is expressed as the union of: Neither (1), Left (a), Right (b), or Both (a*b)
  * ~ Option (Ior a b)  // Ior (or There in Haskell) can be defined as `a + b + a*b`, therefore joining it, with Option, adds the empty case
- * ~ Can a b           // And that's how we get to [Can] of <A, B>
+ * ~ Can a b           // And that's how we get to Can of <A, B>
  * ```
  * It can be easier to visualize in a picture:
  * ```
@@ -38,13 +270,61 @@ import arrow.typeclasses.Show
  * Similarly to [Ior], [Can] differs from [Either] in that it can contain both [A] and [B]. On top of that it can contain neither of them.
  * This means that it's isomorphic to using [Option]<[Ior]<[A], [B]>>.
  *
- * Operations available are biased towards [B].
+ * Operations available are biased towards [B]
  *
  * Implementation Notes:
  *  - The names of [Can.Left] and [Can.Right] were used instead of the original `One` and `Eno` to match other data classes like [Either] or [Ior]
  *  - The name [Can.Neither] was used instead of `None` to avoid clashing with [None]
  *
  */
+
+//sealed class Milk {
+//  object LowFat : Milk()
+//  object Semi : Milk()
+//  object Whole : Milk()
+//}
+//
+//data class Sugar(val spoons: Int)
+//
+//typealias CoffeeInstructions = Can<Milk, Sugar>
+//
+//class CoffeeUi {
+//
+//  private var instructions: CoffeeInstructions = CoffeeInstructions.neither()
+//
+//  sealed class UserAction {
+//    object AddSugar : UserAction()
+//    object RemoveSugar : UserAction()
+//    data class AddMilk(val milk: Milk) : UserAction()
+//    object RemoveMilk : UserAction()
+//  }
+//
+//  fun CoffeeInstructions.modify(action: UserAction): CoffeeInstructions =
+//    when (action) {
+//      is UserAction.AddSugar -> incrementSugar()
+//      is UserAction.RemoveSugar -> decreaseSugar()
+//      is UserAction.AddMilk -> addMilk(action.milk)
+//      is UserAction.RemoveMilk -> removeMilk()
+//    }
+//
+//  fun CoffeeInstructions.incrementSugar(): CoffeeInstructions = let { (milk, sugar) ->
+//    CoffeeInstructions.fromOptions(milk, Some(sugar.fold({ Sugar(spoons = 1) }, { it.copy(spoons = it.spoons + 1) })))
+//  }
+//
+//  fun CoffeeInstructions.decreaseSugar(): CoffeeInstructions = let { (milk, sugar) ->
+//    CoffeeInstructions.fromOptions(milk, sugar.map { it.copy(spoons = it.spoons - 1) }.filter { it.spoons > 0 })
+//  }
+//
+//  fun CoffeeInstructions.addMilk(milk: Milk): CoffeeInstructions = let { (_, sugar) ->
+//    CoffeeInstructions.fromOptions(Some(milk), sugar)
+//  }
+//
+//  fun CoffeeInstructions.removeMilk(): CoffeeInstructions = let { (_, sugar) ->
+//    CoffeeInstructions.fromOptions(None, sugar)
+//  }
+//
+//}
+
 @higherkind
 sealed class Can<out A, out B>(
   /**
@@ -660,3 +940,8 @@ fun <A, B> CanOf<A, B>.rightOrNull(): B? = when (val can = fix()) {
  * ```
  */
 operator fun <A, B> CanOf<A, B>.component2(): Option<B> = right()
+
+fun test() {
+  Can.Both("Over", 9000).component1()
+  val (left, right) = Can.Both("Over", 9000)
+}
