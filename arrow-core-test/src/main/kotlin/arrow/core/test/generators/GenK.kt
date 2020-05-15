@@ -22,6 +22,8 @@ import arrow.core.NonEmptyList
 import arrow.core.Option
 import arrow.core.SequenceK
 import arrow.core.SetK
+import arrow.core.Option2
+import arrow.core.Option2PartialOf
 import arrow.core.SortedMapK
 import arrow.core.SortedMapKPartialOf
 import arrow.core.Success
@@ -85,6 +87,12 @@ fun <A> Ior.Companion.genK(kgen: Gen<A>) =
   object : GenK<IorPartialOf<A>> {
     override fun <B> genK(gen: Gen<B>): Gen<Kind<IorPartialOf<A>, B>> =
       Gen.ior(kgen, gen) as Gen<Kind<IorPartialOf<A>, B>>
+  }
+
+fun <A> Option2.Companion.genK(kgen: Gen<A>) =
+  object : GenK<Option2PartialOf<A>> {
+    override fun <B> genK(gen: Gen<B>): Gen<Kind<Option2PartialOf<A>, B>> =
+      Gen.option2(kgen, gen) as Gen<Kind<Option2PartialOf<A>, B>>
   }
 
 fun <A> Either.Companion.genK(genA: Gen<A>) =

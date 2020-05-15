@@ -4,8 +4,10 @@ import arrow.Kind2
 import arrow.core.Either
 import arrow.core.ForEither
 import arrow.core.ForIor
+import arrow.core.ForOption2
 import arrow.core.ForValidated
 import arrow.core.Ior
+import arrow.core.Option2
 import arrow.core.Validated
 import io.kotlintest.properties.Gen
 
@@ -26,6 +28,12 @@ fun Ior.Companion.genK2() =
   object : GenK2<ForIor> {
     override fun <A, B> genK(genA: Gen<A>, genB: Gen<B>): Gen<Kind2<ForIor, A, B>> =
       Gen.ior(genA, genB) as Gen<Kind2<ForIor, A, B>>
+  }
+
+fun Option2.Companion.genK2() =
+  object : GenK2<ForOption2> {
+    override fun <A, B> genK(genA: Gen<A>, genB: Gen<B>): Gen<Kind2<ForOption2, A, B>> =
+      Gen.option2(genA, genB) as Gen<Kind2<ForOption2, A, B>>
   }
 
 fun Validated.Companion.genK2() =

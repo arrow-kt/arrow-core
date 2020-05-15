@@ -16,6 +16,7 @@ import arrow.core.Option
 import arrow.core.Right
 import arrow.core.SequenceK
 import arrow.core.SetK
+import arrow.core.Option2
 import arrow.core.SortedMapK
 import arrow.core.Success
 import arrow.core.Try
@@ -29,9 +30,12 @@ import arrow.core.Tuple7
 import arrow.core.Tuple8
 import arrow.core.Tuple9
 import arrow.core.Validated
+import arrow.core.extensions.option.applicative.applicative
 import arrow.core.extensions.sequence.functorFilter.filterMap
 import arrow.core.extensions.sequencek.apply.apply
 import arrow.core.extensions.sequencek.functorFilter.filterMap
+import arrow.core.fix
+import arrow.core.getOrElse
 import arrow.core.k
 import arrow.core.toOption
 import arrow.typeclasses.Applicative
@@ -192,6 +196,25 @@ fun <A, B> Gen.Companion.ior(genA: Gen<A>, genB: Gen<B>): Gen<Ior<A, B>> =
           Ior.fromOptions(it.first, it.second)
         }
       }
+  }
+
+fun <A, B> Gen.Companion.option2(genA: Gen<A>, genB: Gen<B>): Gen<Option2<A, B>> =
+  object : Gen<Option2<A, B>> {
+    override fun constants(): Iterable<Option2<A, B>> =
+      Gen.option(genA).constants().asSequence().zip(Gen.option(genB).constants().asSequence())
+        .map {
+          Option.applicative()
+            .mapN(it.first, it.second) { (a, b) -> Option2(a, b) }.fix()
+            .getOrElse { Option2.None }
+        }.asIterable()
+
+    override fun random(): Sequence<Option2<A, B>> =
+      Gen.option(genA).random().zip(Gen.option(genB).random()).map {
+        Option.applicative()
+          .mapN(it.first, it.second) { (a, b) -> Option2(a, b) }.fix()
+          .getOrElse { Option2.None }
+      }
+
   }
 
 fun <A, B> Gen.Companion.genConst(gen: Gen<A>): Gen<Const<A, B>> =
