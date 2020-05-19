@@ -10,7 +10,7 @@ Note: This section keeps on growing! Keep an eye on it from time to time.
 
 #### Libraries
 
-[arrow/ΛNK](https://github.com/arrow-kt/ank/): Compile time docs verification for Kotlin
+[arrow/ΛNK](https://github.com/arrow-kt/arrow-ank): Compile time docs verification and evaluation for Kotlin and Java.
 
 [xenomachina/kessel](https://github.com/xenomachina/kessel): A simple parser combinator library for Kotlin
 
@@ -37,6 +37,8 @@ Note: This section keeps on growing! Keep an eye on it from time to time.
 [raulh82vlc/FunctionalKotlin](https://github.com/raulh82vlc/FunctionalKotlin): Functional Kotlin with Arrow (project done for Android)
 
 [Karumi/KataLogInLogOutKotlin](https://github.com/Karumi/KataLogInLogOutKotlin/): Android development kata used to practice unit testing with test doubles in Kotlin also using Arrow.
+
+[LordRaydenMK/Android-Fx-Examples](https://github.com/LordRaydenMK/Android-Fx-Examples): Real world Android problems solved with Arrow-Fx
 
 #### Backend
 
