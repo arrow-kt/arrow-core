@@ -16,3 +16,8 @@ interface Semigroup<A> {
 
   fun A.maybeCombine(b: A?): A = Option.fromNullable(b).fold({ this }, { combine(it) })
 }
+
+/**
+ * Convenience method to avoid doing `with(SG)` or `SG.run { }`
+ */
+operator fun <A, R> Semigroup<A>.invoke(f: Semigroup<A>.() -> R): R = f()

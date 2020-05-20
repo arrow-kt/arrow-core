@@ -214,7 +214,6 @@ fun <A, B> Gen.Companion.option2(genA: Gen<A>, genB: Gen<B>): Gen<Option2<A, B>>
           .mapN(it.first, it.second) { (a, b) -> Option2(a, b) }.fix()
           .getOrElse { Option2.None }
       }
-
   }
 
 fun <A, B> Gen.Companion.genConst(gen: Gen<A>): Gen<Const<A, B>> =
