@@ -2,6 +2,7 @@ package arrow.core
 
 import arrow.higherkind
 import arrow.typeclasses.Semigroup
+import arrow.typeclasses.Show
 import arrow.typeclasses.invoke
 
 /**
@@ -26,8 +27,6 @@ import arrow.typeclasses.invoke
  *
  * fun currentLocation(): Option2<Latitude, Longitude> = Option.none()
  * ```
- *
- *
  *
  */
 @higherkind
@@ -72,8 +71,8 @@ fun <A, B, C, D> Option2Of<A, B>.map(f: (A, B) -> Pair<C, D>): Option2<C, D> =
 fun <A, B, C, D> Option2Of<A, B>.bimap(fa: (A) -> C, fb: (B) -> D): Option2<C, D> =
   flatMap { a, b -> Option2(fa(a), fb(b)) }
 
-inline fun <A, B, C> Option2Of<A, B>.fold(ifNeither: () -> C, ifBoth: (A, B) -> C): C =
-  if (this is Option2.Some) ifBoth(a, b) else ifNeither()
+inline fun <A, B, C> Option2Of<A, B>.fold(ifEmpty: () -> C, ifSome: (A, B) -> C): C =
+  if (this is Option2.Some) ifSome(a, b) else ifEmpty()
 
 fun <A, B, D> Option2Of<A, B>.flatMap(SG: Semigroup<A>, f: (B) -> Option2Of<A, D>): Option2<A, D> =
   flatMap { l, r -> f(r).fold({ Option2.None }, { a, b -> Option2(SG { l + a }, b) }) }
@@ -97,3 +96,6 @@ fun <B> Option2Of<Nothing, B>.right(): Option<B> = fold({ Option.empty() }, { _,
 operator fun <A> Option2Of<A, Nothing>.component1(): Option<A> = left()
 
 operator fun <B> Option2Of<Nothing, B>.component2(): Option<B> = right()
+
+fun <A, B> Option2Of<A, B>.show(SA: Show<A>, SB: Show<B>): String =
+  fold({ "Option2.None" }, { a, b -> "Option2.Some(a=${SA { a.show() }}, b=${SB { b.show() }})" })

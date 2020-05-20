@@ -13,6 +13,7 @@ import arrow.core.extensions.option2.eq.eq
 import arrow.core.fix
 import arrow.core.flatMap
 import arrow.core.fold
+import arrow.core.show
 import arrow.core.bimap as option2Bimap
 import arrow.core.map as option2Map
 import arrow.extension
@@ -26,6 +27,7 @@ import arrow.typeclasses.Functor
 import arrow.typeclasses.Monad
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
+import arrow.typeclasses.Show
 import me.eugeniomarletti.kotlin.metadata.shadow.utils.addToStdlib.safeAs
 
 @extension
@@ -118,4 +120,11 @@ interface Option2Monad<L> : Monad<Option2PartialOf<L>>, Option2Applicative<L> {
 
   override fun <A, B> tailRecM(a: A, f: (A) -> Option2Of<L, Either<A, B>>): Option2<L, B> =
     Option2.tailRecM(a, f, SL())
+}
+
+@extension
+interface Option2Show<A, B> : Show<Option2Of<A, B>> {
+  fun SA(): Show<A>
+  fun SB(): Show<B>
+  override fun Option2Of<A, B>.show(): String = show(SA(), SB())
 }

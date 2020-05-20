@@ -20,4 +20,4 @@ interface Semigroup<A> {
 /**
  * Convenience method to avoid doing `with(SG)` or `SG.run { }`
  */
-operator fun <A, R> Semigroup<A>.invoke(f: Semigroup<A>.() -> R): R = f()
+inline operator fun <A, R> Semigroup<A>.invoke(f: Semigroup<A>.() -> R): R = f()

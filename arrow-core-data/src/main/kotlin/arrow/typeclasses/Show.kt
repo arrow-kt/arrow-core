@@ -50,3 +50,8 @@ interface Show<in A> {
     }
   }
 }
+
+/**
+ * Convenience method to avoid doing `with(SA)` or `SA.run { }`
+ */
+inline operator fun <A, R> Show<A>.invoke(f: Show<A>.() -> R): R = f()
