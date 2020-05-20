@@ -1,9 +1,9 @@
 package arrow.core
 
 import arrow.Kind
+import arrow.typeclasses.suspended.BindSyntax
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.loop
-import java.lang.RuntimeException
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -14,13 +14,11 @@ internal const val UNDECIDED = 0
 internal const val SUSPENDED = 1
 
 @Suppress("UNCHECKED_CAST")
-abstract class SuspendMonadContinuation<F, A>(private val parent: Continuation<Kind<F, A>>) : Continuation<Kind<F, A>> {
+abstract class SuspendMonadContinuation<F, A>(private val parent: Continuation<Kind<F, A>>) : Continuation<Kind<F, A>>, BindSyntax<F> {
 
-  class ShortCircuit(val e: Any?) : Throwable(message = null, cause = null) {
+  class ShortCircuit(val e: Any?) : RuntimeException(null, null) {
     override fun fillInStackTrace(): Throwable = this
   }
-
-  abstract operator fun <A> Kind<F, A>.not(): A
 
   abstract fun ShortCircuit.recover(): Kind<F, A>
 
@@ -44,10 +42,8 @@ abstract class SuspendMonadContinuation<F, A>(private val parent: Continuation<K
               if (e is ShortCircuit) e.recover() else null
             }
             result.isSuccess -> result.getOrNull()
-            else -> throw RuntimeException("IMPOSSIBLE")
+            else -> throw ArrowCoreInternalException
           }
-
-          println("r: $r, exception: ${result.exceptionOrNull()}")
 
           when {
             r == null -> {

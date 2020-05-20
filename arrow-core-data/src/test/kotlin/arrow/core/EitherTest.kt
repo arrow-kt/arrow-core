@@ -41,6 +41,7 @@ import arrow.core.test.laws.SemigroupKLaws
 import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
 import arrow.typeclasses.Eq
+import io.kotlintest.fail
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
@@ -249,7 +250,8 @@ class EitherTest : UnitSpec() {
               val res = !Either.Right(i)
               throw exception
               res
-            } shouldBe Either.Right(i)
+            }
+            fail("It should never reach here. Either.fx should've thrown $exception")
           } shouldBe exception
         }
     }
@@ -265,7 +267,8 @@ class EitherTest : UnitSpec() {
               sleep(1)
               throw exception
               res
-            } shouldBe Either.Right(i)
+            }
+            fail("It should never reach here. Either.fx should've thrown $exception")
           } shouldBe exception
         }
     }
