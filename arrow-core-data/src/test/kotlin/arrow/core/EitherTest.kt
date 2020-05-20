@@ -227,11 +227,11 @@ class EitherTest : UnitSpec() {
     "suspended Either.fx can bind suspended values" {
       Gen.either(Gen.string(), Gen.int())
         .random()
-        .take(1001)
+        .take(10)
         .forEach { either ->
           Either.fx<String, Int> {
             val res = !(suspend {
-              sleep(1)
+              sleep(100)
               either
             }).invoke()
 
@@ -259,12 +259,12 @@ class EitherTest : UnitSpec() {
     "suspended Either.fx can bind suspended exceptions" {
       Gen.bind(Gen.int(), Gen.throwable(), ::Pair)
         .random()
-        .take(1001)
+        .take(10)
         .forEach { (i, exception) ->
           shouldThrow<Throwable> {
             Either.fx<String, Int> {
               val res = !Either.Right(i)
-              sleep(1)
+              sleep(100)
               throw exception
               res
             }

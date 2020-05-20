@@ -54,7 +54,7 @@ abstract class SuspendMonadContinuation<F, A>(private val parent: Continuation<K
             else -> Unit // loop again
           }
         }
-        else -> { // If not `UNDECIDED` then wwe need to pass result to `parent`
+        else -> { // If not `UNDECIDED` then we need to pass result to `parent`
           val res: Result<Kind<F, A>> = result.fold({ Result.success(it) }, { t ->
             if (t is ShortCircuit) Result.success(t.recover())
             else Result.failure(t)
