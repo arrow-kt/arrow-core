@@ -31,6 +31,8 @@ Some(1).filterMap { None }
 **Flatten** out a structure by collapsing Options.
 
 ```kotlin:ank
+import arrow.core.extensions.option.functorFilter.flattenOption
+
 Some(1).map { None }.flattenOption()
 ```
 
