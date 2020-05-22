@@ -10,7 +10,7 @@ permalink: /arrow/typeclasses/traverse/
 
 
 The `Traverse` typeclass is allowing to commute types from `F<G<A>>` to `G<F<A>>` over sequential execution of code.
-Traversal over a structure with an effect.
+The main use of this is traversal over a structure with an effect.
 This doc focuses on the methods provided by the typeclass.
 
 ### Main Combinators
