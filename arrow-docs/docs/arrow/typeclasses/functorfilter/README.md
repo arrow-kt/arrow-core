@@ -9,7 +9,7 @@ permalink: /arrow/typeclasses/functorfilter/
 
 
 
-`FunctorFilter` is a typeclass that abstracts over sequential execution of code.
+The `FunctorFilter` typeclass is useful when you need to `map` and filter out elements simultaneously.
 This doc focuses on the methods provided by the typeclass.
 
 ### Main Combinators
