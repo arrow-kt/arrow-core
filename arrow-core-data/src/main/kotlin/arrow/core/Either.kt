@@ -1119,11 +1119,11 @@ fun <A, B> EitherOf<A, B>.handleErrorWith(f: (A) -> EitherOf<A, B>): Either<A, B
 internal class EitherSContinuation<E, A>(
   parent: Continuation<EitherOf<E, A>>
 ) : SuspendMonadContinuation<EitherPartialOf<E>, A>(parent) {
-  override suspend fun <A> Kind<EitherPartialOf<E>, A>.bind(): A =
-    fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
-
   override fun ShortCircuit.recover(): Kind<EitherPartialOf<E>, A> =
     Left(value as E)
+
+  override suspend fun <A> Kind<EitherPartialOf<E>, A>.bind(): A =
+    fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
 }
 
 internal class EitherContinuation<E, A> : MonadContinuation<EitherPartialOf<E>, A>() {
