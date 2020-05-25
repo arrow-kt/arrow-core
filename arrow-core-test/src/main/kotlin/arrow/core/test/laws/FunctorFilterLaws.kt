@@ -1,12 +1,8 @@
 package arrow.core.test.laws
 
 import arrow.Kind
-import arrow.core.None
-import arrow.core.Option
-import arrow.core.Some
+import arrow.core.*
 import arrow.core.extensions.eq
-import arrow.core.identity
-import arrow.core.some
 import arrow.core.test.generators.GenK
 import arrow.core.test.generators.functionAToB
 import arrow.core.test.generators.intSmall
@@ -24,11 +20,12 @@ object FunctorFilterLaws {
     val EQ = EQK.liftEq(Int.eq())
 
     return FunctorLaws.laws(FFF, GENK, EQK) + listOf(
-        Law("Functor Filter: filterMap composition") { FFF.filterMapComposition(GEN, EQ) },
-        Law("Functor Filter: filterMap map consistency") { FFF.filterMapMapConsistency(GEN, EQ) },
-        Law("Functor Filter: flattenOption filterMap consistency") { FFF.flattenOptionConsistentWithfilterMap(GEN, EQ) },
-        Law("Functor Filter: filter filterMap consistency") { FFF.filterConsistentWithfilterMap(GEN, EQ) }
-      )
+      Law("Functor Filter: filterMap composition") { FFF.filterMapComposition(GEN, EQ) },
+      Law("Functor Filter: filterMap map consistency") { FFF.filterMapMapConsistency(GEN, EQ) },
+      Law("Functor Filter: flattenOption filterMap consistency") { FFF.flattenOptionConsistentWithfilterMap(GEN, EQ) },
+      Law("Functor Filter: filter filterMap consistency") { FFF.filterConsistentWithfilterMap(GEN, EQ) },
+      Law("Functor Filter: filterIsInstance filterMap consistency") { FFF.filterIsInstanceConsistentWithfilterMap(GEN, EQ) }
+    )
   }
 
   fun <F> FunctorFilter<F>.filterMapComposition(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
@@ -61,5 +58,12 @@ object FunctorFilterLaws {
       Gen.functionAToB<Int, Boolean>(Gen.bool())
     ) { fa: Kind<F, Int>, f ->
       fa.filter(f).equalUnderTheLaw(fa.filterMap { if (f(it)) Some(it) else None }, EQ)
+    }
+
+  fun <F> FunctorFilter<F>.filterIsInstanceConsistentWithfilterMap(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+    forAll(
+      G
+    ) { fa: Kind<F, Int> ->
+      fa.filterIsInstance(Int::class.java).equalUnderTheLaw(fa.filterMap { Some(it) }, EQ)
     }
 }
