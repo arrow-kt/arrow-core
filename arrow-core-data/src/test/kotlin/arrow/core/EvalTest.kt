@@ -20,7 +20,7 @@ import io.kotlintest.fail
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
-import kotlinx.atomicfu.atomic
+import java.util.concurrent.atomic.AtomicBoolean
 
 class EvalTest : UnitSpec() {
 
@@ -42,13 +42,13 @@ class EvalTest : UnitSpec() {
     )
 
     "fx block runs lazily" {
-      val run = atomic(false)
+      val run = AtomicBoolean(false)
       val p = Eval.fx {
         run.getAndSet(true)
-        run.value
+        run.get()
       }
 
-      run.value shouldBe false
+      run.get() shouldBe false
       p.equalUnderTheLaw(just(true), EQK.liftEq(Boolean.eq())) shouldBe true
     }
 
