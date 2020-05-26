@@ -1,20 +1,10 @@
 package arrow.meta.encoder.jvm
 
+import arrow.meta.ast.*
 import arrow.meta.ast.Annotation
-import arrow.meta.ast.Code
-import arrow.meta.ast.Func
-import arrow.meta.ast.Modifier
-import arrow.meta.ast.PackageName
-import arrow.meta.ast.Parameter
 import arrow.meta.ast.TypeName
-import arrow.meta.ast.UseSiteTarget
 import arrow.meta.encoder.MetaApi
-import com.squareup.kotlinpoet.AnnotationSpec
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterizedTypeName
-import com.squareup.kotlinpoet.TypeVariableName
-import com.squareup.kotlinpoet.WildcardTypeName
+import com.squareup.kotlinpoet.*
 import me.eugeniomarletti.kotlin.metadata.KotlinMetadataUtils
 import javax.lang.model.element.ExecutableElement
 
@@ -75,14 +65,16 @@ interface KotlinPoetEncoder {
       annotations = annotations.map { it.toMeta() }
     )
 
-  private fun com.squareup.kotlinpoet.ClassName.toMeta(): TypeName.Classy =
-    TypeName.Classy(
-      simpleName = simpleName.asKotlin(),
-      fqName = canonicalName.asKotlin(),
+  private fun com.squareup.kotlinpoet.ClassName.toMeta(): TypeName.Classy {
+    val fqNameAsKotlin = canonicalName.asKotlin()
+    return TypeName.Classy(
+      fqName = fqNameAsKotlin,
+      simpleName = fqNameAsKotlin.substringAfterLast("."),
+      pckg = PackageName(fqNameAsKotlin.substringBeforeLast(".")),
       annotations = annotations.map { it.toMeta() },
-      nullable = isNullable,
-      pckg = PackageName(packageName.asKotlin())
+      nullable = isNullable
     )
+  }
 
   private fun com.squareup.kotlinpoet.ParameterizedTypeName.toMeta(): TypeName =
     TypeName.ParameterizedType(

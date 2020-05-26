@@ -1,14 +1,8 @@
 package arrow.meta.encoder.jvm
 
 import arrow.common.utils.ProcessorUtils
+import arrow.meta.ast.*
 import arrow.meta.ast.Annotation
-import arrow.meta.ast.Code
-import arrow.meta.ast.Func
-import arrow.meta.ast.Modifier
-import arrow.meta.ast.PackageName
-import arrow.meta.ast.Parameter
-import arrow.meta.ast.Type
-import arrow.meta.ast.TypeName
 import arrow.meta.decoder.TypeDecoder
 import arrow.meta.encoder.MetaApi
 import arrow.meta.encoder.TypeClassInstance
@@ -473,9 +467,15 @@ interface JvmMetaApi : MetaApi, TypeElementEncoder, ProcessorUtils, TypeDecoder 
   /**
    * @see [MetaApi.asKotlin]
    */
-  override fun TypeName.Classy.asKotlin(): TypeName.Classy =
-    if (simpleName == "Iterable") copy(simpleName = simpleName.asKotlin(), fqName = fqName.asKotlin(), pckg = PackageName("kotlin.collections"))
-    else copy(simpleName = simpleName.asKotlin(), fqName = fqName.asKotlin(), pckg = PackageName(pckg.value.asKotlin()))
+  override fun TypeName.Classy.asKotlin(): TypeName.Classy {
+    val fqNameAsKotlin = fqName.asKotlin()
+    return copy(
+      fqName = fqNameAsKotlin,
+      simpleName = fqNameAsKotlin.substringAfterLast("."),
+      pckg = PackageName(fqNameAsKotlin.substringBeforeLast("."))
+    )
+  }
+
 
   /**
    * @see [MetaApi.asPlatform]
