@@ -137,6 +137,33 @@ typealias Invalid<E> = Validated.Invalid<E>
  * //sampleEnd
  * ```
  *
+ * But, as you can see, the parser runs sequentially: first tries to get the map value and then tries to read it.
+ * This is easily translated to an Fx block:
+ *
+ * ```kotlin:ank
+ * import arrow.core.None
+ * import arrow.core.Option
+ * import arrow.core.Some
+ * import arrow.core.Validated
+ * import arrow.core.valid
+ * import arrow.core.invalid
+ * import arrow.core.fx
+ *
+ * //sampleStart
+ * data class Config(val map: Map<String, String>) {
+ *   suspend fun <A> parse(read: Read<A>, key: String) = Validated.fx<ConfigError, A> {
+ *     val value = Validated.fromNullable(map[key]) {
+ *       ConfigError.MissingConfig(key)
+ *     }.bind()
+ *     val readVal = Validated.fromOption(read.read(value)) {
+ *       ConfigError.ParseConfig(key)
+ *     }.bind()
+ *     readVal
+ *   }
+ * }
+ * //sampleEnd
+ * ```
+ *
  * Everything is in place to write the parallel validator. Recall that we can only do parallel
  * validation if each piece is independent. How do we ensure the data is independent? By
  * asking for all of it up front. Let's start with two pieces of data.
@@ -165,7 +192,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * that turns any `Validated<E, A>` value to a `Validated<NonEmptyList<E>, A>`. Additionally, the
  * type alias `ValidatedNel<E, A>` is provided.
  *
- * Time to parse.
+ * Time to validate:
  *
  * ```kotlin:ank
  * import arrow.core.NonEmptyList
@@ -194,6 +221,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Validated
  * import arrow.core.valid
  * import arrow.core.invalid
+ * import arrow.core.fx
  * import arrow.core.NonEmptyList
  *
  * data class ConnectionParams(val url: String, val port: Int)
@@ -222,17 +250,15 @@ typealias Invalid<E> = Validated.Invalid<E>
  * }
  *
  * data class Config(val map: Map<String, String>) {
- *  fun <A> parse(read: Read<A>, key: String): Validated<ConfigError, A> {
- *   val v = Option.fromNullable(map[key])
- *   return when (v) {
- *    is Some ->
- *     when (val s = read.read(v.t)) {
- *      is Some -> s.t.valid()
- *      is None -> ConfigError.ParseConfig(key).invalid()
- *     }
- *    is None -> Validated.Invalid(ConfigError.MissingConfig(key))
+ *   suspend fun <A> parse(read: Read<A>, key: String) = Validated.fx<ConfigError, A> {
+ *     val value = Validated.fromNullable(map[key]) {
+ *       ConfigError.MissingConfig(key)
+ *     }.bind()
+ *     val readVal = Validated.fromOption(read.read(value)) {
+ *       ConfigError.ParseConfig(key)
+ *     }.bind()
+ *     readVal
  *   }
- *  }
  * }
  *
  * fun <E, A, B, C> parallelValidate
@@ -245,6 +271,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  *   else -> throw IllegalStateException("Not possible value")
  *  }
  *
+ * suspend fun main() {
  * //sampleStart
  *  val config = Config(mapOf("url" to "127.0.0.1", "port" to "1337"))
  *
@@ -253,7 +280,6 @@ typealias Invalid<E> = Validated.Invalid<E>
  *  config.parse(Read.intRead, "port")
  *  ) { url, port -> ConnectionParams(url, port) }
  * //sampleEnd
- * fun main() {
  *  println("valid = $valid")
  * }
  * ```
@@ -269,6 +295,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.valid
  * import arrow.core.invalid
  * import arrow.core.NonEmptyList
+ * import arrow.core.fx
  *
  * data class ConnectionParams(val url: String, val port: Int)
  *
@@ -296,17 +323,15 @@ typealias Invalid<E> = Validated.Invalid<E>
  * }
  *
  * data class Config(val map: Map<String, String>) {
- *  fun <A> parse(read: Read<A>, key: String): Validated<ConfigError, A> {
- *   val v = Option.fromNullable(map[key])
- *   return when (v) {
- *    is Some ->
- *     when (val s = read.read(v.t)) {
- *      is Some -> s.t.valid()
- *      is None -> ConfigError.ParseConfig(key).invalid()
- *     }
- *    is None -> Validated.Invalid(ConfigError.MissingConfig(key))
+ *   suspend fun <A> parse(read: Read<A>, key: String) = Validated.fx<ConfigError, A> {
+ *     val value = Validated.fromNullable(map[key]) {
+ *       ConfigError.MissingConfig(key)
+ *     }.bind()
+ *     val readVal = Validated.fromOption(read.read(value)) {
+ *       ConfigError.ParseConfig(key)
+ *     }.bind()
+ *     readVal
  *   }
- *  }
  * }
  *
  * fun <E, A, B, C> parallelValidate
@@ -319,6 +344,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  *   else -> throw IllegalStateException("Not possible value")
  *  }
  *
+ * suspend fun main() {
  * //sampleStart
  * val config = Config(mapOf("wrong field" to "127.0.0.1", "port" to "not a number"))
  *
@@ -326,8 +352,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  *  config.parse(Read.stringRead, "url"),
  *  config.parse(Read.intRead, "port")
  *  ) { url, port -> ConnectionParams(url, port) }
- *  //sampleEnd
- * fun main() {
+ * //sampleEnd
  *  println("valid = $valid")
  * }
  * ```
@@ -349,6 +374,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Validated
  * import arrow.core.valid
  * import arrow.core.invalid
+ * import arrow.core.fx
  *
  * abstract class Read<A> {
  *  abstract fun read(s: String): Option<A>
@@ -369,18 +395,17 @@ typealias Invalid<E> = Validated.Invalid<E>
  * }
  *
  * data class Config(val map: Map<String, String>) {
- *  fun <A> parse(read: Read<A>, key: String): Validated<ConfigError, A> {
- *   val v = Option.fromNullable(map[key])
- *   return when (v) {
- *    is Some ->
- *     when (val s = read.read(v.t)) {
- *      is Some -> s.t.valid()
- *      is None -> ConfigError.ParseConfig(key).invalid()
- *     }
- *    is None -> Validated.Invalid(ConfigError.MissingConfig(key))
+ *   suspend fun <A> parse(read: Read<A>, key: String) = Validated.fx<ConfigError, A> {
+ *     val value = Validated.fromNullable(map[key]) {
+ *       ConfigError.MissingConfig(key)
+ *     }.bind()
+ *     val readVal = Validated.fromOption(read.read(value)) {
+ *       ConfigError.ParseConfig(key)
+ *     }.bind()
+ *     readVal
  *   }
- *  }
  * }
+ *
  * sealed class ConfigError {
  *  data class MissingConfig(val field: String) : ConfigError()
  *  data class ParseConfig(val field: String) : ConfigError()
@@ -394,11 +419,11 @@ typealias Invalid<E> = Validated.Invalid<E>
  *
  * val config = Config(mapOf("house_number" to "-42"))
  *
- * val houseNumber = config.parse(Read.intRead, "house_number").withEither { either ->
- *  either.flatMap { positive("house_number", it) }
- * }
+ * suspend fun main() {
+ *   val houseNumber = config.parse(Read.intRead, "house_number").withEither { either ->
+ *    either.flatMap { positive("house_number", it) }
+ *   }
  * //sampleEnd
- * fun main() {
  *  println(houseNumber)
  * }
  *
