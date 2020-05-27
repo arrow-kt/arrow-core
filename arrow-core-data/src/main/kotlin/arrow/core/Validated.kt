@@ -5,6 +5,10 @@ import arrow.higherkind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
+import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
+import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
 typealias ValidatedNel<E, A> = Validated<Nel<E>, A>
 typealias Valid<A> = Validated.Valid<A>
@@ -693,8 +697,9 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
   fun <EE, B> withEither(f: (Either<E, A>) -> Either<EE, B>): Validated<EE, B> = fromEither(f(toEither()))
 
   /**
-   * Validated is a [functor.Bifunctor], this method applies one of the
-   * given functions.
+   * From [arrow.typeclasses.Bifunctor], maps both types of this Validated.
+   *
+   * Apply a function to an Invalid or Valid value, returning a new Invalid or Valid value respectively.
    */
   fun <EE, AA> bimap(fe: (E) -> EE, fa: (A) -> AA): Validated<EE, AA> = fold({ Invalid(fe(it)) }, { Valid(fa(it)) })
 
@@ -842,3 +847,30 @@ fun <A> A.validNel(): ValidatedNel<Nothing, A> =
 
 fun <E> E.invalidNel(): ValidatedNel<E, Nothing> =
   Validated.invalidNel(this)
+
+suspend fun <E, A> Validated.Companion.fx(c: suspend ValidatedContinuation<E, A>.() -> A): Validated<E, A> =
+  suspendCoroutineUninterceptedOrReturn sc@{ cont ->
+    val continuation = ValidatedContinuation(cont as Continuation<ValidatedOf<E, A>>)
+    val wrapReturn: suspend ValidatedContinuation<E, A>.() -> Validated<E, A> = { c().valid() }
+
+    // Returns Validated `Validated<A, B>` or `COROUTINE_SUSPENDED`
+    val x: Any? = try {
+      wrapReturn.startCoroutineUninterceptedOrReturn(continuation, continuation)
+    } catch (e: Throwable) {
+      if (e is SuspendMonadContinuation.ShortCircuit) Invalid(e.e as E)
+      else throw e
+    }
+
+    return@sc if (x == COROUTINE_SUSPENDED) continuation.getResult()
+    else x as Validated<E, A>
+  }
+
+class ValidatedContinuation<E, A>(
+  parent: Continuation<ValidatedOf<E, A>>
+) : SuspendMonadContinuation<ValidatedPartialOf<E>, A>(parent) {
+  override suspend fun <A> Kind<ValidatedPartialOf<E>, A>.bind(): A =
+    fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
+
+  override fun ShortCircuit.recover(): Kind<ValidatedPartialOf<E>, A> =
+    Invalid(e as E)
+}
