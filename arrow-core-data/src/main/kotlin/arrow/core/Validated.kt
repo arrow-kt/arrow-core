@@ -194,6 +194,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Validated
  * import arrow.core.valid
  * import arrow.core.invalid
+ * import arrow.core.NonEmptyList
  *
  * data class ConnectionParams(val url: String, val port: Int)
  *
@@ -234,15 +235,15 @@ typealias Invalid<E> = Validated.Invalid<E>
  *  }
  * }
  *
- * fun <E, A, B, C> parallelValidate(v1: Validated<E, A>, v2: Validated<E, B>, f: (A, B) -> C): Validated<E, C> {
- *  return when {
+ * fun <E, A, B, C> parallelValidate
+ *   (v1: Validated<E, A>, v2: Validated<E, B>, f: (A, B) -> C): Validated<NonEmptyList<E>, C> =
+ *  when {
  *   v1 is Validated.Valid && v2 is Validated.Valid -> Validated.Valid(f(v1.a, v2.a))
- *   v1 is Validated.Valid && v2 is Validated.Invalid -> v2
- *   v1 is Validated.Invalid && v2 is Validated.Valid -> v1
- *   v1 is Validated.Invalid && v2 is Validated.Invalid -> TODO()
- *   else -> TODO()
+ *   v1 is Validated.Valid && v2 is Validated.Invalid -> v2.toValidatedNel()
+ *   v1 is Validated.Invalid && v2 is Validated.Valid -> v1.toValidatedNel()
+ *   v1 is Validated.Invalid && v2 is Validated.Invalid -> Validated.Invalid(NonEmptyList(v1.e, listOf(v2.e)))
+ *   else -> throw IllegalStateException("Not possible value")
  *  }
- * }
  *
  * //sampleStart
  *  val config = Config(mapOf("url" to "127.0.0.1", "port" to "1337"))
@@ -267,6 +268,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Validated
  * import arrow.core.valid
  * import arrow.core.invalid
+ * import arrow.core.NonEmptyList
  *
  * data class ConnectionParams(val url: String, val port: Int)
  *
@@ -307,18 +309,18 @@ typealias Invalid<E> = Validated.Invalid<E>
  *  }
  * }
  *
- * fun <E, A, B, C> parallelValidate(v1: Validated<E, A>, v2: Validated<E, B>, f: (A, B) -> C): Validated<E, C> {
- *  return when {
+ * fun <E, A, B, C> parallelValidate
+ *   (v1: Validated<E, A>, v2: Validated<E, B>, f: (A, B) -> C): Validated<NonEmptyList<E>, C> =
+ *  when {
  *   v1 is Validated.Valid && v2 is Validated.Valid -> Validated.Valid(f(v1.a, v2.a))
- *   v1 is Validated.Valid && v2 is Validated.Invalid -> v2
- *   v1 is Validated.Invalid && v2 is Validated.Valid -> v1
- *   v1 is Validated.Invalid && v2 is Validated.Invalid -> TODO()
- *   else -> TODO()
+ *   v1 is Validated.Valid && v2 is Validated.Invalid -> v2.toValidatedNel()
+ *   v1 is Validated.Invalid && v2 is Validated.Valid -> v1.toValidatedNel()
+ *   v1 is Validated.Invalid && v2 is Validated.Invalid -> Validated.Invalid(NonEmptyList(v1.e, listOf(v2.e)))
+ *   else -> throw IllegalStateException("Not possible value")
  *  }
- * }
  *
  * //sampleStart
- * val config = Config(mapOf("url" to "127.0.0.1", "port" to "not a number"))
+ * val config = Config(mapOf("wrong field" to "127.0.0.1", "port" to "not a number"))
  *
  * val valid = parallelValidate(
  *  config.parse(Read.stringRead, "url"),
