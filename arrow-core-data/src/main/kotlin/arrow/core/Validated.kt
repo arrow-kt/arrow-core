@@ -624,19 +624,26 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
     fun <A> fromTry(t: Try<A>): Validated<Throwable, A> = t.fold({ Invalid(it) }, { Valid(it) })
 
     /**
-     * Converts an `Either<A, B>` to an `Validated<A, B>`.
+     * Converts an `Either<E, A>` to a `Validated<E, A>`.
      */
     fun <E, A> fromEither(e: Either<E, A>): Validated<E, A> = e.fold({ Invalid(it) }, { Valid(it) })
 
     /**
-     * Converts an `Option<B>` to an `Validated<A, B>`, where the provided `ifNone` values is returned on
-     * the invalid of the `Validated` when the specified `Option` is `None`.
+     * Converts an `Option<A>` to a `Validated<E, A>`, where the provided `ifNone` output value is returned as invalid
+     * when the specified `Option` is `None`.
      */
     fun <E, A> fromOption(o: Option<A>, ifNone: () -> E): Validated<E, A> =
       o.fold(
         { Invalid(ifNone()) },
         { Valid(it) }
       )
+
+    /**
+     * Converts a nullable `A?` to a `Validated<E, A>`, where the provided `ifNull` output value is returned as invalid
+     * when the specified value is null.
+     */
+    fun <E, A> fromNullable(value: A?, ifNull: () -> E): Validated<E, A> =
+      value?.let(::Valid) ?: Invalid(ifNull())
   }
 
   fun show(SE: Show<E>, SA: Show<A>): String = fold({
