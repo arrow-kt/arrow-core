@@ -188,7 +188,7 @@ class ValidatedTest : UnitSpec() {
       Validated.fromOption<Int, Int>(Some(10)) { fail("should not be called") } shouldBe Valid(10)
       Validated.fromOption<Int, Int>(None) { 5 } shouldBe Invalid(5)
     }
-    
+
     "fromNullable should return Valid if is not-null or Invalid otherwise" {
       Validated.fromNullable<Int, Int>(10) { fail("should not be called") } shouldBe Valid(10)
       Validated.fromNullable<Int, Int>(null) { 5 } shouldBe Invalid(5)
