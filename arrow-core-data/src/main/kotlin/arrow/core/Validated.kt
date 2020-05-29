@@ -146,7 +146,6 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Validated
  * import arrow.core.valid
  * import arrow.core.invalid
- * import arrow.core.fx
  *
  * //sampleStart
  * data class Config(val map: Map<String, String>) {
@@ -238,7 +237,6 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Validated
  * import arrow.core.valid
  * import arrow.core.invalid
- * import arrow.core.fx
  * import arrow.core.NonEmptyList
  *
  * data class ConnectionParams(val url: String, val port: Int)
@@ -312,7 +310,6 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.valid
  * import arrow.core.invalid
  * import arrow.core.NonEmptyList
- * import arrow.core.fx
  *
  * data class ConnectionParams(val url: String, val port: Int)
  *
@@ -391,7 +388,6 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Validated
  * import arrow.core.valid
  * import arrow.core.invalid
- * import arrow.core.fx
  *
  * abstract class Read<A> {
  *  abstract fun read(s: String): Option<A>
