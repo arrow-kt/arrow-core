@@ -33,7 +33,7 @@ fun String.asKotlin(): String =
     .replace("java.lang.Long", "kotlin.Long")
     .replace("java.lang.Throwable", "kotlin.Throwable")
     .replace("kotlin.Integer", "kotlin.Int")
-    .replace("Integer", "Int")
+    .replace("java.lang.Integer", "kotlin.Int")
     .replace("java.lang.String", "kotlin.String")
 
 internal fun String.asClassy(): TypeName.Classy {
