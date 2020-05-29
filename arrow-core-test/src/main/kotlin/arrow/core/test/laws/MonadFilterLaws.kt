@@ -29,7 +29,7 @@ object MonadFilterLaws {
       Law("MonadFilter Laws: Right Empty") { MF.monadFilterRightEmpty(GEN, EQ) },
       Law("MonadFilter Laws: Consistency") { MF.monadFilterConsistency(GEN, EQ) },
       Law("MonadFilter Laws: Comprehension Guards") { MF.monadFilterEmptyComprehensions(EQ) },
-      Law("MonadFilter Laws: Comprehension bindWithFilter Guards") { MF.monadFilterBindWithFilterComprehensions(GEN, EQ) })
+      Law("MonadFilter Laws: Comprehension bindWithFilter Guards") { MF.monadFilterBindWithFilterComprehensions(EQ) })
   }
 
   fun <F> laws(
@@ -76,11 +76,11 @@ object MonadFilterLaws {
       }.equalUnderTheLaw(if (!guard) empty() else just(n), EQ)
     }
 
-  fun <F, A> MonadFilter<F>.monadFilterBindWithFilterComprehensions(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, A>>): Unit =
-    forAll(Gen.bool(), G) { guard: Boolean, fa: Kind<F, A> ->
+  fun <F> MonadFilter<F>.monadFilterBindWithFilterComprehensions(EQ: Eq<Kind<F, Int>>): Unit =
+    forAll(Gen.bool(), Gen.int()) { guard: Boolean, n: Int ->
       fx.monadFilter {
-        val x = fa.bindWithFilter { guard }
+        val x = just(n).bindWithFilter { _ -> guard }
         x
-      }.equalUnderTheLaw(if (!guard) empty() else fa, EQ)
+      }.equalUnderTheLaw(if (!guard) empty() else just(n), EQ)
     }
 }
