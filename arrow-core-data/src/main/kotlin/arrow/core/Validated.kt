@@ -216,6 +216,10 @@ typealias Invalid<E> = Validated.Invalid<E>
  * is then equivalent to this:
  *
  * ```kotlin:ank:silent
+ * // added manually due to deps
+ * fun <E> Validated.Companion.nelApplicative(): ValidatedApplicative<NonEmptyList<E>> =
+ *     Validated.applicative(NonEmptyList.semigroup())
+ *
  * //sampleStart
  *  Validated.nelApplicative()
  *      .tupledN(v1.toValidatedNel(), v2.toValidatedNel())
