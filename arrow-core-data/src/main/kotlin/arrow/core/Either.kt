@@ -650,6 +650,7 @@ import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
  * import arrow.core.extensions.fx
  * import arrow.core.Either
  *
+ * suspend fun main() {
  * val value =
  * //sampleStart
  *  Either.fx<Int, Int> {
@@ -659,7 +660,6 @@ import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
  *   a + b + c
  *  }
  * //sampleEnd
- * fun main() {
  *  println(value)
  * }
  * ```
