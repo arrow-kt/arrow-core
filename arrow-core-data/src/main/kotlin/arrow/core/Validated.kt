@@ -209,9 +209,27 @@ typealias Invalid<E> = Validated.Invalid<E>
  * //sampleEnd
  * ```
  *
- * Kotlin says that our match is not exhaustive and we have to add `else`.
+ * ### Improving the validation
  *
- * When no errors are present in the configuration, we get a `ConnectionParams` wrapped in a `Valid` instance.
+ * Kotlin says that our match is not exhaustive and we have to add `else`. To solve this we need to nest our when,
+ * but that would complicate the code. Alternatively, we could use Applicative through the `nelApplicative` function in arrow-core
+ * to unlock `tupledN`. This function combines Validated by accumulating errors in a tuple, that we can then map, the above function
+ * is then equivalent to this:
+ *
+ * ```kotlin:ank:silent
+ * //sampleStart
+ *  Validated.nelApplicative()
+ *      .tupledN(v1.toValidatedNel(), v2.toValidatedNel())
+ *      .map { (a, b) -> /* combine errors */ }.fix()
+ * //sampleEnd
+ * ```
+ *
+ * Note that the `tupledN` function has multiple implementation with more arities, so we could easily add more parameters without worrying about
+ * the function blowing up in complexity.
+ *
+ * ---
+ *
+ * Coming back to our example, when no errors are present in the configuration, we get a `ConnectionParams` wrapped in a `Valid` instance.
  *
  * ```kotlin:ank:playground
  * import arrow.core.None
