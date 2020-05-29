@@ -13,6 +13,7 @@ import arrow.core.extensions.listk.functor.functor
 import arrow.core.extensions.listk.hash.hash
 import arrow.core.extensions.listk.monad.monad
 import arrow.core.extensions.listk.monadCombine.monadCombine
+import arrow.core.extensions.listk.monadFilter.monadFilter
 import arrow.core.extensions.listk.monadLogic.monadLogic
 import arrow.core.extensions.listk.monoid.monoid
 import arrow.core.extensions.listk.monoidK.monoidK
@@ -185,6 +186,14 @@ class ListKTest : UnitSpec() {
 
         result.map { it.a }.equalUnderTheLaw(a, ListK.eq(Int.eq()))
       }
+    }
+
+    "bindWithFilter bug #132" {
+      val list = listOf(1, 2, 3, 4).k()
+
+      ListK.monadFilter().fx.monadFilter {
+        list.bindWithFilter { it % 2 == 0 }
+      }.let(::println)
     }
   }
 
