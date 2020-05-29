@@ -5,9 +5,8 @@ import arrow.higherkind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
+import arrow.typeclasses.suspended.BindSyntax
 import kotlin.coroutines.Continuation
-import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
-import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
 typealias ValidatedNel<E, A> = Validated<Nel<E>, A>
@@ -669,6 +668,21 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
      */
     fun <E, A> fromNullable(value: A?, ifNull: () -> E): Validated<E, A> =
       value?.let(::Valid) ?: Invalid(ifNull())
+
+    fun <E, A> fx2(c: suspend EagerBind<ValidatedPartialOf<E>>.() -> A): Validated<E, A> {
+      val continuation: ValidatedContinuation<E, A> = ValidatedContinuation()
+      return continuation.startCoroutineUninterceptedAndReturn {
+        Valid(c())
+      } as Validated<E, A>
+    }
+
+    suspend fun <E, A> fx(c: suspend BindSyntax<ValidatedPartialOf<E>>.() -> A): Validated<E, A> =
+      suspendCoroutineUninterceptedOrReturn sc@{ cont ->
+        val continuation = ValidatedSContinuation(cont as Continuation<ValidatedOf<E, A>>)
+        continuation.startCoroutineUninterceptedOrReturn {
+          Valid(c())
+        }
+      }
   }
 
   fun show(SE: Show<E>, SA: Show<A>): String = fold({
@@ -882,29 +896,20 @@ fun <A> A.validNel(): ValidatedNel<Nothing, A> =
 fun <E> E.invalidNel(): ValidatedNel<E, Nothing> =
   Validated.invalidNel(this)
 
-suspend fun <E, A> Validated.Companion.fx(c: suspend ValidatedContinuation<E, A>.() -> A): Validated<E, A> =
-  suspendCoroutineUninterceptedOrReturn sc@{ cont ->
-    val continuation = ValidatedContinuation(cont as Continuation<ValidatedOf<E, A>>)
-    val wrapReturn: suspend ValidatedContinuation<E, A>.() -> Validated<E, A> = { c().valid() }
-
-    // Returns Validated `Validated<A, B>` or `COROUTINE_SUSPENDED`
-    val x: Any? = try {
-      wrapReturn.startCoroutineUninterceptedOrReturn(continuation, continuation)
-    } catch (e: Throwable) {
-      if (e is SuspendMonadContinuation.ShortCircuit) Invalid(e.e as E)
-      else throw e
-    }
-
-    return@sc if (x == COROUTINE_SUSPENDED) continuation.getResult()
-    else x as Validated<E, A>
-  }
-
-class ValidatedContinuation<E, A>(
+internal class ValidatedSContinuation<E, A>(
   parent: Continuation<ValidatedOf<E, A>>
 ) : SuspendMonadContinuation<ValidatedPartialOf<E>, A>(parent) {
   override suspend fun <A> Kind<ValidatedPartialOf<E>, A>.bind(): A =
     fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
 
   override fun ShortCircuit.recover(): Kind<ValidatedPartialOf<E>, A> =
-    Invalid(e as E)
+    Invalid(value as E)
+}
+
+internal class ValidatedContinuation<E, A> : MonadContinuation<ValidatedPartialOf<E>, A>() {
+  override suspend fun <A> Kind<ValidatedPartialOf<E>, A>.bind(): A =
+    fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
+
+  override fun ShortCircuit.recover(): Kind<ValidatedPartialOf<E>, A> =
+    Invalid(value as E)
 }
