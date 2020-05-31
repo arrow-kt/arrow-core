@@ -1,7 +1,5 @@
 package arrow.typeclasses
 
-import java.math.BigInteger
-
 class ForMonoid private constructor() { companion object }
 typealias MonoidOf<A> = arrow.Kind<ForMonoid, A>
 fun <A> MonoidOf<A>.fix(): Monoid<A> = this as Monoid<A>
@@ -30,28 +28,27 @@ interface Monoid<A> : Semigroup<A>, MonoidOf<A> {
    * Combine the given monoid [m], [k] times with itself (i.e. m^k).
    * This uses a fast implementation (Exponentiation by Squaring) that calls [combine] `log(k)` times rather than `k` times.
    */
-  fun combineTimes(m: A, k: BigInteger): A {
-    if (k <= BigInteger.ZERO) {
+  fun combineTimes(m: A, k: Long): A {
+    if (k <= 0) {
       return empty()
     }
-    if (k == BigInteger.ONE) {
+    if (k == 1L) {
       return m
     }
     var y = empty()
     var x  = m
     var n = k
-    val two = BigInteger.valueOf(2)
-    while (n > BigInteger.ONE) {
-      if (n.testBit(0)) {
+    while (n > 1) {
+      if (n % 2L == 1L) {
         // n is odd
         y = y.combine(x)
         x = x.combine(x)
-        n -= BigInteger.ONE
+        n -= 1
       } else {
         // n is even
         x = x.combine(x)
       }
-      n /= two
+      n /= 2
     }
     return x.combine(y)
   }
