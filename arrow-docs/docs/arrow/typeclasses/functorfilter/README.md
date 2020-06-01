@@ -49,6 +49,8 @@ Some(1).filter { false }
 Filter out instances of a specific type.
 
 ```kotlin:ank
+import arrow.core.extensions.option.functorFilter.filterIsInstance
+
 Some(1).filterIsInstance(Int::class.java)
 ```
 
