@@ -216,17 +216,22 @@ typealias Invalid<E> = Validated.Invalid<E>
  * is then equivalent to this:
  *
  * ```kotlin:ank:silent
+ * import arrow.core.NonEmptyList
  * import arrow.core.Validated
+ * import arrow.core.ValidatedPartialOf
+ * import arrow.core.extensions.nonemptylist.semigroup.semigroup
  * import arrow.core.extensions.validated.applicative.applicative
+ * import arrow.core.fix
  * import arrow.typeclasses.Applicative
  * // added manually due to deps
- * fun <E> Validated.Companion.nelApplicative(): Applicative<ValidatedPartialOf<NonEmptyList<E>> =
+ * fun <E> Validated.Companion.nelApplicative(): Applicative<ValidatedPartialOf<NonEmptyList<E>>> =
  *     Validated.applicative(NonEmptyList.semigroup())
- *
+ * val v1: Validated<String, Int> = Validated.Valid(1)
+ * val v2: Validated<String, Int> = Validated.Valid(2)
  * //sampleStart
- *  Validated.nelApplicative()
- *      .tupledN(v1.toValidatedNel(), v2.toValidatedNel())
- *      .map { (a, b) -> /* combine errors */ }.fix()
+ * val parallelValidated = Validated.nelApplicative<String>()
+ *     .tupledN(v1.toValidatedNel(), v2.toValidatedNel()).fix()
+ *     .map { (a, b) -> /* combine the result */ }
  * //sampleEnd
  * ```
  *
