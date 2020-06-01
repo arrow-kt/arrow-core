@@ -235,7 +235,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * //sampleEnd
  * ```
  *
- * Note that the `tupledN` function has multiple implementation with more arities, so we could easily add more parameters without worrying about
+ * Note that there are mutiple `tupledN` functions with more arities, so we could easily add more parameters without worrying about
  * the function blowing up in complexity.
  *
  * ---
