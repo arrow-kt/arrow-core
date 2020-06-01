@@ -58,7 +58,7 @@ object TraverseFilterLaws {
     forAll(
       genInt
     ) { fa: Kind<F, Int> ->
-      fa.traverseFilterIsInstance(GA, Int::class.java).equalUnderTheLaw(fa.traverseFilter(GA) { a -> GA.just(Some(a)) }, EQ)
+      fa.traverseFilterIsInstance(GA, Integer::class.java).map { it.map { it as Int } }.equalUnderTheLaw(fa.traverseFilter(GA) { a -> GA.just(Some(a)) }, EQ)
     }
   }
 }

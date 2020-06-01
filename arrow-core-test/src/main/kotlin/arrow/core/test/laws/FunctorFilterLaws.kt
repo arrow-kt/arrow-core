@@ -1,8 +1,12 @@
 package arrow.core.test.laws
 
 import arrow.Kind
-import arrow.core.*
+import arrow.core.None
+import arrow.core.Option
+import arrow.core.Some
 import arrow.core.extensions.eq
+import arrow.core.identity
+import arrow.core.some
 import arrow.core.test.generators.GenK
 import arrow.core.test.generators.functionAToB
 import arrow.core.test.generators.intSmall
@@ -64,6 +68,6 @@ object FunctorFilterLaws {
     forAll(
       G
     ) { fa: Kind<F, Int> ->
-      fa.filterIsInstance(Int::class.java).equalUnderTheLaw(fa.filterMap { Some(it) }, EQ)
+      fa.filterIsInstance(Integer::class.java).map { it as Int }.equalUnderTheLaw(fa.filterMap { Some(it) }, EQ)
     }
 }
