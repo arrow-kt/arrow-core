@@ -210,35 +210,30 @@ typealias Invalid<E> = Validated.Invalid<E>
  *
  * ### Improving the validation
  *
- * Kotlin says that our match is not exhaustive and we have to add `else`. To solve this we need to nest our when,
- * but that would complicate the code. Alternatively, we could use Applicative through the `applicativeNel` function in arrow-core
- * to unlock `tupledN`. This function combines Validated by accumulating errors in a tuple, that we can then map, the above function
- * is then equivalent to this:
+ * Kotlin says that our match is not exhaustive and we have to add `else`. To solve this we would need to nest our when,
+ * but that would complicate the code. To achieve this Arrow provides an [arrow.typeclasses.Applicative] through the
+ * `applicativeNel` function in arrow-core to unlock `tupledN`.
+ * This function combines [Validated]s by accumulating errors in a tuple, which we can then map.
+ * The above function can be rewritten as follows:
  *
  * ```kotlin:ank:silent
- * import arrow.core.NonEmptyList
  * import arrow.core.Validated
- * import arrow.core.ValidatedPartialOf
- * import arrow.core.extensions.nonemptylist.semigroup.semigroup
- * import arrow.core.extensions.validated.applicative.applicative
  * import arrow.core.fix
- * import arrow.typeclasses.Applicative
+ * import arrow.reflect.applicativeNel
  *
  * // added manually due to deps
- * fun <E> Validated.Companion.applicativeNel(): Applicative<ValidatedPartialOf<NonEmptyList<E>>> =
- *     Validated.applicative(NonEmptyList.semigroup())
  *
- * val v1: Validated<String, Int> = Validated.Valid(1)
- * val v2: Validated<String, Int> = Validated.Valid(2)
+ * val v1: Validated<ConfigError, Int> = Validated.Valid(1)
+ * val v2: Validated<ConfigError, Int> = Validated.Valid(2)
  *
  * //sampleStart
- * val parallelValidated = Validated.applicativeNel<String>()
+ * val parallelValidate = Validated.applicativeNel<ConfigError>()
  *     .tupledN(v1.toValidatedNel(), v2.toValidatedNel()).fix()
  *     .map { (a, b) -> /* combine the result */ }
  * //sampleEnd
  * ```
  *
- * Note that there are mutiple `tupledN` functions with more arities, so we could easily add more parameters without worrying about
+ * Note that there are multiple `tupledN` functions with more arities, so we could easily add more parameters without worrying about
  * the function blowing up in complexity.
  *
  * ---
@@ -253,6 +248,8 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.valid
  * import arrow.core.invalid
  * import arrow.core.NonEmptyList
+ * import arrow.core.fix
+ * import arrow.reflect.applicativeNel
  *
  * data class ConnectionParams(val url: String, val port: Int)
  *
@@ -288,27 +285,19 @@ typealias Invalid<E> = Validated.Invalid<E>
  *       ConfigError.ParseConfig(key)
  *     }.bind()
  *     readVal
- *   }
+ *   }.toValidatedNel()
  * }
  *
- * fun <E, A, B, C> parallelValidate
- *   (v1: Validated<E, A>, v2: Validated<E, B>, f: (A, B) -> C): Validated<NonEmptyList<E>, C> =
- *  when {
- *   v1 is Validated.Valid && v2 is Validated.Valid -> Validated.Valid(f(v1.a, v2.a))
- *   v1 is Validated.Valid && v2 is Validated.Invalid -> v2.toValidatedNel()
- *   v1 is Validated.Invalid && v2 is Validated.Valid -> v1.toValidatedNel()
- *   v1 is Validated.Invalid && v2 is Validated.Invalid -> Validated.Invalid(NonEmptyList(v1.e, listOf(v2.e)))
- *   else -> throw IllegalStateException("Not possible value")
- *  }
+ * val parallelValidate = Validated.applicativeNel<ConfigError>()
  *
  * suspend fun main() {
  * //sampleStart
  *  val config = Config(mapOf("url" to "127.0.0.1", "port" to "1337"))
  *
- *  val valid = parallelValidate(
+ *  val valid = parallelValidate.tupledN(
  *  config.parse(Read.stringRead, "url"),
  *  config.parse(Read.intRead, "port")
- *  ) { url, port -> ConnectionParams(url, port) }
+ *  ).fix().map { (url, port) -> ConnectionParams(url, port) }
  * //sampleEnd
  *  println("valid = $valid")
  * }
@@ -325,6 +314,8 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.valid
  * import arrow.core.invalid
  * import arrow.core.NonEmptyList
+ * import arrow.core.fix
+ * import arrow.reflect.applicativeNel
  *
  * data class ConnectionParams(val url: String, val port: Int)
  *
@@ -360,27 +351,19 @@ typealias Invalid<E> = Validated.Invalid<E>
  *       ConfigError.ParseConfig(key)
  *     }.bind()
  *     readVal
- *   }
+ *   }.toValidatedNel()
  * }
  *
- * fun <E, A, B, C> parallelValidate
- *   (v1: Validated<E, A>, v2: Validated<E, B>, f: (A, B) -> C): Validated<NonEmptyList<E>, C> =
- *  when {
- *   v1 is Validated.Valid && v2 is Validated.Valid -> Validated.Valid(f(v1.a, v2.a))
- *   v1 is Validated.Valid && v2 is Validated.Invalid -> v2.toValidatedNel()
- *   v1 is Validated.Invalid && v2 is Validated.Valid -> v1.toValidatedNel()
- *   v1 is Validated.Invalid && v2 is Validated.Invalid -> Validated.Invalid(NonEmptyList(v1.e, listOf(v2.e)))
- *   else -> throw IllegalStateException("Not possible value")
- *  }
+ * val parallelValidate = Validated.applicativeNel<ConfigError>()
  *
  * suspend fun main() {
  * //sampleStart
  * val config = Config(mapOf("wrong field" to "127.0.0.1", "port" to "not a number"))
  *
- * val valid = parallelValidate(
+ * val valid = parallelValidate.tupledN(
  *  config.parse(Read.stringRead, "url"),
  *  config.parse(Read.intRead, "port")
- *  ) { url, port -> ConnectionParams(url, port) }
+ *  ).fix().map { (url, port) -> ConnectionParams(url, port) }
  * //sampleEnd
  *  println("valid = $valid")
  * }
