@@ -136,8 +136,8 @@ typealias Invalid<E> = Validated.Invalid<E>
  * //sampleEnd
  * ```
  *
- * But, as you can see, the parser runs sequentially: first tries to get the map value and then tries to read it.
- * This is easily translated to an Fx block:
+ * And, as you can see, the parser runs sequentially: first tries to get the map value and then tries to read it.
+ * Is then straightforward to translate this an Fx block:
  *
  * ```kotlin:ank
  * import arrow.core.None
@@ -211,7 +211,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * ### Improving the validation
  *
  * Kotlin says that our match is not exhaustive and we have to add `else`. To solve this we need to nest our when,
- * but that would complicate the code. Alternatively, we could use Applicative through the `nelApplicative` function in arrow-core
+ * but that would complicate the code. Alternatively, we could use Applicative through the `applicativeNel` function in arrow-core
  * to unlock `tupledN`. This function combines Validated by accumulating errors in a tuple, that we can then map, the above function
  * is then equivalent to this:
  *
@@ -223,13 +223,16 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.extensions.validated.applicative.applicative
  * import arrow.core.fix
  * import arrow.typeclasses.Applicative
+ *
  * // added manually due to deps
- * fun <E> Validated.Companion.nelApplicative(): Applicative<ValidatedPartialOf<NonEmptyList<E>>> =
+ * fun <E> Validated.Companion.applicativeNel(): Applicative<ValidatedPartialOf<NonEmptyList<E>>> =
  *     Validated.applicative(NonEmptyList.semigroup())
+ *
  * val v1: Validated<String, Int> = Validated.Valid(1)
  * val v2: Validated<String, Int> = Validated.Valid(2)
+ *
  * //sampleStart
- * val parallelValidated = Validated.nelApplicative<String>()
+ * val parallelValidated = Validated.applicativeNel<String>()
  *     .tupledN(v1.toValidatedNel(), v2.toValidatedNel()).fix()
  *     .map { (a, b) -> /* combine the result */ }
  * //sampleEnd
@@ -446,7 +449,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  *
  * suspend fun main() {
  *   val houseNumber = config.parse(Read.intRead, "house_number").withEither { either ->
- *    either.flatMap { positive("house_number", it) }
+ *     either.flatMap { positive("house_number", it) }
  *   }
  * //sampleEnd
  *  println(houseNumber)
@@ -679,7 +682,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
     fun <E, A> fromEither(e: Either<E, A>): Validated<E, A> = e.fold({ Invalid(it) }, { Valid(it) })
 
     /**
-     * Converts an `Option<A>` to a `Validated<E, A>`, where the provided `ifNone` output value is returned as invalid
+     * Converts an `Option<A>` to a `Validated<E, A>`, where the provided `ifNone` output value is returned as [Invalid]
      * when the specified `Option` is `None`.
      */
     fun <E, A> fromOption(o: Option<A>, ifNone: () -> E): Validated<E, A> =
@@ -689,7 +692,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       )
 
     /**
-     * Converts a nullable `A?` to a `Validated<E, A>`, where the provided `ifNull` output value is returned as invalid
+     * Converts a nullable `A?` to a `Validated<E, A>`, where the provided `ifNull` output value is returned as [Invalid]
      * when the specified value is null.
      */
     fun <E, A> fromNullable(value: A?, ifNull: () -> E): Validated<E, A> =

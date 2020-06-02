@@ -189,5 +189,5 @@ interface ValidatedHash<L, R> : Hash<Validated<L, R>>, ValidatedEq<L, R> {
   })
 }
 
-fun <E> Validated.Companion.nelApplicative(): ValidatedApplicative<NonEmptyList<E>> =
+fun <E> Validated.Companion.applicativeNel(): ValidatedApplicative<NonEmptyList<E>> =
   Validated.applicative(NonEmptyList.semigroup())
