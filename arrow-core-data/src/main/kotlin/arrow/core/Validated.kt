@@ -20,8 +20,8 @@ typealias Invalid<E> = Validated.Invalid<E>
  *
  * Imagine you are filling out a web form to sign up for an account. You input your username and
  * password, then submit. A response comes back saying your username can't have dashes in it,
- * so you make some changes, then resubmit. Can't have special characters either. Change, resubmit.
- * Passwords need to have at least one capital letter. Change, resubmit. Password needs to have at least one number.
+ * so you make some changes, then resubmit. You can't have special characters either. Change, resubmit.
+ * Password needs to have at least one capital letter. Change, resubmit. Password needs to have at least one number.
  *
  * Or perhaps you're reading from a configuration file. One could imagine the configuration library
  * you're using returns an `Either`. Your parsing may look something like:
@@ -42,10 +42,10 @@ typealias Invalid<E> = Validated.Invalid<E>
  * //sampleEnd
  * ```
  *
- * You run your program and it says key "url" not found. Turns out the key was "endpoint". So
+ * You run your program and it says key "url" not found. Turns out the key was "endpoint." So
  * you change your code and re-run. Now it says the "port" key was not a well-formed integer.
  *
- * It would be nice to have all of these errors reported simultaneously. That the username can't
+ * It would be nice to have all of these errors reported simultaneously. The username's inability to
  * have dashes can be validated separately from it not having special characters, as well as
  * from the password needing to have certain requirements. A misspelled (or missing) field in
  * a config can be validated separately from another field not being well-formed.
@@ -89,7 +89,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * //sampleEnd
  * ```
  *
- * Then we enumerate our errors—when asking for a config value, one of two things can go wrong:
+ * Then we enumerate our errors. When asking for a config value, one of two things can go wrong:
  * The field is missing, or it is not well-formed with regards to the expected type.
  *
  * ```kotlin:ank
@@ -136,8 +136,8 @@ typealias Invalid<E> = Validated.Invalid<E>
  * //sampleEnd
  * ```
  *
- * And, as you can see, the parser runs sequentially: first tries to get the map value and then tries to read it.
- * Is then straightforward to translate this an Fx block:
+ * And, as you can see, the parser runs sequentially: it first tries to get the map value and then tries to read it.
+ * It's then straightforward to translate this to an Fx block:
  *
  * ```kotlin:ank
  * import arrow.core.None
@@ -162,7 +162,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * //sampleEnd
  * ```
  *
- * Everything is in place to write the parallel validator. Recall that we can only do parallel
+ * Everything is in place to write the parallel validator. Remember that we can only do parallel
  * validation if each piece is independent. How do we ensure the data is independent? By
  * asking for all of it up front. Let's start with two pieces of data.
  *
@@ -210,8 +210,8 @@ typealias Invalid<E> = Validated.Invalid<E>
  *
  * ### Improving the validation
  *
- * Kotlin says that our match is not exhaustive and we have to add `else`. To solve this we would need to nest our when,
- * but that would complicate the code. To achieve this Arrow provides an [arrow.typeclasses.Applicative] through the
+ * Kotlin says that our match is not exhaustive and we have to add `else`. To solve this, we would need to nest our when,
+ * but that would complicate the code. To achieve this, Arrow provides an [arrow.typeclasses.Applicative] through the
  * `applicativeNel` function in arrow-core to unlock `tupledN`.
  * This function combines [Validated]s by accumulating errors in a tuple, which we can then map.
  * The above function can be rewritten as follows:
@@ -303,7 +303,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * }
  * ```
  *
- * But what happens when having one or more errors? They are accumulated in a `NonEmptyList` wrapped in
+ * But what happens when we have one or more errors? They are accumulated in a `NonEmptyList` wrapped in
  * an `Invalid` instance.
  *
  * ```kotlin:ank:playground
@@ -372,7 +372,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * ## Sequential Validation
  *
  * If you do want error accumulation, but occasionally run into places where sequential validation is needed,
- * then Validated provides `withEither` method to allow you to temporarily turn a Validated
+ * then Validated provides a `withEither` method to allow you to temporarily turn a Validated
  * instance into an Either instance and apply it to a function.
  *
  * ```kotlin:ank:playground
