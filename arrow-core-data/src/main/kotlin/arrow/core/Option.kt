@@ -4,6 +4,8 @@ import arrow.Kind
 import arrow.higherkind
 import arrow.typeclasses.Show
 
+internal typealias Predicate<T> = (T) -> Boolean
+
 /**
  *
  * ank_macro_hierarchy(arrow.core.Option)
