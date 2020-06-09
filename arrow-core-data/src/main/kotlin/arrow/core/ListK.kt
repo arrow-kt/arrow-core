@@ -284,4 +284,3 @@ fun <A> List<A>.k(): ListK<A> = ListK(this)
 
 fun <A> listKOf(vararg elements: A): ListK<A> =
   listOf(*elements).k()
-
