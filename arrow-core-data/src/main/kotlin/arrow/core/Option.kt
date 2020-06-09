@@ -363,7 +363,11 @@ import arrow.typeclasses.Show
  * Contents partially adapted from [Scala Exercises Option Tutorial](https://www.scala-exercises.org/std_lib/options)
  * Originally based on the Scala Koans.
  */
-
+@Deprecated(
+  "Option will be deleted soon as it promotes the wrong message of using a slower and memory unfriendly " +
+    "abstraction when the lang provides a better one.",
+  ReplaceWith("Either<Unit, A>")
+)
 @higherkind
 sealed class Option<out A> : OptionOf<A> {
 
