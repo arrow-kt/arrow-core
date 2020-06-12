@@ -21,11 +21,11 @@ dependencies {
         exclude group: 'org.jetbrains.kotlin', module: 'kotlin-reflect'
     }
     compile "org.jetbrains.kotlin:kotlin-reflect:$KOTLIN_VERSION"
-    compileOnly "com.google.auto.service:auto-service:$GOOGLE_AUTO_SERVICE_VERSION"
-    kapt "com.google.auto.service:auto-service:$GOOGLE_AUTO_SERVICE_VERSION"
+    compileOnly "com.google.auto.service:auto-service:1.0-rc7"
+    kapt "com.google.auto.service:auto-service:1.0-rc7"
 
     //To generate stubs for data classes
-    kaptTest "com.google.auto.service:auto-service:$GOOGLE_AUTO_SERVICE_VERSION"
+    kaptTest "com.google.auto.service:auto-service:1.0-rc7"
     testCompile "com.google.testing.compile:compile-testing:$GOOGLE_COMPILE_TESTING_VERSION"
     testCompile fileTree(dir: './src/test/libs', includes: ['*.jar'])
     testCompile project(":arrow-meta:arrow-meta-test-models")
