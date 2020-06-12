@@ -28,7 +28,7 @@ class KnownException(message: String, val element: Element?) : RuntimeException(
 
 abstract class AbstractProcessor : KotlinAbstractProcessor(), ProcessorUtils, KotlinMetatadataEncoder {
 
-  override fun getSupportedOptions(): Set<String> = Collections.singleton("org.gradle.annotation.processing.isolating");
+  override fun getSupportedOptions(): Set<String> = Collections.singleton("org.gradle.annotation.processing.isolating")
 
   private fun Element.kDocLocation(): File =
     locationName()

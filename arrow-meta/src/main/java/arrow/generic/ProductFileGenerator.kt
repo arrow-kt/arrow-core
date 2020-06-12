@@ -56,7 +56,6 @@ class ProductFileGenerator(
           logger,
           element.type
         )
-
       }
 
   private fun processInstancesForElement(product: AnnotatedGeneric): Pair<AnnotatedGeneric, String> = product to """
