@@ -10,8 +10,8 @@ apply from: "$DOC_CONF"
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KOTLIN_VERSION"
-    compileOnly "com.google.auto.service:auto-service:1.0-rc7"
-    kapt "com.google.auto.service:auto-service:1.0-rc7"
+    compileOnly "com.google.auto.service:auto-service:$GOOGLE_AUTO_SERVICE_VERSION"
+    kapt "com.google.auto.service:auto-service:$GOOGLE_AUTO_SERVICE_VERSION"
     compile project(":arrow-annotations")
     compile project(":arrow-core")
 }
