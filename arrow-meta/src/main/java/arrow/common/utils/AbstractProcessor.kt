@@ -10,7 +10,6 @@ import me.eugeniomarletti.kotlin.processing.KotlinAbstractProcessor
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
-import java.util.Collections
 import javax.annotation.processing.Filer
 import javax.annotation.processing.FilerException
 import javax.annotation.processing.RoundEnvironment
@@ -27,8 +26,6 @@ class KnownException(message: String, val element: Element?) : RuntimeException(
 }
 
 abstract class AbstractProcessor : KotlinAbstractProcessor(), ProcessorUtils, KotlinMetatadataEncoder {
-
-  override fun getSupportedOptions(): Set<String> = Collections.singleton("org.gradle.annotation.processing.isolating")
 
   private fun Element.kDocLocation(): File =
     locationName()
