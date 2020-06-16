@@ -1,13 +1,11 @@
 package arrow.core
 
 import arrow.Kind
-import arrow.core.Eval.Companion.just
 import arrow.core.extensions.eval.applicative.applicative
 import arrow.core.extensions.eval.bimonad.bimonad
 import arrow.core.extensions.eval.comonad.comonad
 import arrow.core.extensions.eval.functor.functor
 import arrow.core.extensions.eval.monad.monad
-import arrow.core.extensions.fx
 import arrow.core.test.UnitSpec
 import arrow.core.test.concurrency.SideEffect
 import arrow.core.test.generators.GenK
@@ -33,11 +31,13 @@ class EvalTest : UnitSpec() {
       EQ.run { this@eqK.fix().value().eqv(other.fix().value()) }
   }
 
+  val G: Gen<Kind<ForEval, Int>> = GENK.genK(Gen.int())
+
   init {
 
     testLaws(
       BimonadLaws.laws(Eval.bimonad(), Eval.monad(), Eval.comonad(), Eval.functor(), Eval.applicative(), Eval.monad(), GENK, EQK),
-      FxLaws.laws(GENK.genK(Gen.int()).map { it }, Eval.Companion::fx2, Eval.Companion::fx)
+      FxLaws.laws(G, G, Eval.Companion::fx2, Eval.Companion::fx)
     )
 
     "should map wrapped value" {

@@ -16,23 +16,28 @@ import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-typealias EagerFxBlock<F, A> = (suspend EagerBind<F>.() -> A) -> Kind<F, A>
-typealias SuspendFxBlock<F, A> = suspend (suspend BindSyntax<F>.() -> A) -> Kind<F, A>
+private typealias EagerFxBlock<F, A> = (suspend EagerBind<F>.() -> A) -> Kind<F, A>
+private typealias SuspendFxBlock<F, A> = suspend (suspend BindSyntax<F>.() -> A) -> Kind<F, A>
 
 object FxLaws {
 
-  fun <F, A> laws(G: Gen<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>, sfxBlock: SuspendFxBlock<F, A>): List<Law> = listOf(
+  fun <F, A> laws(
+    pureGen: Gen<Kind<F, A>>, // TODO cannot specify or filter a pure generator, so we need to require an additional one
+    G: Gen<Kind<F, A>>,
+    fxBlock: EagerFxBlock<F, A>,
+    sfxBlock: SuspendFxBlock<F, A>
+  ): List<Law> = listOf(
     Law("non-suspended fx is lazy") { nonSuspendedIsLazy(G, fxBlock) },
     Law("suspended fx is lazy") { suspendedIsLazy(G, sfxBlock) },
     Law("non-suspended fx can bind immediate values") { nonSuspendedCanBindImmediate(G, fxBlock) },
-    Law("non-suspended fx can bind immediate exceptions") { nonSuspendedCanBindImmediateException(G, fxBlock) },
+    Law("non-suspended fx can bind immediate exceptions") { nonSuspendedCanBindImmediateException(pureGen, fxBlock) },
     Law("suspended fx can bind immediate values") { suspendedCanBindImmediateValues(G, sfxBlock) },
     Law("suspended fx can bind suspended values") { suspendedCanBindSuspendedValues(G, sfxBlock) },
-    Law("suspended fx can bind immediate exceptions") { suspendedCanBindImmediateExceptions(G, sfxBlock) },
-    Law("suspended fx can bind suspended exceptions") { suspendedCanBindSuspendedExceptions(G, sfxBlock) }
+    Law("suspended fx can bind immediate exceptions") { suspendedCanBindImmediateExceptions(pureGen, sfxBlock) },
+    Law("suspended fx can bind suspended exceptions") { suspendedCanBindSuspendedExceptions(pureGen, sfxBlock) }
   )
 
-  private fun <F, A> nonSuspendedIsLazy(G: Gen<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
+  private suspend fun <F, A> nonSuspendedIsLazy(G: Gen<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
     forAll(G) { f: Kind<F, A> ->
       val effect = SideEffect()
       fxBlock {
@@ -58,7 +63,7 @@ object FxLaws {
       }
   }
 
-  private fun <F, A> nonSuspendedCanBindImmediate(G: Gen<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
+  private suspend fun <F, A> nonSuspendedCanBindImmediate(G: Gen<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
     forAll(G) { f: Kind<F, A> ->
       fxBlock {
         val res = !f
