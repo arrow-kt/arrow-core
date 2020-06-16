@@ -2,7 +2,6 @@ package arrow.core
 
 import arrow.Kind
 import arrow.core.Eval.Companion.just
-import arrow.core.extensions.eq
 import arrow.core.extensions.eval.applicative.applicative
 import arrow.core.extensions.eval.bimonad.bimonad
 import arrow.core.extensions.eval.comonad.comonad
@@ -12,18 +11,14 @@ import arrow.core.extensions.fx
 import arrow.core.test.UnitSpec
 import arrow.core.test.concurrency.SideEffect
 import arrow.core.test.generators.GenK
-import arrow.core.test.generators.throwable
 import arrow.core.test.laws.BimonadLaws
 import arrow.core.test.laws.FxLaws
-import arrow.core.test.laws.equalUnderTheLaw
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import io.kotlintest.fail
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
-import io.kotlintest.shouldThrow
-import java.util.concurrent.atomic.AtomicBoolean
 
 class EvalTest : UnitSpec() {
 

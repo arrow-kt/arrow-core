@@ -383,7 +383,6 @@ fun <A, B> Iterator<A>.iterateRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Ev
   return loop()
 }
 
-
 internal class EvalSContinuation<A>(
   parent: Continuation<EvalOf<A>>
 ) : SuspendMonadContinuation<ForEval, A>(parent) {
