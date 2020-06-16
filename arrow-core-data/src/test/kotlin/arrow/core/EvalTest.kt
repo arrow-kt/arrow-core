@@ -12,7 +12,9 @@ import arrow.core.extensions.fx
 import arrow.core.test.UnitSpec
 import arrow.core.test.concurrency.SideEffect
 import arrow.core.test.generators.GenK
+import arrow.core.test.generators.throwable
 import arrow.core.test.laws.BimonadLaws
+import arrow.core.test.laws.FxLaws
 import arrow.core.test.laws.equalUnderTheLaw
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
@@ -20,6 +22,7 @@ import io.kotlintest.fail
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
+import io.kotlintest.shouldThrow
 import java.util.concurrent.atomic.AtomicBoolean
 
 class EvalTest : UnitSpec() {
@@ -38,19 +41,9 @@ class EvalTest : UnitSpec() {
   init {
 
     testLaws(
-      BimonadLaws.laws(Eval.bimonad(), Eval.monad(), Eval.comonad(), Eval.functor(), Eval.applicative(), Eval.monad(), GENK, EQK)
+      BimonadLaws.laws(Eval.bimonad(), Eval.monad(), Eval.comonad(), Eval.functor(), Eval.applicative(), Eval.monad(), GENK, EQK),
+      FxLaws.laws(GENK.genK(Gen.int()).map { it }, Eval.Companion::fx2, Eval.Companion::fx)
     )
-
-    "fx block runs lazily" {
-      val run = AtomicBoolean(false)
-      val p = Eval.fx {
-        run.getAndSet(true)
-        run.get()
-      }
-
-      run.get() shouldBe false
-      p.equalUnderTheLaw(just(true), EQK.liftEq(Boolean.eq())) shouldBe true
-    }
 
     "should map wrapped value" {
       val sideEffect = SideEffect()
