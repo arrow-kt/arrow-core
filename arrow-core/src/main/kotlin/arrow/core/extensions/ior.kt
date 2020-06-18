@@ -10,7 +10,6 @@ import arrow.core.IorOf
 import arrow.core.IorPartialOf
 import arrow.core.ap
 import arrow.core.extensions.ior.eq.eq
-import arrow.core.extensions.ior.monad.monad
 import arrow.core.fix
 import arrow.core.flatMap
 import arrow.core.leftIor
@@ -31,7 +30,6 @@ import arrow.typeclasses.Foldable
 import arrow.typeclasses.Functor
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monad
-import arrow.typeclasses.MonadSyntax
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.Traverse
@@ -210,9 +208,6 @@ interface IorHash<L, R> : Hash<Ior<L, R>>, IorEq<L, R> {
     is Ior.Both -> 31 * HL().run { leftValue.hash() } + HR().run { rightValue.hash() }
   }
 }
-
-fun <L, R> Ior.Companion.fx(SL: Semigroup<L>, c: suspend MonadSyntax<IorPartialOf<L>>.() -> R): Ior<L, R> =
-  Ior.monad(SL).fx.monad(c).fix()
 
 @extension
 interface IorCrosswalk<L> : Crosswalk<IorPartialOf<L>>, IorFunctor<L>, IorFoldable<L> {

@@ -5,6 +5,9 @@ import arrow.higherkind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
+import arrow.typeclasses.suspended.BindSyntax
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
 typealias IorNel<A, B> = Ior<Nel<A>, B>
 
@@ -113,6 +116,21 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
     fun <A, B> leftNel(a: A): IorNel<A, B> = Left(NonEmptyList.of(a))
 
     fun <A, B> bothNel(a: A, b: B): IorNel<A, B> = Both(NonEmptyList.of(a), b)
+
+    fun <A, B> fxEager(c: suspend EagerBind<IorPartialOf<A>>.() -> B): Ior<A, B> {
+      val continuation: IorContinuation<A, B> = IorContinuation()
+      return continuation.startCoroutineUninterceptedAndReturn {
+        Right(c())
+      } as Ior<A, B>
+    }
+
+    suspend fun <A, B> fx(c: suspend BindSyntax<IorPartialOf<A>>.() -> B): Ior<A, B> =
+      suspendCoroutineUninterceptedOrReturn { cont ->
+        val continuation = IorSContinuation(cont as Continuation<IorOf<A, B>>)
+        continuation.startCoroutineUninterceptedOrReturn {
+          Right(c())
+        }
+      }
   }
 
   /**
@@ -374,3 +392,21 @@ fun <A, B> Tuple2<A, B>.bothIor(): Ior<A, B> = Ior.Both(this.a, this.b)
 fun <A> A.leftIor(): Ior<A, Nothing> = Ior.Left(this)
 
 fun <A> A.rightIor(): Ior<Nothing, A> = Ior.Right(this)
+
+internal class IorSContinuation<A, B>(
+  parent: Continuation<IorOf<A, B>>
+) : SuspendMonadContinuation<IorPartialOf<A>, B>(parent) {
+  override fun ShortCircuit.recover(): Kind<IorPartialOf<A>, B> =
+    Ior.Left(value as A)
+
+  override suspend fun <B> Kind<IorPartialOf<A>, B>.bind(): B =
+    fix().fold({ e -> throw ShortCircuit(e) }, ::identity, { _, b -> b })
+}
+
+internal class IorContinuation<A, B> : MonadContinuation<IorPartialOf<A>, B>() {
+  override fun ShortCircuit.recover(): Kind<IorPartialOf<A>, B> =
+    Ior.Left(value as A)
+
+  override suspend fun <B> Kind<IorPartialOf<A>, B>.bind(): B =
+    fix().fold({ e -> throw ShortCircuit(e) }, ::identity, { _, b -> b })
+}

@@ -26,6 +26,7 @@ import arrow.core.test.laws.BifunctorLaws
 import arrow.core.test.laws.BitraverseLaws
 import arrow.core.test.laws.CrosswalkLaws
 import arrow.core.test.laws.EqK2Laws
+import arrow.core.test.laws.FxLaws
 import arrow.core.test.laws.HashLaws
 import arrow.core.test.laws.MonadLaws
 import arrow.core.test.laws.ShowLaws
@@ -64,7 +65,8 @@ class IorTest : UnitSpec() {
       HashLaws.laws(Ior.hash(String.hash(), Int.hash()), Gen.ior(Gen.string(), Gen.int()), Ior.eq(String.eq(), Int.eq())),
       BitraverseLaws.laws(Ior.bitraverse(), Ior.genK2(), Ior.eqK2()),
       CrosswalkLaws.laws(Ior.crosswalk(), Ior.genK(Gen.int()), Ior.eqK(Int.eq())),
-      BicrosswalkLaws.laws(Ior.bicrosswalk(), Ior.genK2(), Ior.eqK2())
+      BicrosswalkLaws.laws(Ior.bicrosswalk(), Ior.genK2(), Ior.eqK2()),
+      FxLaws.laws(Gen.int().map { Ior.Right(it) }, Ior.genK(Gen.string()).genK(Gen.int()), Ior.eqK(String.eq()).liftEq(Int.eq()), Ior.Companion::fxEager, Ior.Companion::fx)
     )
 
     "bimap() should allow modify both value" {
