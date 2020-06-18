@@ -2,19 +2,20 @@ package arrow.core.test.laws
 
 import arrow.Kind
 import arrow.core.EagerBind
-import arrow.core.test.concurrency.SideEffect
 import arrow.core.test.generators.throwable
+import arrow.typeclasses.Eq
 import arrow.typeclasses.suspended.BindSyntax
 import io.kotlintest.fail
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
+import kotlin.coroutines.intrinsics.intercepted
+import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
+import kotlin.coroutines.startCoroutine
 
 private typealias EagerFxBlock<F, A> = (suspend EagerBind<F>.() -> A) -> Kind<F, A>
 private typealias SuspendFxBlock<F, A> = suspend (suspend BindSyntax<F>.() -> A) -> Kind<F, A>
@@ -24,51 +25,24 @@ object FxLaws {
   fun <F, A> laws(
     pureGen: Gen<Kind<F, A>>, // TODO cannot specify or filter a pure generator, so we need to require an additional one
     G: Gen<Kind<F, A>>,
+    EQ: Eq<Kind<F, A>>,
     fxBlock: EagerFxBlock<F, A>,
     sfxBlock: SuspendFxBlock<F, A>
   ): List<Law> = listOf(
-    Law("non-suspended fx is lazy") { nonSuspendedIsLazy(G, fxBlock) },
-    Law("suspended fx is lazy") { suspendedIsLazy(G, sfxBlock) },
-    Law("non-suspended fx can bind immediate values") { nonSuspendedCanBindImmediate(G, fxBlock) },
+    Law("non-suspended fx can bind immediate values") { nonSuspendedCanBindImmediate(G, EQ, fxBlock) },
     Law("non-suspended fx can bind immediate exceptions") { nonSuspendedCanBindImmediateException(pureGen, fxBlock) },
-    Law("suspended fx can bind immediate values") { suspendedCanBindImmediateValues(G, sfxBlock) },
-    Law("suspended fx can bind suspended values") { suspendedCanBindSuspendedValues(G, sfxBlock) },
+    Law("suspended fx can bind immediate values") { suspendedCanBindImmediateValues(G, EQ, sfxBlock) },
+    Law("suspended fx can bind suspended values") { suspendedCanBindSuspendedValues(G, EQ, sfxBlock) },
     Law("suspended fx can bind immediate exceptions") { suspendedCanBindImmediateExceptions(pureGen, sfxBlock) },
     Law("suspended fx can bind suspended exceptions") { suspendedCanBindSuspendedExceptions(pureGen, sfxBlock) }
   )
 
-  private suspend fun <F, A> nonSuspendedIsLazy(G: Gen<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
-    forAll(G) { f: Kind<F, A> ->
-      val effect = SideEffect()
-      fxBlock {
-        effect.increment()
-        f.bind()
-      }
-
-      effect.counter == 0
-    }
-  }
-
-  private suspend fun <F, A> suspendedIsLazy(G: Gen<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
-    G.random()
-      .take(1001)
-      .forEach { f ->
-        val effect = SideEffect()
-        fxBlock {
-          effect.increment()
-          f.bind()
-        }
-
-        effect.counter shouldBe 0
-      }
-  }
-
-  private suspend fun <F, A> nonSuspendedCanBindImmediate(G: Gen<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
+  private suspend fun <F, A> nonSuspendedCanBindImmediate(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
     forAll(G) { f: Kind<F, A> ->
       fxBlock {
         val res = !f
         res
-      } == f
+      }.equalUnderTheLaw(f, EQ)
     }
   }
 
@@ -86,29 +60,25 @@ object FxLaws {
     }
   }
 
-  private suspend fun <F, A> suspendedCanBindImmediateValues(G: Gen<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
+  private suspend fun <F, A> suspendedCanBindImmediateValues(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
     G.random()
       .take(1001)
       .forEach { f ->
         fxBlock {
           val res = !f
           res
-        } shouldBe f
+        }.equalUnderTheLaw(f, EQ)
       }
   }
 
-  private suspend fun <F, A> suspendedCanBindSuspendedValues(G: Gen<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
+  private suspend fun <F, A> suspendedCanBindSuspendedValues(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
     G.random()
       .take(10)
       .forEach { f ->
         fxBlock {
-          val res = !(suspend {
-            sleep(100)
-            f
-          }).invoke()
-
+          val res = !f.suspend()
           res
-        } shouldBe f
+        }.equalUnderTheLaw(f, EQ)
       }
   }
 
@@ -136,8 +106,7 @@ object FxLaws {
         shouldThrow<Throwable> {
           fxBlock {
             val res = !f
-            sleep(100)
-            throw exception
+            exception.suspend()
             res
           }
           fail("It should never reach here. fx should've thrown $exception")
@@ -146,21 +115,21 @@ object FxLaws {
   }
 }
 
-private val scheduler: ScheduledExecutorService by lazy {
-  Executors.newScheduledThreadPool(2) { r ->
-    Thread(r).apply {
-      name = "arrow-effect-scheduler-$id"
-      isDaemon = true
-    }
-  }
-}
+// TODO expose for tests
+internal suspend fun Throwable.suspend(): Nothing =
+  suspendCoroutineUninterceptedOrReturn { cont ->
+    suspend { throw this }.startCoroutine(Continuation(EmptyCoroutineContext) {
+      cont.intercepted().resumeWith(it)
+    })
 
-private suspend fun sleep(duration: Long): Unit =
-  if (duration <= 0) Unit
-  else suspendCoroutine { cont ->
-    scheduler.schedule(
-      { cont.resume(Unit) },
-      duration,
-      TimeUnit.MILLISECONDS
-    )
+    COROUTINE_SUSPENDED
+  }
+
+internal suspend fun <A> A.suspend(): A =
+  suspendCoroutineUninterceptedOrReturn { cont ->
+    suspend { this }.startCoroutine(Continuation(EmptyCoroutineContext) {
+      cont.intercepted().resumeWith(it)
+    })
+
+    COROUTINE_SUSPENDED
   }

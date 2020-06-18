@@ -1,6 +1,7 @@
 package arrow.core
 
 import arrow.Kind
+import arrow.core.extensions.eq
 import arrow.core.extensions.eval.applicative.applicative
 import arrow.core.extensions.eval.bimonad.bimonad
 import arrow.core.extensions.eval.comonad.comonad
@@ -37,7 +38,7 @@ class EvalTest : UnitSpec() {
 
     testLaws(
       BimonadLaws.laws(Eval.bimonad(), Eval.monad(), Eval.comonad(), Eval.functor(), Eval.applicative(), Eval.monad(), GENK, EQK),
-      FxLaws.laws(G, G, Eval.Companion::fx2, Eval.Companion::fx)
+      FxLaws.laws(G, G, EQK.liftEq(Int.eq()), Eval.Companion::fx2, Eval.Companion::fx)
     )
 
     "should map wrapped value" {
