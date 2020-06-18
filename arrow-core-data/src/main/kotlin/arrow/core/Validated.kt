@@ -679,7 +679,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
     fun <E, A> fromNullable(value: A?, ifNull: () -> E): Validated<E, A> =
       value?.let(::Valid) ?: Invalid(ifNull())
 
-    fun <E, A> fx2(c: suspend EagerBind<ValidatedPartialOf<E>>.() -> A): Validated<E, A> {
+    fun <E, A> fxEager(c: suspend EagerBind<ValidatedPartialOf<E>>.() -> A): Validated<E, A> {
       val continuation: ValidatedContinuation<E, A> = ValidatedContinuation()
       return continuation.startCoroutineUninterceptedAndReturn {
         Valid(c())
@@ -687,7 +687,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
     }
 
     suspend fun <E, A> fx(c: suspend BindSyntax<ValidatedPartialOf<E>>.() -> A): Validated<E, A> =
-      suspendCoroutineUninterceptedOrReturn sc@{ cont ->
+      suspendCoroutineUninterceptedOrReturn { cont ->
         val continuation = ValidatedSContinuation(cont as Continuation<ValidatedOf<E, A>>)
         continuation.startCoroutineUninterceptedOrReturn {
           Valid(c())

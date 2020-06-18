@@ -899,7 +899,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
         fe(t.nonFatalOrThrow()).left()
       }
 
-    fun <E, A> fx2(c: suspend EagerBind<EitherPartialOf<E>>.() -> A): Either<E, A> {
+    fun <E, A> fxEager(c: suspend EagerBind<EitherPartialOf<E>>.() -> A): Either<E, A> {
       val continuation: EitherContinuation<E, A> = EitherContinuation()
       return continuation.startCoroutineUninterceptedAndReturn {
         Right(c())
@@ -907,7 +907,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     }
 
     suspend fun <E, A> fx(c: suspend BindSyntax<EitherPartialOf<E>>.() -> A): Either<E, A> =
-      suspendCoroutineUninterceptedOrReturn sc@{ cont ->
+      suspendCoroutineUninterceptedOrReturn { cont ->
         val continuation = EitherSContinuation(cont as Continuation<EitherOf<E, A>>)
         continuation.startCoroutineUninterceptedOrReturn {
           Right(c())

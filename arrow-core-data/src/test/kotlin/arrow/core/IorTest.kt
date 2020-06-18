@@ -66,7 +66,7 @@ class IorTest : UnitSpec() {
       BitraverseLaws.laws(Ior.bitraverse(), Ior.genK2(), Ior.eqK2()),
       CrosswalkLaws.laws(Ior.crosswalk(), Ior.genK(Gen.int()), Ior.eqK(Int.eq())),
       BicrosswalkLaws.laws(Ior.bicrosswalk(), Ior.genK2(), Ior.eqK2()),
-      FxLaws.laws(Gen.int().map { Ior.Right(it) }, Ior.genK(Gen.string()).genK(Gen.int()), Ior.eqK(String.eq()).liftEq(Int.eq()), Ior.Companion::fxEager, Ior.Companion::fx)
+      FxLaws.laws<IorPartialOf<String>, Int>(Gen.int().map { Ior.Right(it) }, Ior.genK(Gen.string()).genK(Gen.int()), Ior.eqK(String.eq()).liftEq(Int.eq()), Ior.Companion::fxEager, Ior.Companion::fx)
     )
 
     "bimap() should allow modify both value" {

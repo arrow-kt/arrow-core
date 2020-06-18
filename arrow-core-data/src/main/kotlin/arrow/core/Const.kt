@@ -26,7 +26,7 @@ data class Const<A, out T>(private val value: A) : ConstOf<A, T> {
   companion object {
     fun <A, T> just(a: A): Const<A, T> = Const(a)
 
-    fun <A, T> fx2(c: suspend EagerBind<ConstPartialOf<A>>.() -> A): Const<A, T> {
+    fun <A, T> fxEager(c: suspend EagerBind<ConstPartialOf<A>>.() -> A): Const<A, T> {
       val continuation: ConstContinuation<A, A> = ConstContinuation()
       return continuation.startCoroutineUninterceptedAndReturn {
         just(c())
@@ -34,7 +34,7 @@ data class Const<A, out T>(private val value: A) : ConstOf<A, T> {
     }
 
     suspend fun <A, T> fx(c: suspend BindSyntax<ConstPartialOf<A>>.() -> A): Const<A, T> =
-      suspendCoroutineUninterceptedOrReturn sc@{ cont ->
+      suspendCoroutineUninterceptedOrReturn { cont ->
         val continuation = ConstSContinuation(cont as Continuation<ConstOf<A, T>>)
         continuation.startCoroutineUninterceptedOrReturn {
           just(c())
@@ -64,7 +64,7 @@ internal class ConstSContinuation<A, T>(
   override fun ShortCircuit.recover(): Const<A, T> =
     throw this
 
-  override suspend fun <B> Kind<ConstPartialOf<A>, B>.bind(): B  =
+  override suspend fun <B> Kind<ConstPartialOf<A>, B>.bind(): B =
     value() as B
 }
 

@@ -243,7 +243,7 @@ sealed class Eval<out A> : EvalOf<A> {
       return curr.value() as A
     }
 
-    fun <A> fx2(c: suspend EagerBind<ForEval>.() -> A): Eval<A> {
+    fun <A> fxEager(c: suspend EagerBind<ForEval>.() -> A): Eval<A> {
       val continuation: EvalContinuation<A> = EvalContinuation()
       return continuation.startCoroutineUninterceptedAndReturn {
         just(c())
@@ -251,7 +251,7 @@ sealed class Eval<out A> : EvalOf<A> {
     }
 
     suspend fun <A> fx(c: suspend BindSyntax<ForEval>.() -> A): Eval<A> =
-      suspendCoroutineUninterceptedOrReturn sc@{ cont ->
+      suspendCoroutineUninterceptedOrReturn { cont ->
         val continuation = EvalSContinuation(cont as Continuation<EvalOf<A>>)
         continuation.startCoroutineUninterceptedOrReturn {
           just(c())
