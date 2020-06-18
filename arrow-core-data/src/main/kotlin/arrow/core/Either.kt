@@ -645,13 +645,12 @@ import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
  *
  *
  * ```kotlin:ank:playground
- * import arrow.core.extensions.fx
  * import arrow.core.Either
  *
  * suspend fun main() {
  * val value =
  * //sampleStart
- *  Either.fx<Int, Int> {
+ *  either<Int, Int> {
  *   val (a) = Either.Right(1)
  *   val (b) = Either.Right(1 + a)
  *   val (c) = Either.Right(1 + b)

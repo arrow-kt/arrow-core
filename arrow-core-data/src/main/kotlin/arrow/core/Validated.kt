@@ -147,7 +147,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  *
  * //sampleStart
  * data class Config(val map: Map<String, String>) {
- *   suspend fun <A> parse(read: Read<A>, key: String) = Validated.fx<ConfigError, A> {
+ *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
  *     }.bind()
@@ -275,7 +275,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * }
  *
  * data class Config(val map: Map<String, String>) {
- *   suspend fun <A> parse(read: Read<A>, key: String) = Validated.fx<ConfigError, A> {
+ *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
  *     }.bind()
