@@ -678,21 +678,6 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
      */
     fun <E, A> fromNullable(value: A?, ifNull: () -> E): Validated<E, A> =
       value?.let(::Valid) ?: Invalid(ifNull())
-
-    fun <E, A> fxEager(c: suspend EagerBind<ValidatedPartialOf<E>>.() -> A): Validated<E, A> {
-      val continuation: ValidatedContinuation<E, A> = ValidatedContinuation()
-      return continuation.startCoroutineUninterceptedAndReturn {
-        Valid(c())
-      } as Validated<E, A>
-    }
-
-    suspend fun <E, A> fx(c: suspend BindSyntax<ValidatedPartialOf<E>>.() -> A): Validated<E, A> =
-      suspendCoroutineUninterceptedOrReturn { cont ->
-        val continuation = ValidatedSContinuation(cont as Continuation<ValidatedOf<E, A>>)
-        continuation.startCoroutineUninterceptedOrReturn {
-          Valid(c())
-        }
-      }
   }
 
   fun show(SE: Show<E>, SA: Show<A>): String = fold({
@@ -905,6 +890,21 @@ fun <A> A.validNel(): ValidatedNel<Nothing, A> =
 
 fun <E> E.invalidNel(): ValidatedNel<E, Nothing> =
   Validated.invalidNel(this)
+
+fun <E, A> validated(c: suspend EagerBind<ValidatedPartialOf<E>>.() -> A): Validated<E, A> {
+  val continuation: ValidatedContinuation<E, A> = ValidatedContinuation()
+  return continuation.startCoroutineUninterceptedAndReturn {
+    Valid(c())
+  } as Validated<E, A>
+}
+
+suspend fun <E, A> validated(c: suspend BindSyntax<ValidatedPartialOf<E>>.() -> A): Validated<E, A> =
+  suspendCoroutineUninterceptedOrReturn { cont ->
+    val continuation = ValidatedSContinuation(cont as Continuation<ValidatedOf<E, A>>)
+    continuation.startCoroutineUninterceptedOrReturn {
+      Valid(c())
+    }
+  }
 
 internal class ValidatedSContinuation<E, A>(
   parent: Continuation<ValidatedOf<E, A>>

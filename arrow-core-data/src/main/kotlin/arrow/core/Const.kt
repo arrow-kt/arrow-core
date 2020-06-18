@@ -25,21 +25,6 @@ data class Const<A, out T>(private val value: A) : ConstOf<A, T> {
 
   companion object {
     fun <A, T> just(a: A): Const<A, T> = Const(a)
-
-    fun <A, T> fxEager(c: suspend EagerBind<ConstPartialOf<A>>.() -> A): Const<A, T> {
-      val continuation: ConstContinuation<A, A> = ConstContinuation()
-      return continuation.startCoroutineUninterceptedAndReturn {
-        just(c())
-      } as Const<A, T>
-    }
-
-    suspend fun <A, T> fx(c: suspend BindSyntax<ConstPartialOf<A>>.() -> A): Const<A, T> =
-      suspendCoroutineUninterceptedOrReturn { cont ->
-        val continuation = ConstSContinuation(cont as Continuation<ConstOf<A, T>>)
-        continuation.startCoroutineUninterceptedOrReturn {
-          just(c())
-        }
-      }
   }
 
   fun value(): A = value
@@ -57,6 +42,21 @@ fun <T, A, G> ConstOf<A, Kind<G, T>>.sequence(GA: Applicative<G>): Kind<G, Const
   fix().traverse(GA, ::identity)
 
 fun <A> A.const(): Const<A, Nothing> = Const(this)
+
+fun <A, T> const(c: suspend EagerBind<ConstPartialOf<A>>.() -> A): Const<A, T> {
+  val continuation: ConstContinuation<A, A> = ConstContinuation()
+  return continuation.startCoroutineUninterceptedAndReturn {
+    Const.just(c())
+  } as Const<A, T>
+}
+
+suspend fun <A, T> const(c: suspend BindSyntax<ConstPartialOf<A>>.() -> A): Const<A, T> =
+  suspendCoroutineUninterceptedOrReturn { cont ->
+    val continuation = ConstSContinuation(cont as Continuation<ConstOf<A, T>>)
+    continuation.startCoroutineUninterceptedOrReturn {
+      Const.just(c())
+    }
+  }
 
 internal class ConstSContinuation<A, T>(
   parent: Continuation<ConstOf<A, T>>
