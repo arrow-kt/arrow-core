@@ -646,6 +646,7 @@ import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
  *
  * ```kotlin:ank:playground
  * import arrow.core.Either
+ * import arrow.core.either
  *
  * suspend fun main() {
  * val value =
