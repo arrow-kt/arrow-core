@@ -5,10 +5,11 @@ import arrow.core.Either.Left
 import arrow.core.Either.Right
 import arrow.higherkind
 import arrow.typeclasses.Show
+import arrow.typeclasses.suspended.BindSyntax
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
 /**
- *
- * ank_macro_hierarchy(arrow.core.Either)
  *
  *
  * In day-to-day programming, it is fairly common to find ourselves writing functions that can fail.
@@ -605,7 +606,7 @@ import arrow.typeclasses.Show
  * Arrow contains `Either` instances for many useful typeclasses that allows you to use and transform right values.
  * Option does not require a type parameter with the following functions, but it is specifically used for Either.Left
  *
- * [Functor]({{'/docs/arrow/typeclasses/functor/' | relative_url }})
+ * [`Functor`](../../../../arrow/typeclasses/functor/)
  *
  * Transforming the inner contents
  *
@@ -621,7 +622,7 @@ import arrow.typeclasses.Show
  * }
  * ```
  *
- * [Applicative]({{'/arrow/typeclasses/applicative/' | relative_url }})
+ * [`Applicative`](../../../../arrow/typeclasses/applicative/)
  *
  * Computing over independent values
  *
@@ -638,25 +639,25 @@ import arrow.typeclasses.Show
  * }
  * ```
  *
- * [Monad]({{'/arrow/typeclasses/monad/' | relative_url }})
+ * [`Monad`](../../../../arrow/typeclasses/monad/)
  *
  * Computing over dependent values ignoring absence
  *
  *
  * ```kotlin:ank:playground
- * import arrow.core.extensions.fx
  * import arrow.core.Either
+ * import arrow.core.either
  *
+ * suspend fun main() {
  * val value =
  * //sampleStart
- *  Either.fx<Int, Int> {
+ *  either<Int, Int> {
  *   val (a) = Either.Right(1)
  *   val (b) = Either.Right(1 + a)
  *   val (c) = Either.Right(1 + b)
  *   a + b + c
  *  }
  * //sampleEnd
- * fun main() {
  *  println(value)
  * }
  * ```
@@ -1048,17 +1049,17 @@ fun <A, B> EitherOf<A, B>.contains(elem: B): Boolean =
   fix().fold({ false }, { it == elem })
 
 fun <A, B, C> EitherOf<A, B>.ap(ff: EitherOf<A, (B) -> C>): Either<A, C> =
-  flatMap { a -> ff.fix().map { f -> f(a) } }.fix()
+  flatMap { a -> ff.fix().map { f -> f(a) } }
 
 fun <A, B> EitherOf<A, B>.combineK(y: EitherOf<A, B>): Either<A, B> =
   when (this) {
-    is Either.Left -> y.fix()
+    is Left -> y.fix()
     else -> fix()
   }
 
-fun <A> A.left(): Either<A, Nothing> = Either.Left(this)
+fun <A> A.left(): Either<A, Nothing> = Left(this)
 
-fun <A> A.right(): Either<Nothing, A> = Either.Right(this)
+fun <A> A.right(): Either<Nothing, A> = Right(this)
 
 /**
  * Returns [Either.Right] if the value of type B is not null, otherwise the specified A value wrapped into an
@@ -1071,8 +1072,8 @@ fun <A> A.right(): Either<Nothing, A> = Either.Right(this)
  * ```
  */
 fun <A, B> B?.rightIfNotNull(default: () -> A): Either<A, B> = when (this) {
-  null -> Either.Left(default())
-  else -> Either.Right(this)
+  null -> Left(default())
+  else -> Right(this)
 }
 
 /**
@@ -1093,7 +1094,40 @@ fun <A> Any?.rightIfNull(default: () -> A): Either<A, Nothing?> = when (this) {
 fun <A, B> EitherOf<A, B>.handleErrorWith(f: (A) -> EitherOf<A, B>): Either<A, B> =
   fix().let {
     when (it) {
-      is Either.Left -> f(it.a).fix()
-      is Either.Right -> it
+      is Left -> f(it.a).fix()
+      is Right -> it
     }
   }
+
+fun <E, A> either(c: suspend EagerBind<EitherPartialOf<E>>.() -> A): Either<E, A> {
+  val continuation: EitherContinuation<E, A> = EitherContinuation()
+  return continuation.startCoroutineUninterceptedAndReturn {
+    Right(c())
+  } as Either<E, A>
+}
+
+suspend fun <E, A> either(c: suspend BindSyntax<EitherPartialOf<E>>.() -> A): Either<E, A> =
+  suspendCoroutineUninterceptedOrReturn { cont ->
+    val continuation = EitherSContinuation(cont as Continuation<EitherOf<E, A>>)
+    continuation.startCoroutineUninterceptedOrReturn {
+      Right(c())
+    }
+  }
+
+internal class EitherSContinuation<E, A>(
+  parent: Continuation<EitherOf<E, A>>
+) : SuspendMonadContinuation<EitherPartialOf<E>, A>(parent) {
+  override fun ShortCircuit.recover(): Kind<EitherPartialOf<E>, A> =
+    Left(value as E)
+
+  override suspend fun <A> Kind<EitherPartialOf<E>, A>.bind(): A =
+    fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
+}
+
+internal class EitherContinuation<E, A> : MonadContinuation<EitherPartialOf<E>, A>() {
+  override fun ShortCircuit.recover(): Kind<EitherPartialOf<E>, A> =
+    Left(value as E)
+
+  override suspend fun <A> Kind<EitherPartialOf<E>, A>.bind(): A =
+    fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
+}
