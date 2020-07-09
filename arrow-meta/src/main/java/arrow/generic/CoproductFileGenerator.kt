@@ -3,6 +3,7 @@
 package arrow.generic
 
 import arrow.common.utils.toCamelCase
+import arrow.common.utils.writeSafeTo
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
@@ -16,7 +17,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeVariableName
-import java.io.File
+import javax.annotation.processing.Filer
 
 private val genericsToClassNames: Map<String, String> = mapOf(
   "A" to "First",
@@ -43,11 +44,11 @@ private val genericsToClassNames: Map<String, String> = mapOf(
   "V" to "TwentySecond"
 )
 
-fun generateCoproducts(destination: File) {
+fun generateCoproducts(destination: Filer) {
   for (size in 2 until genericsToClassNames.size + 1) {
     val generics = genericsToClassNames.keys.toList().take(size)
 
-    FileSpec.builder("arrow.generic.coproduct$size", "Coproduct$size")
+    FileSpec.builder(coproductPackageName(size), "Coproduct$size")
       .apply {
         addCoproductClassDeclaration(generics)
         addExtensionConstructors(generics)
@@ -55,7 +56,7 @@ fun generateCoproducts(destination: File) {
         addFoldFunction(generics)
       }
       .build()
-      .writeTo(destination)
+      .writeSafeTo(destination)
   }
 }
 
@@ -196,7 +197,7 @@ private fun methodDocumentation(
 private fun List<String>.toTypeParameters(): List<TypeVariableName> = map { TypeVariableName(it) }
 
 private fun parameterizedCoproductNClassName(generics: List<String>): ParameterizedTypeName =
-  ClassName("", "Coproduct${generics.size}")
+  ClassName(coproductPackageName(generics.size), "Coproduct${generics.size}")
     .parameterizedBy(*generics.map { TypeVariableName(it) }.toTypedArray())
 
 private fun additionalParameterSuppressAnnotation(count: Int): List<AnnotationSpec> =
@@ -215,3 +216,5 @@ private fun additionalParameterSpecs(count: Int): List<ParameterSpec> = List(cou
     .defaultValue("Unit")
     .build()
 }
+
+private fun coproductPackageName(size: Int) = "arrow.generic.coproduct$size"

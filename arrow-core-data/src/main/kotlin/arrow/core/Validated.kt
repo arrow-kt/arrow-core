@@ -5,6 +5,9 @@ import arrow.higherkind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
+import arrow.typeclasses.suspended.BindSyntax
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
 typealias ValidatedNel<E, A> = Validated<Nel<E>, A>
 typealias Valid<A> = Validated.Valid<A>
@@ -12,13 +15,11 @@ typealias Invalid<E> = Validated.Invalid<E>
 
 /**
  *
- * ank_macro_hierarchy(arrow.core.Validated)
- *
  *
  * Imagine you are filling out a web form to sign up for an account. You input your username and
  * password, then submit. A response comes back saying your username can't have dashes in it,
- * so you make some changes, then resubmit. Can't have special characters either. Change, resubmit.
- * Passwords need to have at least one capital letter. Change, resubmit. Password needs to have at least one number.
+ * so you make some changes, then resubmit. You can't have special characters either. Change, resubmit.
+ * Password needs to have at least one capital letter. Change, resubmit. Password needs to have at least one number.
  *
  * Or perhaps you're reading from a configuration file. One could imagine the configuration library
  * you're using returns an `Either`. Your parsing may look something like:
@@ -39,10 +40,10 @@ typealias Invalid<E> = Validated.Invalid<E>
  * //sampleEnd
  * ```
  *
- * You run your program and it says key "url" not found. Turns out the key was "endpoint". So
+ * You run your program and it says key "url" not found. Turns out the key was "endpoint." So
  * you change your code and re-run. Now it says the "port" key was not a well-formed integer.
  *
- * It would be nice to have all of these errors reported simultaneously. That the username can't
+ * It would be nice to have all of these errors reported simultaneously. The username's inability to
  * have dashes can be validated separately from it not having special characters, as well as
  * from the password needing to have certain requirements. A misspelled (or missing) field in
  * a config can be validated separately from another field not being well-formed.
@@ -86,7 +87,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * //sampleEnd
  * ```
  *
- * Then we enumerate our errors—when asking for a config value, one of two things can go wrong:
+ * Then we enumerate our errors. When asking for a config value, one of two things can go wrong:
  * The field is missing, or it is not well-formed with regards to the expected type.
  *
  * ```kotlin:ank
@@ -133,7 +134,34 @@ typealias Invalid<E> = Validated.Invalid<E>
  * //sampleEnd
  * ```
  *
- * Everything is in place to write the parallel validator. Recall that we can only do parallel
+ * And, as you can see, the parser runs sequentially: it first tries to get the map value and then tries to read it.
+ * It's then straightforward to translate this to an Fx block:
+ *
+ * ```kotlin:ank
+ * import arrow.core.None
+ * import arrow.core.Option
+ * import arrow.core.Some
+ * import arrow.core.Validated
+ * import arrow.core.validated
+ * import arrow.core.valid
+ * import arrow.core.invalid
+ *
+ * //sampleStart
+ * data class Config(val map: Map<String, String>) {
+ *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
+ *     val value = Validated.fromNullable(map[key]) {
+ *       ConfigError.MissingConfig(key)
+ *     }.bind()
+ *     val readVal = Validated.fromOption(read.read(value)) {
+ *       ConfigError.ParseConfig(key)
+ *     }.bind()
+ *     readVal
+ *   }
+ * }
+ * //sampleEnd
+ * ```
+ *
+ * Everything is in place to write the parallel validator. Remember that we can only do parallel
  * validation if each piece is independent. How do we ensure the data is independent? By
  * asking for all of it up front. Let's start with two pieces of data.
  *
@@ -161,7 +189,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * that turns any `Validated<E, A>` value to a `Validated<NonEmptyList<E>, A>`. Additionally, the
  * type alias `ValidatedNel<E, A>` is provided.
  *
- * Time to parse.
+ * Time to validate:
  *
  * ```kotlin:ank
  * import arrow.core.NonEmptyList
@@ -179,17 +207,49 @@ typealias Invalid<E> = Validated.Invalid<E>
  * //sampleEnd
  * ```
  *
- * Kotlin says that our match is not exhaustive and we have to add `else`.
+ * ### Improving the validation
  *
- * When no errors are present in the configuration, we get a `ConnectionParams` wrapped in a `Valid` instance.
+ * Kotlin says that our match is not exhaustive and we have to add `else`. To solve this, we would need to nest our when,
+ * but that would complicate the code. To achieve this, Arrow provides an [arrow.typeclasses.Applicative] through the
+ * `applicativeNel` function in arrow-core to unlock `tupledN`.
+ * This function combines [Validated]s by accumulating errors in a tuple, which we can then map.
+ * The above function can be rewritten as follows:
+ *
+ * ```kotlin:ank:silent
+ * import arrow.core.Validated
+ * import arrow.core.fix
+ * import arrow.reflect.applicativeNel
+ *
+ * // added manually due to deps
+ *
+ * val v1: Validated<ConfigError, Int> = Validated.Valid(1)
+ * val v2: Validated<ConfigError, Int> = Validated.Valid(2)
+ *
+ * //sampleStart
+ * val parallelValidate = Validated.applicativeNel<ConfigError>()
+ *     .tupledN(v1.toValidatedNel(), v2.toValidatedNel()).fix()
+ *     .map { (a, b) -> /* combine the result */ }
+ * //sampleEnd
+ * ```
+ *
+ * Note that there are multiple `tupledN` functions with more arities, so we could easily add more parameters without worrying about
+ * the function blowing up in complexity.
+ *
+ * ---
+ *
+ * Coming back to our example, when no errors are present in the configuration, we get a `ConnectionParams` wrapped in a `Valid` instance.
  *
  * ```kotlin:ank:playground
  * import arrow.core.None
  * import arrow.core.Option
  * import arrow.core.Some
  * import arrow.core.Validated
+ * import arrow.core.validated
  * import arrow.core.valid
  * import arrow.core.invalid
+ * import arrow.core.NonEmptyList
+ * import arrow.core.fix
+ * import arrow.reflect.applicativeNel
  *
  * data class ConnectionParams(val url: String, val port: Int)
  *
@@ -217,43 +277,33 @@ typealias Invalid<E> = Validated.Invalid<E>
  * }
  *
  * data class Config(val map: Map<String, String>) {
- *  fun <A> parse(read: Read<A>, key: String): Validated<ConfigError, A> {
- *   val v = Option.fromNullable(map[key])
- *   return when (v) {
- *    is Some ->
- *     when (val s = read.read(v.t)) {
- *      is Some -> s.t.valid()
- *      is None -> ConfigError.ParseConfig(key).invalid()
- *     }
- *    is None -> Validated.Invalid(ConfigError.MissingConfig(key))
- *   }
- *  }
+ *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
+ *     val value = Validated.fromNullable(map[key]) {
+ *       ConfigError.MissingConfig(key)
+ *     }.bind()
+ *     val readVal = Validated.fromOption(read.read(value)) {
+ *       ConfigError.ParseConfig(key)
+ *     }.bind()
+ *     readVal
+ *   }.toValidatedNel()
  * }
  *
- * fun <E, A, B, C> parallelValidate(v1: Validated<E, A>, v2: Validated<E, B>, f: (A, B) -> C): Validated<E, C> {
- *  return when {
- *   v1 is Validated.Valid && v2 is Validated.Valid -> Validated.Valid(f(v1.a, v2.a))
- *   v1 is Validated.Valid && v2 is Validated.Invalid -> v2
- *   v1 is Validated.Invalid && v2 is Validated.Valid -> v1
- *   v1 is Validated.Invalid && v2 is Validated.Invalid -> TODO()
- *   else -> TODO()
- *  }
- * }
+ * val parallelValidate = Validated.applicativeNel<ConfigError>()
  *
+ * suspend fun main() {
  * //sampleStart
  *  val config = Config(mapOf("url" to "127.0.0.1", "port" to "1337"))
  *
- *  val valid = parallelValidate(
+ *  val valid = parallelValidate.tupledN(
  *  config.parse(Read.stringRead, "url"),
  *  config.parse(Read.intRead, "port")
- *  ) { url, port -> ConnectionParams(url, port) }
+ *  ).fix().map { (url, port) -> ConnectionParams(url, port) }
  * //sampleEnd
- * fun main() {
  *  println("valid = $valid")
  * }
  * ```
  *
- * But what happens when having one or more errors? They are accumulated in a `NonEmptyList` wrapped in
+ * But what happens when we have one or more errors? They are accumulated in a `NonEmptyList` wrapped in
  * an `Invalid` instance.
  *
  * ```kotlin:ank:playground
@@ -261,8 +311,12 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Option
  * import arrow.core.Some
  * import arrow.core.Validated
+ * import arrow.core.validated
  * import arrow.core.valid
  * import arrow.core.invalid
+ * import arrow.core.NonEmptyList
+ * import arrow.core.fix
+ * import arrow.reflect.applicativeNel
  *
  * data class ConnectionParams(val url: String, val port: Int)
  *
@@ -290,38 +344,28 @@ typealias Invalid<E> = Validated.Invalid<E>
  * }
  *
  * data class Config(val map: Map<String, String>) {
- *  fun <A> parse(read: Read<A>, key: String): Validated<ConfigError, A> {
- *   val v = Option.fromNullable(map[key])
- *   return when (v) {
- *    is Some ->
- *     when (val s = read.read(v.t)) {
- *      is Some -> s.t.valid()
- *      is None -> ConfigError.ParseConfig(key).invalid()
- *     }
- *    is None -> Validated.Invalid(ConfigError.MissingConfig(key))
- *   }
- *  }
+ *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
+ *     val value = Validated.fromNullable(map[key]) {
+ *       ConfigError.MissingConfig(key)
+ *     }.bind()
+ *     val readVal = Validated.fromOption(read.read(value)) {
+ *       ConfigError.ParseConfig(key)
+ *     }.bind()
+ *     readVal
+ *   }.toValidatedNel()
  * }
  *
- * fun <E, A, B, C> parallelValidate(v1: Validated<E, A>, v2: Validated<E, B>, f: (A, B) -> C): Validated<E, C> {
- *  return when {
- *   v1 is Validated.Valid && v2 is Validated.Valid -> Validated.Valid(f(v1.a, v2.a))
- *   v1 is Validated.Valid && v2 is Validated.Invalid -> v2
- *   v1 is Validated.Invalid && v2 is Validated.Valid -> v1
- *   v1 is Validated.Invalid && v2 is Validated.Invalid -> TODO()
- *   else -> TODO()
- *  }
- * }
+ * val parallelValidate = Validated.applicativeNel<ConfigError>()
  *
+ * suspend fun main() {
  * //sampleStart
- * val config = Config(mapOf("url" to "127.0.0.1", "port" to "not a number"))
+ * val config = Config(mapOf("wrong field" to "127.0.0.1", "port" to "not a number"))
  *
- * val valid = parallelValidate(
+ * val valid = parallelValidate.tupledN(
  *  config.parse(Read.stringRead, "url"),
  *  config.parse(Read.intRead, "port")
- *  ) { url, port -> ConnectionParams(url, port) }
- *  //sampleEnd
- * fun main() {
+ *  ).fix().map { (url, port) -> ConnectionParams(url, port) }
+ * //sampleEnd
  *  println("valid = $valid")
  * }
  * ```
@@ -329,7 +373,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * ## Sequential Validation
  *
  * If you do want error accumulation, but occasionally run into places where sequential validation is needed,
- * then Validated provides `withEither` method to allow you to temporarily turn a Validated
+ * then Validated provides a `withEither` method to allow you to temporarily turn a Validated
  * instance into an Either instance and apply it to a function.
  *
  * ```kotlin:ank:playground
@@ -341,6 +385,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.right
  * import arrow.core.Some
  * import arrow.core.Validated
+ * import arrow.core.validated
  * import arrow.core.valid
  * import arrow.core.invalid
  *
@@ -363,18 +408,17 @@ typealias Invalid<E> = Validated.Invalid<E>
  * }
  *
  * data class Config(val map: Map<String, String>) {
- *  fun <A> parse(read: Read<A>, key: String): Validated<ConfigError, A> {
- *   val v = Option.fromNullable(map[key])
- *   return when (v) {
- *    is Some ->
- *     when (val s = read.read(v.t)) {
- *      is Some -> s.t.valid()
- *      is None -> ConfigError.ParseConfig(key).invalid()
- *     }
- *    is None -> Validated.Invalid(ConfigError.MissingConfig(key))
+ *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
+ *     val value = Validated.fromNullable(map[key]) {
+ *       ConfigError.MissingConfig(key)
+ *     }.bind()
+ *     val readVal = Validated.fromOption(read.read(value)) {
+ *       ConfigError.ParseConfig(key)
+ *     }.bind()
+ *     readVal
  *   }
- *  }
  * }
+ *
  * sealed class ConfigError {
  *  data class MissingConfig(val field: String) : ConfigError()
  *  data class ParseConfig(val field: String) : ConfigError()
@@ -388,11 +432,11 @@ typealias Invalid<E> = Validated.Invalid<E>
  *
  * val config = Config(mapOf("house_number" to "-42"))
  *
- * val houseNumber = config.parse(Read.intRead, "house_number").withEither { either ->
- *  either.flatMap { positive("house_number", it) }
- * }
+ * suspend fun main() {
+ *   val houseNumber = config.parse(Read.intRead, "house_number").withEither { either ->
+ *     either.flatMap { positive("house_number", it) }
+ *   }
  * //sampleEnd
- * fun main() {
  *  println(houseNumber)
  * }
  *
@@ -618,19 +662,40 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
     fun <A> fromTry(t: Try<A>): Validated<Throwable, A> = t.fold({ Invalid(it) }, { Valid(it) })
 
     /**
-     * Converts an `Either<A, B>` to an `Validated<A, B>`.
+     * Converts an `Either<E, A>` to a `Validated<E, A>`.
      */
     fun <E, A> fromEither(e: Either<E, A>): Validated<E, A> = e.fold({ Invalid(it) }, { Valid(it) })
 
     /**
-     * Converts an `Option<B>` to an `Validated<A, B>`, where the provided `ifNone` values is returned on
-     * the invalid of the `Validated` when the specified `Option` is `None`.
+     * Converts an `Option<A>` to a `Validated<E, A>`, where the provided `ifNone` output value is returned as [Invalid]
+     * when the specified `Option` is `None`.
      */
     fun <E, A> fromOption(o: Option<A>, ifNone: () -> E): Validated<E, A> =
       o.fold(
         { Invalid(ifNone()) },
         { Valid(it) }
       )
+
+    /**
+     * Converts a nullable `A?` to a `Validated<E, A>`, where the provided `ifNull` output value is returned as [Invalid]
+     * when the specified value is null.
+     */
+    fun <E, A> fromNullable(value: A?, ifNull: () -> E): Validated<E, A> =
+      value?.let(::Valid) ?: Invalid(ifNull())
+
+    suspend fun <A> catch(f: suspend () -> A): Validated<Throwable, A> =
+      try {
+        f().valid()
+      } catch (e: Throwable) {
+        e.nonFatalOrThrow().invalid()
+      }
+
+    suspend fun <A> catchNel(f: suspend () -> A): ValidatedNel<Throwable, A> =
+      try {
+        f().validNel()
+      } catch (e: Throwable) {
+        e.nonFatalOrThrow().invalidNel()
+      }
   }
 
   fun show(SE: Show<E>, SA: Show<A>): String = fold({
@@ -661,59 +726,66 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
   /**
    * Is this Valid and matching the given predicate
    */
-  fun exist(predicate: (A) -> Boolean): Boolean = fold({ false }, { predicate(it) })
+  inline fun exist(predicate: (A) -> Boolean): Boolean =
+    fold({ false }, predicate)
 
   /**
    * Converts the value to an Either<E, A>
    */
-  fun toEither(): Either<E, A> = fold({ Left(it) }, { Right(it) })
+  fun toEither(): Either<E, A> =
+    fold(::Left, ::Right)
 
   /**
    * Returns Valid values wrapped in Some, and None for Invalid values
    */
-  fun toOption(): Option<A> = fold({ None }, { Some(it) })
+  fun toOption(): Option<A> =
+    fold({ None }, ::Some)
 
   /**
    * Convert this value to a single element List if it is Valid,
    * otherwise return an empty List
    */
-  fun toList(): List<A> = fold({ listOf() }, { listOf(it) })
+  fun toList(): List<A> =
+    fold({ listOf() }, ::listOf)
 
   /** Lift the Invalid value into a NonEmptyList. */
   fun toValidatedNel(): ValidatedNel<E, A> =
-    fold(
-      { invalidNel(it) },
-      { Valid(it) }
-    )
+    fold({ invalidNel(it) }, ::Valid)
 
   /**
    * Convert to an Either, apply a function, convert back. This is handy
    * when you want to use the Monadic properties of the Either type.
    */
-  fun <EE, B> withEither(f: (Either<E, A>) -> Either<EE, B>): Validated<EE, B> = fromEither(f(toEither()))
+  inline fun <EE, B> withEither(f: (Either<E, A>) -> Either<EE, B>): Validated<EE, B> =
+    fromEither(f(toEither()))
 
   /**
-   * Validated is a [functor.Bifunctor], this method applies one of the
-   * given functions.
+   * From [arrow.typeclasses.Bifunctor], maps both types of this Validated.
+   *
+   * Apply a function to an Invalid or Valid value, returning a new Invalid or Valid value respectively.
    */
-  fun <EE, AA> bimap(fe: (E) -> EE, fa: (A) -> AA): Validated<EE, AA> = fold({ Invalid(fe(it)) }, { Valid(fa(it)) })
+  inline fun <EE, AA> bimap(fe: (E) -> EE, fa: (A) -> AA): Validated<EE, AA> =
+    fold({ Invalid(fe(it)) }, { Valid(fa(it)) })
 
   /**
    * Apply a function to a Valid value, returning a new Valid value
    */
-  fun <B> map(f: (A) -> B): Validated<E, B> = bimap(::identity) { f(it) }
+  inline fun <B> map(f: (A) -> B): Validated<E, B> =
+    bimap(::identity, f)
 
   /**
    * Apply a function to an Invalid value, returning a new Invalid value.
    * Or, if the original valid was Valid, return it.
    */
-  fun <EE> leftMap(f: (E) -> EE): Validated<EE, A> = bimap({ f(it) }, ::identity)
+  inline fun <EE> leftMap(f: (E) -> EE): Validated<EE, A> =
+    bimap(f, ::identity)
 
   /**
    * apply the given function to the value with the given B when
    * valid, otherwise return the given B
    */
-  fun <B> foldLeft(b: B, f: (B, A) -> B): B = fold({ b }, { f(b, it) })
+  inline fun <B> foldLeft(b: B, f: (B, A) -> B): B =
+    fold({ b }, { f(b, it) })
 
   fun <B> foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> =
     when (this) {
@@ -721,13 +793,14 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       is Invalid -> lb
     }
 
-  fun swap(): Validated<A, E> = fold({ Valid(it) }, { Invalid(it) })
+  fun swap(): Validated<A, E> =
+    fold(::Valid, ::Invalid)
 }
 
 /**
  * Return the Valid value, or the default if Invalid
  */
-fun <E, B> ValidatedOf<E, B>.getOrElse(default: () -> B): B =
+inline fun <E, B> ValidatedOf<E, B>.getOrElse(default: () -> B): B =
   fix().fold({ default() }, ::identity)
 
 /**
@@ -739,16 +812,15 @@ fun <E, B> ValidatedOf<E, B>.orNull(): B? =
 /**
  * Return the Valid value, or the result of f if Invalid
  */
-fun <E, B> ValidatedOf<E, B>.valueOr(f: (E) -> B): B =
+inline fun <E, B> ValidatedOf<E, B>.valueOr(f: (E) -> B): B =
   fix().fold({ f(it) }, ::identity)
 
 /**
  * If `this` is valid return `this`, otherwise if `that` is valid return `that`, otherwise combine the failures.
  * This is similar to [orElse] except that here failures are accumulated.
  */
-fun <E, A> ValidatedOf<E, A>.findValid(SE: Semigroup<E>, that: () -> Validated<E, A>): Validated<E, A> =
+inline fun <E, A> ValidatedOf<E, A>.findValid(SE: Semigroup<E>, that: () -> Validated<E, A>): Validated<E, A> =
   fix().fold(
-
     { e ->
       that().fold(
         { ee -> Invalid(SE.run { e.combine(ee) }) },
@@ -763,7 +835,7 @@ fun <E, A> ValidatedOf<E, A>.findValid(SE: Semigroup<E>, that: () -> Validated<E
  * The functionality is similar to that of [findValid] except for failure accumulation,
  * where here only the error on the right is preserved and the error on the left is ignored.
  */
-fun <E, A> ValidatedOf<E, A>.orElse(default: () -> Validated<E, A>): Validated<E, A> =
+inline fun <E, A> ValidatedOf<E, A>.orElse(default: () -> Validated<E, A>): Validated<E, A> =
   fix().fold(
     { default() },
     { Valid(it) }
@@ -773,7 +845,7 @@ fun <E, A> ValidatedOf<E, A>.orElse(default: () -> Validated<E, A>): Validated<E
  * From Apply:
  * if both the function and this value are Valid, apply the function
  */
-fun <E, A, B> ValidatedOf<E, A>.ap(SE: Semigroup<E>, f: Validated<E, (A) -> B>): Validated<E, B> =
+inline fun <E, A, B> ValidatedOf<E, A>.ap(SE: Semigroup<E>, f: Validated<E, (A) -> B>): Validated<E, B> =
   fix().fold(
     { e -> f.fold({ Invalid(SE.run { e.combine(it) }) }, { Invalid(e) }) },
     { a -> f.fold(::Invalid) { Valid(it(a)) } }
@@ -783,13 +855,13 @@ fun <E, A, B> ValidatedOf<E, A>.ap(SE: Semigroup<E>, f: Validated<E, (A) -> B>):
   "To keep API consistent with Either and Option please use `handleErrorWith` instead",
   ReplaceWith("handleErrorWith(f)")
 )
-fun <E, A> ValidatedOf<E, A>.handleLeftWith(f: (E) -> ValidatedOf<E, A>): Validated<E, A> =
+inline fun <E, A> ValidatedOf<E, A>.handleLeftWith(f: (E) -> ValidatedOf<E, A>): Validated<E, A> =
   handleErrorWith(f)
 
-fun <E, A> ValidatedOf<E, A>.handleErrorWith(f: (E) -> ValidatedOf<E, A>): Validated<E, A> =
+inline fun <E, A> ValidatedOf<E, A>.handleErrorWith(f: (E) -> ValidatedOf<E, A>): Validated<E, A> =
   fix().fold({ f(it).fix() }, ::Valid)
 
-fun <E, A> ValidatedOf<E, A>.handleError(f: (E) -> A): Validated<E, A> =
+inline fun <E, A> ValidatedOf<E, A>.handleError(f: (E) -> A): Validated<E, A> =
   fix().handleErrorWith { Valid(f(it)) }
 
 fun <G, E, A, B> ValidatedOf<E, A>.traverse(GA: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, Validated<E, B>> = GA.run {
@@ -831,14 +903,47 @@ fun <E, A> ValidatedOf<E, A>.combineK(SE: Semigroup<E>, y: ValidatedOf<E, A>): V
 fun <E, A> ValidatedOf<E, A>.toIor(): Ior<E, A> =
   fix().fold({ Ior.Left(it) }, { Ior.Right(it) })
 
-fun <A> A.valid(): Validated<Nothing, A> =
+inline fun <A> A.valid(): Validated<Nothing, A> =
   Valid(this)
 
-fun <E> E.invalid(): Validated<E, Nothing> =
+inline fun <E> E.invalid(): Validated<E, Nothing> =
   Invalid(this)
 
-fun <A> A.validNel(): ValidatedNel<Nothing, A> =
+inline fun <A> A.validNel(): ValidatedNel<Nothing, A> =
   Validated.validNel(this)
 
-fun <E> E.invalidNel(): ValidatedNel<E, Nothing> =
+inline fun <E> E.invalidNel(): ValidatedNel<E, Nothing> =
   Validated.invalidNel(this)
+
+fun <E, A> validated(c: suspend EagerBind<ValidatedPartialOf<E>>.() -> A): Validated<E, A> {
+  val continuation: ValidatedContinuation<E, A> = ValidatedContinuation()
+  return continuation.startCoroutineUninterceptedAndReturn {
+    Valid(c())
+  } as Validated<E, A>
+}
+
+suspend fun <E, A> validated(c: suspend BindSyntax<ValidatedPartialOf<E>>.() -> A): Validated<E, A> =
+  suspendCoroutineUninterceptedOrReturn { cont ->
+    val continuation = ValidatedSContinuation(cont as Continuation<ValidatedOf<E, A>>)
+    continuation.startCoroutineUninterceptedOrReturn {
+      Valid(c())
+    }
+  }
+
+internal class ValidatedSContinuation<E, A>(
+  parent: Continuation<ValidatedOf<E, A>>
+) : SuspendMonadContinuation<ValidatedPartialOf<E>, A>(parent) {
+  override suspend fun <A> Kind<ValidatedPartialOf<E>, A>.bind(): A =
+    fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
+
+  override fun ShortCircuit.recover(): Kind<ValidatedPartialOf<E>, A> =
+    Invalid(value as E)
+}
+
+internal class ValidatedContinuation<E, A> : MonadContinuation<ValidatedPartialOf<E>, A>() {
+  override suspend fun <A> Kind<ValidatedPartialOf<E>, A>.bind(): A =
+    fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
+
+  override fun ShortCircuit.recover(): Kind<ValidatedPartialOf<E>, A> =
+    Invalid(value as E)
+}
