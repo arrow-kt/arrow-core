@@ -5,9 +5,6 @@ import arrow.higherkind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
-import arrow.typeclasses.suspended.BindSyntax
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
 typealias ValidatedNel<E, A> = Validated<Nel<E>, A>
 typealias Valid<A> = Validated.Valid<A>
@@ -914,38 +911,3 @@ inline fun <A> A.validNel(): ValidatedNel<Nothing, A> =
 
 inline fun <E> E.invalidNel(): ValidatedNel<E, Nothing> =
   Validated.invalidNel(this)
-
-object validated {
-  fun <E, A> eager(c: suspend EagerBind<ValidatedPartialOf<E>>.() -> A): Validated<E, A> {
-    val continuation: ValidatedContinuation<E, A> = ValidatedContinuation()
-    return continuation.startCoroutineUninterceptedAndReturn {
-      Valid(c())
-    } as Validated<E, A>
-  }
-
-  suspend operator fun <E, A> invoke(c: suspend BindSyntax<ValidatedPartialOf<E>>.() -> A): Validated<E, A> =
-    suspendCoroutineUninterceptedOrReturn { cont ->
-      val continuation = ValidatedSContinuation(cont as Continuation<ValidatedOf<E, A>>)
-      continuation.startCoroutineUninterceptedOrReturn {
-        Valid(c())
-      }
-    }
-
-  internal class ValidatedSContinuation<E, A>(
-    parent: Continuation<ValidatedOf<E, A>>
-  ) : SuspendMonadContinuation<ValidatedPartialOf<E>, A>(parent) {
-    override suspend fun <A> Kind<ValidatedPartialOf<E>, A>.bind(): A =
-      fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
-
-    override fun ShortCircuit.recover(): Kind<ValidatedPartialOf<E>, A> =
-      Invalid(value as E)
-  }
-
-  internal class ValidatedContinuation<E, A> : MonadContinuation<ValidatedPartialOf<E>, A>() {
-    override suspend fun <A> Kind<ValidatedPartialOf<E>, A>.bind(): A =
-      fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
-
-    override fun ShortCircuit.recover(): Kind<ValidatedPartialOf<E>, A> =
-      Invalid(value as E)
-  }
-}

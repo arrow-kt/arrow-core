@@ -41,7 +41,7 @@ class ConstTest : UnitSpec() {
         ApplicativeLaws.laws(Const.applicative(M), Const.functor(), GENK, EQK),
         EqLaws.laws(Const.eq<Int, Int>(Eq.any()), GEN),
         ShowLaws.laws(Const.show(Int.show()), Const.eq<Int, Int>(Eq.any()), GEN),
-        FxLaws.laws<ConstPartialOf<Int>, Int>(GENK.genK(Gen.int()), GENK.genK(Gen.int()), EQK.liftEq(Int.eq()), const::eager, const::invoke)
+        FxLaws.laws<ConstPartialOf<Int>, Int>(GENK.genK(Gen.int()), GENK.genK(Gen.int()), EQK.liftEq(Int.eq()), constFx::eager, constFx::invoke)
       )
   }
 }
