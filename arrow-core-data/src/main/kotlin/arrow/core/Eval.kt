@@ -368,35 +368,37 @@ fun <A, B> Iterator<A>.iterateRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Ev
   return loop()
 }
 
-fun <A> eval(c: suspend EagerBind<ForEval>.() -> A): Eval<A> {
-  val continuation: EvalContinuation<A> = EvalContinuation()
-  return continuation.startCoroutineUninterceptedAndReturn {
-    Eval.just(c())
-  } as Eval<A>
-}
-
-suspend fun <A> eval(c: suspend BindSyntax<ForEval>.() -> A): Eval<A> =
-  suspendCoroutineUninterceptedOrReturn { cont ->
-    val continuation = EvalSContinuation(cont as Continuation<EvalOf<A>>)
-    continuation.startCoroutineUninterceptedOrReturn {
+object eval {
+  fun <A> eager(c: suspend EagerBind<ForEval>.() -> A): Eval<A> {
+    val continuation: EvalContinuation<A> = EvalContinuation()
+    return continuation.startCoroutineUninterceptedAndReturn {
       Eval.just(c())
-    }
+    } as Eval<A>
   }
 
-internal class EvalSContinuation<A>(
-  parent: Continuation<EvalOf<A>>
-) : SuspendMonadContinuation<ForEval, A>(parent) {
-  override fun ShortCircuit.recover(): Kind<ForEval, A> =
-    throw this
+  suspend operator fun <A> invoke(c: suspend BindSyntax<ForEval>.() -> A): Eval<A> =
+    suspendCoroutineUninterceptedOrReturn { cont ->
+      val continuation = EvalSContinuation(cont as Continuation<EvalOf<A>>)
+      continuation.startCoroutineUninterceptedOrReturn {
+        Eval.just(c())
+      }
+    }
 
-  override suspend fun <A> Kind<ForEval, A>.bind(): A =
-    fix().value()
-}
+  internal class EvalSContinuation<A>(
+    parent: Continuation<EvalOf<A>>
+  ) : SuspendMonadContinuation<ForEval, A>(parent) {
+    override fun ShortCircuit.recover(): Kind<ForEval, A> =
+      throw this
 
-internal class EvalContinuation<A> : MonadContinuation<ForEval, A>() {
-  override fun ShortCircuit.recover(): Kind<ForEval, A> =
-    throw this
+    override suspend fun <A> Kind<ForEval, A>.bind(): A =
+      fix().value()
+  }
 
-  override suspend fun <A> Kind<ForEval, A>.bind(): A =
-    fix().value()
+  internal class EvalContinuation<A> : MonadContinuation<ForEval, A>() {
+    override fun ShortCircuit.recover(): Kind<ForEval, A> =
+      throw this
+
+    override suspend fun <A> Kind<ForEval, A>.bind(): A =
+      fix().value()
+  }
 }

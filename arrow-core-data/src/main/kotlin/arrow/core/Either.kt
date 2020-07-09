@@ -1101,35 +1101,37 @@ inline fun <A, B> EitherOf<A, B>.handleErrorWith(f: (A) -> EitherOf<A, B>): Eith
     }
   }
 
-fun <E, A> either(c: suspend EagerBind<EitherPartialOf<E>>.() -> A): Either<E, A> {
-  val continuation: EitherContinuation<E, A> = EitherContinuation()
-  return continuation.startCoroutineUninterceptedAndReturn {
-    Right(c())
-  } as Either<E, A>
-}
-
-suspend fun <E, A> either(c: suspend BindSyntax<EitherPartialOf<E>>.() -> A): Either<E, A> =
-  suspendCoroutineUninterceptedOrReturn { cont ->
-    val continuation = EitherSContinuation(cont as Continuation<EitherOf<E, A>>)
-    continuation.startCoroutineUninterceptedOrReturn {
+object either {
+  fun <E, A> eager(c: suspend EagerBind<EitherPartialOf<E>>.() -> A): Either<E, A> {
+    val continuation: EitherContinuation<E, A> = EitherContinuation()
+    return continuation.startCoroutineUninterceptedAndReturn {
       Right(c())
-    }
+    } as Either<E, A>
   }
 
-internal class EitherSContinuation<E, A>(
-  parent: Continuation<EitherOf<E, A>>
-) : SuspendMonadContinuation<EitherPartialOf<E>, A>(parent) {
-  override fun ShortCircuit.recover(): Kind<EitherPartialOf<E>, A> =
-    Left(value as E)
+  suspend operator fun <E, A> invoke(c: suspend BindSyntax<EitherPartialOf<E>>.() -> A): Either<E, A> =
+    suspendCoroutineUninterceptedOrReturn { cont ->
+      val continuation = EitherSContinuation(cont as Continuation<EitherOf<E, A>>)
+      continuation.startCoroutineUninterceptedOrReturn {
+        Right(c())
+      }
+    }
 
-  override suspend fun <A> Kind<EitherPartialOf<E>, A>.bind(): A =
-    fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
-}
+  internal class EitherSContinuation<E, A>(
+    parent: Continuation<EitherOf<E, A>>
+  ) : SuspendMonadContinuation<EitherPartialOf<E>, A>(parent) {
+    override fun ShortCircuit.recover(): Kind<EitherPartialOf<E>, A> =
+      Left(value as E)
 
-internal class EitherContinuation<E, A> : MonadContinuation<EitherPartialOf<E>, A>() {
-  override fun ShortCircuit.recover(): Kind<EitherPartialOf<E>, A> =
-    Left(value as E)
+    override suspend fun <A> Kind<EitherPartialOf<E>, A>.bind(): A =
+      fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
+  }
 
-  override suspend fun <A> Kind<EitherPartialOf<E>, A>.bind(): A =
-    fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
+  internal class EitherContinuation<E, A> : MonadContinuation<EitherPartialOf<E>, A>() {
+    override fun ShortCircuit.recover(): Kind<EitherPartialOf<E>, A> =
+      Left(value as E)
+
+    override suspend fun <A> Kind<EitherPartialOf<E>, A>.bind(): A =
+      fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
+  }
 }

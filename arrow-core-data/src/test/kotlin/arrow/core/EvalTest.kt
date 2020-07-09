@@ -38,7 +38,7 @@ class EvalTest : UnitSpec() {
 
     testLaws(
       BimonadLaws.laws(Eval.bimonad(), Eval.monad(), Eval.comonad(), Eval.functor(), Eval.applicative(), Eval.monad(), GENK, EQK),
-      FxLaws.laws<ForEval, Int>(G, G, EQK.liftEq(Int.eq()), ::eval, ::eval)
+      FxLaws.laws<ForEval, Int>(G, G, EQK.liftEq(Int.eq()), eval::eager, eval::invoke)
     )
 
     "should map wrapped value" {
