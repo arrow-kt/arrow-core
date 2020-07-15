@@ -28,7 +28,7 @@ import arrow.typeclasses.conest
 import arrow.typeclasses.counnest
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
-import io.kotlintest.properties.forAll
+import io.kotest.property.forAll
 import io.kotlintest.shouldBe
 
 class AndThenTest : UnitSpec() {

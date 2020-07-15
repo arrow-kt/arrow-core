@@ -13,7 +13,7 @@ import arrow.typeclasses.Foldable
 import arrow.typeclasses.Unzip
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
-import io.kotlintest.properties.forAll
+import io.kotest.property.forAll
 
 object UnzipLaws {
   fun <F> laws(

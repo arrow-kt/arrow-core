@@ -17,7 +17,7 @@ import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semiring
 import io.kotest.property.Arb
-import io.kotlintest.properties.forAll
+import io.kotest.property.forAll
 
 class NumberInstancesTest : UnitSpec() {
 

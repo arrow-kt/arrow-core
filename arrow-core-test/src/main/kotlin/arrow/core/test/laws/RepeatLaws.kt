@@ -9,7 +9,7 @@ import arrow.typeclasses.Foldable
 import arrow.typeclasses.Repeat
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
-import io.kotlintest.properties.forAll
+import io.kotest.property.forAll
 
 object RepeatLaws {
   fun <F> laws(

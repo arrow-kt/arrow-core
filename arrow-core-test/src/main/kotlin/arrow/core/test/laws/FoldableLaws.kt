@@ -45,7 +45,7 @@ import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.Foldable
 import io.kotest.property.Arb
-import io.kotlintest.properties.forAll
+import io.kotest.property.forAll
 import io.kotlintest.shouldBe
 
 object FoldableLaws {

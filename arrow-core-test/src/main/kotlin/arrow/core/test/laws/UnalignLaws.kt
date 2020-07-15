@@ -16,7 +16,7 @@ import arrow.typeclasses.Unalign
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.arb
-import io.kotlintest.properties.forAll
+import io.kotest.property.forAll
 
 object UnalignLaws {
   fun <F> laws(

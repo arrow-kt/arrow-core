@@ -7,7 +7,7 @@ import arrow.typeclasses.Eq
 import arrow.typeclasses.suspended.BindSyntax
 import io.kotlintest.fail
 import io.kotest.property.Arb
-import io.kotlintest.properties.forAll
+import io.kotest.property.forAll
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import kotlin.coroutines.Continuation

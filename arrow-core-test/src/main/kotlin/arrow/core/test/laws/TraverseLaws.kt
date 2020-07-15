@@ -26,7 +26,7 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.Functor
 import arrow.typeclasses.Traverse
 import io.kotest.property.Arb
-import io.kotlintest.properties.forAll
+import io.kotest.property.forAll
 
 typealias TI<A> = Tuple2<IdOf<A>, IdOf<A>>
 

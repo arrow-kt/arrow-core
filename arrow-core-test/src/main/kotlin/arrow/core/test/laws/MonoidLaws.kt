@@ -3,7 +3,7 @@ package arrow.core.test.laws
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Monoid
 import io.kotest.property.Arb
-import io.kotlintest.properties.forAll
+import io.kotest.property.forAll
 import io.kotlintest.shouldBe
 
 object MonoidLaws {

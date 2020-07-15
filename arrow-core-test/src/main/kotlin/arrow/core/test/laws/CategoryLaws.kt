@@ -8,7 +8,7 @@ import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK2
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
-import io.kotlintest.properties.forAll
+import io.kotest.property.forAll
 
 object CategoryLaws {
 

@@ -12,7 +12,7 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.TraverseFilter
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
-import io.kotlintest.properties.forAll
+import io.kotest.property.forAll
 
 object TraverseFilterLaws {
 

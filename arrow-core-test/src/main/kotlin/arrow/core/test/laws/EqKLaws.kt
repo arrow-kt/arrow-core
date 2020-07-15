@@ -6,7 +6,7 @@ import arrow.core.test.generators.GenK
 import arrow.typeclasses.EqK
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
-import io.kotlintest.properties.forAll
+import io.kotest.property.forAll
 
 object EqKLaws {
 

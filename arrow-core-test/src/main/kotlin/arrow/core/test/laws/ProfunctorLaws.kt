@@ -10,7 +10,7 @@ import arrow.typeclasses.EqK2
 import arrow.typeclasses.Profunctor
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
-import io.kotlintest.properties.forAll
+import io.kotest.property.forAll
 
 object ProfunctorLaws {
 
