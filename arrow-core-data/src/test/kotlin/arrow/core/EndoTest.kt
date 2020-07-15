@@ -6,6 +6,7 @@ import arrow.core.test.generators.endo
 import arrow.core.test.laws.MonoidLaws
 import arrow.typeclasses.Eq
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
 
 class EndoTest : UnitSpec() {
   val EQ: Eq<Endo<Int>> = Eq { a, b ->

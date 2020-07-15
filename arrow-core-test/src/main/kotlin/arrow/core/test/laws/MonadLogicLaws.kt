@@ -13,6 +13,7 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.MonadLogic
 import arrow.typeclasses.reflect
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 

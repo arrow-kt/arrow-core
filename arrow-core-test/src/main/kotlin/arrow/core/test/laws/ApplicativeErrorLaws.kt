@@ -16,6 +16,7 @@ import arrow.typeclasses.ApplicativeError
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
 import io.kotlintest.properties.forAll
 import kotlinx.coroutines.runBlocking
 

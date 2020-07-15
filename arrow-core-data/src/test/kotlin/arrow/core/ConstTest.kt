@@ -20,6 +20,7 @@ import arrow.core.test.laws.TraverseFilterLaws
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
 
 class ConstTest : UnitSpec() {
 

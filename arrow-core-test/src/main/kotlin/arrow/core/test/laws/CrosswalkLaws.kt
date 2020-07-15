@@ -13,6 +13,7 @@ import arrow.typeclasses.Crosswalk
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.arb
 import io.kotlintest.properties.forAll
 import kotlin.math.abs

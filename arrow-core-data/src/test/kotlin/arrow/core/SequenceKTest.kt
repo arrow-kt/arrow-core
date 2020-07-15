@@ -44,6 +44,7 @@ import arrow.core.test.laws.UnalignLaws
 import arrow.core.test.laws.UnzipLaws
 import io.kotlintest.matchers.sequences.shouldBeEmpty
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
 import io.kotlintest.properties.forAll
 import kotlin.math.max
 import kotlin.math.min

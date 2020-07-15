@@ -28,6 +28,7 @@ import arrow.typeclasses.Hash
 import io.kotlintest.fail
 import io.kotlintest.matchers.beTheSameInstanceAs
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
 import io.kotlintest.properties.forAll
 import io.kotlintest.should
 import io.kotlintest.shouldBe

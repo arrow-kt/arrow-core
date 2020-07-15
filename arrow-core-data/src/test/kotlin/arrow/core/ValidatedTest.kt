@@ -31,6 +31,7 @@ import arrow.core.test.laws.TraverseLaws
 import arrow.typeclasses.Semigroup
 import io.kotlintest.fail
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
 import io.kotlintest.shouldBe
 
 @Suppress("RedundantSuspendModifier")

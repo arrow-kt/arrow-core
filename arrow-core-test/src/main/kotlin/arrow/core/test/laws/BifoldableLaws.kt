@@ -10,6 +10,7 @@ import arrow.core.test.generators.intSmall
 import arrow.typeclasses.Bifoldable
 import arrow.typeclasses.Eq
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
 import io.kotlintest.properties.forAll
 
 object BifoldableLaws {

@@ -27,6 +27,7 @@ import arrow.typeclasses.EqK2
 import arrow.typeclasses.conest
 import arrow.typeclasses.counnest
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 

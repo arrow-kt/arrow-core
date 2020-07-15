@@ -33,6 +33,7 @@ import arrow.core.test.laws.TraverseLaws
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Monad
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 

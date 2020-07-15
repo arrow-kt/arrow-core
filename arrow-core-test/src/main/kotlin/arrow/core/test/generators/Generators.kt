@@ -37,6 +37,7 @@ import arrow.core.toOption
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.ApplicativeError
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.arb
 import io.kotlintest.properties.shrinking.DoubleShrinker
 import io.kotlintest.properties.shrinking.FloatShrinker
