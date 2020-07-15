@@ -16,6 +16,6 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$KOTLINX_COROUTINES_VERSION"
     testRuntime "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
-    compile "io.kotest:kotest-runner-junit5-jvm:$KOTLIN_TEST_VERSION", excludeArrow
+    api "io.kotest:kotest-runner-junit5-jvm:$KOTEST_VERSION", excludeArrow
     kapt project(":arrow-meta")
 }
