@@ -7,13 +7,13 @@ import arrow.core.test.generators.functionAToB
 import arrow.typeclasses.Comonad
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 object ComonadLaws {
 
   fun <F> laws(CM: Comonad<F>, GENK: GenK<F>, EQK: EqK<F>): List<Law> {
-    val GEN = GENK.genK(Gen.int())
+    val GEN = GENK.genK(Arb.int())
     val EQ = EQK.liftEq(Int.eq())
 
     return FunctorLaws.laws(CM, GENK, EQK) + listOf(
@@ -27,32 +27,32 @@ object ComonadLaws {
       )
   }
 
-  fun <F> Comonad<F>.duplicateThenExtractIsId(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  fun <F> Comonad<F>.duplicateThenExtractIsId(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(G) { fa: Kind<F, Int> ->
       fa.duplicate().extract().equalUnderTheLaw(fa, EQ)
     }
 
-  fun <F> Comonad<F>.duplicateThenMapExtractIsId(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  fun <F> Comonad<F>.duplicateThenMapExtractIsId(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(G) { fa: Kind<F, Int> ->
       fa.duplicate().map { it.extract() }.equalUnderTheLaw(fa, EQ)
     }
 
-  fun <F> Comonad<F>.mapAndCoflatmapCoherence(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
-    forAll(G, Gen.functionAToB<Int, Int>(Gen.int())) { fa: Kind<F, Int>, f: (Int) -> Int ->
+  fun <F> Comonad<F>.mapAndCoflatmapCoherence(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+    forAll(G, Arb.functionAToB<Int, Int>(Arb.int())) { fa: Kind<F, Int>, f: (Int) -> Int ->
       fa.map(f).equalUnderTheLaw(fa.coflatMap { f(it.extract()) }, EQ)
     }
 
-  fun <F> Comonad<F>.comonadLeftIdentity(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  fun <F> Comonad<F>.comonadLeftIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(G) { fa: Kind<F, Int> ->
       fa.coflatMap { it.extract() }.equalUnderTheLaw(fa, EQ)
     }
 
-  fun <F> Comonad<F>.comonadRightIdentity(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
-    forAll(G, Gen.functionAToB<Kind<F, Int>, Kind<F, Int>>(G)) { fa: Kind<F, Int>, f: (Kind<F, Int>) -> Kind<F, Int> ->
+  fun <F> Comonad<F>.comonadRightIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+    forAll(G, Arb.functionAToB<Kind<F, Int>, Kind<F, Int>>(G)) { fa: Kind<F, Int>, f: (Kind<F, Int>) -> Kind<F, Int> ->
       fa.coflatMap(f).extract().equalUnderTheLaw(f(fa), EQ)
     }
 
-  fun <F> Comonad<F>.cobinding(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  fun <F> Comonad<F>.cobinding(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(G) { fa: Kind<F, Int> ->
       val comonad = fx.comonad {
         val x = fa.extract()

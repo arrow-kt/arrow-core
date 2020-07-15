@@ -27,7 +27,7 @@ import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import io.kotlintest.fail
 import io.kotlintest.matchers.beTheSameInstanceAs
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 import io.kotlintest.should
 import io.kotlintest.shouldBe
@@ -42,11 +42,11 @@ class TryTest : UnitSpec() {
   init {
 
     testLaws(
-      MonoidLaws.laws(Try.monoid(MO = Int.monoid()), Gen.`try`(Gen.int()), EQ),
-      ShowLaws.laws(Try.show(), Try.eq(Int.eq(), Eq.any()), Gen.`try`(Gen.int())),
+      MonoidLaws.laws(Try.monoid(MO = Int.monoid()), Arb.`try`(Arb.int()), EQ),
+      ShowLaws.laws(Try.show(), Try.eq(Int.eq(), Eq.any()), Arb.`try`(Arb.int())),
       MonadErrorLaws.laws(Try.monadError(), Try.functor(), Try.applicative(), Try.monad(), Try.genK(), Try.eqK()),
       TraverseLaws.laws(Try.traverse(), Try.applicative(), Try.genK(), Try.eqK()),
-      HashLaws.laws(Try.hash(Int.hash(), Hash.any()), Gen.`try`(Gen.int()), Try.eq(Int.eq(), Eq.any()))
+      HashLaws.laws(Try.hash(Int.hash(), Hash.any()), Arb.`try`(Arb.int()), Try.eq(Int.eq(), Eq.any()))
     )
 
     "empty should return a Success of the empty of the inner type" {

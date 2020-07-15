@@ -12,7 +12,7 @@ import arrow.typeclasses.Align
 import arrow.typeclasses.Crosswalk
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 import kotlin.math.abs
 
@@ -24,7 +24,7 @@ object CrosswalkLaws {
     EQK: EqK<T>
   ): List<Law> {
 
-    val funGen = object : Gen<(Int) -> Kind<ForListK, String>> {
+    val funGen = object : Arb<(Int) -> Kind<ForListK, String>> {
       override fun constants(): Iterable<(Int) -> ListK<String>> = listOf(
         { int: Int -> listOf("$int").k() },
         { int: Int -> List(abs(int % 100)) { "$it" }.k() })
@@ -34,17 +34,17 @@ object CrosswalkLaws {
 
     return listOf(
       Law("Crosswalk laws: crosswalk an empty structure == an empty structure") {
-        CW.crosswalkEmptyIsEmpty(ListK.align(), GENK.genK(Gen.int()), ListK.eq(EQK.liftEq(Eq.any())))
+        CW.crosswalkEmptyIsEmpty(ListK.align(), GENK.genK(Arb.int()), ListK.eq(EQK.liftEq(Eq.any())))
       },
       Law("Crosswalk laws: crosswalk function == fmap function andThen sequenceL") {
-        CW.crosswalkFunctionEqualsComposeSequenceAndFunction(ListK.align(), GENK.genK(Gen.int()), funGen, ListK.eq(EQK.liftEq(String.eq())))
+        CW.crosswalkFunctionEqualsComposeSequenceAndFunction(ListK.align(), GENK.genK(Arb.int()), funGen, ListK.eq(EQK.liftEq(String.eq())))
       }
     )
   }
 
   fun <T, F, A, B> Crosswalk<T>.crosswalkEmptyIsEmpty(
     ALIGN: Align<F>,
-    G: Gen<Kind<T, A>>,
+    G: Arb<Kind<T, A>>,
     EQ: Eq<Kind<F, Kind<T, B>>>
   ) = forAll(G) { a: Kind<T, A> ->
 
@@ -56,8 +56,8 @@ object CrosswalkLaws {
 
   fun <T, F, A, B> Crosswalk<T>.crosswalkFunctionEqualsComposeSequenceAndFunction(
     ALIGN: Align<F>,
-    aGen: Gen<Kind<T, A>>,
-    faGen: Gen<(A) -> Kind<F, B>>,
+    aGen: Arb<Kind<T, A>>,
+    faGen: Arb<(A) -> Kind<F, B>>,
     EQ: Eq<Kind<F, Kind<T, B>>>
   ) = forAll(aGen, faGen) { a: Kind<T, A>, fa: (A) -> Kind<F, B> ->
 

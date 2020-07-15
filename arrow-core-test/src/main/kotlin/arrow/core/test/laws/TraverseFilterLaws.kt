@@ -10,7 +10,7 @@ import arrow.typeclasses.Applicative
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.TraverseFilter
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 object TraverseFilterLaws {
@@ -21,8 +21,8 @@ object TraverseFilterLaws {
     GENK: GenK<F>,
     EQK: EqK<F>
   ): List<Law> {
-    val GEN = GENK.genK(Gen.int())
-    val genBool = GENK.genK(Gen.bool())
+    val GEN = GENK.genK(Arb.int())
+    val genBool = GENK.genK(Arb.bool())
     val EQ = EQK.liftEq(Int.eq())
     val EQ_NESTED = EQK.liftEq(EQ)
 
@@ -34,24 +34,24 @@ object TraverseFilterLaws {
       )
   }
 
-  fun <F> TraverseFilter<F>.identityTraverseFilter(GEN: Gen<Kind<F, Int>>, GA: Applicative<F>, EQ: Eq<Kind<F, Kind<F, Int>>> = Eq.any()) =
+  fun <F> TraverseFilter<F>.identityTraverseFilter(GEN: Arb<Kind<F, Int>>, GA: Applicative<F>, EQ: Eq<Kind<F, Kind<F, Int>>> = Eq.any()) =
     forAll(GEN) { fa: Kind<F, Int> ->
       fa.traverseFilter(GA) { GA.just(Some(it)) }.equalUnderTheLaw(GA.just(fa), EQ)
     }
 
   fun <F> TraverseFilter<F>.filterAconsistentWithTraverseFilter(
-    genInt: Gen<Kind<F, Int>>,
-    genBool: Gen<Kind<F, Boolean>>,
+    genInt: Arb<Kind<F, Int>>,
+    genBool: Arb<Kind<F, Boolean>>,
     GA: Applicative<F>,
     EQ: Eq<Kind<F, Kind<F, Int>>>
   ) = run {
-    forAll(genInt, Gen.functionAToB<Int, Kind<F, Boolean>>(genBool)) { fa: Kind<F, Int>, f: (Int) -> Kind<F, Boolean> ->
+    forAll(genInt, Arb.functionAToB<Int, Kind<F, Boolean>>(genBool)) { fa: Kind<F, Int>, f: (Int) -> Kind<F, Boolean> ->
       fa.filterA(f, GA).equalUnderTheLaw(fa.traverseFilter(GA) { a -> f(a).map { b: Boolean -> if (b) Some(a) else None } }, EQ)
     }
   }
 
   fun <F> TraverseFilter<F>.traverseFilterIsInstanceConsistentWithTraverseFilter(
-    genInt: Gen<Kind<F, Int>>,
+    genInt: Arb<Kind<F, Int>>,
     GA: Applicative<F>,
     EQ: Eq<Kind<F, Kind<F, Int>>>
   ) = run {

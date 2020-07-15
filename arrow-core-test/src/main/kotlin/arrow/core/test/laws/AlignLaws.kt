@@ -9,7 +9,7 @@ import arrow.typeclasses.Align
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.Foldable
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 object AlignLaws {
@@ -36,16 +36,16 @@ object AlignLaws {
     GENK: GenK<F>,
     EQK: EqK<F>
   ) = listOf(
-    Law("Align Laws: align right empty") { A.alignRightEmpty(GENK.genK(Gen.int()), EQK.liftEq(iorEq)) },
-    Law("Align Laws: align left empty") { A.alignLeftEmpty(GENK.genK(Gen.int()), EQK.liftEq(iorEq)) }
+    Law("Align Laws: align right empty") { A.alignRightEmpty(GENK.genK(Arb.int()), EQK.liftEq(iorEq)) },
+    Law("Align Laws: align left empty") { A.alignLeftEmpty(GENK.genK(Arb.int()), EQK.liftEq(iorEq)) }
   )
 
-  fun <F, A> Align<F>.alignRightEmpty(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, Ior<A, A>>>) =
+  fun <F, A> Align<F>.alignRightEmpty(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<A, A>>>) =
     forAll(G) { a ->
       align(a, empty<A>()).equalUnderTheLaw(a.map { Ior.Left(it) }, EQ)
     }
 
-  fun <F, A> Align<F>.alignLeftEmpty(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, Ior<A, A>>>) =
+  fun <F, A> Align<F>.alignLeftEmpty(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<A, A>>>) =
     forAll(G) { a ->
       align(empty<A>(), a).equalUnderTheLaw(a.map { Ior.Right(it) }, EQ)
     }

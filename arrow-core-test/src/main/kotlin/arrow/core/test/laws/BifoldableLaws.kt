@@ -9,7 +9,7 @@ import arrow.core.test.generators.functionAToB
 import arrow.core.test.generators.intSmall
 import arrow.typeclasses.Bifoldable
 import arrow.typeclasses.Eq
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 object BifoldableLaws {
@@ -17,7 +17,7 @@ object BifoldableLaws {
   fun <F> laws(BF: Bifoldable<F>, GENK: GenK2<F>): List<Law> {
 
     val EQ = Int.eq()
-    val GEN = GENK.genK(Gen.int(), Gen.int())
+    val GEN = GENK.genK(Arb.int(), Arb.int())
 
     return listOf(
       Law("Bifoldable Laws: Left bifold consistent with BifoldMap") { BF.bifoldLeftConsistentWithBifoldMap(GEN, EQ) },
@@ -25,8 +25,8 @@ object BifoldableLaws {
     )
   }
 
-  fun <F> Bifoldable<F>.bifoldLeftConsistentWithBifoldMap(G: Gen<Kind2<F, Int, Int>>, EQ: Eq<Int>) =
-    forAll(Gen.functionAToB<Int, Int>(Gen.intSmall()), Gen.functionAToB<Int, Int>(Gen.intSmall()), G
+  fun <F> Bifoldable<F>.bifoldLeftConsistentWithBifoldMap(G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Int>) =
+    forAll(Arb.functionAToB<Int, Int>(Arb.intSmall()), Arb.functionAToB<Int, Int>(Arb.intSmall()), G
     ) { f: (Int) -> Int, g: (Int) -> Int, fab: Kind2<F, Int, Int> ->
       with(Int.monoid()) {
         val expected = fab.bifoldLeft(Int.monoid().empty(), { c: Int, a: Int -> c.combine(f(a)) },
@@ -35,8 +35,8 @@ object BifoldableLaws {
       }
     }
 
-  fun <F> Bifoldable<F>.bifoldRightConsistentWithBifoldMap(G: Gen<Kind2<F, Int, Int>>, EQ: Eq<Int>) =
-    forAll(Gen.functionAToB<Int, Int>(Gen.intSmall()), Gen.functionAToB<Int, Int>(Gen.intSmall()), G
+  fun <F> Bifoldable<F>.bifoldRightConsistentWithBifoldMap(G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Int>) =
+    forAll(Arb.functionAToB<Int, Int>(Arb.intSmall()), Arb.functionAToB<Int, Int>(Arb.intSmall()), G
     ) { f: (Int) -> Int, g: (Int) -> Int, fab: Kind2<F, Int, Int> ->
       with(Int.monoid()) {
         val expected = fab.bifoldRight(Eval.Later { Int.monoid().empty() }, { a: Int, ec: Eval<Int> -> ec.map { c -> f(a).combine(c) } },

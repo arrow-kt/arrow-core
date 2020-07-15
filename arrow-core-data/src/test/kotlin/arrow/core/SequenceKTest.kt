@@ -43,7 +43,7 @@ import arrow.core.test.laws.TraverseLaws
 import arrow.core.test.laws.UnalignLaws
 import arrow.core.test.laws.UnzipLaws
 import io.kotlintest.matchers.sequences.shouldBeEmpty
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 import kotlin.math.max
 import kotlin.math.min
@@ -64,13 +64,13 @@ class SequenceKTest : UnitSpec() {
       ),
 
       MonadCombineLaws.laws(SequenceK.monadCombine(), SequenceK.genK(), SequenceK.eqK()),
-      ShowLaws.laws(SequenceK.show(Int.show()), EQ, Gen.sequenceK(Gen.int())),
+      ShowLaws.laws(SequenceK.show(Int.show()), EQ, Arb.sequenceK(Arb.int())),
       MonoidKLaws.laws(SequenceK.monoidK(), SequenceK.genK(), SequenceK.eqK()),
-      MonoidLaws.laws(SequenceK.monoid(), Gen.sequenceK(Gen.int()), EQ),
+      MonoidLaws.laws(SequenceK.monoid(), Arb.sequenceK(Arb.int()), EQ),
       MonoidalLaws.laws(SequenceK.monoidal(), SequenceK.genK(), SequenceK.eqK(), this::bijection),
       TraverseLaws.laws(SequenceK.traverse(), SequenceK.genK(), SequenceK.eqK()),
       FunctorFilterLaws.laws(SequenceK.functorFilter(), SequenceK.genK(), SequenceK.eqK()),
-      HashLaws.laws(SequenceK.hash(Int.hash()), Gen.sequenceK(Gen.int()), SequenceK.eq(Int.eq())),
+      HashLaws.laws(SequenceK.hash(Int.hash()), Arb.sequenceK(Arb.int()), SequenceK.eq(Int.eq())),
       AlignLaws.laws(SequenceK.align(),
         SequenceK.genK(),
         SequenceK.eqK(),
@@ -101,13 +101,13 @@ class SequenceKTest : UnitSpec() {
     )
 
     "can align sequences" {
-      forAll(Gen.sequenceK(Gen.int()), Gen.sequenceK(Gen.string())) { a, b ->
+      forAll(Arb.sequenceK(Arb.int()), Arb.sequenceK(Arb.string())) { a, b ->
         SequenceK.semialign().run {
           align(a, b).fix().toList().size == max(a.toList().size, b.toList().size)
         }
       }
 
-      forAll(Gen.sequenceK(Gen.int()), Gen.sequenceK(Gen.string())) { a, b ->
+      forAll(Arb.sequenceK(Arb.int()), Arb.sequenceK(Arb.string())) { a, b ->
         SequenceK.semialign().run {
           align(a, b).fix().take(min(a.toList().size, b.toList().size)).all {
             it.isBoth
@@ -115,7 +115,7 @@ class SequenceKTest : UnitSpec() {
         }
       }
 
-      forAll(Gen.sequenceK(Gen.int()), Gen.sequenceK(Gen.string())) { a, b ->
+      forAll(Arb.sequenceK(Arb.int()), Arb.sequenceK(Arb.string())) { a, b ->
         SequenceK.semialign().run {
           val ls = a.toList()
           val rs = b.toList()
@@ -145,7 +145,7 @@ class SequenceKTest : UnitSpec() {
       val seq2 = generateSequence(0) { it + 1 }.k()
 
       SequenceK.semialign().run {
-        forAll(10, Gen.positiveIntegers().filter { it < 10_000 }) { idx: Int ->
+        forAll(10, Arb.positiveIntegers().filter { it < 10_000 }) { idx: Int ->
           val element = align(seq1, seq2).fix().drop(idx).first()
 
           element == Ior.Both("A", idx)

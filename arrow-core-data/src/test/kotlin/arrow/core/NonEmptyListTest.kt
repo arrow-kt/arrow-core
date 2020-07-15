@@ -29,7 +29,7 @@ import arrow.core.test.laws.SemigroupLaws
 import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
 import arrow.core.test.laws.UnzipLaws
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 import kotlin.math.max
 import kotlin.math.min
@@ -40,7 +40,7 @@ class NonEmptyListTest : UnitSpec() {
     val EQ1 = NonEmptyList.eq(Int.eq())
 
     testLaws(
-      ShowLaws.laws(NonEmptyList.show(Int.show()), EQ1, Gen.nonEmptyList(Gen.int())),
+      ShowLaws.laws(NonEmptyList.show(Int.show()), EQ1, Arb.nonEmptyList(Arb.int())),
       SemigroupKLaws.laws(
         NonEmptyList.semigroupK(),
         NonEmptyList.genK(),
@@ -56,8 +56,8 @@ class NonEmptyListTest : UnitSpec() {
         NonEmptyList.eqK()
       ),
       TraverseLaws.laws(NonEmptyList.traverse(), NonEmptyList.applicative(), NonEmptyList.genK(), NonEmptyList.eqK()),
-      SemigroupLaws.laws(NonEmptyList.semigroup(), Gen.nonEmptyList(Gen.int()), EQ1),
-      HashLaws.laws(NonEmptyList.hash(Int.hash()), Gen.nonEmptyList(Gen.int()), EQ1),
+      SemigroupLaws.laws(NonEmptyList.semigroup(), Arb.nonEmptyList(Arb.int()), EQ1),
+      HashLaws.laws(NonEmptyList.hash(Int.hash()), Arb.nonEmptyList(Arb.int()), EQ1),
       EqKLaws.laws(
         NonEmptyList.eqK(),
         NonEmptyList.genK()
@@ -70,13 +70,13 @@ class NonEmptyListTest : UnitSpec() {
     )
 
     "can align lists with different lengths" {
-      forAll(Gen.nonEmptyList(Gen.bool()), Gen.nonEmptyList(Gen.bool())) { a, b ->
+      forAll(Arb.nonEmptyList(Arb.bool()), Arb.nonEmptyList(Arb.bool())) { a, b ->
         NonEmptyList.semialign().run {
           align(a, b).fix().size == max(a.size, b.size)
         }
       }
 
-      forAll(Gen.nonEmptyList(Gen.bool()), Gen.nonEmptyList(Gen.bool())) { a, b ->
+      forAll(Arb.nonEmptyList(Arb.bool()), Arb.nonEmptyList(Arb.bool())) { a, b ->
         NonEmptyList.semialign().run {
           align(a, b).fix().all.take(min(a.size, b.size)).all {
             it.isBoth

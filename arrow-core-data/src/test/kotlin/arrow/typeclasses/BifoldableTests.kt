@@ -13,7 +13,7 @@ import arrow.core.test.generators.GenK2
 import arrow.core.test.generators.either
 import arrow.core.test.generators.intSmall
 import arrow.core.test.laws.BifoldableLaws
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 
 class BifoldableTests : UnitSpec() {
   init {
@@ -35,13 +35,13 @@ class BifoldableTests : UnitSpec() {
 
     val eitherComposeEither = eitherBifoldable.compose(eitherBifoldable)
 
-    val eitherGen = Gen.either(Gen.intSmall(), Gen.intSmall())
+    val eitherGen = Arb.either(Arb.intSmall(), Arb.intSmall())
 
     val genK2 = object : GenK2<Nested<ForEither, ForEither>> {
-      override fun <A, B> genK(genA: Gen<A>, genB: Gen<B>): Gen<Kind2<Nested<ForEither, ForEither>, A, B>> =
-        Gen.either(eitherGen, Gen.either(genA, genB)).map {
+      override fun <A, B> genK(genA: Arb<A>, genB: Arb<B>): Arb<Kind2<Nested<ForEither, ForEither>, A, B>> =
+        Arb.either(eitherGen, Arb.either(genA, genB)).map {
           it.binest()
-        } as Gen<Kind2<Nested<ForEither, ForEither>, A, B>>
+        } as Arb<Kind2<Nested<ForEither, ForEither>, A, B>>
     }
 
     testLaws(BifoldableLaws.laws(eitherComposeEither, genK2))

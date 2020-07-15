@@ -15,14 +15,14 @@ import arrow.core.test.laws.FxLaws
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import io.kotlintest.fail
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 
 class EvalTest : UnitSpec() {
 
   val GENK = object : GenK<ForEval> {
-    override fun <A> genK(gen: Gen<A>): Gen<Kind<ForEval, A>> {
+    override fun <A> genK(gen: Arb<A>): Arb<Kind<ForEval, A>> {
       return gen.map { Eval.now(it) }
     }
   }
@@ -32,7 +32,7 @@ class EvalTest : UnitSpec() {
       EQ.run { this@eqK.fix().value().eqv(other.fix().value()) }
   }
 
-  val G: Gen<Kind<ForEval, Int>> = GENK.genK(Gen.int())
+  val G: Arb<Kind<ForEval, Int>> = GENK.genK(Arb.int())
 
   init {
 
@@ -167,11 +167,11 @@ class EvalTest : UnitSpec() {
       class Defer : O()
 
       companion object {
-        val gen = Gen.oneOf<O>(
-          Gen.create { O.Map { it + 1 } },
-          Gen.create { O.FlatMap { Eval.Now(it) } },
-          Gen.create { O.Memoize() },
-          Gen.create { O.Defer() }
+        val gen = Arb.oneOf<O>(
+          Arb.create { O.Map { it + 1 } },
+          Arb.create { O.FlatMap { Eval.Now(it) } },
+          Arb.create { O.Memoize() },
+          Arb.create { O.Defer() }
         )
       }
     }
@@ -199,7 +199,7 @@ class EvalTest : UnitSpec() {
         step(0, leaf, mutableListOf())
       }
 
-      val gen = Gen.create {
+      val gen = Arb.create {
         val leaf = { Eval.Now(0) }
         val eval = build(leaf, O.gen.random().take(maxDepth).toList())
         DeepEval(eval)

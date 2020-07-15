@@ -26,7 +26,7 @@ import arrow.core.test.laws.MonoidalLaws
 import arrow.core.test.laws.SemigroupKLaws
 import arrow.core.test.laws.ShowLaws
 import arrow.typeclasses.Eq
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 
 class SetKTest : UnitSpec() {
 
@@ -43,8 +43,8 @@ class SetKTest : UnitSpec() {
     val EQ = SetK.eq(Int.eq())
 
     testLaws(
-      ShowLaws.laws(SetK.show(Int.show()), EQ, Gen.genSetK(Gen.int())),
-      MonoidLaws.laws(SetK.monoid(), Gen.genSetK(Gen.int()), EQ),
+      ShowLaws.laws(SetK.show(Int.show()), EQ, Arb.genSetK(Arb.int())),
+      MonoidLaws.laws(SetK.monoid(), Arb.genSetK(Arb.int()), EQ),
       SemigroupKLaws.laws(SetK.semigroupK(), SetK.genK(), SetK.eqK()),
       MonoidalLaws.laws(SetK.monoidal(),
         SetK.genK(10),
@@ -53,7 +53,7 @@ class SetKTest : UnitSpec() {
       ),
       MonoidKLaws.laws(SetK.monoidK(), SetK.genK(), SetK.eqK()),
       FoldableLaws.laws(SetK.foldable(), SetK.genK()),
-      HashLaws.laws(SetK.hash(Int.hash()), Gen.genSetK(Gen.int()), SetK.eq(Int.eq())),
+      HashLaws.laws(SetK.hash(Int.hash()), Arb.genSetK(Arb.int()), SetK.eq(Int.eq())),
       EqKLaws.laws(
         SetK.eqK(),
         SetK.genK()

@@ -7,7 +7,7 @@ import arrow.core.test.generators.functionAToB
 import arrow.typeclasses.Alternative
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 object AlternativeLaws {
@@ -18,8 +18,8 @@ object AlternativeLaws {
     EQK: EqK<F>
   ): List<Law> {
     val EQ = EQK.liftEq(Int.eq())
-    val cf = GENK.genK(Gen.int())
-    val cff = GENK.genK(Gen.functionAToB<Int, Int>(Gen.int()))
+    val cf = GENK.genK(Arb.int())
+    val cff = GENK.genK(Arb.functionAToB<Int, Int>(Arb.int()))
 
     return ApplicativeLaws.laws(AF, GENK, EQK) + MonoidKLaws.laws(AF, GENK, EQK) + listOf(
       Law("Alternative Laws: Right Absorption") { AF.alternativeRightAbsorption(cff, EQ) },
@@ -33,20 +33,20 @@ object AlternativeLaws {
     )
   }
 
-  fun <F> Alternative<F>.alternativeRightAbsorption(G: Gen<Kind<F, (Int) -> Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  fun <F> Alternative<F>.alternativeRightAbsorption(G: Arb<Kind<F, (Int) -> Int>>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(G) { fa: Kind<F, (Int) -> Int> ->
       empty<Int>().ap(fa).equalUnderTheLaw(empty(), EQ)
     }
 
-  fun <F> Alternative<F>.alternativeLeftDistributivity(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
-    forAll(G, G, Gen.functionAToB<Int, Int>(Gen.int())
+  fun <F> Alternative<F>.alternativeLeftDistributivity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+    forAll(G, G, Arb.functionAToB<Int, Int>(Arb.int())
     ) { fa: Kind<F, Int>, fa2: Kind<F, Int>, f: (Int) -> Int ->
       fa.combineK(fa2).map(f).equalUnderTheLaw(fa.map(f).combineK(fa2.map(f)), EQ)
     }
 
   fun <F> Alternative<F>.alternativeRightDistributivity(
-    G: Gen<Kind<F, Int>>,
-    GF: Gen<Kind<F, (Int) -> Int>>,
+    G: Arb<Kind<F, Int>>,
+    GF: Arb<Kind<F, (Int) -> Int>>,
     EQ: Eq<Kind<F, Int>>
   ): Unit =
     forAll(G, GF, GF) { fa: Kind<F, Int>, ff: Kind<F, (Int) -> Int>, fg: Kind<F, (Int) -> Int> ->
@@ -54,7 +54,7 @@ object AlternativeLaws {
     }
 
   fun <F> Alternative<F>.alternativeAssociativity(
-    G: Gen<Kind<F, Int>>,
+    G: Arb<Kind<F, Int>>,
     EQ: Eq<Kind<F, Int>>
   ): Unit =
     forAll(G, G, G) { fa: Kind<F, Int>, fa2: Kind<F, Int>, fa3: Kind<F, Int> ->

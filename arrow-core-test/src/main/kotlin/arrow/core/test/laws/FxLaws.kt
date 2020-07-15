@@ -6,7 +6,7 @@ import arrow.core.test.generators.throwable
 import arrow.typeclasses.Eq
 import arrow.typeclasses.suspended.BindSyntax
 import io.kotlintest.fail
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
@@ -23,8 +23,8 @@ private typealias SuspendFxBlock<F, A> = suspend (suspend BindSyntax<F>.() -> A)
 object FxLaws {
 
   fun <F, A> laws(
-    pureGen: Gen<Kind<F, A>>, // TODO cannot specify or filter a pure generator, so we need to require an additional one
-    G: Gen<Kind<F, A>>,
+    pureGen: Arb<Kind<F, A>>, // TODO cannot specify or filter a pure generator, so we need to require an additional one
+    G: Arb<Kind<F, A>>,
     EQ: Eq<Kind<F, A>>,
     fxEager: EagerFxBlock<F, A>,
     fxSuspend: SuspendFxBlock<F, A>
@@ -37,7 +37,7 @@ object FxLaws {
     Law("suspended fx can bind suspended exceptions") { suspendedCanBindSuspendedExceptions(pureGen, fxSuspend) }
   )
 
-  private suspend fun <F, A> nonSuspendedCanBindImmediateValues(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
+  private suspend fun <F, A> nonSuspendedCanBindImmediateValues(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
     forAll(G) { f: Kind<F, A> ->
       fxBlock {
         val res = !f
@@ -46,8 +46,8 @@ object FxLaws {
     }
   }
 
-  private fun <F, A> nonSuspendedCanBindImmediateException(G: Gen<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
-    forAll(G, Gen.throwable()) { f, exception ->
+  private fun <F, A> nonSuspendedCanBindImmediateException(G: Arb<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
+    forAll(G, Arb.throwable()) { f, exception ->
       shouldThrow<Throwable> {
         fxBlock {
           val res = !f
@@ -60,7 +60,7 @@ object FxLaws {
     }
   }
 
-  private suspend fun <F, A> suspendedCanBindImmediateValues(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
+  private suspend fun <F, A> suspendedCanBindImmediateValues(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
     G.random()
       .take(1001)
       .forEach { f ->
@@ -71,7 +71,7 @@ object FxLaws {
       }
   }
 
-  private suspend fun <F, A> suspendedCanBindSuspendedValues(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
+  private suspend fun <F, A> suspendedCanBindSuspendedValues(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
     G.random()
       .take(10)
       .forEach { f ->
@@ -82,8 +82,8 @@ object FxLaws {
       }
   }
 
-  private suspend fun <F, A> suspendedCanBindImmediateExceptions(G: Gen<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
-    Gen.bind(G, Gen.throwable(), ::Pair)
+  private suspend fun <F, A> suspendedCanBindImmediateExceptions(G: Arb<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
+    Arb.bind(G, Arb.throwable(), ::Pair)
       .random()
       .take(1001)
       .forEach { (f, exception) ->
@@ -98,8 +98,8 @@ object FxLaws {
       }
   }
 
-  private suspend fun <F, A> suspendedCanBindSuspendedExceptions(G: Gen<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
-    Gen.bind(G, Gen.throwable(), ::Pair)
+  private suspend fun <F, A> suspendedCanBindSuspendedExceptions(G: Arb<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
+    Arb.bind(G, Arb.throwable(), ::Pair)
       .random()
       .take(10)
       .forEach { (f, exception) ->

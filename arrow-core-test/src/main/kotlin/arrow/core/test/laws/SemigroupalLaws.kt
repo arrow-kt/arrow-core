@@ -8,7 +8,7 @@ import arrow.core.test.generators.GenK
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.Semigroupal
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 object SemigroupalLaws {
@@ -20,11 +20,11 @@ object SemigroupalLaws {
     EQK: EqK<F>
   ): List<Law> = listOf(Law("Semigroupal: Bijective associativity") {
     val EQ = EQK.liftEq(Tuple2.eq(Int.eq(), Tuple2.eq(Int.eq(), Int.eq())))
-    SGAL.semigroupalAssociative(GENK.genK(Gen.int()), bijection, EQ)
+    SGAL.semigroupalAssociative(GENK.genK(Arb.int()), bijection, EQ)
   })
 
   private fun <F> Semigroupal<F>.semigroupalAssociative(
-    GEN: Gen<Kind<F, Int>>,
+    GEN: Arb<Kind<F, Int>>,
     bijection: (Kind<F, Tuple2<Tuple2<Int, Int>, Int>>) -> (Kind<F, Tuple2<Int, Tuple2<Int, Int>>>),
     EQ: Eq<Kind<F, Tuple2<Int, Tuple2<Int, Int>>>>
   ) = forAll(GEN, GEN, GEN) { a, b, c ->

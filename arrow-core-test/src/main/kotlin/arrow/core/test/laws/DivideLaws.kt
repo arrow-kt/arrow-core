@@ -8,7 +8,7 @@ import arrow.core.test.generators.GenK
 import arrow.typeclasses.Divide
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 object DivideLaws {
@@ -18,7 +18,7 @@ object DivideLaws {
     GENK: GenK<F>,
     EQK: EqK<F>
   ): List<Law> {
-    val G = GENK.genK(Gen.int())
+    val G = GENK.genK(Arb.int())
 
     return ContravariantLaws.laws(DF, GENK, EQK) + listOf(
       Law("Divide laws: Associative") { DF.associative(G, EQK.liftEq(Int.eq())) }
@@ -28,7 +28,7 @@ object DivideLaws {
   fun <A> delta(a: A): Tuple2<A, A> = a toT a
 
   fun <F> Divide<F>.associative(
-    G: Gen<Kind<F, Int>>,
+    G: Arb<Kind<F, Int>>,
     EQ: Eq<Kind<F, Int>>
   ): Unit =
     forAll(G) { fa ->

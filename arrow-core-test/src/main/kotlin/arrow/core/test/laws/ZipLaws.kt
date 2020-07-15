@@ -14,7 +14,7 @@ import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.Foldable
 import arrow.typeclasses.Zip
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 object ZipLaws {
@@ -42,8 +42,8 @@ object ZipLaws {
     GENK: GenK<F>,
     EQK: EqK<F>
   ): List<Law> {
-    val intGen = GENK.genK(Gen.int())
-    val tupleGen = GENK.genK(Gen.tuple2(Gen.int(), Gen.int()))
+    val intGen = GENK.genK(Arb.int())
+    val tupleGen = GENK.genK(Arb.tuple2(Arb.int(), Arb.int()))
 
     return listOf(
       Law("Zip Laws: Idempotency") { ZIP.idempotency(intGen, EQK.liftEq(intTupleEq)) },
@@ -62,17 +62,17 @@ object ZipLaws {
     )
   }
 
-  fun <F, A> Zip<F>.idempotency(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, Tuple2<A, A>>>) =
+  fun <F, A> Zip<F>.idempotency(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Tuple2<A, A>>>) =
     forAll(G) { x ->
       x.zip(x).equalUnderTheLaw(x.map { it toT it }, EQ)
     }
 
-  fun <F, A> Zip<F>.commutativity(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, Tuple2<A, A>>>) =
+  fun <F, A> Zip<F>.commutativity(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Tuple2<A, A>>>) =
     forAll(G, G) { x, y ->
       x.zip(y).equalUnderTheLaw(y.zip(x).map { it.reverse() }, EQ)
     }
 
-  fun <F, A> Zip<F>.associativity(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, Tuple2<A, Tuple2<A, A>>>>) =
+  fun <F, A> Zip<F>.associativity(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Tuple2<A, Tuple2<A, A>>>>) =
     forAll(G, G, G) { x, y, z ->
       val ls = x.zip(y.zip(z))
       val rs = (x.zip(y)).zip(z).map { it.assoc() }
@@ -80,12 +80,12 @@ object ZipLaws {
       ls.equalUnderTheLaw(rs, EQ)
     }
 
-  fun <F, A> Zip<F>.absorption1(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
+  fun <F, A> Zip<F>.absorption1(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
     forAll(G, G) { x, y ->
       x.zip(align(x, y)).map { it.a }.equalUnderTheLaw(x, EQ)
     }
 
-  fun <F, A> Zip<F>.absorption2(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, Ior<A, Tuple2<A, A>>>>) =
+  fun <F, A> Zip<F>.absorption2(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<A, Tuple2<A, A>>>>) =
     forAll(G, G) { x, y ->
       val ls = align(x, x.zip(y)).map { it.toLeft() }
       val rs = x.map { it.leftIor() }
@@ -93,7 +93,7 @@ object ZipLaws {
       ls.equalUnderTheLaw(rs, EQ)
     }
 
-  fun <F, A> Zip<F>.zipWith(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, String>>) =
+  fun <F, A> Zip<F>.zipWith(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, String>>) =
     forAll(G, G) { x, y ->
       val f = { a: A, b: A -> "f($a,$b)" }
       val ls = x.zipWith(y, f)
@@ -102,7 +102,7 @@ object ZipLaws {
       ls.equalUnderTheLaw(rs, EQ)
     }
 
-  fun <F, A> Zip<F>.functoriality(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, Tuple2<String, String>>>) =
+  fun <F, A> Zip<F>.functoriality(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Tuple2<String, String>>>) =
     forAll(G, G) { x, y ->
       val f = { a: A -> "f($a)" }
       val g = { a: A -> "g($a)" }
@@ -113,22 +113,22 @@ object ZipLaws {
       ls.equalUnderTheLaw(rs, EQ)
     }
 
-  fun <F, A> Zip<F>.zippyness1(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
+  fun <F, A> Zip<F>.zippyness1(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
     forAll(G) { x ->
       x.zip(x).map { it.a }.equalUnderTheLaw(x, EQ)
     }
 
-  fun <F, A> Zip<F>.zippyness2(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
+  fun <F, A> Zip<F>.zippyness2(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
     forAll(G) { x ->
       x.zip(x).map { it.b }.equalUnderTheLaw(x, EQ)
     }
 
-  fun <F, A> Zip<F>.zippyness3(G: Gen<Kind<F, Tuple2<A, A>>>, EQ: Eq<Kind<F, Tuple2<A, A>>>) =
+  fun <F, A> Zip<F>.zippyness3(G: Arb<Kind<F, Tuple2<A, A>>>, EQ: Eq<Kind<F, Tuple2<A, A>>>) =
     forAll(G) { x ->
       (x.map { it.a }).zip(x.map { it.b }).equalUnderTheLaw(x, EQ)
     }
 
-  fun <F, A> Zip<F>.distributivity1(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, Ior<Tuple2<A, A>, A>>>) =
+  fun <F, A> Zip<F>.distributivity1(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<Tuple2<A, A>, A>>>) =
     forAll(G, G, G) { x, y, z ->
       val ls = align(x.zip(y), z)
       val rs = align(x, z).zip(align(y, z)).map { it.undistrThesePair() }
@@ -136,7 +136,7 @@ object ZipLaws {
       ls.equalUnderTheLaw(rs, EQ)
     }
 
-  fun <F, A> Zip<F>.distributivity2(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, Ior<Tuple2<A, A>, Tuple2<A, A>>>>) =
+  fun <F, A> Zip<F>.distributivity2(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<Tuple2<A, A>, Tuple2<A, A>>>>) =
     forAll(G, G, G) { x, y, z ->
       val ls = align(x, y).zip(z).map { it.distrPairThese() }
       val rs = align(x.zip(z), y.zip(z))
@@ -144,7 +144,7 @@ object ZipLaws {
       ls.equalUnderTheLaw(rs, EQ)
     }
 
-  fun <F, A> Zip<F>.distributivity3(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, Tuple2<Ior<A, A>, A>>>) =
+  fun <F, A> Zip<F>.distributivity3(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Tuple2<Ior<A, A>, A>>>) =
     forAll(G, G, G) { x, y, z ->
       val ls = align(x, y).zip(z)
       val rs = align(x.zip(z), y.zip(z)).map { it.undistrPairThese() }

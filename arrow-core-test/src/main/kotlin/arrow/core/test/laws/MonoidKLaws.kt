@@ -7,13 +7,13 @@ import arrow.core.test.generators.GenK
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.MonoidK
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 object MonoidKLaws {
 
   fun <F> laws(SGK: MonoidK<F>, GENK: GenK<F>, EQK: EqK<F>): List<Law> {
-    val GEN = GENK.genK(Gen.int())
+    val GEN = GENK.genK(Arb.int())
     val EQ = EQK.liftEq(Int.eq())
 
     return SemigroupKLaws.laws(SGK, GENK, EQK) + listOf(
@@ -22,17 +22,17 @@ object MonoidKLaws {
         Law("MonoidK Laws: Fold with Monoid instance") { SGK.monoidKFold(GEN, EQ) })
   }
 
-  fun <F> MonoidK<F>.monoidKLeftIdentity(GEN: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  fun <F> MonoidK<F>.monoidKLeftIdentity(GEN: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(GEN) { fa: Kind<F, Int> ->
       empty<Int>().combineK(fa).equalUnderTheLaw(fa, EQ)
     }
 
-  fun <F> MonoidK<F>.monoidKRightIdentity(GEN: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  fun <F> MonoidK<F>.monoidKRightIdentity(GEN: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(GEN) { fa: Kind<F, Int> ->
       fa.combineK(empty<Int>()).equalUnderTheLaw(fa, EQ)
     }
 
-  fun <F> MonoidK<F>.monoidKFold(GEN: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
+  fun <F> MonoidK<F>.monoidKFold(GEN: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
     val mo = this
     forAll(GEN) { fa: Kind<F, Int> ->
       listOf(fa).fold(mo.algebra()).equalUnderTheLaw(fa, EQ)

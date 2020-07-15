@@ -26,7 +26,7 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.EqK2
 import arrow.typeclasses.conest
 import arrow.typeclasses.counnest
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 
@@ -42,23 +42,23 @@ class AndThenTest : UnitSpec() {
   }
 
   fun conestedGENK() = object : GenK<Conested<ForAndThen, Int>> {
-    override fun <A> genK(gen: Gen<A>): Gen<Kind<Conested<ForAndThen, Int>, A>> = gen.map {
+    override fun <A> genK(gen: Arb<A>): Arb<Kind<Conested<ForAndThen, Int>, A>> = gen.map {
       AndThen.just<Int, A>(it).conest()
-    } as Gen<Kind<Conested<ForAndThen, Int>, A>>
+    } as Arb<Kind<Conested<ForAndThen, Int>, A>>
   }
 
   init {
 
     testLaws(
       MonadLaws.laws(AndThen.monad(), AndThen.functor(), AndThen.applicative(), AndThen.monad(), AndThen.genK(), AndThen.eqK<Int>()),
-      MonoidLaws.laws(AndThen.monoid<Int, Int>(Int.monoid()), Gen.int().map { i -> AndThen<Int, Int> { i } }, EQ),
+      MonoidLaws.laws(AndThen.monoid<Int, Int>(Int.monoid()), Arb.int().map { i -> AndThen<Int, Int> { i } }, EQ),
       ContravariantLaws.laws(AndThen.contravariant(), conestedGENK(), conestedEQK),
       ProfunctorLaws.laws(AndThen.profunctor(), AndThen.genK2(), AndThen.eqK2()),
       CategoryLaws.laws(AndThen.category(), AndThen.genK2(), AndThen.eqK2())
     )
 
     "compose a chain of functions with andThen should be same with AndThen" {
-      forAll(Gen.int(), Gen.list(Gen.functionAToB<Int, Int>(Gen.int()))) { i, fs ->
+      forAll(Arb.int(), Arb.list(Arb.functionAToB<Int, Int>(Arb.int()))) { i, fs ->
         val result = fs.map(AndThen.Companion::invoke)
           .fold(AndThen<Int, Int>(::identity)) { acc, b ->
             acc.andThen(b)
@@ -73,7 +73,7 @@ class AndThenTest : UnitSpec() {
     }
 
     "compose a chain of function with compose should be same with AndThen" {
-      forAll(Gen.int(), Gen.list(Gen.functionAToB<Int, Int>(Gen.int()))) { i, fs ->
+      forAll(Arb.int(), Arb.list(Arb.functionAToB<Int, Int>(Arb.int()))) { i, fs ->
         val result = fs.map(AndThen.Companion::invoke)
           .fold(AndThen<Int, Int>(::identity)) { acc, b ->
             acc.compose(b)
@@ -140,13 +140,13 @@ private fun AndThen.Companion.eqK2() = object : EqK2<ForAndThen> {
 }
 
 private fun <A> AndThen.Companion.genK() = object : GenK<AndThenPartialOf<A>> {
-  override fun <B> genK(gen: Gen<B>): Gen<Kind<AndThenPartialOf<A>, B>> =
+  override fun <B> genK(gen: Arb<B>): Arb<Kind<AndThenPartialOf<A>, B>> =
     gen.map {
       AndThen.just<A, B>(it)
     }
 }
 
 private fun AndThen.Companion.genK2() = object : GenK2<ForAndThen> {
-  override fun <A, B> genK(genA: Gen<A>, genB: Gen<B>): Gen<Kind2<ForAndThen, A, B>> =
+  override fun <A, B> genK(genA: Arb<A>, genB: Arb<B>): Arb<Kind2<ForAndThen, A, B>> =
     AndThen.genK<A>().genK(genB)
 }

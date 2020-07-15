@@ -14,13 +14,13 @@ import arrow.core.test.generators.option
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.FunctorFilter
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 object FunctorFilterLaws {
 
   fun <F> laws(FFF: FunctorFilter<F>, GENK: GenK<F>, EQK: EqK<F>): List<Law> {
-    val GEN = GENK.genK(Gen.int())
+    val GEN = GENK.genK(Arb.int())
     val EQ = EQK.liftEq(Int.eq())
 
     return FunctorLaws.laws(FFF, GENK, EQK) + listOf(
@@ -32,39 +32,39 @@ object FunctorFilterLaws {
     )
   }
 
-  fun <F> FunctorFilter<F>.filterMapComposition(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  fun <F> FunctorFilter<F>.filterMapComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(
       G,
-      Gen.functionAToB<Int, Option<Int>>(Gen.option(Gen.intSmall())),
-      Gen.functionAToB<Int, Option<Int>>(Gen.option(Gen.intSmall()))
+      Arb.functionAToB<Int, Option<Int>>(Arb.option(Arb.intSmall())),
+      Arb.functionAToB<Int, Option<Int>>(Arb.option(Arb.intSmall()))
     ) { fa: Kind<F, Int>, f, g ->
       fa.filterMap(f).filterMap(g).equalUnderTheLaw(fa.filterMap { a -> f(a).flatMap(g) }, EQ)
     }
 
-  fun <F> FunctorFilter<F>.filterMapMapConsistency(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  fun <F> FunctorFilter<F>.filterMapMapConsistency(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(
       G,
-      Gen.functionAToB<Int, Int>(Gen.int())
+      Arb.functionAToB<Int, Int>(Arb.int())
     ) { fa: Kind<F, Int>, f ->
       fa.filterMap { Some(f(it)) }.equalUnderTheLaw(fa.map(f), EQ)
     }
 
-  fun <F> FunctorFilter<F>.flattenOptionConsistentWithfilterMap(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  fun <F> FunctorFilter<F>.flattenOptionConsistentWithfilterMap(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(
       G
     ) { fa: Kind<F, Int> ->
       fa.map { it.some() }.flattenOption().equalUnderTheLaw(fa.filterMap { Some(identity(it)) }, EQ)
     }
 
-  fun <F> FunctorFilter<F>.filterConsistentWithfilterMap(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  fun <F> FunctorFilter<F>.filterConsistentWithfilterMap(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(
       G,
-      Gen.functionAToB<Int, Boolean>(Gen.bool())
+      Arb.functionAToB<Int, Boolean>(Arb.bool())
     ) { fa: Kind<F, Int>, f ->
       fa.filter(f).equalUnderTheLaw(fa.filterMap { if (f(it)) Some(it) else None }, EQ)
     }
 
-  fun <F> FunctorFilter<F>.filterIsInstanceConsistentWithfilterMap(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  fun <F> FunctorFilter<F>.filterIsInstanceConsistentWithfilterMap(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(
       G
     ) { fa: Kind<F, Int> ->

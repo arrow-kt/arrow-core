@@ -5,7 +5,7 @@ import arrow.core.test.UnitSpec
 import arrow.core.test.generators.endo
 import arrow.core.test.laws.MonoidLaws
 import arrow.typeclasses.Eq
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 
 class EndoTest : UnitSpec() {
   val EQ: Eq<Endo<Int>> = Eq { a, b ->
@@ -14,7 +14,7 @@ class EndoTest : UnitSpec() {
 
   init {
     testLaws(
-      MonoidLaws.laws(Endo.monoid(), Gen.endo(Gen.int()), EQ)
+      MonoidLaws.laws(Endo.monoid(), Arb.endo(Arb.int()), EQ)
     )
   }
 }

@@ -6,7 +6,7 @@ import arrow.core.test.generators.GenK
 import arrow.typeclasses.Divisible
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 object DivisibleLaws {
@@ -16,7 +16,7 @@ object DivisibleLaws {
     GENK: GenK<F>,
     EQK: EqK<F>
   ): List<Law> {
-    val G = GENK.genK(Gen.int())
+    val G = GENK.genK(Arb.int())
     val EQ = EQK.liftEq(Int.eq())
     return DivideLaws.laws(DF, GENK, EQK) + listOf(
         Law("Divisible laws: Left identity") { DF.leftIdentity(G, EQ) },
@@ -25,7 +25,7 @@ object DivisibleLaws {
   }
 
   fun <F> Divisible<F>.leftIdentity(
-    G: Gen<Kind<F, Int>>,
+    G: Arb<Kind<F, Int>>,
     EQ: Eq<Kind<F, Int>>
   ): Unit =
     forAll(G) { fa ->
@@ -33,7 +33,7 @@ object DivisibleLaws {
     }
 
   fun <F> Divisible<F>.rightIdentity(
-    G: Gen<Kind<F, Int>>,
+    G: Arb<Kind<F, Int>>,
     EQ: Eq<Kind<F, Int>>
   ): Unit =
     forAll(G) { fa ->

@@ -43,7 +43,7 @@ import arrow.core.test.laws.TraverseFilterLaws
 import arrow.core.test.laws.UnalignLaws
 import arrow.core.test.laws.UnzipLaws
 import arrow.typeclasses.Eq
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotBe
@@ -72,12 +72,12 @@ class OptionTest : UnitSpec() {
         Option.genK(),
         Option.eqK()
       ),
-      ShowLaws.laws(Option.show(Int.show()), Option.eq(Int.eq()), Gen.option(Gen.int())),
-      MonoidLaws.laws(Option.monoid(Int.monoid()), Gen.option(Gen.int()), Option.eq(Int.eq())),
+      ShowLaws.laws(Option.show(Int.show()), Option.eq(Int.eq()), Arb.option(Arb.int())),
+      MonoidLaws.laws(Option.monoid(Int.monoid()), Arb.option(Arb.int()), Option.eq(Int.eq())),
       // testLaws(MonadErrorLaws.laws(monadError<ForOption, Unit>(), Eq.any(), EQ_EITHER)) TODO reenable once the MonadErrorLaws are parametric to `E`
       FunctorFilterLaws.laws(Option.traverseFilter(), Option.genK(), Option.eqK()),
       TraverseFilterLaws.laws(Option.traverseFilter(), Option.applicative(), Option.genK(), Option.eqK()),
-      HashLaws.laws(Option.hash(Int.hash()), Gen.option(Gen.int()), Option.eq(Int.eq())),
+      HashLaws.laws(Option.hash(Int.hash()), Arb.option(Arb.int()), Option.eq(Int.eq())),
       MonoidalLaws.laws(Option.monoidal(), Option.genK(), Option.eqK(), ::bijection),
       EqKLaws.laws(
         Option.eqK(),

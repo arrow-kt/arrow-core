@@ -37,15 +37,15 @@ import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
 import arrow.core.test.laws.UnzipLaws
 import arrow.typeclasses.Eq
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 class IdTest : UnitSpec() {
 
   init {
     testLaws(
-      MonoidLaws.laws(Id.monoid(Int.monoid()), Gen.constant(Id(1)), Id.eq(Int.eq())),
-      ShowLaws.laws(Id.show(Int.show()), Eq.any(), Gen.id(Gen.int())),
+      MonoidLaws.laws(Id.monoid(Int.monoid()), Arb.constant(Id(1)), Id.eq(Int.eq())),
+      ShowLaws.laws(Id.show(Int.show()), Eq.any(), Arb.id(Arb.int())),
       TraverseLaws.laws(Id.traverse(), Id.applicative(), Id.genK(), Id.eqK()),
       BimonadLaws.laws(
         Id.bimonad(),
@@ -57,7 +57,7 @@ class IdTest : UnitSpec() {
         Id.genK(),
         Id.eqK()
       ),
-      HashLaws.laws(Id.hash(Int.hash()), Gen.id(Gen.int()), Id.eq(Int.eq())),
+      HashLaws.laws(Id.hash(Int.hash()), Arb.id(Arb.int()), Id.eq(Int.eq())),
       EqKLaws.laws(
         Id.eqK(),
         Id.genK()

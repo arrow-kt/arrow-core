@@ -13,7 +13,7 @@ import arrow.typeclasses.Align
 import arrow.typeclasses.Bicrosswalk
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK2
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 import kotlin.math.abs
 
@@ -25,7 +25,7 @@ object BicrosswalkLaws {
     EQK: EqK2<T>
   ): List<Law> {
 
-    val funGen = object : Gen<(Int) -> Kind<ForListK, String>> {
+    val funGen = object : Arb<(Int) -> Kind<ForListK, String>> {
       override fun constants(): Iterable<(Int) -> ListK<String>> = listOf(
         { _: Int -> ListK.empty<String>() }, { _: Int -> ListK.just("value") }
       )
@@ -33,7 +33,7 @@ object BicrosswalkLaws {
       override fun random(): Sequence<(Int) -> ListK<String>> = generateSequence({ int: Int -> List(abs(int % 1000)) { "$it" }.k() }) { it }
     }
 
-    val G = GENK.genK(Gen.int(), Gen.int())
+    val G = GENK.genK(Arb.int(), Arb.int())
     val EQ = EQK.liftEq(String.eq(), String.eq())
     val EQ1 = ListK.eqK().liftEq(EQ)
 
@@ -49,7 +49,7 @@ object BicrosswalkLaws {
 
   fun <T, F, A, B, C, D> Bicrosswalk<T>.bicrosswalkEmpty(
     ALIGN: Align<F>,
-    G: Gen<Kind2<T, A, B>>,
+    G: Arb<Kind2<T, A, B>>,
     EQ: Eq<Kind<F, Kind2<T, C, D>>>
   ) = forAll(G) { a: Kind2<T, A, B> ->
 
@@ -61,9 +61,9 @@ object BicrosswalkLaws {
 
   fun <T, F, A, B, C, D> Bicrosswalk<T>.bicrosswalkSequencelEquality(
     ALIGN: Align<F>,
-    G: Gen<Kind2<T, A, B>>,
-    faGen: Gen<(A) -> Kind<F, C>>,
-    fbGen: Gen<(B) -> Kind<F, D>>,
+    G: Arb<Kind2<T, A, B>>,
+    faGen: Arb<(A) -> Kind<F, C>>,
+    fbGen: Arb<(B) -> Kind<F, D>>,
     EQ: Eq<Kind<F, Kind2<T, C, D>>>
   ) {
     forAll(G, faGen, fbGen) { a: Kind2<T, A, B>, fa: (A) -> Kind<F, C>, fb: (B) -> Kind<F, D> ->

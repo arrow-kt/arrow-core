@@ -42,7 +42,7 @@ import arrow.core.test.laws.SemigroupKLaws
 import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
 import arrow.typeclasses.Eq
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 
@@ -50,7 +50,7 @@ class EitherTest : UnitSpec() {
 
   val EQ: Eq<Kind<EitherPartialOf<ForId>, Int>> = Eq.any()
   val throwableEQ: Eq<Throwable> = Eq.any()
-  val GEN = Gen.either(Gen.string(), Gen.int())
+  val GEN = Arb.either(Arb.string(), Arb.int())
 
   init {
     testLaws(
@@ -63,15 +63,15 @@ class EitherTest : UnitSpec() {
         Either.functor(),
         Either.applicative(),
         Either.monad(),
-        Either.genK(Gen.throwable()),
+        Either.genK(Arb.throwable()),
         Either.eqK(throwableEQ)
       ),
-      TraverseLaws.laws(Either.traverse(), Either.applicative(), Either.genK(Gen.int()), Either.eqK(Int.eq())),
+      TraverseLaws.laws(Either.traverse(), Either.applicative(), Either.genK(Arb.int()), Either.eqK(Int.eq())),
       BitraverseLaws.laws(Either.bitraverse(), Either.genK2(), Either.eqK2()),
-      SemigroupKLaws.laws(Either.semigroupK(), Either.genK(Gen.id(Gen.int())), Either.eqK(Id.eq(Int.eq()))),
+      SemigroupKLaws.laws(Either.semigroupK(), Either.genK(Arb.id(Arb.int())), Either.eqK(Id.eq(Int.eq()))),
       HashLaws.laws(Either.hash(String.hash(), Int.hash()), GEN, Either.eq(String.eq(), Int.eq())),
       BicrosswalkLaws.laws(Either.bicrosswalk(), Either.genK2(), Either.eqK2()),
-      FxLaws.laws<EitherPartialOf<String>, Int>(Gen.int().map(::Right), GEN.map { it }, Either.eqK(String.eq()).liftEq(Int.eq()), ::either, ::either)
+      FxLaws.laws<EitherPartialOf<String>, Int>(Arb.int().map(::Right), GEN.map { it }, Either.eqK(String.eq()).liftEq(Int.eq()), ::either, ::either)
     )
 
     "fromNullable should lift value as a Right if it is not null" {
@@ -130,7 +130,7 @@ class EitherTest : UnitSpec() {
     }
 
     "filterOrElse should filter values" {
-      forAll(Gen.intSmall(), Gen.intSmall()) { a: Int, b: Int ->
+      forAll(Arb.intSmall(), Arb.intSmall()) { a: Int, b: Int ->
         val left: Either<Int, Int> = Left(a)
 
         Right(a).filterOrElse({ it > a - 1 }, { b }) == Right(a) &&
@@ -141,7 +141,7 @@ class EitherTest : UnitSpec() {
     }
 
     "filterOrOther should filter values" {
-      forAll(Gen.intSmall(), Gen.intSmall()) { a: Int, b: Int ->
+      forAll(Arb.intSmall(), Arb.intSmall()) { a: Int, b: Int ->
         val left: Either<Int, Int> = Left(a)
 
         Right(a).filterOrOther({ it > a - 1 }, { b + a }) == Right(a) &&
@@ -188,7 +188,7 @@ class EitherTest : UnitSpec() {
     }
 
     "contains should check value" {
-      forAll(Gen.intSmall(), Gen.intSmall()) { a: Int, b: Int ->
+      forAll(Arb.intSmall(), Arb.intSmall()) { a: Int, b: Int ->
         Right(a).contains(a) &&
           !Right(a).contains(b) &&
           !Left(a).contains(a)
@@ -196,7 +196,7 @@ class EitherTest : UnitSpec() {
     }
 
     "mapLeft should alter left instance only" {
-      forAll(Gen.intSmall(), Gen.intSmall()) { a: Int, b: Int ->
+      forAll(Arb.intSmall(), Arb.intSmall()) { a: Int, b: Int ->
         val right: Either<Int, Int> = Right(a)
         val left: Either<Int, Int> = Left(b)
         right.mapLeft { it + 1 } == right && left.mapLeft { it + 1 } == Left(b + 1)

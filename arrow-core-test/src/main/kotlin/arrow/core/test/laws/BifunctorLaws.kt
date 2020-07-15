@@ -8,13 +8,13 @@ import arrow.core.test.generators.functionAToB
 import arrow.typeclasses.Bifunctor
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK2
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 object BifunctorLaws {
 
   fun <F> laws(BF: Bifunctor<F>, GENK: GenK2<F>, EQK: EqK2<F>): List<Law> {
-    val G = GENK.genK(Gen.int(), Gen.int())
+    val G = GENK.genK(Arb.int(), Arb.int())
     val EQ = EQK.liftEq(Int.eq(), Int.eq())
 
     return listOf(
@@ -23,18 +23,18 @@ object BifunctorLaws {
     )
   }
 
-  fun <F> Bifunctor<F>.identity(G: Gen<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): Unit =
+  fun <F> Bifunctor<F>.identity(G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): Unit =
     forAll(G) { fa: Kind2<F, Int, Int> ->
       fa.bimap({ it }, { it }).equalUnderTheLaw(fa, EQ)
     }
 
-  fun <F> Bifunctor<F>.composition(G: Gen<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): Unit =
+  fun <F> Bifunctor<F>.composition(G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): Unit =
     forAll(
       G,
-      Gen.functionAToB<Int, Int>(Gen.int()),
-      Gen.functionAToB<Int, Int>(Gen.int()),
-      Gen.functionAToB<Int, Int>(Gen.int()),
-      Gen.functionAToB<Int, Int>(Gen.int())
+      Arb.functionAToB<Int, Int>(Arb.int()),
+      Arb.functionAToB<Int, Int>(Arb.int()),
+      Arb.functionAToB<Int, Int>(Arb.int()),
+      Arb.functionAToB<Int, Int>(Arb.int())
     ) { fa: Kind2<F, Int, Int>, ff, g, x, y ->
       fa.bimap(ff, g).bimap(x, y).equalUnderTheLaw(fa.bimap(ff andThen x, g andThen y), EQ)
     }

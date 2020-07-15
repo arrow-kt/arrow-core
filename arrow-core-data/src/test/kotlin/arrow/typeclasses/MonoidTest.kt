@@ -7,7 +7,7 @@ import arrow.core.test.UnitSpec
 import arrow.core.test.generators.GenK
 import arrow.core.test.laws.InvariantLaws
 import arrow.core.test.laws.equalUnderTheLaw
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 
 class MonoidTest : UnitSpec() {
 
@@ -25,8 +25,8 @@ class MonoidTest : UnitSpec() {
   }
 
   fun <A> genk(M: Monoid<A>) = object : GenK<ForMonoid> {
-    override fun <A> genK(gen: Gen<A>): Gen<Kind<ForMonoid, A>> =
-      Gen.constant(M) as Gen<Kind<ForMonoid, A>>
+    override fun <A> genK(gen: Arb<A>): Arb<Kind<ForMonoid, A>> =
+      Arb.constant(M) as Arb<Kind<ForMonoid, A>>
   }
 
   init {

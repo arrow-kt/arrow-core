@@ -25,7 +25,7 @@ import arrow.core.test.laws.TraverseLaws
 import arrow.core.test.laws.UnalignLaws
 import arrow.core.test.laws.UnzipLaws
 import arrow.typeclasses.Eq
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 class SortedMapKTest : UnitSpec() {
@@ -37,33 +37,33 @@ class SortedMapKTest : UnitSpec() {
 
   init {
     testLaws(
-      HashLaws.laws(SortedMapK.hash(String.hash(), Int.hash()), Gen.sortedMapK(Gen.string(), Gen.int()), SortedMapK.eq(String.eq(), Int.eq())),
-      ShowLaws.laws(SortedMapK.show(String.show(), Int.show()), SortedMapK.eq(String.eq(), Int.eq()), Gen.sortedMapK(Gen.string(), Gen.int())),
-      MonoidLaws.laws(SortedMapK.monoid<String, Int>(Int.monoid()), Gen.sortedMapK(Gen.string(), Gen.int()), EQ),
+      HashLaws.laws(SortedMapK.hash(String.hash(), Int.hash()), Arb.sortedMapK(Arb.string(), Arb.int()), SortedMapK.eq(String.eq(), Int.eq())),
+      ShowLaws.laws(SortedMapK.show(String.show(), Int.show()), SortedMapK.eq(String.eq(), Int.eq()), Arb.sortedMapK(Arb.string(), Arb.int())),
+      MonoidLaws.laws(SortedMapK.monoid<String, Int>(Int.monoid()), Arb.sortedMapK(Arb.string(), Arb.int()), EQ),
       TraverseLaws.laws(
         SortedMapK.traverse<String>(),
-        SortedMapK.genK(Gen.string()),
+        SortedMapK.genK(Arb.string()),
         SortedMapK.eqK(String.eq())
       ),
       AlignLaws.laws(SortedMapK.align<String>(),
-        SortedMapK.genK(Gen.string()),
+        SortedMapK.genK(Arb.string()),
         SortedMapK.eqK(String.eq()),
         SortedMapK.foldable<String>()
       ),
       UnalignLaws.laws(SortedMapK.unalign<String>(),
-        SortedMapK.genK(Gen.string()),
+        SortedMapK.genK(Arb.string()),
         SortedMapK.eqK(String.eq()),
         SortedMapK.foldable<String>()
       ),
       UnzipLaws.laws(SortedMapK.unzip<String>(),
-        SortedMapK.genK(Gen.string()),
+        SortedMapK.genK(Arb.string()),
         SortedMapK.eqK(String.eq()),
         SortedMapK.foldable<String>()
       )
     )
 
     "can align maps" {
-      val gen = Gen.sortedMapK(Gen.string(), Gen.bool())
+      val gen = Arb.sortedMapK(Arb.string(), Arb.bool())
 
       // aligned keySet is union of a's and b's keys
       forAll(gen, gen) { a, b ->

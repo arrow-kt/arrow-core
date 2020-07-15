@@ -17,7 +17,7 @@ import arrow.core.test.laws.BimonadLaws
 import arrow.core.test.laws.MonoidLaws
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 
@@ -38,13 +38,13 @@ class Function0Test : UnitSpec() {
   }
 
   val genk = object : GenK<ForFunction0> {
-    override fun <A> genK(gen: Gen<A>): Gen<Kind<ForFunction0, A>> =
+    override fun <A> genK(gen: Arb<A>): Arb<Kind<ForFunction0, A>> =
       gen.map { { it }.k() }
   }
 
   init {
     testLaws(
-      MonoidLaws.laws(Function0.monoid(Int.monoid()), Gen.constant({ 1 }.k()), EQ1),
+      MonoidLaws.laws(Function0.monoid(Int.monoid()), Arb.constant({ 1 }.k()), EQ1),
 
       BimonadLaws.laws(
         Function0.bimonad(),

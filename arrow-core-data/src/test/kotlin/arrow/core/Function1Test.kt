@@ -26,7 +26,7 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.EqK2
 import arrow.typeclasses.conest
 import arrow.typeclasses.counnest
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 class Function1Test : UnitSpec() {
@@ -60,27 +60,27 @@ class Function1Test : UnitSpec() {
   }
 
   fun conestedGENK() = object : GenK<Conested<ForFunction1, Int>> {
-    override fun <A> genK(gen: Gen<A>): Gen<Kind<Conested<ForFunction1, Int>, A>> =
+    override fun <A> genK(gen: Arb<A>): Arb<Kind<Conested<ForFunction1, Int>, A>> =
       gen.map {
         Function1.just<Int, A>(it).conest()
-      } as Gen<Kind<Conested<ForFunction1, Int>, A>>
+      } as Arb<Kind<Conested<ForFunction1, Int>, A>>
   }
 
   fun <A> genK() = object : GenK<Function1PartialOf<A>> {
-    override fun <B> genK(gen: Gen<B>): Gen<Kind<Function1PartialOf<A>, B>> = gen.map {
+    override fun <B> genK(gen: Arb<B>): Arb<Kind<Function1PartialOf<A>, B>> = gen.map {
       Function1.just<A, B>(it)
     }
   }
 
   fun genK2() = object : GenK2<ForFunction1> {
-    override fun <A, B> genK(genA: Gen<A>, genB: Gen<B>): Gen<Kind2<ForFunction1, A, B>> = genB.map {
+    override fun <A, B> genK(genA: Arb<A>, genB: Arb<B>): Arb<Kind2<ForFunction1, A, B>> = genB.map {
       Function1.just<A, B>(it)
     }
   }
 
   init {
     testLaws(
-      MonoidLaws.laws(Function1.monoid<Int, Int>(Int.monoid()), Gen.constant({ a: Int -> a + 1 }.k()), EQ),
+      MonoidLaws.laws(Function1.monoid<Int, Int>(Int.monoid()), Arb.constant({ a: Int -> a + 1 }.k()), EQ),
       DivisibleLaws.laws(Function1.divisible(Int.monoid()), conestedGENK(), conestedEQK),
       ProfunctorLaws.laws(Function1.profunctor(), genK2(), eqK2()),
       MonadLaws.laws(Function1.monad(), Function1.functor(), Function1.applicative(), Function1.monad(), genK(), eqK(5150)),

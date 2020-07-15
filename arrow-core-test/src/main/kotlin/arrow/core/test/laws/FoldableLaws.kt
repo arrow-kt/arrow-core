@@ -44,16 +44,16 @@ import arrow.typeclasses.Applicative
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.Foldable
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 
 object FoldableLaws {
 
   fun <F> laws(FF: Foldable<F>, GENK: GenK<F>): List<Law> {
-    val GEN: Gen<Kind<F, Int>> = GENK.genK(Gen.intSmall())
-    val GENListK: Gen<Kind<F, ListK<Int>>> = GENK.genK(Gen.listK(Gen.intSmall()))
-    val GENB = GENK.genK(Gen.bool())
+    val GEN: Arb<Kind<F, Int>> = GENK.genK(Arb.intSmall())
+    val GENListK: Arb<Kind<F, ListK<Int>>> = GENK.genK(Arb.listK(Arb.intSmall()))
+    val GENB = GENK.genK(Arb.bool())
 
     val EQ: Eq<Int> = Int.eq()
     val EQBool = Boolean.eq()
@@ -100,7 +100,7 @@ object FoldableLaws {
     )
   }
 
-  fun <F> Foldable<F>.`foldRight is lazy`(G: Gen<Kind<F, Int>>) =
+  fun <F> Foldable<F>.`foldRight is lazy`(G: Arb<Kind<F, Int>>) =
     forAll(G) { fa: Kind<F, Int> ->
       val sideEffect = SideEffect()
       val lazyResult = fa.foldRight(Eval.now(0)) { _: Int, _: Eval<Int> ->
@@ -114,32 +114,32 @@ object FoldableLaws {
       sideEffect.counter == expected
     }
 
-  fun <F> Foldable<F>.leftFoldConsistentWithFoldMap(G: Gen<Kind<F, Int>>, EQ: Eq<Int>) =
-    forAll(Gen.functionAToB<Int, Int>(Gen.intSmall()), G) { f: (Int) -> Int, fa: Kind<F, Int> ->
+  fun <F> Foldable<F>.leftFoldConsistentWithFoldMap(G: Arb<Kind<F, Int>>, EQ: Eq<Int>) =
+    forAll(Arb.functionAToB<Int, Int>(Arb.intSmall()), G) { f: (Int) -> Int, fa: Kind<F, Int> ->
       with(Int.monoid()) {
         fa.foldMap(this, f).equalUnderTheLaw(fa.foldLeft(empty()) { acc, a -> acc.combine(f(a)) }, EQ)
       }
     }
 
-  fun <F> Foldable<F>.rightFoldConsistentWithFoldMap(G: Gen<Kind<F, Int>>, EQ: Eq<Int>) =
-    forAll(Gen.functionAToB<Int, Int>(Gen.intSmall()), G) { f: (Int) -> Int, fa: Kind<F, Int> ->
+  fun <F> Foldable<F>.rightFoldConsistentWithFoldMap(G: Arb<Kind<F, Int>>, EQ: Eq<Int>) =
+    forAll(Arb.functionAToB<Int, Int>(Arb.intSmall()), G) { f: (Int) -> Int, fa: Kind<F, Int> ->
       with(Int.monoid()) {
         fa.foldMap(this, f).equalUnderTheLaw(fa.foldRight(Eval.later { empty() }) { a, lb: Eval<Int> -> lb.map { f(a).combine(it) } }.value(), EQ)
       }
     }
 
-  fun <F> Foldable<F>.`find matching predicate should return some(value) or none`(G: Gen<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
-    forAll(Gen.intPredicate(), G) { f: (Int) -> Boolean, fa: Kind<F, Int> ->
+  fun <F> Foldable<F>.`find matching predicate should return some(value) or none`(G: Arb<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
+    forAll(Arb.intPredicate(), G) { f: (Int) -> Boolean, fa: Kind<F, Int> ->
       val expected = fa.foldRight(Eval.now<Option<Int>>(None)) { a, lb -> if (f(a)) Eval.now(a.some()) else lb }.value()
       fa.find { f(it) }.equalUnderTheLaw(expected, EQ)
     }
 
-  fun <F> Foldable<F>.existsConsistentWithFind(G: Gen<Kind<F, Int>>) =
-    forAll(Gen.intPredicate(), G) { f: (Int) -> Boolean, fa: Kind<F, Int> ->
+  fun <F> Foldable<F>.existsConsistentWithFind(G: Arb<Kind<F, Int>>) =
+    forAll(Arb.intPredicate(), G) { f: (Int) -> Boolean, fa: Kind<F, Int> ->
       fa.exists(f).equalUnderTheLaw(fa.find(f).fold({ false }, { true }), Eq.any())
     }
 
-  fun <F> Foldable<F>.existsIsLazy(G: Gen<Kind<F, Int>>, EQ: Eq<Int>) =
+  fun <F> Foldable<F>.existsIsLazy(G: Arb<Kind<F, Int>>, EQ: Eq<Int>) =
     forAll(G) { fa: Kind<F, Int> ->
       val sideEffect = SideEffect()
       fa.exists { _ ->
@@ -150,7 +150,7 @@ object FoldableLaws {
       sideEffect.counter.equalUnderTheLaw(expected, EQ)
     }
 
-  fun <F> Foldable<F>.forAllIsLazy(G: Gen<Kind<F, Int>>, EQ: Eq<Int>) =
+  fun <F> Foldable<F>.forAllIsLazy(G: Arb<Kind<F, Int>>, EQ: Eq<Int>) =
     forAll(G) { fa: Kind<F, Int> ->
       val sideEffect = SideEffect()
       fa.all { _ ->
@@ -161,8 +161,8 @@ object FoldableLaws {
       sideEffect.counter.equalUnderTheLaw(expected.toInt(), EQ)
     }
 
-  fun <F> Foldable<F>.forallConsistentWithExists(G: Gen<Kind<F, Int>>) =
-    forAll(Gen.intPredicate(), G) { f: (Int) -> Boolean, fa: Kind<F, Int> ->
+  fun <F> Foldable<F>.forallConsistentWithExists(G: Arb<Kind<F, Int>>) =
+    forAll(Arb.intPredicate(), G) { f: (Int) -> Boolean, fa: Kind<F, Int> ->
       if (fa.all(f)) {
         // if f is true for all elements, then there cannot be an element for which
         // it does not hold.
@@ -173,13 +173,13 @@ object FoldableLaws {
       } else true
     }
 
-  fun <F> Foldable<F>.forallReturnsTrueIfEmpty(G: Gen<Kind<F, Int>>) =
-    forAll(Gen.intPredicate(), G) { f: (Int) -> Boolean, fa: Kind<F, Int> ->
+  fun <F> Foldable<F>.forallReturnsTrueIfEmpty(G: Arb<Kind<F, Int>>) =
+    forAll(Arb.intPredicate(), G) { f: (Int) -> Boolean, fa: Kind<F, Int> ->
       !fa.isEmpty() || fa.all(f)
     }
 
-  fun <F> Foldable<F>.foldMIdIsFoldL(G: Gen<Kind<F, Int>>, EQ: Eq<Int>) =
-    forAll(Gen.functionAToB<Int, Int>(Gen.intSmall()), G) { f: (Int) -> Int, fa: Kind<F, Int> ->
+  fun <F> Foldable<F>.foldMIdIsFoldL(G: Arb<Kind<F, Int>>, EQ: Eq<Int>) =
+    forAll(Arb.functionAToB<Int, Int>(Arb.intSmall()), G) { f: (Int) -> Int, fa: Kind<F, Int> ->
       with(Int.monoid()) {
         val foldL: Int = fa.foldLeft(empty()) { acc, a -> acc.combine(f(a)) }
         val foldM: Int = fa.foldM(Id.monad(), empty()) { acc, a -> Id(acc.combine(f(a))) }.extract()
@@ -187,52 +187,52 @@ object FoldableLaws {
       }
     }
 
-  fun <F> Foldable<F>.firstOrNoneReturnsNoneIfEmpty(G: Gen<Kind<F, Int>>) =
+  fun <F> Foldable<F>.firstOrNoneReturnsNoneIfEmpty(G: Arb<Kind<F, Int>>) =
     forAll(G) { fa: Kind<F, Int> ->
       if (fa.isEmpty()) fa.firstOrNone().isEmpty()
       else fa.firstOrNone().isDefined()
     }
 
-  fun <F> Foldable<F>.firstOrNoneReturnsNoneIfPredicateFails(G: Gen<Kind<F, Int>>) =
+  fun <F> Foldable<F>.firstOrNoneReturnsNoneIfPredicateFails(G: Arb<Kind<F, Int>>) =
     forAll(G) { fa: Kind<F, Int> ->
       fa.firstOrNone { false }.isEmpty()
     }
 
-  fun <F> Foldable<F>.`firstOrNone is consistent with find`(G: Gen<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
+  fun <F> Foldable<F>.`firstOrNone is consistent with find`(G: Arb<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
     forAll(G) { fa: Kind<F, Int> ->
       fa.firstOrNone().equalUnderTheLaw(fa.find { true }, EQ)
     }
 
-  fun <F> Foldable<F>.`firstOrNone is consistent with find predicate`(G: Gen<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
-    forAll(Gen.intPredicate(), G) { f: (Int) -> Boolean, fa: Kind<F, Int> ->
+  fun <F> Foldable<F>.`firstOrNone is consistent with find predicate`(G: Arb<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
+    forAll(Arb.intPredicate(), G) { f: (Int) -> Boolean, fa: Kind<F, Int> ->
       fa.firstOrNone(f).equalUnderTheLaw(fa.find { f(it) }, EQ)
     }
 
-  fun <F> Foldable<F>.`toList turn items into a list`(G: Gen<Kind<F, Int>>, EQ: Eq<Int>) =
+  fun <F> Foldable<F>.`toList turn items into a list`(G: Arb<Kind<F, Int>>, EQ: Eq<Int>) =
     forAll(G) { fa: Kind<F, Int> ->
       val result = fa.toList()
       val expected = fa.foldRight(Eval.now(emptyList<Int>())) { v, acc -> acc.map { listOf(v) + it } }.value()
       result.eqK(expected, EQ)
     }
 
-  fun <F> Foldable<F>.`fold should combine all items`(G: Gen<Kind<F, ListK<Int>>>, EQ: Eq<ListK<Int>>) =
+  fun <F> Foldable<F>.`fold should combine all items`(G: Arb<Kind<F, ListK<Int>>>, EQ: Eq<ListK<Int>>) =
     forAll(G) { fa: Kind<F, ListK<Int>> ->
       with(ListK.monoid<Int>()) {
         fa.fold(this).equalUnderTheLaw(fa.foldLeft(empty()) { acc, a -> acc.combine(a) }, EQ)
       }
     }
 
-  fun <F> Foldable<F>.`combineAll consistent with fold (alias)`(G: Gen<Kind<F, ListK<Int>>>, EQ: Eq<ListK<Int>>) =
+  fun <F> Foldable<F>.`combineAll consistent with fold (alias)`(G: Arb<Kind<F, ListK<Int>>>, EQ: Eq<ListK<Int>>) =
     forAll(G) { fa: Kind<F, ListK<Int>> ->
       with(ListK.monoid<Int>()) {
         fa.combineAll(this).equalUnderTheLaw(fa.fold(this), EQ)
       }
     }
 
-  fun <F> Foldable<F>.`reduceLeftToOption returns Option value`(G: Gen<Kind<F, Boolean>>, EQ: Eq<Option<Int>>) =
+  fun <F> Foldable<F>.`reduceLeftToOption returns Option value`(G: Arb<Kind<F, Boolean>>, EQ: Eq<Option<Int>>) =
     forAll(
-      Gen.functionAToB<Boolean, Int>(Gen.intSmall()),
-      Gen.functionBAToB<Boolean, Int>(Gen.intSmall()),
+      Arb.functionAToB<Boolean, Int>(Arb.intSmall()),
+      Arb.functionBAToB<Boolean, Int>(Arb.intSmall()),
       G) { f: (Boolean) -> Int, g: (Int, Boolean) -> Int, fa: Kind<F, Boolean> ->
 
       val expected = fa.foldLeft(Option.empty<Int>()) { option, a ->
@@ -244,10 +244,10 @@ object FoldableLaws {
       fa.reduceLeftToOption(f, g).equalUnderTheLaw(expected, EQ)
     }
 
-  fun <F> Foldable<F>.`reduceRightToOption returns Option value`(G: Gen<Kind<F, Boolean>>, EQ: Eq<Option<Int>>) =
+  fun <F> Foldable<F>.`reduceRightToOption returns Option value`(G: Arb<Kind<F, Boolean>>, EQ: Eq<Option<Int>>) =
     forAll(
-      Gen.functionAToB<Boolean, Int>(Gen.intSmall()),
-      Gen.functionABToB<Boolean, Eval<Int>>(Gen.intSmall().eval()),
+      Arb.functionAToB<Boolean, Int>(Arb.intSmall()),
+      Arb.functionABToB<Boolean, Eval<Int>>(Arb.intSmall().eval()),
       G) { f: (Boolean) -> Int, g: (Boolean, Eval<Int>) -> Eval<Int>, fa: Kind<F, Boolean> ->
 
       val expected = fa.foldRight(Eval.Now<Option<Int>>(Option.empty())) { a: Boolean, lb: Eval<Option<Int>> ->
@@ -261,13 +261,13 @@ object FoldableLaws {
       fa.reduceRightToOption(f, g).value().equalUnderTheLaw(expected.value(), EQ)
     }
 
-  fun <F> Foldable<F>.`reduceLeftOption returns Option value`(G: Gen<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
-    forAll(Gen.functionAAToA(Gen.intSmall()), G) { f: (Int, Int) -> Int, fa: Kind<F, Int> ->
+  fun <F> Foldable<F>.`reduceLeftOption returns Option value`(G: Arb<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
+    forAll(Arb.functionAAToA(Arb.intSmall()), G) { f: (Int, Int) -> Int, fa: Kind<F, Int> ->
       fa.reduceLeftOption(f).equalUnderTheLaw(fa.reduceLeftToOption({ a -> a }, f), EQ)
     }
 
-  fun <F> Foldable<F>.`reduceRightOption returns Option value`(G: Gen<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
-    forAll(Gen.functionABToB<Int, Eval<Int>>(Gen.intSmall().eval()), G) { f: (Int, Eval<Int>) -> Eval<Int>, fa ->
+  fun <F> Foldable<F>.`reduceRightOption returns Option value`(G: Arb<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
+    forAll(Arb.functionABToB<Int, Eval<Int>>(Arb.intSmall().eval()), G) { f: (Int, Eval<Int>) -> Eval<Int>, fa ->
       fa.reduceRightOption(f).value().equalUnderTheLaw(fa.reduceRightToOption({ a -> a }, f).value(), EQ)
     }
 
@@ -278,8 +278,8 @@ object FoldableLaws {
       }
     }
 
-  fun <F, G> Foldable<F>.`traverse_ consistent with foldRight`(GA: Applicative<G>, GF: Gen<Kind<F, Int>>, GG: GenK<G>, EQG: Eq<Kind<G, Unit>>) =
-    forAll(Gen.functionAToB<Int, Kind<G, Int>>(GG.genK(Gen.intSmall())), GF) { f: (Int) -> Kind<G, Int>, fa: Kind<F, Int> ->
+  fun <F, G> Foldable<F>.`traverse_ consistent with foldRight`(GA: Applicative<G>, GF: Arb<Kind<F, Int>>, GG: GenK<G>, EQG: Eq<Kind<G, Unit>>) =
+    forAll(Arb.functionAToB<Int, Kind<G, Int>>(GG.genK(Arb.intSmall())), GF) { f: (Int) -> Kind<G, Int>, fa: Kind<F, Int> ->
       GA.run {
         val expected = fa.foldRight(always { GA.just(Unit) }) { a, acc -> GA.run { f(a).apEval(acc.map { it.map { { _: Int -> Unit } } }) } }.value()
         fa.traverse_(this, f).equalUnderTheLaw(expected, EQG)
@@ -287,24 +287,24 @@ object FoldableLaws {
     }
 
   fun <F, G> Foldable<F>.`sequence_ consistent with traverse_`(GA: Applicative<G>, GF: GenK<F>, GG: GenK<G>, EQ: Eq<Kind<G, Unit>>) =
-    forAll(GF.genK(GG.genK(Gen.intSmall()))) { fa: Kind<F, Kind<G, Int>> ->
+    forAll(GF.genK(GG.genK(Arb.intSmall()))) { fa: Kind<F, Kind<G, Int>> ->
       GA.run {
         fa.sequence_(this).equalUnderTheLaw(fa.traverse_(this, ::identity), EQ)
       }
     }
 
-  fun <F> Foldable<F>.`isEmpty returns if there are elements or not`(G: Gen<Kind<F, Int>>, EQ: Eq<Boolean>) =
+  fun <F> Foldable<F>.`isEmpty returns if there are elements or not`(G: Arb<Kind<F, Int>>, EQ: Eq<Boolean>) =
     forAll(G) { fa: Kind<F, Int> ->
       fa.isEmpty().equalUnderTheLaw(fa.foldRight(Eval.True) { _, _ -> Eval.False }.value(), EQ)
     }
 
-  fun <F> Foldable<F>.`isNotEmpty consistent with isEmpty`(G: Gen<Kind<F, Int>>, EQ: Eq<Boolean>) =
+  fun <F> Foldable<F>.`isNotEmpty consistent with isEmpty`(G: Arb<Kind<F, Int>>, EQ: Eq<Boolean>) =
     forAll(G) { fa: Kind<F, Int> ->
       fa.isNotEmpty().equalUnderTheLaw(!fa.isEmpty(), EQ)
     }
 
-  fun <F> Foldable<F>.`foldMapM folds on F mapping values to G(B) using given Monoid`(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<ForId, Int>>) =
-    forAll(Gen.functionAToB<Int, Kind<ForId, Int>>(Gen.intSmall().map(::Id)), G) { f: (Int) -> Kind<ForId, Int>, fa: Kind<F, Int> ->
+  fun <F> Foldable<F>.`foldMapM folds on F mapping values to G(B) using given Monoid`(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<ForId, Int>>) =
+    forAll(Arb.functionAToB<Int, Kind<ForId, Int>>(Arb.intSmall().map(::Id)), G) { f: (Int) -> Kind<ForId, Int>, fa: Kind<F, Int> ->
       Id.monad().run {
         with(Int.monoid()) {
           val expected = fa.foldM(this@run, this.empty()) { b, a -> f(a).map { this.run { b.combine(it) } } }
@@ -313,8 +313,8 @@ object FoldableLaws {
       }
     }
 
-  fun <F> Foldable<F>.`get gets the item at the given index of the Foldable`(G: Gen<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
-    forAll(Gen.intSmall(), G) { index, fa: Kind<F, Int> ->
+  fun <F> Foldable<F>.`get gets the item at the given index of the Foldable`(G: Arb<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
+    forAll(Arb.intSmall(), G) { index, fa: Kind<F, Int> ->
       val idx = index.toLong()
       val expected = if (idx < 0L)
         None

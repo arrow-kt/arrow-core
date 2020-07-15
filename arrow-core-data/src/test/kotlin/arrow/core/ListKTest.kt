@@ -43,7 +43,7 @@ import arrow.core.test.laws.UnalignLaws
 import arrow.core.test.laws.UnzipLaws
 import arrow.core.test.laws.equalUnderTheLaw
 import arrow.typeclasses.Eq
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 import kotlin.math.max
@@ -66,8 +66,8 @@ class ListKTest : UnitSpec() {
         ListK.genK(),
         ListK.eqK()
       ),
-      ShowLaws.laws(ListK.show(Int.show()), EQ, Gen.listK(Gen.int())),
-      MonoidLaws.laws(ListK.monoid(), Gen.listK(Gen.int()), ListK.eq(Int.eq())),
+      ShowLaws.laws(ListK.show(Int.show()), EQ, Arb.listK(Arb.int())),
+      MonoidLaws.laws(ListK.monoid(), Arb.listK(Arb.int()), ListK.eq(Int.eq())),
       SemigroupKLaws.laws(ListK.semigroupK(), ListK.genK(), ListK.eqK()),
       MonoidalLaws.laws(ListK.monoidal(),
         ListK.genK(10),
@@ -76,7 +76,7 @@ class ListKTest : UnitSpec() {
       MonoidKLaws.laws(ListK.monoidK(), ListK.genK(), ListK.eqK()),
       TraverseLaws.laws(ListK.traverse(), ListK.applicative(), ListK.genK(), ListK.eqK()),
 
-      HashLaws.laws(ListK.hash(Int.hash()), Gen.listK(Gen.int()), ListK.eq(Int.eq())),
+      HashLaws.laws(ListK.hash(Int.hash()), Arb.listK(Arb.int()), ListK.eq(Int.eq())),
       EqKLaws.laws(
         ListK.eqK(),
         ListK.genK()
@@ -116,13 +116,13 @@ class ListKTest : UnitSpec() {
     }
 
     "can align lists with different lengths" {
-      forAll(Gen.listK(Gen.bool()), Gen.listK(Gen.bool())) { a, b ->
+      forAll(Arb.listK(Arb.bool()), Arb.listK(Arb.bool())) { a, b ->
         ListK.semialign().run {
           align(a, b).fix().size == max(a.size, b.size)
         }
       }
 
-      forAll(Gen.listK(Gen.bool()), Gen.listK(Gen.bool())) { a, b ->
+      forAll(Arb.listK(Arb.bool()), Arb.listK(Arb.bool())) { a, b ->
         ListK.semialign().run {
           align(a, b).fix().take(min(a.size, b.size)).all {
             it.isBoth
@@ -130,7 +130,7 @@ class ListKTest : UnitSpec() {
         }
       }
 
-      forAll(Gen.listK(Gen.bool()), Gen.listK(Gen.bool())) { a, b ->
+      forAll(Arb.listK(Arb.bool()), Arb.listK(Arb.bool())) { a, b ->
         ListK.semialign().run {
           align(a, b).fix().drop(min(a.size, b.size)).all {
             if (a.size < b.size) {
@@ -144,7 +144,7 @@ class ListKTest : UnitSpec() {
     }
 
     "lpadzip" {
-      forAll(Gen.listK(Gen.int()), Gen.listK(Gen.int())) { a, b ->
+      forAll(Arb.listK(Arb.int()), Arb.listK(Arb.int())) { a, b ->
 
         val result =
           a.lpadZip(b)
@@ -154,7 +154,7 @@ class ListKTest : UnitSpec() {
     }
 
     "lpadzipwith" {
-      forAll(Gen.listK(Gen.int()), Gen.listK(Gen.int())) { a, b ->
+      forAll(Arb.listK(Arb.int()), Arb.listK(Arb.int())) { a, b ->
 
         val result =
           a.lpadZipWith(b) { a, b ->
@@ -166,7 +166,7 @@ class ListKTest : UnitSpec() {
     }
 
     "rpadzip" {
-      forAll(Gen.listK(Gen.int()), Gen.listK(Gen.int())) { a, b ->
+      forAll(Arb.listK(Arb.int()), Arb.listK(Arb.int())) { a, b ->
 
         val result =
           a.rpadZip(b)
@@ -176,7 +176,7 @@ class ListKTest : UnitSpec() {
     }
 
     "rpadzipwith" {
-      forAll(Gen.listK(Gen.int()), Gen.listK(Gen.int())) { a, b ->
+      forAll(Arb.listK(Arb.int()), Arb.listK(Arb.int())) { a, b ->
 
         val result =
           a.rpadZipWith(b) { a, b ->

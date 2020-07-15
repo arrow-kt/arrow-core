@@ -8,7 +8,7 @@ import arrow.core.test.generators.GenK
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.Monoidal
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 object MonoidalLaws {
@@ -19,7 +19,7 @@ object MonoidalLaws {
     EQK: EqK<F>,
     BIJECTION: (Kind<F, Tuple2<Tuple2<Int, Int>, Int>>) -> (Kind<F, Tuple2<Int, Tuple2<Int, Int>>>)
   ): List<Law> {
-    val GEN = GENK.genK(Gen.int())
+    val GEN = GENK.genK(Arb.int())
     val EQ = EQK.liftEq(Tuple2.eq(Int.eq(), Int.eq()))
 
     return SemigroupalLaws.laws(MDAL,
@@ -32,12 +32,12 @@ object MonoidalLaws {
     )
   }
 
-  private fun <F> Monoidal<F>.monoidalLeftIdentity(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Int, Int>>>): Unit =
+  private fun <F> Monoidal<F>.monoidalLeftIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Int, Int>>>): Unit =
     forAll(G) { fa: Kind<F, Int> ->
       identity<Int>().product(fa).equalUnderTheLaw(identity(), EQ)
     }
 
-  private fun <F> Monoidal<F>.monoidalRightIdentity(G: Gen<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Int, Int>>>): Unit =
+  private fun <F> Monoidal<F>.monoidalRightIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Int, Int>>>): Unit =
     forAll(G) { fa: Kind<F, Int> ->
       fa.product(identity<Int>()).equalUnderTheLaw(identity(), EQ)
     }

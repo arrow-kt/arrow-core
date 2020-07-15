@@ -30,7 +30,7 @@ import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
 import arrow.typeclasses.Semigroup
 import io.kotlintest.fail
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.shouldBe
 
 @Suppress("RedundantSuspendModifier")
@@ -47,20 +47,20 @@ class ValidatedTest : UnitSpec() {
     testLaws(
       EqK2Laws.laws(Validated.eqK2(), Validated.genK2()),
       BifunctorLaws.laws(Validated.bifunctor(), Validated.genK2(), Validated.eqK2()),
-      EqLaws.laws(EQ, Gen.validated(Gen.string(), Gen.int())),
-      ShowLaws.laws(Validated.show(String.show(), Int.show()), EQ, Gen.validated(Gen.string(), Gen.int())),
-      SelectiveLaws.laws(Validated.selective(String.semigroup()), Validated.functor(), Validated.genK(Gen.string()), Validated.eqK(String.eq())),
-      TraverseLaws.laws(Validated.traverse(), Validated.applicative(String.semigroup()), Validated.genK(Gen.string()), Validated.eqK(String.eq())),
+      EqLaws.laws(EQ, Arb.validated(Arb.string(), Arb.int())),
+      ShowLaws.laws(Validated.show(String.show(), Int.show()), EQ, Arb.validated(Arb.string(), Arb.int())),
+      SelectiveLaws.laws(Validated.selective(String.semigroup()), Validated.functor(), Validated.genK(Arb.string()), Validated.eqK(String.eq())),
+      TraverseLaws.laws(Validated.traverse(), Validated.applicative(String.semigroup()), Validated.genK(Arb.string()), Validated.eqK(String.eq())),
       SemigroupKLaws.laws(
         Validated.semigroupK(String.semigroup()),
-        Validated.genK(Gen.string()),
+        Validated.genK(Arb.string()),
         Validated.eqK(String.eq())),
       BitraverseLaws.laws(
         Validated.bitraverse(),
         Validated.genK2(),
         Validated.eqK2()
       ),
-      FxLaws.laws<ValidatedPartialOf<String>, Int>(Gen.int().map(::Valid), Gen.validated(Gen.string(), Gen.int()).map { it }, Validated.eqK(String.eq()).liftEq(Int.eq()), ::validated, ::validated)
+      FxLaws.laws<ValidatedPartialOf<String>, Int>(Arb.int().map(::Valid), Arb.validated(Arb.string(), Arb.int()).map { it }, Validated.eqK(String.eq()).liftEq(Int.eq()), ::validated, ::validated)
     )
 
     "fold should call function on Invalid" {

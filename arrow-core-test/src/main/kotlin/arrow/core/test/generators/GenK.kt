@@ -28,88 +28,88 @@ import arrow.core.Success
 import arrow.core.Try
 import arrow.core.Validated
 import arrow.core.ValidatedPartialOf
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 
 interface GenK<F> {
   /**
-   * lifts a Gen<A> to the context F. the resulting Gen can be used to create types Kind<F, A>
+   * lifts a Arb<A> to the context F. the resulting Arb can be used to create types Kind<F, A>
    */
-  fun <A> genK(gen: Gen<A>): Gen<Kind<F, A>>
+  fun <A> genK(gen: Arb<A>): Arb<Kind<F, A>>
 }
 
 private val DEFAULT_COLLECTION_MAX_SIZE = 100
 
 fun Option.Companion.genK() = object : GenK<ForOption> {
-  override fun <A> genK(gen: Gen<A>): Gen<Kind<ForOption, A>> =
-    Gen.option(gen) as Gen<Kind<ForOption, A>>
+  override fun <A> genK(gen: Arb<A>): Arb<Kind<ForOption, A>> =
+    Arb.option(gen) as Arb<Kind<ForOption, A>>
 }
 
 fun Id.Companion.genK() = object : GenK<ForId> {
-  override fun <A> genK(gen: Gen<A>): Gen<Kind<ForId, A>> =
-    Gen.id(gen) as Gen<Kind<ForId, A>>
+  override fun <A> genK(gen: Arb<A>): Arb<Kind<ForId, A>> =
+    Arb.id(gen) as Arb<Kind<ForId, A>>
 }
 
 fun ListK.Companion.genK(withMaxSize: Int = DEFAULT_COLLECTION_MAX_SIZE) = object : GenK<ForListK> {
-  override fun <A> genK(gen: Gen<A>): Gen<Kind<ForListK, A>> =
-    Gen.listK(gen).filter { it.size <= withMaxSize } as Gen<Kind<ForListK, A>>
+  override fun <A> genK(gen: Arb<A>): Arb<Kind<ForListK, A>> =
+    Arb.listK(gen).filter { it.size <= withMaxSize } as Arb<Kind<ForListK, A>>
 }
 
 fun NonEmptyList.Companion.genK(withMaxSize: Int = DEFAULT_COLLECTION_MAX_SIZE) = object : GenK<ForNonEmptyList> {
-  override fun <A> genK(gen: Gen<A>): Gen<Kind<ForNonEmptyList, A>> =
-    Gen.nonEmptyList(gen).filter { it.size <= withMaxSize } as Gen<Kind<ForNonEmptyList, A>>
+  override fun <A> genK(gen: Arb<A>): Arb<Kind<ForNonEmptyList, A>> =
+    Arb.nonEmptyList(gen).filter { it.size <= withMaxSize } as Arb<Kind<ForNonEmptyList, A>>
 }
 
 fun SequenceK.Companion.genK() = object : GenK<ForSequenceK> {
-  override fun <A> genK(gen: Gen<A>): Gen<Kind<ForSequenceK, A>> =
-    Gen.sequenceK(gen) as Gen<Kind<ForSequenceK, A>>
+  override fun <A> genK(gen: Arb<A>): Arb<Kind<ForSequenceK, A>> =
+    Arb.sequenceK(gen) as Arb<Kind<ForSequenceK, A>>
 }
 
-fun <K> MapK.Companion.genK(kgen: Gen<K>, withMaxSize: Int = DEFAULT_COLLECTION_MAX_SIZE) =
+fun <K> MapK.Companion.genK(kgen: Arb<K>, withMaxSize: Int = DEFAULT_COLLECTION_MAX_SIZE) =
   object : GenK<MapKPartialOf<K>> {
-    override fun <A> genK(gen: Gen<A>): Gen<Kind<MapKPartialOf<K>, A>> =
-      Gen.mapK(kgen, gen).filter { it.size <= withMaxSize } as Gen<Kind<MapKPartialOf<K>, A>>
+    override fun <A> genK(gen: Arb<A>): Arb<Kind<MapKPartialOf<K>, A>> =
+      Arb.mapK(kgen, gen).filter { it.size <= withMaxSize } as Arb<Kind<MapKPartialOf<K>, A>>
   }
 
-fun <K : Comparable<K>> SortedMapK.Companion.genK(kgen: Gen<K>, withMaxSize: Int = DEFAULT_COLLECTION_MAX_SIZE) =
+fun <K : Comparable<K>> SortedMapK.Companion.genK(kgen: Arb<K>, withMaxSize: Int = DEFAULT_COLLECTION_MAX_SIZE) =
   object : GenK<SortedMapKPartialOf<K>> {
-    override fun <A> genK(gen: Gen<A>): Gen<Kind<SortedMapKPartialOf<K>, A>> =
-      Gen.sortedMapK(kgen, gen) as Gen<Kind<SortedMapKPartialOf<K>, A>>
+    override fun <A> genK(gen: Arb<A>): Arb<Kind<SortedMapKPartialOf<K>, A>> =
+      Arb.sortedMapK(kgen, gen) as Arb<Kind<SortedMapKPartialOf<K>, A>>
   }
 
 fun SetK.Companion.genK(withMaxSize: Int = DEFAULT_COLLECTION_MAX_SIZE) = object : GenK<ForSetK> {
-  override fun <A> genK(gen: Gen<A>): Gen<Kind<ForSetK, A>> =
-    Gen.genSetK(gen).filter { it.size <= withMaxSize } as Gen<Kind<ForSetK, A>>
+  override fun <A> genK(gen: Arb<A>): Arb<Kind<ForSetK, A>> =
+    Arb.genSetK(gen).filter { it.size <= withMaxSize } as Arb<Kind<ForSetK, A>>
 }
 
-fun <A> Ior.Companion.genK(kgen: Gen<A>) =
+fun <A> Ior.Companion.genK(kgen: Arb<A>) =
   object : GenK<IorPartialOf<A>> {
-    override fun <B> genK(gen: Gen<B>): Gen<Kind<IorPartialOf<A>, B>> =
-      Gen.ior(kgen, gen) as Gen<Kind<IorPartialOf<A>, B>>
+    override fun <B> genK(gen: Arb<B>): Arb<Kind<IorPartialOf<A>, B>> =
+      Arb.ior(kgen, gen) as Arb<Kind<IorPartialOf<A>, B>>
   }
 
-fun <A> Either.Companion.genK(genA: Gen<A>) =
+fun <A> Either.Companion.genK(genA: Arb<A>) =
   object : GenK<EitherPartialOf<A>> {
-    override fun <B> genK(gen: Gen<B>): Gen<Kind<EitherPartialOf<A>, B>> =
-      Gen.either(genA, gen) as Gen<Kind<EitherPartialOf<A>, B>>
+    override fun <B> genK(gen: Arb<B>): Arb<Kind<EitherPartialOf<A>, B>> =
+      Arb.either(genA, gen) as Arb<Kind<EitherPartialOf<A>, B>>
   }
 
-fun <E> Validated.Companion.genK(genE: Gen<E>) =
+fun <E> Validated.Companion.genK(genE: Arb<E>) =
   object : GenK<ValidatedPartialOf<E>> {
-    override fun <A> genK(gen: Gen<A>): Gen<Kind<ValidatedPartialOf<E>, A>> =
-      Gen.validated(genE, gen) as Gen<Kind<ValidatedPartialOf<E>, A>>
+    override fun <A> genK(gen: Arb<A>): Arb<Kind<ValidatedPartialOf<E>, A>> =
+      Arb.validated(genE, gen) as Arb<Kind<ValidatedPartialOf<E>, A>>
   }
 
-fun <A> Const.Companion.genK(genA: Gen<A>) = object : GenK<ConstPartialOf<A>> {
-  override fun <T> genK(gen: Gen<T>): Gen<Kind<ConstPartialOf<A>, T>> =
+fun <A> Const.Companion.genK(genA: Arb<A>) = object : GenK<ConstPartialOf<A>> {
+  override fun <T> genK(gen: Arb<T>): Arb<Kind<ConstPartialOf<A>, T>> =
     genA.map {
       Const<A, T>(it)
     }
 }
 
 fun Try.Companion.genK() = object : GenK<ForTry> {
-  override fun <A> genK(gen: Gen<A>): Gen<Kind<ForTry, A>> =
-    Gen.oneOf(
+  override fun <A> genK(gen: Arb<A>): Arb<Kind<ForTry, A>> =
+    Arb.oneOf(
       gen.map {
         Success(it)
-      }, Gen.throwable().map { Try.Failure(it) })
+      }, Arb.throwable().map { Try.Failure(it) })
 }

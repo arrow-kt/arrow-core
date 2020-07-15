@@ -11,7 +11,7 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.Functor
 import arrow.typeclasses.Monad
 import arrow.typeclasses.Selective
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 
 object BimonadLaws {
@@ -20,7 +20,7 @@ object BimonadLaws {
     BF: Bimonad<F>,
     EQK: EqK<F>
   ): List<Law> {
-    val GEN = Gen.int()
+    val GEN = Arb.int()
 
     val EQ1 = EQK.liftEq(Int.eq())
     val EQ2 = EQK.liftEq(EQ1)
@@ -58,21 +58,21 @@ object BimonadLaws {
       ComonadLaws.laws(CM, GENK, EQK) +
       bimonadLaws(BF, EQK)
 
-  fun <F, A> Bimonad<F>.extractIsIdentity(G: Gen<A>, EQ: Eq<A>): Unit =
+  fun <F, A> Bimonad<F>.extractIsIdentity(G: Arb<A>, EQ: Eq<A>): Unit =
     forAll(
       G
     ) { a ->
       just(a).extract().equalUnderTheLaw(a, EQ)
     }
 
-  fun <F, A> Bimonad<F>.extractFlatMap(G: Gen<A>, EQ: Eq<A>): Unit =
+  fun <F, A> Bimonad<F>.extractFlatMap(G: Arb<A>, EQ: Eq<A>): Unit =
     forAll(
       G
     ) { a ->
       just(just(a)).flatten().extract().equalUnderTheLaw(just(just(a)).map { it.extract() }.extract(), EQ)
     }
 
-  fun <F, A> Bimonad<F>.coflatMapComposition(G: Gen<A>, EQ: Eq<Kind<F, Kind<F, A>>>): Unit =
+  fun <F, A> Bimonad<F>.coflatMapComposition(G: Arb<A>, EQ: Eq<Kind<F, Kind<F, A>>>): Unit =
     forAll(
       G
     ) { a ->

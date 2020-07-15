@@ -19,7 +19,7 @@ import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseFilterLaws
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 
 class ConstTest : UnitSpec() {
 
@@ -33,15 +33,15 @@ class ConstTest : UnitSpec() {
   init {
     val M = Int.monoid()
     val EQK = EQK(Int.eq())
-    val GENK = Const.genK(Gen.int())
-    val GEN = Gen.genConst<Int, Int>(Gen.int())
+    val GENK = Const.genK(Arb.int())
+    val GEN = Arb.genConst<Int, Int>(Arb.int())
 
     testLaws(
         TraverseFilterLaws.laws(Const.traverseFilter(), Const.applicative(M), GENK, EQK),
         ApplicativeLaws.laws(Const.applicative(M), Const.functor(), GENK, EQK),
         EqLaws.laws(Const.eq<Int, Int>(Eq.any()), GEN),
         ShowLaws.laws(Const.show(Int.show()), Const.eq<Int, Int>(Eq.any()), GEN),
-        FxLaws.laws<ConstPartialOf<Int>, Int>(GENK.genK(Gen.int()), GENK.genK(Gen.int()), EQK.liftEq(Int.eq()), ::const, ::const)
+        FxLaws.laws<ConstPartialOf<Int>, Int>(GENK.genK(Arb.int()), GENK.genK(Arb.int()), EQK.liftEq(Int.eq()), ::const, ::const)
       )
   }
 }

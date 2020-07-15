@@ -32,7 +32,7 @@ import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Monad
-import io.kotlintest.properties.Gen
+import io.kotest.property.Arb
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 
@@ -47,23 +47,23 @@ class IorTest : UnitSpec() {
     testLaws(
       EqK2Laws.laws(Ior.eqK2(), Ior.genK2()),
       BifunctorLaws.laws(Ior.bifunctor(), Ior.genK2(), Ior.eqK2()),
-      ShowLaws.laws(Ior.show(String.show(), Int.show()), EQ, Gen.ior(Gen.string(), Gen.int())),
+      ShowLaws.laws(Ior.show(String.show(), Int.show()), EQ, Arb.ior(Arb.string(), Arb.int())),
       MonadLaws.laws(
         Ior.monad(Int.semigroup()),
         Ior.functor(),
         Ior.applicative(Int.semigroup()),
         Ior.monad(Int.semigroup()),
-        Ior.genK(Gen.int()),
+        Ior.genK(Arb.int()),
         Ior.eqK(Int.eq())
       ),
       TraverseLaws.laws(Ior.traverse(),
         Ior.applicative(Int.semigroup()),
-        Ior.genK(Gen.int()),
+        Ior.genK(Arb.int()),
         Ior.eqK(Int.eq())
       ),
-      HashLaws.laws(Ior.hash(String.hash(), Int.hash()), Gen.ior(Gen.string(), Gen.int()), Ior.eq(String.eq(), Int.eq())),
+      HashLaws.laws(Ior.hash(String.hash(), Int.hash()), Arb.ior(Arb.string(), Arb.int()), Ior.eq(String.eq(), Int.eq())),
       BitraverseLaws.laws(Ior.bitraverse(), Ior.genK2(), Ior.eqK2()),
-      CrosswalkLaws.laws(Ior.crosswalk(), Ior.genK(Gen.int()), Ior.eqK(Int.eq())),
+      CrosswalkLaws.laws(Ior.crosswalk(), Ior.genK(Arb.int()), Ior.eqK(Int.eq())),
       BicrosswalkLaws.laws(Ior.bicrosswalk(), Ior.genK2(), Ior.eqK2())
     )
 
