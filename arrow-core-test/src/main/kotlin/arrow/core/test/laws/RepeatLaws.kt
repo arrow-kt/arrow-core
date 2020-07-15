@@ -7,8 +7,8 @@ import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.Foldable
 import arrow.typeclasses.Repeat
-import io.kotlintest.properties.Gen
-import io.kotlintest.properties.forAll
+import io.kotest.properties.Gen
+import io.kotest.properties.forAll
 
 object RepeatLaws {
   fun <F> laws(

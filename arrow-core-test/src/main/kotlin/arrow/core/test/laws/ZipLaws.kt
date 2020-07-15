@@ -14,8 +14,8 @@ import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.Foldable
 import arrow.typeclasses.Zip
-import io.kotlintest.properties.Gen
-import io.kotlintest.properties.forAll
+import io.kotest.properties.Gen
+import io.kotest.properties.forAll
 
 object ZipLaws {
 

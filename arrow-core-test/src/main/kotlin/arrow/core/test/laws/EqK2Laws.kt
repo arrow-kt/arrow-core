@@ -4,8 +4,8 @@ import arrow.Kind2
 import arrow.core.extensions.eq
 import arrow.core.test.generators.GenK2
 import arrow.typeclasses.EqK2
-import io.kotlintest.properties.Gen
-import io.kotlintest.properties.forAll
+import io.kotest.properties.Gen
+import io.kotest.properties.forAll
 
 object EqK2Laws {
 

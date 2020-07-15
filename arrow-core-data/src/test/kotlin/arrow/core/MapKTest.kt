@@ -33,8 +33,8 @@ import arrow.core.test.laws.TraverseLaws
 import arrow.core.test.laws.UnalignLaws
 import arrow.core.test.laws.UnzipLaws
 import arrow.typeclasses.Eq
-import io.kotlintest.properties.Gen
-import io.kotlintest.properties.forAll
+import io.kotest.properties.Gen
+import io.kotest.properties.forAll
 
 class MapKTest : UnitSpec() {
 

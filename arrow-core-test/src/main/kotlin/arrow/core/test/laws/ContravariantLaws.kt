@@ -8,8 +8,8 @@ import arrow.core.test.generators.functionAToB
 import arrow.typeclasses.Contravariant
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
-import io.kotlintest.properties.Gen
-import io.kotlintest.properties.forAll
+import io.kotest.properties.Gen
+import io.kotest.properties.forAll
 
 object ContravariantLaws {
 

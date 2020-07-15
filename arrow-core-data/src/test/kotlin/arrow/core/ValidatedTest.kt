@@ -29,9 +29,9 @@ import arrow.core.test.laws.SemigroupKLaws
 import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
 import arrow.typeclasses.Semigroup
-import io.kotlintest.fail
-import io.kotlintest.properties.Gen
-import io.kotlintest.shouldBe
+import io.kotest.fail
+import io.kotest.properties.Gen
+import io.kotest.shouldBe
 
 @Suppress("RedundantSuspendModifier")
 class ValidatedTest : UnitSpec() {

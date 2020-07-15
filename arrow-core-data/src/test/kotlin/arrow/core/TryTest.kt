@@ -25,12 +25,12 @@ import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
-import io.kotlintest.fail
-import io.kotlintest.matchers.beTheSameInstanceAs
-import io.kotlintest.properties.Gen
-import io.kotlintest.properties.forAll
-import io.kotlintest.should
-import io.kotlintest.shouldBe
+import io.kotest.fail
+import io.kotest.matchers.beTheSameInstanceAs
+import io.kotest.properties.Gen
+import io.kotest.properties.forAll
+import io.kotest.should
+import io.kotest.shouldBe
 
 class TryTest : UnitSpec() {
 

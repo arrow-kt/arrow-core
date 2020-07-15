@@ -5,8 +5,8 @@ import com.google.common.io.Files
 import com.google.testing.compile.CompilationSubject.assertThat
 import com.google.testing.compile.Compiler.javac
 import com.google.testing.compile.JavaFileObjects
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.AbstractStringSpec
+import io.kotest.shouldBe
+import io.kotest.specs.AbstractStringSpec
 import java.io.File
 import java.nio.file.Paths
 

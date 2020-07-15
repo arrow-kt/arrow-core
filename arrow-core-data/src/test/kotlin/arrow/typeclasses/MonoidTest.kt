@@ -7,7 +7,7 @@ import arrow.core.test.UnitSpec
 import arrow.core.test.generators.GenK
 import arrow.core.test.laws.InvariantLaws
 import arrow.core.test.laws.equalUnderTheLaw
-import io.kotlintest.properties.Gen
+import io.kotest.properties.Gen
 
 class MonoidTest : UnitSpec() {
 

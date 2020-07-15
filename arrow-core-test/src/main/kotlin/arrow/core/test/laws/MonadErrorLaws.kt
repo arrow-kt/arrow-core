@@ -14,10 +14,10 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.Functor
 import arrow.typeclasses.MonadError
 import arrow.typeclasses.Selective
-import io.kotlintest.fail
-import io.kotlintest.properties.Gen
-import io.kotlintest.properties.forAll
-import io.kotlintest.shouldThrowAny
+import io.kotest.fail
+import io.kotest.properties.Gen
+import io.kotest.properties.forAll
+import io.kotest.shouldThrowAny
 
 object MonadErrorLaws {
 

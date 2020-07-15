@@ -13,8 +13,8 @@ import arrow.typeclasses.Align
 import arrow.typeclasses.Bicrosswalk
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK2
-import io.kotlintest.properties.Gen
-import io.kotlintest.properties.forAll
+import io.kotest.properties.Gen
+import io.kotest.properties.forAll
 import kotlin.math.abs
 
 object BicrosswalkLaws {

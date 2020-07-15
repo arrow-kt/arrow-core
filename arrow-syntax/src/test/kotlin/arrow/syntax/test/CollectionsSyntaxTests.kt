@@ -20,7 +20,7 @@ import arrow.syntax.collections.destructured
 import arrow.syntax.collections.prependTo
 import arrow.syntax.collections.tail
 import arrow.core.test.UnitSpec
-import io.kotlintest.shouldBe
+import io.kotest.shouldBe
 
 class CollectionsSyntaxTests : UnitSpec() {
 
