@@ -44,6 +44,7 @@ import arrow.core.test.laws.TraverseLaws
 import arrow.typeclasses.Eq
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.string
 import io.kotest.property.forAll
 import io.kotlintest.shouldBe
 
