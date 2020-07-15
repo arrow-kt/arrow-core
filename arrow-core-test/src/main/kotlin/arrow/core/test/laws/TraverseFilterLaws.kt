@@ -35,12 +35,12 @@ object TraverseFilterLaws {
       )
   }
 
-  fun <F> TraverseFilter<F>.identityTraverseFilter(GEN: Arb<Kind<F, Int>>, GA: Applicative<F>, EQ: Eq<Kind<F, Kind<F, Int>>> = Eq.any()) =
+  private suspend fun <F> TraverseFilter<F>.identityTraverseFilter(GEN: Arb<Kind<F, Int>>, GA: Applicative<F>, EQ: Eq<Kind<F, Kind<F, Int>>> = Eq.any()) =
     forAll(GEN) { fa: Kind<F, Int> ->
       fa.traverseFilter(GA) { GA.just(Some(it)) }.equalUnderTheLaw(GA.just(fa), EQ)
     }
 
-  fun <F> TraverseFilter<F>.filterAconsistentWithTraverseFilter(
+  private suspend fun <F> TraverseFilter<F>.filterAconsistentWithTraverseFilter(
     genInt: Arb<Kind<F, Int>>,
     genBool: Arb<Kind<F, Boolean>>,
     GA: Applicative<F>,
@@ -51,7 +51,7 @@ object TraverseFilterLaws {
     }
   }
 
-  fun <F> TraverseFilter<F>.traverseFilterIsInstanceConsistentWithTraverseFilter(
+  private suspend fun <F> TraverseFilter<F>.traverseFilterIsInstanceConsistentWithTraverseFilter(
     genInt: Arb<Kind<F, Int>>,
     GA: Applicative<F>,
     EQ: Eq<Kind<F, Kind<F, Int>>>

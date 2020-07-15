@@ -50,19 +50,19 @@ object SemialignLaws {
 
   // Laws ported from https://hackage.haskell.org/package/semialign-1.1/docs/Data-Semialign.html
 
-  fun <F, A> Semialign<F>.semialignIdempotency(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<A, A>>>) =
+  private suspend fun <F, A> Semialign<F>.semialignIdempotency(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<A, A>>>) =
     forAll(G) { a ->
       align(a, a).equalUnderTheLaw(a.map { Ior.Both(it, it) }, EQ)
     }
 
-  fun <F, A> Semialign<F>.semialignCommutativity(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<A, A>>>) =
+  private suspend fun <F, A> Semialign<F>.semialignCommutativity(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<A, A>>>) =
     forAll(G, G) { a: Kind<F, A>, b: Kind<F, A> ->
       val left: Kind<F, Ior<A, A>> = align(a, b).map { it.swap() }
       val right: Kind<F, Ior<A, A>> = align(b, a)
       left.equalUnderTheLaw(right, EQ)
     }
 
-  fun <F, A> Semialign<F>.semialignAssociativity(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<A, Ior<A, A>>>>) =
+  private suspend fun <F, A> Semialign<F>.semialignAssociativity(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<A, Ior<A, A>>>>) =
     forAll(G, G, G) { x: Kind<F, A>, y: Kind<F, A>, z: Kind<F, A> ->
 
       val left = align(x, align(y, z))
@@ -72,7 +72,7 @@ object SemialignLaws {
       left.equalUnderTheLaw(right, EQ)
     }
 
-  fun <F, A> Semialign<F>.semialignWith(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, String>>) =
+  private suspend fun <F, A> Semialign<F>.semialignWith(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, String>>) =
     forAll(G, G) { a: Kind<F, A>, b: Kind<F, A> ->
       val left = alignWith(a, b) { "$it" }
       val right = align(a, b).map { "$it" }
@@ -80,7 +80,7 @@ object SemialignLaws {
       left.equalUnderTheLaw(right, EQ)
     }
 
-  fun <F, A> Semialign<F>.semialignFunctoriality(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<String, String>>>) =
+  private suspend fun <F, A> Semialign<F>.semialignFunctoriality(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<String, String>>>) =
     forAll(G, G) { a: Kind<F, A>, b: Kind<F, A> ->
 
       val left = align(a.map { "$it" }, b.map { "$it" })
@@ -91,7 +91,7 @@ object SemialignLaws {
       left.equalUnderTheLaw(right, EQ)
     }
 
-  fun <F, A> Semialign<F>.semialignAlignedness(
+  private suspend fun <F, A> Semialign<F>.semialignAlignedness(
     G: Arb<Kind<F, A>>,
     FOLD: Foldable<F>
   ) = forAll(G, G) { a: Kind<F, A>, b: Kind<F, A> ->

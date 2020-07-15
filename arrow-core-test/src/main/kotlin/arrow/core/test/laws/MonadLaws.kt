@@ -66,22 +66,22 @@ object MonadLaws {
     )
   }
 
-  fun <F> Monad<F>.leftIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Monad<F>.leftIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(Arb.functionAToB<Int, Kind<F, Int>>(G), Arb.int()) { f: (Int) -> Kind<F, Int>, a: Int ->
       just(a).flatMap(f).equalUnderTheLaw(f(a), EQ)
     }
 
-  fun <F> Monad<F>.rightIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Monad<F>.rightIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(G) { fa: Kind<F, Int> ->
       fa.flatMap { just(it) }.equalUnderTheLaw(fa, EQ)
     }
 
-  fun <F> Monad<F>.stackSafety(iter: Int = 5000, EQ: Eq<Kind<F, Int>>) {
+  private suspend fun <F> Monad<F>.stackSafety(iter: Int = 5000, EQ: Eq<Kind<F, Int>>) {
     val res = tailRecM(0) { i -> just(if (i < iter) Left(i + 1) else Right(i)) }
     res.equalUnderTheLaw(just(iter), EQ)
   }
 
-  fun <F> Monad<F>.monadComprehensions(EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Monad<F>.monadComprehensions(EQ: Eq<Kind<F, Int>>): Unit =
     forAll(Arb.int()) { num: Int ->
       fx.monad {
         val a = !just(num)
@@ -91,64 +91,64 @@ object MonadLaws {
       }.equalUnderTheLaw(just(num + 2), EQ)
     }
 
-  fun <F> Monad<F>.derivedSelectiveConsistent(GK: GenK<F>, SL: Selective<F>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Monad<F>.derivedSelectiveConsistent(GK: GenK<F>, SL: Selective<F>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(GK.genK(Arb.either(Arb.int(), Arb.int())), GK.genK(Arb.functionAToB<Int, Int>(Arb.int()))) { x, f ->
       SL.run { x.select(f) }.equalUnderTheLaw(x.select(f), EQ)
     }
 
-  fun <F> Monad<F>.derivedMapConsistent(G: Arb<Kind<F, Int>>, FF: Functor<F>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Monad<F>.derivedMapConsistent(G: Arb<Kind<F, Int>>, FF: Functor<F>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(G, Arb.functionAToB<Int, Int>(Arb.int())) { fa, f ->
       FF.run { fa.map(f) }.equalUnderTheLaw(fa.map(f), EQ)
     }
 
-  fun <F> Monad<F>.derivedApConsistent(GK: GenK<F>, AP: Apply<F>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Monad<F>.derivedApConsistent(GK: GenK<F>, AP: Apply<F>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(GK.genK(Arb.int()), GK.genK(Arb.functionAToB<Int, Int>(Arb.int()))) { fa, ff ->
       AP.run { fa.ap(ff) }.equalUnderTheLaw(fa.ap(ff), EQ)
     }
 
-  fun <F> Monad<F>.derivedFollowedByConsistent(GK: GenK<F>, AP: Apply<F>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Monad<F>.derivedFollowedByConsistent(GK: GenK<F>, AP: Apply<F>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(GK.genK(Arb.int()), GK.genK(Arb.int())) { fa, fb ->
       AP.run { fa.followedBy(fb) }.equalUnderTheLaw(fa.followedBy(fb), EQ)
     }
 
-  fun <F> Monad<F>.derivedApTapConsistent(GK: GenK<F>, AP: Apply<F>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Monad<F>.derivedApTapConsistent(GK: GenK<F>, AP: Apply<F>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(GK.genK(Arb.int()), GK.genK(Arb.int())) { fa, fb ->
       AP.run { fa.apTap(fb) }.equalUnderTheLaw(fa.apTap(fb), EQ)
     }
 
-  fun <F> Monad<F>.derivedFlattenConsistent(GK: GenK<F>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Monad<F>.derivedFlattenConsistent(GK: GenK<F>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(GK.genK(GK.genK(Arb.int()))) { fa: Kind<F, Kind<F, Int>> ->
       fa.flatten().equalUnderTheLaw(fa.flatMap(::identity), EQ)
     }
 
-  fun <F> Monad<F>.derivedFollowedByEvalConsistent(GK: GenK<F>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Monad<F>.derivedFollowedByEvalConsistent(GK: GenK<F>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(GK.genK(Arb.int()), GK.genK(Arb.int())) { fa, fb ->
       val fbEval: Eval<Kind<F, Int>> = Eval.just(fb)
       fa.followedByEval(fbEval).equalUnderTheLaw(fa.flatMap { fbEval.value() }, EQ)
     }
 
-  fun <F> Monad<F>.derivedProductLConsistent(GK: GenK<F>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Monad<F>.derivedProductLConsistent(GK: GenK<F>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(GK.genK(Arb.int()), GK.genK(Arb.int())) { fa, fb ->
       fa.productL(fb).equalUnderTheLaw(fa.flatMap { a -> fb.map { a } }, EQ)
     }
 
-  fun <F> Monad<F>.derivedProductLEvalConsistent(GK: GenK<F>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Monad<F>.derivedProductLEvalConsistent(GK: GenK<F>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(GK.genK(Arb.int()), GK.genK(Arb.int())) { fa, fb ->
       val fbEval: Eval<Kind<F, Int>> = Eval.just(fb)
       fa.productLEval(fbEval).equalUnderTheLaw(fa.flatMap { a -> fbEval.value().map { a } }, EQ)
     }
 
-  fun <F> Monad<F>.derivedProductConsistent(GK: GenK<F>, AP: Apply<F>, EQ: Eq<Kind<F, Tuple2<Int, Int>>>): Unit =
+  private suspend fun <F> Monad<F>.derivedProductConsistent(GK: GenK<F>, AP: Apply<F>, EQ: Eq<Kind<F, Tuple2<Int, Int>>>): Unit =
     forAll(GK.genK(Arb.int()), GK.genK(Arb.int())) { fa, fb ->
       AP.run { fa.product(fb) }.equalUnderTheLaw(fa.product(fb), EQ)
     }
 
-  fun <F> Monad<F>.derivedMProductConsistent(GK: GenK<F>, EQ: Eq<Kind<F, Tuple2<Int, Int>>>): Unit =
+  private suspend fun <F> Monad<F>.derivedMProductConsistent(GK: GenK<F>, EQ: Eq<Kind<F, Tuple2<Int, Int>>>): Unit =
     forAll(GK.genK(Arb.int()), Arb.functionAToB<Int, Kind<F, Int>>(Arb.int().applicative(this))) { fa, fb: (Int) -> Kind<F, Int> ->
       fa.mproduct(fb).equalUnderTheLaw(fa.flatMap { a -> fb(a).map { Tuple2(a, it) } }, EQ)
     }
 
-  fun <F> Monad<F>.derivedIfMConsistent(GK: GenK<F>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Monad<F>.derivedIfMConsistent(GK: GenK<F>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(GK.genK(Arb.bool()), Arb.functionToA(GK.genK(Arb.int())), Arb.functionToA(GK.genK(Arb.int()))) { fa, fTrue, fFalse ->
       fa.ifM(fTrue, fFalse).equalUnderTheLaw(fa.flatMap { if (it) fTrue() else fFalse() }, EQ)
     }

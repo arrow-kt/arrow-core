@@ -46,57 +46,57 @@ object ApplicativeLaws {
     )
   }
 
-  fun <F> Applicative<F>.apIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Applicative<F>.apIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(G) { fa: Kind<F, Int> ->
       fa.ap(just { n: Int -> n }).equalUnderTheLaw(fa, EQ)
     }
 
-  fun <F> Applicative<F>.homomorphism(EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Applicative<F>.homomorphism(EQ: Eq<Kind<F, Int>>): Unit =
     forAll(Arb.functionAToB<Int, Int>(Arb.int()), Arb.int()) { ab: (Int) -> Int, a: Int ->
       just(a).ap(just(ab)).equalUnderTheLaw(just(ab(a)), EQ)
     }
 
-  fun <F> Applicative<F>.interchange(GK: GenK<F>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Applicative<F>.interchange(GK: GenK<F>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(GK.genK(Arb.functionAToB<Int, Int>(Arb.int())), Arb.int()) { fa: Kind<F, (Int) -> Int>, a: Int ->
       just(a).ap(fa).equalUnderTheLaw(fa.ap(just { x: (Int) -> Int -> x(a) }), EQ)
     }
 
-  fun <F> Applicative<F>.mapDerived(G: Arb<Kind<F, Int>>, FF: Functor<F>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Applicative<F>.mapDerived(G: Arb<Kind<F, Int>>, FF: Functor<F>, EQ: Eq<Kind<F, Int>>): Unit =
     forAll(G, Arb.functionAToB<Int, Int>(Arb.int())) { fa: Kind<F, Int>, f: (Int) -> Int ->
       FF.run { fa.map(f) }.equalUnderTheLaw(fa.ap(just(f)), EQ)
     }
 
-  fun <F> Applicative<F>.cartesianBuilderMap(EQ: Eq<Kind<F, Tuple3<Int, Int, Int>>>): Unit =
+  private suspend fun <F> Applicative<F>.cartesianBuilderMap(EQ: Eq<Kind<F, Tuple3<Int, Int, Int>>>): Unit =
     forAll(Arb.intSmall(), Arb.intSmall(), Arb.intSmall()) { a: Int, b: Int, c: Int ->
       mapN(just(a), just(b), just(c)) { it }.equalUnderTheLaw(just(Tuple3(a, b, c)), EQ)
     }
 
-  fun <F> Applicative<F>.cartesianBuilderTupled2(EQ: Eq<Kind<F, Tuple2<Int, Int>>>): Unit =
+  private suspend fun <F> Applicative<F>.cartesianBuilderTupled2(EQ: Eq<Kind<F, Tuple2<Int, Int>>>): Unit =
     forAll(Arb.intSmall(), Arb.intSmall()) { a: Int, b: Int ->
       tupledN(just(a), just(b)).equalUnderTheLaw(just(Tuple2(a, b)), EQ)
     }
 
-  fun <F> Applicative<F>.cartesianBuilderTupled3(EQ: Eq<Kind<F, Tuple3<Int, Int, Int>>>): Unit =
+  private suspend fun <F> Applicative<F>.cartesianBuilderTupled3(EQ: Eq<Kind<F, Tuple3<Int, Int, Int>>>): Unit =
     forAll(Arb.intSmall(), Arb.intSmall(), Arb.intSmall()) { a: Int, b: Int, c: Int ->
       tupledN(just(a), just(b), just(c)).equalUnderTheLaw(just(Tuple3(a, b, c)), EQ)
     }
 
-  fun <F> Applicative<F>.replicateSize(EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Applicative<F>.replicateSize(EQ: Eq<Kind<F, Int>>): Unit =
     forAll(Arb.choose(0, 100)) { n ->
       just(1).replicate(n).map { it.size }.equalUnderTheLaw(just(n), EQ)
     }
 
-  fun <F> Applicative<F>.replicateListOf1(EQ: Eq<Kind<F, Boolean>>): Unit =
+  private suspend fun <F> Applicative<F>.replicateListOf1(EQ: Eq<Kind<F, Boolean>>): Unit =
     forAll(Arb.choose(0, 100)) { n ->
       just(1).replicate(n).map { list -> list.all { it == 1 } }.equalUnderTheLaw(just(true), EQ)
     }
 
-  fun <F> Applicative<F>.replicateMonoid(EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Applicative<F>.replicateMonoid(EQ: Eq<Kind<F, Int>>): Unit =
     forAll(Arb.choose(0, 100)) { n ->
       just(1).replicate(n, Int.monoid()).equalUnderTheLaw(just(n), EQ)
     }
 
-  fun <F> Applicative<F>.apEvalConsistent(G: GenK<F>, EQ: Eq<Kind<F, Int>>) =
+  private suspend fun <F> Applicative<F>.apEvalConsistent(G: GenK<F>, EQ: Eq<Kind<F, Int>>) =
     forAll(G.genK(Arb.int()), G.genK(Arb.functionAToB<Int, Int>(Arb.int()))) { fa, ff ->
       fa.ap(ff).equalUnderTheLaw(fa.apEval(Eval.now(ff)).value(), EQ)
     }

@@ -40,12 +40,12 @@ object RepeatLaws {
       }
     )
 
-  fun <F, A> Repeat<F>.zipWithRhsRepeatIsNeutralToTheLhs(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
+  private suspend fun <F, A> Repeat<F>.zipWithRhsRepeatIsNeutralToTheLhs(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
     forAll(G) { a: Kind<F, A> ->
       a.zip(repeat("foo")).map { it.a }.equalUnderTheLaw(a, EQ)
     }
 
-  fun <F, A> Repeat<F>.zipWithLhsRepeatIsNeutralToTheRhs(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
+  private suspend fun <F, A> Repeat<F>.zipWithLhsRepeatIsNeutralToTheRhs(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
     forAll(G) { a: Kind<F, A> ->
       repeat("foo").zip(a).map { it.b }.equalUnderTheLaw(a, EQ)
     }

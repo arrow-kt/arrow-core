@@ -69,14 +69,14 @@ object MonadLogicLaws {
   fun <F, A> MonadLogic<F>.msplitZeroIsNone(EQ: Eq<Kind<F, Option<Tuple2<Kind<F, A>, A>>>>) =
     zeroM<A>().splitM().equalUnderTheLaw(just(Option.empty()), EQ) shouldBe true
 
-  fun <F, A> MonadLogic<F>.onceJust(
+  private suspend fun <F, A> MonadLogic<F>.onceJust(
     genA: Arb<A>,
     EQ: Eq<Kind<F, A>>
   ) = forAll(genA) { a ->
     just(a).once().equalUnderTheLaw(just(a), EQ)
   }
 
-  fun <F, A> MonadLogic<F>.msplitGivesAccessToFirstResult(
+  private suspend fun <F, A> MonadLogic<F>.msplitGivesAccessToFirstResult(
     genA: Arb<A>,
     genFA: Arb<Kind<F, A>>,
     EQ: Eq<Kind<F, Option<Tuple2<Kind<F, A>, A>>>>
@@ -88,7 +88,7 @@ object MonadLogicLaws {
       ls.equalUnderTheLaw(rs, EQ)
     }
 
-  fun <F, A, B> MonadLogic<F>.iftePicksFirstOnSuccess(
+  private suspend fun <F, A, B> MonadLogic<F>.iftePicksFirstOnSuccess(
     iterations: Int,
     genA: Arb<A>,
     genFunAToFB: Arb<(A) -> Kind<F, B>>,

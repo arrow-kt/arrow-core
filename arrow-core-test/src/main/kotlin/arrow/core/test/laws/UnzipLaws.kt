@@ -51,7 +51,7 @@ object UnzipLaws {
     }
   )
 
-  fun <F, A, B> Unzip<F>.zipIsInverseOfUnzip(
+  private suspend fun <F, A, B> Unzip<F>.zipIsInverseOfUnzip(
     G: Arb<Kind<F, Tuple2<A, B>>>,
     EQ: Eq<Kind<F, Tuple2<A, B>>>
   ) =
@@ -60,7 +60,7 @@ object UnzipLaws {
       ls.zip(rs).equalUnderTheLaw(xs, EQ)
     }
 
-  fun <F, A> Unzip<F>.unipIsInverseOfZip(
+  private suspend fun <F, A> Unzip<F>.unipIsInverseOfZip(
     G: Arb<Kind<F, A>>,
     EQ: Eq<Tuple2<Kind<F, A>, Kind<F, A>>>
   ) =

@@ -59,21 +59,21 @@ object BimonadLaws {
       ComonadLaws.laws(CM, GENK, EQK) +
       bimonadLaws(BF, EQK)
 
-  fun <F, A> Bimonad<F>.extractIsIdentity(G: Arb<A>, EQ: Eq<A>): Unit =
+  private suspend fun <F, A> Bimonad<F>.extractIsIdentity(G: Arb<A>, EQ: Eq<A>): Unit =
     forAll(
       G
     ) { a ->
       just(a).extract().equalUnderTheLaw(a, EQ)
     }
 
-  fun <F, A> Bimonad<F>.extractFlatMap(G: Arb<A>, EQ: Eq<A>): Unit =
+  private suspend fun <F, A> Bimonad<F>.extractFlatMap(G: Arb<A>, EQ: Eq<A>): Unit =
     forAll(
       G
     ) { a ->
       just(just(a)).flatten().extract().equalUnderTheLaw(just(just(a)).map { it.extract() }.extract(), EQ)
     }
 
-  fun <F, A> Bimonad<F>.coflatMapComposition(G: Arb<A>, EQ: Eq<Kind<F, Kind<F, A>>>): Unit =
+  private suspend fun <F, A> Bimonad<F>.coflatMapComposition(G: Arb<A>, EQ: Eq<Kind<F, Kind<F, A>>>): Unit =
     forAll(
       G
     ) { a ->

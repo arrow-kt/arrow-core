@@ -17,21 +17,21 @@ object MonoidLaws {
         Law("Monoid Laws: combineAll of empty list is empty") { M.combineAllOfEmptyIsEmpty(EQ) }
       )
 
-  fun <F> Monoid<F>.monoidLeftIdentity(GEN: Arb<F>, EQ: Eq<F>): Unit =
+  private suspend fun <F> Monoid<F>.monoidLeftIdentity(GEN: Arb<F>, EQ: Eq<F>): Unit =
     forAll(GEN) { a ->
       (empty().combine(a)).equalUnderTheLaw(a, EQ)
     }
 
-  fun <F> Monoid<F>.monoidRightIdentity(GEN: Arb<F>, EQ: Eq<F>): Unit =
+  private suspend fun <F> Monoid<F>.monoidRightIdentity(GEN: Arb<F>, EQ: Eq<F>): Unit =
     forAll(GEN) { a ->
       a.combine(empty()).equalUnderTheLaw(a, EQ)
     }
 
-  fun <F> Monoid<F>.combineAllIsDerived(GEN: Arb<F>, EQ: Eq<F>): Unit =
+  private suspend fun <F> Monoid<F>.combineAllIsDerived(GEN: Arb<F>, EQ: Eq<F>): Unit =
     forAll(5, Arb.list(GEN)) { list ->
       list.combineAll().equalUnderTheLaw(if (list.isEmpty()) empty() else list.reduce { acc, f -> acc.combine(f) }, EQ)
     }
 
-  fun <F> Monoid<F>.combineAllOfEmptyIsEmpty(EQ: Eq<F>): Unit =
+  private suspend fun <F> Monoid<F>.combineAllOfEmptyIsEmpty(EQ: Eq<F>): Unit =
     emptyList<F>().combineAll().equalUnderTheLaw(empty(), EQ) shouldBe true
 }

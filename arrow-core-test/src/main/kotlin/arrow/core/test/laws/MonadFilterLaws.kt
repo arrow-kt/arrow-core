@@ -54,17 +54,17 @@ object MonadFilterLaws {
       FunctorFilterLaws.laws(MF, GENK, EQK) +
       monadFilterLaws(MF, GENK, EQK)
 
-  fun <F, A> MonadFilter<F>.monadFilterLeftEmpty(G: Arb<Function1<A, Kind<F, A>>>, EQ: Eq<Kind<F, A>>): Unit =
+  private suspend fun <F, A> MonadFilter<F>.monadFilterLeftEmpty(G: Arb<Function1<A, Kind<F, A>>>, EQ: Eq<Kind<F, A>>): Unit =
     forAll(G) { f: (A) -> Kind<F, A> ->
       empty<A>().flatMap(f).equalUnderTheLaw(empty(), EQ)
     }
 
-  fun <F, A> MonadFilter<F>.monadFilterRightEmpty(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>): Unit =
+  private suspend fun <F, A> MonadFilter<F>.monadFilterRightEmpty(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>): Unit =
     forAll(G) { fa: Kind<F, A> ->
       fa.flatMap { empty<A>() }.equalUnderTheLaw(empty(), EQ)
     }
 
-  fun <F, A> MonadFilter<F>.monadFilterConsistency(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>): Unit =
+  private suspend fun <F, A> MonadFilter<F>.monadFilterConsistency(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>): Unit =
     forAll(Arb.functionAToB<A, Boolean>(Arb.bool()), G) { f: (A) -> Boolean, fa: Kind<F, A> ->
       fa.filter(f).equalUnderTheLaw(fa.flatMap { a -> if (f(a)) just(a) else empty() }, EQ)
     }

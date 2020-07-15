@@ -81,7 +81,7 @@ object TraverseLaws {
     )
   }
 
-  fun <F> Traverse<F>.identityTraverse(FF: Functor<F>, G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) = Id.applicative().run {
+  private suspend fun <F> Traverse<F>.identityTraverse(FF: Functor<F>, G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) = Id.applicative().run {
     val idApp = this
     forAll(Arb.functionAToB<Int, Kind<ForId, Int>>(Arb.intSmall().map(::Id)), G) { f: (Int) -> Kind<ForId, Int>, fa: Kind<F, Int> ->
       fa.traverse(idApp, f).extract().equalUnderTheLaw(FF.run {
@@ -90,7 +90,7 @@ object TraverseLaws {
     }
   }
 
-  fun <F> Traverse<F>.sequentialComposition(GEN: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) = Id.applicative().run {
+  private suspend fun <F> Traverse<F>.sequentialComposition(GEN: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) = Id.applicative().run {
     val idApp = this
     forAll(Arb.functionAToB<Int, Kind<ForId, Int>>(Arb.intSmall().map(::Id)),
       Arb.functionAToB<Int, Kind<ForId, Int>>(Arb.intSmall().map(::Id)),
@@ -103,7 +103,7 @@ object TraverseLaws {
     }
   }
 
-  fun <F> Traverse<F>.parallelComposition(GEN: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) =
+  private suspend fun <F> Traverse<F>.parallelComposition(GEN: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) =
     forAll(Arb.functionAToB<Int, Kind<ForId, Int>>(Arb.intSmall().map(::Id)), Arb.functionAToB<Int, Kind<ForId, Int>>(Arb.intSmall().map(::Id)), GEN) { f: (Int) -> Kind<ForId, Int>, g: (Int) -> Kind<ForId, Int>, fha: Kind<F, Int> ->
       val TIA = object : Applicative<TIF> {
         override fun <A> just(a: A): Kind<TIF, A> =
@@ -128,14 +128,14 @@ object TraverseLaws {
       seen.equalUnderTheLaw(expected, TIEQ)
     }
 
-  fun <F> Traverse<F>.foldMapDerived(GEN: Arb<Kind<F, Int>>) =
+  private suspend fun <F> Traverse<F>.foldMapDerived(GEN: Arb<Kind<F, Int>>) =
     forAll(Arb.functionAToB<Int, Int>(Arb.intSmall()), GEN) { f: (Int) -> Int, fa: Kind<F, Int> ->
       val traversed = fa.traverse(Const.applicative(Int.monoid())) { a -> f(a).const() }.value()
       val mapped = fa.foldMap(Int.monoid(), f)
       mapped.equalUnderTheLaw(traversed, Eq.any())
     }
 
-  fun <F> Traverse<F>.leftToRight(GEN: Arb<Kind<F, Int>>) =
+  private suspend fun <F> Traverse<F>.leftToRight(GEN: Arb<Kind<F, Int>>) =
     forAll(GEN) { fa ->
       val mutable = mutableListOf<Int>()
       fa.traverse(Eval.applicative()) { mutable.add(it); Eval.now(Unit) }.value()

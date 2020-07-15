@@ -24,7 +24,7 @@ object SemigroupalLaws {
     SGAL.semigroupalAssociative(GENK.genK(Arb.int()), bijection, EQ)
   })
 
-  private fun <F> Semigroupal<F>.semigroupalAssociative(
+  private suspend fun <F> Semigroupal<F>.semigroupalAssociative(
     GEN: Arb<Kind<F, Int>>,
     bijection: (Kind<F, Tuple2<Tuple2<Int, Int>, Int>>) -> (Kind<F, Tuple2<Int, Tuple2<Int, Int>>>),
     EQ: Eq<Kind<F, Tuple2<Int, Tuple2<Int, Int>>>>

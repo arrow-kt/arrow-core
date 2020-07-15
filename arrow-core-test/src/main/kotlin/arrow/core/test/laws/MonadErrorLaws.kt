@@ -52,23 +52,23 @@ object MonadErrorLaws {
       ApplicativeErrorLaws.laws(M, GENK, EQK) +
       monadErrorLaws(M, EQK)
 
-  fun <F> MonadError<F, Throwable>.monadErrorLeftZero(EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> MonadError<F, Throwable>.monadErrorLeftZero(EQ: Eq<Kind<F, Int>>): Unit =
     forAll(Arb.functionAToB<Int, Kind<F, Int>>(Arb.int().applicativeError(this)), Arb.throwable()) { f: (Int) -> Kind<F, Int>, e: Throwable ->
       raiseError<Int>(e).flatMap(f).equalUnderTheLaw(raiseError(e), EQ)
     }
 
-  fun <F> MonadError<F, Throwable>.monadErrorEnsureConsistency(EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> MonadError<F, Throwable>.monadErrorEnsureConsistency(EQ: Eq<Kind<F, Int>>): Unit =
     forAll(Arb.int().applicativeError(this), Arb.throwable(), Arb.functionAToB<Int, Boolean>(Arb.bool())) { fa: Kind<F, Int>, e: Throwable, p: (Int) -> Boolean ->
       fa.ensure({ e }, p).equalUnderTheLaw(fa.flatMap { a -> if (p(a)) just(a) else raiseError(e) }, EQ)
     }
 
-  fun <F> MonadError<F, Throwable>.monadErrorCatchesNonFatalThrowables(EQ: Eq<Kind<F, Int>>) {
+  private suspend fun <F> MonadError<F, Throwable>.monadErrorCatchesNonFatalThrowables(EQ: Eq<Kind<F, Int>>) {
     forAll(Arb.throwable()) { nonFatal: Throwable ->
       catch { throw nonFatal }.equalUnderTheLaw(raiseError(nonFatal), EQ)
     }
   }
 
-  fun <F> MonadError<F, Throwable>.monadErrorThrowsFatalThrowables(EQ: Eq<Kind<F, Int>>) {
+  private suspend fun <F> MonadError<F, Throwable>.monadErrorThrowsFatalThrowables(EQ: Eq<Kind<F, Int>>) {
     forAll(Arb.fatalThrowable()) { fatal: Throwable ->
       shouldThrowAny {
         fun <A> itShouldNotComeThisFar(): Kind<F, A> {
@@ -80,14 +80,14 @@ object MonadErrorLaws {
     }
   }
 
-  fun <F> MonadError<F, Throwable>.monadErrorDerivesRedeemWith(EQ: Eq<Kind<F, Int>>) =
+  private suspend fun <F> MonadError<F, Throwable>.monadErrorDerivesRedeemWith(EQ: Eq<Kind<F, Int>>) =
     forAll(Arb.int().applicativeError(this),
       Arb.functionAToB<Throwable, Kind<F, Int>>(Arb.int().applicativeError(this)),
       Arb.functionAToB<Int, Kind<F, Int>>(Arb.int().applicative(this))) { fa, fe, fb ->
       fa.redeemWith(fe, fb).equalUnderTheLaw(fa.flatMap(fb).handleErrorWith(fe), EQ)
     }
 
-  fun <F> MonadError<F, Throwable>.monadErrorRedeemWithPureIsFlatMap(EQ: Eq<Kind<F, Int>>) =
+  private suspend fun <F> MonadError<F, Throwable>.monadErrorRedeemWithPureIsFlatMap(EQ: Eq<Kind<F, Int>>) =
     forAll(Arb.int().applicative(this),
       Arb.functionAToB<Throwable, Kind<F, Int>>(Arb.int().applicativeError(this)),
       Arb.functionAToB<Int, Kind<F, Int>>(Arb.int().applicative(this))) { fa, fe, fb ->
