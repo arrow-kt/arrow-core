@@ -13,6 +13,7 @@ import arrow.typeclasses.Crosswalk
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.arb
 import io.kotlintest.properties.forAll
 import kotlin.math.abs
 
@@ -24,12 +25,13 @@ object CrosswalkLaws {
     EQK: EqK<T>
   ): List<Law> {
 
-    val funGen = object : Arb<(Int) -> Kind<ForListK, String>> {
-      override fun constants(): Iterable<(Int) -> ListK<String>> = listOf(
+    val funGen = arb<(Int) -> Kind<ForListK, String>>(
+      listOf(
         { int: Int -> listOf("$int").k() },
-        { int: Int -> List(abs(int % 100)) { "$it" }.k() })
-
-      override fun random(): Sequence<(Int) -> ListK<String>> = emptySequence()
+        { int: Int -> List(abs(int % 100)) { "$it" }.k() }
+      )
+    ) {
+      emptySequence()
     }
 
     return listOf(

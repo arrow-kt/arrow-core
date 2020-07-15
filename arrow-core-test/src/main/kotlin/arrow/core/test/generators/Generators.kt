@@ -37,9 +37,9 @@ import arrow.core.toOption
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.ApplicativeError
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.arb
 import io.kotlintest.properties.shrinking.DoubleShrinker
 import io.kotlintest.properties.shrinking.FloatShrinker
-import io.kotlintest.properties.shrinking.Shrinker
 
 fun Arb.Companion.short(): Arb<Short> =
   Arb.choose(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).map { it.toShort() }
@@ -72,18 +72,11 @@ fun Arb.Companion.throwable(): Arb<Throwable> = Arb.from(listOf(RuntimeException
 
 fun Arb.Companion.fatalThrowable(): Arb<Throwable> = Arb.from(listOf(ThreadDeath(), StackOverflowError(), OutOfMemoryError(), InterruptedException()))
 
-fun Arb.Companion.doubleSmall(): Arb<Double> = object : Arb<Double> {
-  override fun constants(): Iterable<Double> = emptyList()
-  override fun random(): Sequence<Double> = (0 until 10_000).asSequence().map { it / 100.0 }
-  override fun shrinker(): Shrinker<Double> = DoubleShrinker
-}
+fun Arb.Companion.doubleSmall(): Arb<Double> =
+  arb(DoubleShrinker, listOf(0.0)) { it.random.nextInt(100).toDouble() }
 
-fun Arb.Companion.floatSmall(): Arb<Float> = object : Arb<Float> {
-  val literals = listOf(0F)
-  override fun constants(): Iterable<Float> = literals
-  override fun random(): Sequence<Float> = (0 until 10_000).asSequence().map { it / 100.0f }
-  override fun shrinker() = FloatShrinker
-}
+fun Arb.Companion.floatSmall(): Arb<Float> =
+  arb(FloatShrinker, listOf(0F)) { it.random.nextInt(100).toFloat() }
 
 fun Arb.Companion.intSmall(): Arb<Int> = Arb.oneOf(Arb.choose(Int.MIN_VALUE / 10000, -1), Arb.choose(0, Int.MAX_VALUE / 10000))
 
@@ -169,29 +162,22 @@ fun <A> Arb.Companion.genSetK(genA: Arb<A>): Arb<SetK<A>> = Arb.set(genA).map { 
 fun Arb.Companion.unit(): Arb<Unit> =
   create { Unit }
 
-fun <T> Arb.Companion.id(gen: Arb<T>): Arb<Id<T>> = object : Arb<Id<T>> {
-  override fun constants(): Iterable<Id<T>> =
-    gen.constants().map { Id.just(it) }
-
-  override fun random(): Sequence<Id<T>> =
-    gen.random().map { Id.just(it) }
-}
+fun <T> Arb.Companion.id(gen: Arb<T>): Arb<Id<T>> =
+  arb(gen.constants().map { Id.just(it) }) { gen.random().map { Id.just(it) } }
 
 fun <A, B> Arb.Companion.ior(genA: Arb<A>, genB: Arb<B>): Arb<Ior<A, B>> =
-  object : Arb<Ior<A, B>> {
-    override fun constants(): Iterable<Ior<A, B>> =
-      (genA.orNull().constants().asSequence().k() to genB.orNull().constants().asSequence().k()).let { (ls, rs) ->
-        SequenceK.apply().run { ls.product(rs) }.filterMap {
-          Ior.fromOptions(Option.fromNullable(it.a), Option.fromNullable(it.b))
-        }.asIterable()
+  arb(
+    (genA.orNull().constants().asSequence().k() to genB.orNull().constants().asSequence().k()).let { (ls, rs) ->
+      SequenceK.apply().run { ls.product(rs) }.filterMap {
+        Ior.fromOptions(Option.fromNullable(it.a), Option.fromNullable(it.b))
+      }.asIterable()
+    }
+  ) {
+    (Arb.option(genA).random() to Arb.option(genB).random()).let { (ls, rs) ->
+      ls.zip(rs).filterMap {
+        Ior.fromOptions(it.first, it.second)
       }
-
-    override fun random(): Sequence<Ior<A, B>> =
-      (Arb.option(genA).random() to Arb.option(genB).random()).let { (ls, rs) ->
-        ls.zip(rs).filterMap {
-          Ior.fromOptions(it.first, it.second)
-        }
-      }
+    }
   }
 
 fun <A, B> Arb.Companion.genConst(gen: Arb<A>): Arb<Const<A, B>> =

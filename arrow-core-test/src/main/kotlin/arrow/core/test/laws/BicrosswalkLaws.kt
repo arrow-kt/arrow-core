@@ -2,7 +2,6 @@ package arrow.core.test.laws
 
 import arrow.Kind
 import arrow.Kind2
-import arrow.core.ForListK
 import arrow.core.ListK
 import arrow.core.extensions.eq
 import arrow.core.extensions.listk.align.align
@@ -14,6 +13,7 @@ import arrow.typeclasses.Bicrosswalk
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK2
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.arb
 import io.kotlintest.properties.forAll
 import kotlin.math.abs
 
@@ -25,12 +25,12 @@ object BicrosswalkLaws {
     EQK: EqK2<T>
   ): List<Law> {
 
-    val funGen = object : Arb<(Int) -> Kind<ForListK, String>> {
-      override fun constants(): Iterable<(Int) -> ListK<String>> = listOf(
+    val funGen = arb<(Int) -> ListK<String>>(
+      listOf(
         { _: Int -> ListK.empty<String>() }, { _: Int -> ListK.just("value") }
       )
-
-      override fun random(): Sequence<(Int) -> ListK<String>> = generateSequence({ int: Int -> List(abs(int % 1000)) { "$it" }.k() }) { it }
+    ) {
+      generateSequence({ int: Int -> List(abs(int % 1000)) { "$it" }.k() }) { it }
     }
 
     val G = GENK.genK(Arb.int(), Arb.int())
