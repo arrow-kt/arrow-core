@@ -5,8 +5,8 @@ import arrow.core.Option
 import arrow.core.Some
 import arrow.core.extensions.option.applicative.applicative
 import arrow.core.extensions.sequence.traverse.sequence
-import io.kotest.shouldBe
-import io.kotest.specs.StringSpec
+import io.kotlintest.shouldBe
+import io.kotlintest.specs.StringSpec
 
 class TraverseTest : StringSpec({
   "traverse is stacksafe over very long collections and short circuits properly" {

@@ -26,7 +26,7 @@ import arrow.core.test.laws.MonoidalLaws
 import arrow.core.test.laws.SemigroupKLaws
 import arrow.core.test.laws.ShowLaws
 import arrow.typeclasses.Eq
-import io.kotest.properties.Gen
+import io.kotlintest.properties.Gen
 
 class SetKTest : UnitSpec() {
 

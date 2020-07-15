@@ -28,10 +28,10 @@ import arrow.core.extensions.tuple10.show.show
 import arrow.core.test.UnitSpec
 import arrow.core.test.laws.*
 import arrow.typeclasses.Eq
-import io.kotest.runner.junit4.kotestRunner
+import io.kotlintest.runner.junit4.KotlinTestRunner
 import org.junit.runner.RunWith
 
-@RunWith(kotestRunner::class)
+@RunWith(KotlinTestRunner::class)
 class TupleTest : UnitSpec() {
   init {
             testLaws(

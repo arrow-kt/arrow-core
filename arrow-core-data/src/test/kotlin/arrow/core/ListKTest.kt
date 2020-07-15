@@ -43,9 +43,9 @@ import arrow.core.test.laws.UnalignLaws
 import arrow.core.test.laws.UnzipLaws
 import arrow.core.test.laws.equalUnderTheLaw
 import arrow.typeclasses.Eq
-import io.kotest.properties.Gen
-import io.kotest.properties.forAll
-import io.kotest.shouldBe
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
+import io.kotlintest.shouldBe
 import kotlin.math.max
 import kotlin.math.min
 import arrow.core.extensions.list.monad.flatten as monadFlatten

@@ -5,11 +5,11 @@ import arrow.core.EagerBind
 import arrow.core.test.generators.throwable
 import arrow.typeclasses.Eq
 import arrow.typeclasses.suspended.BindSyntax
-import io.kotest.fail
-import io.kotest.properties.Gen
-import io.kotest.properties.forAll
-import io.kotest.shouldBe
-import io.kotest.shouldThrow
+import io.kotlintest.fail
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldThrow
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED

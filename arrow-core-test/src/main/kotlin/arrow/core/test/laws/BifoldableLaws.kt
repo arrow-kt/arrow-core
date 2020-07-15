@@ -9,8 +9,8 @@ import arrow.core.test.generators.functionAToB
 import arrow.core.test.generators.intSmall
 import arrow.typeclasses.Bifoldable
 import arrow.typeclasses.Eq
-import io.kotest.properties.Gen
-import io.kotest.properties.forAll
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 
 object BifoldableLaws {
 

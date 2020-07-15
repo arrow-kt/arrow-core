@@ -1,9 +1,9 @@
 package arrow.core.test
 
 import arrow.core.test.laws.Law
-import io.kotest.TestCase
-import io.kotest.TestType
-import io.kotest.specs.AbstractStringSpec
+import io.kotlintest.TestCase
+import io.kotlintest.TestType
+import io.kotlintest.specs.AbstractStringSpec
 
 /**
  * Base class for unit tests

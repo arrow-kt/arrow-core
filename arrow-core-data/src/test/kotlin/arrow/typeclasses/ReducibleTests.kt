@@ -15,7 +15,7 @@ import arrow.core.fix
 import arrow.core.test.UnitSpec
 import arrow.core.test.generators.genK
 import arrow.core.test.laws.ReducibleLaws
-import io.kotest.shouldBe
+import io.kotlintest.shouldBe
 
 class ReducibleTests : UnitSpec() {
   init {

@@ -13,8 +13,8 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.Foldable
 import arrow.typeclasses.Semialign
 import arrow.typeclasses.Unalign
-import io.kotest.properties.Gen
-import io.kotest.properties.forAll
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 
 object UnalignLaws {
   fun <F> laws(

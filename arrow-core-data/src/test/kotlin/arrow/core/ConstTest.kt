@@ -19,7 +19,7 @@ import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseFilterLaws
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
-import io.kotest.properties.Gen
+import io.kotlintest.properties.Gen
 
 class ConstTest : UnitSpec() {
 

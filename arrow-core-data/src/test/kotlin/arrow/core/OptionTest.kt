@@ -43,10 +43,10 @@ import arrow.core.test.laws.TraverseFilterLaws
 import arrow.core.test.laws.UnalignLaws
 import arrow.core.test.laws.UnzipLaws
 import arrow.typeclasses.Eq
-import io.kotest.properties.Gen
-import io.kotest.properties.forAll
-import io.kotest.shouldBe
-import io.kotest.shouldNotBe
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldNotBe
 
 class OptionTest : UnitSpec() {
 

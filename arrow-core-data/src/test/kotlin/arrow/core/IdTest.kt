@@ -37,8 +37,8 @@ import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
 import arrow.core.test.laws.UnzipLaws
 import arrow.typeclasses.Eq
-import io.kotest.properties.Gen
-import io.kotest.properties.forAll
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 
 class IdTest : UnitSpec() {
 

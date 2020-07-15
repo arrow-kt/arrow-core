@@ -28,7 +28,7 @@ import arrow.core.Success
 import arrow.core.Try
 import arrow.core.Validated
 import arrow.core.ValidatedPartialOf
-import io.kotest.properties.Gen
+import io.kotlintest.properties.Gen
 
 interface GenK<F> {
   /**

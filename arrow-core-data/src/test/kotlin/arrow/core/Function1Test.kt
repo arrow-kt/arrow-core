@@ -26,8 +26,8 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.EqK2
 import arrow.typeclasses.conest
 import arrow.typeclasses.counnest
-import io.kotest.properties.Gen
-import io.kotest.properties.forAll
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 
 class Function1Test : UnitSpec() {
 

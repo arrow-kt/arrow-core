@@ -36,10 +36,10 @@ import arrow.core.k
 import arrow.core.toOption
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.ApplicativeError
-import io.kotest.properties.Gen
-import io.kotest.properties.shrinking.DoubleShrinker
-import io.kotest.properties.shrinking.FloatShrinker
-import io.kotest.properties.shrinking.Shrinker
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.shrinking.DoubleShrinker
+import io.kotlintest.properties.shrinking.FloatShrinker
+import io.kotlintest.properties.shrinking.Shrinker
 
 fun Gen.Companion.short(): Gen<Short> =
   Gen.choose(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).map { it.toShort() }

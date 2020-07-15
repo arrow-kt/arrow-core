@@ -12,9 +12,9 @@ import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.MonadLogic
 import arrow.typeclasses.reflect
-import io.kotest.properties.Gen
-import io.kotest.properties.forAll
-import io.kotest.shouldBe
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
+import io.kotlintest.shouldBe
 
 object MonadLogicLaws {
 

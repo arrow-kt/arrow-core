@@ -32,9 +32,9 @@ import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Monad
-import io.kotest.properties.Gen
-import io.kotest.properties.forAll
-import io.kotest.shouldBe
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
+import io.kotlintest.shouldBe
 
 class IorTest : UnitSpec() {
 

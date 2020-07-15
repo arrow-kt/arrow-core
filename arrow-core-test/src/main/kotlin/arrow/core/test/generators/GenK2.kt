@@ -7,7 +7,7 @@ import arrow.core.ForIor
 import arrow.core.ForValidated
 import arrow.core.Ior
 import arrow.core.Validated
-import io.kotest.properties.Gen
+import io.kotlintest.properties.Gen
 
 interface GenK2<F> {
   /**

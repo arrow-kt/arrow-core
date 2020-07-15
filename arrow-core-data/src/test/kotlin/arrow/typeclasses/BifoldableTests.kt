@@ -13,7 +13,7 @@ import arrow.core.test.generators.GenK2
 import arrow.core.test.generators.either
 import arrow.core.test.generators.intSmall
 import arrow.core.test.laws.BifoldableLaws
-import io.kotest.properties.Gen
+import io.kotlintest.properties.Gen
 
 class BifoldableTests : UnitSpec() {
   init {

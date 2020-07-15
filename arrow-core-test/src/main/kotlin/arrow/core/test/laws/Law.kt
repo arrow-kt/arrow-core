@@ -1,7 +1,7 @@
 package arrow.core.test.laws
 
 import arrow.typeclasses.Eq
-import io.kotest.TestContext
+import io.kotlintest.TestContext
 
 data class Law(val name: String, val test: suspend TestContext.() -> Unit)
 

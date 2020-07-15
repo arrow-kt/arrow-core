@@ -5,7 +5,7 @@ import arrow.core.test.UnitSpec
 import arrow.core.test.generators.endo
 import arrow.core.test.laws.MonoidLaws
 import arrow.typeclasses.Eq
-import io.kotest.properties.Gen
+import io.kotlintest.properties.Gen
 
 class EndoTest : UnitSpec() {
   val EQ: Eq<Endo<Int>> = Eq { a, b ->

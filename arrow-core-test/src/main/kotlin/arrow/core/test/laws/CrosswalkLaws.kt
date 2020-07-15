@@ -12,8 +12,8 @@ import arrow.typeclasses.Align
 import arrow.typeclasses.Crosswalk
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
-import io.kotest.properties.Gen
-import io.kotest.properties.forAll
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import kotlin.math.abs
 
 object CrosswalkLaws {

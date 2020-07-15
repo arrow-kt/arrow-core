@@ -17,9 +17,9 @@ import arrow.core.test.laws.BimonadLaws
 import arrow.core.test.laws.MonoidLaws
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
-import io.kotest.properties.Gen
-import io.kotest.properties.forAll
-import io.kotest.shouldBe
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
+import io.kotlintest.shouldBe
 
 class Function0Test : UnitSpec() {
   val EQ1: Eq<Kind<ForFunction0, Int>> = Eq { a, b ->

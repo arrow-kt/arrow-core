@@ -1,8 +1,8 @@
 package arrow.core
 
 import arrow.core.test.UnitSpec
-import io.kotest.shouldBe
-import io.kotest.shouldNotBe
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldNotBe
 
 class MapsTest : UnitSpec() {
 

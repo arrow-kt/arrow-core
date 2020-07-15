@@ -8,8 +8,8 @@ import arrow.core.test.generators.functionAToB
 import arrow.typeclasses.Bifunctor
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK2
-import io.kotest.properties.Gen
-import io.kotest.properties.forAll
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 
 object BifunctorLaws {
 

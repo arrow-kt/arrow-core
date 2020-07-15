@@ -19,8 +19,8 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.Functor
 import arrow.typeclasses.Monad
 import arrow.typeclasses.Selective
-import io.kotest.properties.Gen
-import io.kotest.properties.forAll
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 
 object MonadLaws {
 
