@@ -15,6 +15,9 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.Functor
 import arrow.typeclasses.Selective
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.bool
+import io.kotest.property.arbitrary.double
+import io.kotest.property.arbitrary.float
 import io.kotest.property.arbitrary.int
 import io.kotest.property.forAll
 
@@ -35,7 +38,7 @@ object SelectiveLaws {
     )
   }
 
-  fun <F> Selective<F>.identityLaw(EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Selective<F>.identityLaw(EQ: Eq<Kind<F, Int>>) =
     forAll(Arb.either(Arb.int(), Arb.int())) { either ->
       either.fold(
         { l -> just(either).select(just(::identity)).equalUnderTheLaw(just(l), EQ) },
@@ -43,14 +46,14 @@ object SelectiveLaws {
       )
     }
 
-  fun <F> Selective<F>.distributivity(GK: GenK<F>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Selective<F>.distributivity(GK: GenK<F>, EQ: Eq<Kind<F, Int>>) =
     forAll(Arb.either(Arb.int(), Arb.int()).applicative(this),
       GK.genK(Arb.functionAToB<Int, Int>(Arb.int())),
       GK.genK(Arb.functionAToB<Int, Int>(Arb.int()))) { fe, f, g ->
       fe.select(f.apTap(g)).equalUnderTheLaw(fe.select(f).apTap(fe.select(g)), EQ)
     }
 
-  fun <F> Selective<F>.associativity(GK: GenK<F>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Selective<F>.associativity(GK: GenK<F>, EQ: Eq<Kind<F, Int>>) =
     forAll(
       GK.genK(Arb.either(Arb.int(), Arb.int())),
       GK.genK(Arb.either(Arb.int(), Arb.functionAToB<Int, Int>(Arb.int()))),
@@ -62,7 +65,7 @@ object SelectiveLaws {
           .select(z.map { f -> { t: Tuple2<Int, Int> -> f(t.a)(t.b) } }), EQ)
     }
 
-  fun <F> Selective<F>.branch(GK: GenK<F>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Selective<F>.branch(GK: GenK<F>, EQ: Eq<Kind<F, Int>>) =
     forAll(GK.genK(Arb.functionAToB<Double, Int>(Arb.int())),
       GK.genK(Arb.functionAToB<Float, Int>(Arb.int())),
       Arb.either(Arb.double(), Arb.float())) { fl, fr, either ->
@@ -72,7 +75,7 @@ object SelectiveLaws {
       )
     }
 
-  fun <F> Selective<F>.ifSLaw(GK: GenK<F>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Selective<F>.ifSLaw(GK: GenK<F>, EQ: Eq<Kind<F, Int>>) =
     forAll(Arb.bool(), GK.genK(Arb.int()), GK.genK(Arb.int())) { bool, l, r ->
       if (bool) just(bool).ifS(l, r).equalUnderTheLaw(l, EQ)
       else just(bool).ifS(l, r).equalUnderTheLaw(r, EQ)

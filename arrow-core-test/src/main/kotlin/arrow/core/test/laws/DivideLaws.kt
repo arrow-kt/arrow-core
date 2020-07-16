@@ -28,10 +28,10 @@ object DivideLaws {
 
   fun <A> delta(a: A): Tuple2<A, A> = a toT a
 
-  fun <F> Divide<F>.associative(
+  private suspend fun <F> Divide<F>.associative(
     G: Arb<Kind<F, Int>>,
     EQ: Eq<Kind<F, Int>>
-  ): Unit =
+  ) {
     forAll(G) { fa ->
       val a = divide<Int, Int, Int>(
         fa,
@@ -45,4 +45,5 @@ object DivideLaws {
 
       a.equalUnderTheLaw(b, EQ)
     }
+  }
 }

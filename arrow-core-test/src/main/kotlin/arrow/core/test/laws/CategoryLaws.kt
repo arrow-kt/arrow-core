@@ -8,23 +8,24 @@ import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK2
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.map
 import io.kotest.property.forAll
 
 object CategoryLaws {
 
-  fun <F> laws(C: Category<F>, GENK: GenK2<F>, EQK: EqK2<F>): List<Law> {
-    val G = GENK.genK(Arb.int(), Arb.int())
-    val EQ = EQK.liftEq(Int.eq(), Int.eq())
+  fun <F> laws(C: Category<F>, GENK: GenK2<F>, EQK: EqK2<F>): List<Law> =
+    categoryLaws(
+      C,
+      GENK.genK(Arb.int(), Arb.int()),
+      EQK.liftEq(Int.eq(), Int.eq())
+    )
 
-    return categoryLaws<F>(C, G, EQ)
-  }
-
-  fun <F> laws(C: Category<F>, f: (Int) -> Kind2<F, Int, Int>, EQ: Eq<Kind2<F, Int, Int>>): List<Law> {
-
-    val G = Arb.int().map(f)
-
-    return categoryLaws<F>(C, G, EQ)
-  }
+  fun <F> laws(C: Category<F>, f: (Int) -> Kind2<F, Int, Int>, EQ: Eq<Kind2<F, Int, Int>>): List<Law> =
+    categoryLaws(
+      C,
+      Arb.int().map(f),
+      EQ
+    )
 
   private fun <F> categoryLaws(C: Category<F>, G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): List<Law> =
     listOf(
@@ -33,18 +34,21 @@ object CategoryLaws {
       Law("Category Laws: associativity") { C.associativity(G, EQ) }
     )
 
-  fun <F> Category<F>.rightIdentity(G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): Unit =
+  private suspend fun <F> Category<F>.rightIdentity(G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>) {
     forAll(G) { fa: Kind2<F, Int, Int> ->
       fa.compose(id()).equalUnderTheLaw(fa, EQ)
     }
+  }
 
-  fun <F> Category<F>.leftIdentity(G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): Unit =
+  private suspend fun <F> Category<F>.leftIdentity(G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>) {
     forAll(G) { fa: Kind2<F, Int, Int> ->
       id<Int>().compose(fa).equalUnderTheLaw(fa, EQ)
     }
+  }
 
-  fun <F> Category<F>.associativity(G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): Unit =
+  private suspend fun <F> Category<F>.associativity(G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>) {
     forAll(G, G, G) { a, b, c ->
       a.compose(b).compose(c).equalUnderTheLaw(a.compose(b.compose(c)), EQ)
     }
+  }
 }

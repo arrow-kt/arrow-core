@@ -14,11 +14,12 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.Functor
 import arrow.typeclasses.MonadError
 import arrow.typeclasses.Selective
-import io.kotlintest.fail
+import io.kotest.assertions.fail
+import io.kotest.assertions.throwables.shouldThrowAny
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.bool
 import io.kotest.property.arbitrary.int
 import io.kotest.property.forAll
-import io.kotlintest.shouldThrowAny
 
 object MonadErrorLaws {
 
@@ -52,12 +53,12 @@ object MonadErrorLaws {
       ApplicativeErrorLaws.laws(M, GENK, EQK) +
       monadErrorLaws(M, EQK)
 
-  private suspend fun <F> MonadError<F, Throwable>.monadErrorLeftZero(EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> MonadError<F, Throwable>.monadErrorLeftZero(EQ: Eq<Kind<F, Int>>) =
     forAll(Arb.functionAToB<Int, Kind<F, Int>>(Arb.int().applicativeError(this)), Arb.throwable()) { f: (Int) -> Kind<F, Int>, e: Throwable ->
       raiseError<Int>(e).flatMap(f).equalUnderTheLaw(raiseError(e), EQ)
     }
 
-  private suspend fun <F> MonadError<F, Throwable>.monadErrorEnsureConsistency(EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> MonadError<F, Throwable>.monadErrorEnsureConsistency(EQ: Eq<Kind<F, Int>>) =
     forAll(Arb.int().applicativeError(this), Arb.throwable(), Arb.functionAToB<Int, Boolean>(Arb.bool())) { fa: Kind<F, Int>, e: Throwable, p: (Int) -> Boolean ->
       fa.ensure({ e }, p).equalUnderTheLaw(fa.flatMap { a -> if (p(a)) just(a) else raiseError(e) }, EQ)
     }

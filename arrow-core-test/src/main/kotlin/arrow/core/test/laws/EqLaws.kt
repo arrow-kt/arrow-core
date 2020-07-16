@@ -16,17 +16,17 @@ object EqLaws {
       Law("Eq Laws: transitivity") { EQ.eqTransitivity(GEN) }
     )
 
-  fun <F> Eq<F>.eqReflexivity(G: Arb<F>) =
+  private suspend fun <F> Eq<F>.eqReflexivity(G: Arb<F>) =
     forAll(G) { x ->
       x.eqv(x)
     }
 
-  fun <F> Eq<F>.eqSymmetry(G: Arb<F>) =
+  private suspend fun <F> Eq<F>.eqSymmetry(G: Arb<F>) =
     forAll(G, G) { x, y ->
       x.eqv(y) == y.eqv(x)
     }
 
-  fun <F> Eq<F>.eqTransitivity(G: Arb<F>) =
+  private suspend fun <F> Eq<F>.eqTransitivity(G: Arb<F>) =
     forAll(G, G, G) { x, y, z ->
       !(x.eqv(y) && y.eqv(z)) || x.eqv(z)
     }

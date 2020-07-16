@@ -5,11 +5,11 @@ import arrow.core.EagerBind
 import arrow.core.test.generators.throwable
 import arrow.typeclasses.Eq
 import arrow.typeclasses.suspended.BindSyntax
-import io.kotlintest.fail
+import io.kotest.assertions.fail
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.property.Arb
 import io.kotest.property.forAll
-import io.kotlintest.shouldBe
-import io.kotlintest.shouldThrow
+import kotlinx.coroutines.runBlocking
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
@@ -46,7 +46,7 @@ object FxLaws {
     }
   }
 
-  private fun <F, A> nonSuspendedCanBindImmediateException(G: Arb<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
+  private suspend fun <F, A> nonSuspendedCanBindImmediateException(G: Arb<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
     forAll(G, Arb.throwable()) { f, exception ->
       shouldThrow<Throwable> {
         fxBlock {
@@ -61,32 +61,30 @@ object FxLaws {
   }
 
   private suspend fun <F, A> suspendedCanBindImmediateValues(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
-    G.random()
-      .take(1001)
-      .forEach { f ->
+    forAll(G) { f ->
+      runBlocking {
         fxBlock {
           val res = !f
           res
         }.equalUnderTheLaw(f, EQ)
       }
+    }
   }
 
   private suspend fun <F, A> suspendedCanBindSuspendedValues(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
-    G.random()
-      .take(10)
-      .forEach { f ->
+    forAll(G) { f ->
+      runBlocking {
         fxBlock {
           val res = !f.suspend()
           res
         }.equalUnderTheLaw(f, EQ)
       }
+    }
   }
 
   private suspend fun <F, A> suspendedCanBindImmediateExceptions(G: Arb<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
-    Arb.bind(G, Arb.throwable(), ::Pair)
-      .random()
-      .take(1001)
-      .forEach { (f, exception) ->
+    forAll(G, Arb.throwable()) { f, exception ->
+      runBlocking {
         shouldThrow<Throwable> {
           fxBlock {
             val res = !f
@@ -94,15 +92,13 @@ object FxLaws {
             res
           }
           fail("It should never reach here. fx should've thrown $exception")
-        } shouldBe exception
+        } == exception
       }
+    }
   }
 
   private suspend fun <F, A> suspendedCanBindSuspendedExceptions(G: Arb<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
-    Arb.bind(G, Arb.throwable(), ::Pair)
-      .random()
-      .take(10)
-      .forEach { (f, exception) ->
+    forAll(G, Arb.throwable()) { f, exception ->
         shouldThrow<Throwable> {
           fxBlock {
             val res = !f
@@ -110,7 +106,7 @@ object FxLaws {
             res
           }
           fail("It should never reach here. fx should've thrown $exception")
-        } shouldBe exception
+        } == exception
       }
   }
 }

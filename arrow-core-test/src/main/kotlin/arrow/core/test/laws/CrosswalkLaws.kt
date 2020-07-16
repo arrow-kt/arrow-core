@@ -45,7 +45,7 @@ object CrosswalkLaws {
     )
   }
 
-  fun <T, F, A, B> Crosswalk<T>.crosswalkEmptyIsEmpty(
+  private suspend fun <T, F, A, B> Crosswalk<T>.crosswalkEmptyIsEmpty(
     ALIGN: Align<F>,
     G: Arb<Kind<T, A>>,
     EQ: Eq<Kind<F, Kind<T, B>>>
@@ -57,7 +57,7 @@ object CrosswalkLaws {
     ls(a).equalUnderTheLaw(rs(a), EQ)
   }
 
-  fun <T, F, A, B> Crosswalk<T>.crosswalkFunctionEqualsComposeSequenceAndFunction(
+  private suspend fun <T, F, A, B> Crosswalk<T>.crosswalkFunctionEqualsComposeSequenceAndFunction(
     ALIGN: Align<F>,
     aGen: Arb<Kind<T, A>>,
     faGen: Arb<(A) -> Kind<F, B>>,

@@ -38,6 +38,7 @@ import arrow.core.test.laws.TraverseLaws
 import arrow.core.test.laws.UnzipLaws
 import arrow.typeclasses.Eq
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.constant
 import io.kotest.property.arbitrary.int
 import io.kotest.property.forAll
 

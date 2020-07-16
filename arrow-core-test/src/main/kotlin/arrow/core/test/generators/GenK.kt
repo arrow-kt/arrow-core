@@ -5,6 +5,7 @@ import arrow.core.Const
 import arrow.core.ConstPartialOf
 import arrow.core.Either
 import arrow.core.EitherPartialOf
+import arrow.core.Failure
 import arrow.core.ForId
 import arrow.core.ForListK
 import arrow.core.ForNonEmptyList
@@ -29,6 +30,9 @@ import arrow.core.Try
 import arrow.core.Validated
 import arrow.core.ValidatedPartialOf
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.choice
+import io.kotest.property.arbitrary.filter
+import io.kotest.property.arbitrary.map
 
 interface GenK<F> {
   /**
@@ -37,7 +41,7 @@ interface GenK<F> {
   fun <A> genK(gen: Arb<A>): Arb<Kind<F, A>>
 }
 
-private val DEFAULT_COLLECTION_MAX_SIZE = 100
+private const val DEFAULT_COLLECTION_MAX_SIZE = 100
 
 fun Option.Companion.genK() = object : GenK<ForOption> {
   override fun <A> genK(gen: Arb<A>): Arb<Kind<ForOption, A>> =
@@ -108,7 +112,7 @@ fun <A> Const.Companion.genK(genA: Arb<A>) = object : GenK<ConstPartialOf<A>> {
 
 fun Try.Companion.genK() = object : GenK<ForTry> {
   override fun <A> genK(gen: Arb<A>): Arb<Kind<ForTry, A>> =
-    Arb.oneOf(
+    Arb.choice(
       gen.map {
         Success(it)
       }, Arb.throwable().map { Try.Failure(it) })

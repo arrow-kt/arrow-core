@@ -15,7 +15,7 @@ object SemigroupKLaws {
   fun <F> laws(SGK: SemigroupK<F>, GENK: GenK<F>, EQK: EqK<F>): List<Law> =
     listOf(Law("SemigroupK: associativity") { SGK.semigroupKAssociative(GENK.genK(Arb.int()), EQK.liftEq(Int.eq())) })
 
-  fun <F> SemigroupK<F>.semigroupKAssociative(GEN: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> SemigroupK<F>.semigroupKAssociative(GEN: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) =
     forAll(GEN, GEN, GEN) { a, b, c ->
       a.combineK(b).combineK(c).equalUnderTheLaw(a.combineK(b.combineK(c)), EQ)
     }

@@ -23,18 +23,21 @@ object EqK2Laws {
     )
   }
 
-  fun <F> EqK2<F>.eqkReflexivity(G: Arb<Kind2<F, Int, Int>>) =
+  private suspend fun <F> EqK2<F>.eqkReflexivity(G: Arb<Kind2<F, Int, Int>>) {
     forAll(G) { x ->
       x.eqK(x, Int.eq(), Int.eq())
     }
+  }
 
-  fun <F> EqK2<F>.eqKSymmetry(G: Arb<Kind2<F, Int, Int>>) =
+  private suspend fun <F> EqK2<F>.eqKSymmetry(G: Arb<Kind2<F, Int, Int>>) {
     forAll(G, G) { x, y ->
       x.eqK(y, Int.eq(), Int.eq()) == y.eqK(x, Int.eq(), Int.eq())
     }
+  }
 
-  fun <F> EqK2<F>.eqKTransitivity(G: Arb<Kind2<F, Int, Int>>) =
+  private suspend fun <F> EqK2<F>.eqKTransitivity(G: Arb<Kind2<F, Int, Int>>) {
     forAll(G, G, G) { x, y, z ->
       !(x.eqK(y, Int.eq(), Int.eq()) && y.eqK(z, Int.eq(), Int.eq())) || x.eqK(z, Int.eq(), Int.eq())
     }
+  }
 }

@@ -29,13 +29,14 @@ object ContravariantLaws {
     )
   }
 
-  fun <F> Contravariant<F>.identity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Contravariant<F>.identity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
     forAll(G) { fa: Kind<F, Int> ->
       @Suppress("ExplicitItLambdaParameter")
       fa.contramap { it: Int -> it }.equalUnderTheLaw(fa, EQ)
     }
+  }
 
-  fun <F> Contravariant<F>.composition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Contravariant<F>.composition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
     forAll(
       G,
       Arb.functionAToB<Int, Int>(Arb.int()),
@@ -43,4 +44,5 @@ object ContravariantLaws {
     ) { fa: Kind<F, Int>, f, g ->
       fa.contramap(f).contramap(g).equalUnderTheLaw(fa.contramap(f compose g), EQ)
     }
+  }
 }

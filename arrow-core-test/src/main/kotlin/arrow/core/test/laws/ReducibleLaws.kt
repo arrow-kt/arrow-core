@@ -38,21 +38,21 @@ object ReducibleLaws {
       )
   }
 
-  fun <F> Reducible<F>.reduceLeftToConsistentWithReduceMap(cf: Arb<Kind<F, Int>>, EQ: Eq<Int>) =
+  private suspend fun <F> Reducible<F>.reduceLeftToConsistentWithReduceMap(cf: Arb<Kind<F, Int>>, EQ: Eq<Int>) =
     forAll(Arb.functionAToB<Int, Int>(Arb.intSmall()), cf) { f: (Int) -> Int, fa: Kind<F, Int> ->
       with(Int.monoid()) {
         fa.reduceMap(this, f).equalUnderTheLaw(fa.reduceLeftTo(f) { b, a -> b.combine(f(a)) }, EQ)
       }
     }
 
-  fun <F> Reducible<F>.reduceRightToConsistentWithReduceMap(cf: Arb<Kind<F, Int>>, EQ: Eq<Int>) =
+  private suspend fun <F> Reducible<F>.reduceRightToConsistentWithReduceMap(cf: Arb<Kind<F, Int>>, EQ: Eq<Int>) =
     forAll(Arb.functionAToB<Int, Int>(Arb.intSmall()), cf) { f: (Int) -> Int, fa: Kind<F, Int> ->
       with(Int.monoid()) {
         fa.reduceMap(this, f).equalUnderTheLaw(fa.reduceRightTo(f) { a, eb -> eb.map { f(a).combine(it) } }.value(), EQ)
       }
     }
 
-  fun <F> Reducible<F>.reduceRightToConsistentWithReduceRightToOption(cf: Arb<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
+  private suspend fun <F> Reducible<F>.reduceRightToConsistentWithReduceRightToOption(cf: Arb<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
     forAll(Arb.functionAToB<Int, Int>(Arb.intSmall()), cf) { f: (Int) -> Int, fa: Kind<F, Int> ->
       with(Int.monoid()) {
         fa.reduceRightToOption(f) { a, eb -> eb.map { f(a).combine(it) } }.value()
@@ -60,20 +60,20 @@ object ReducibleLaws {
       }
     }
 
-  fun <F> Reducible<F>.reduceRightConsistentWithReduceRightOption(cf: Arb<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
+  private suspend fun <F> Reducible<F>.reduceRightConsistentWithReduceRightOption(cf: Arb<Kind<F, Int>>, EQ: Eq<Option<Int>>) =
     forAll(Arb.functionAAToA(Arb.intSmall()), cf) { f: (Int, Int) -> Int, fa: Kind<F, Int> ->
       fa.reduceRight { a1, e2 -> Eval.Now(f(a1, e2.value())) }.map { Option(it) }.value()
         .equalUnderTheLaw(fa.reduceRightOption { a1, e2 -> Eval.Now(f(a1, e2.value())) }.value(), EQ)
     }
 
-  fun <F> Reducible<F>.reduceReduceLeftConsistent(cf: Arb<Kind<F, Int>>, EQ: Eq<Int>) =
+  private suspend fun <F> Reducible<F>.reduceReduceLeftConsistent(cf: Arb<Kind<F, Int>>, EQ: Eq<Int>) =
     forAll(cf) { fa: Kind<F, Int> ->
       with(Int.monoid()) {
         fa.reduce(this).equalUnderTheLaw(fa.reduceLeft { a1, a2 -> a1.combine(a2) }, EQ)
       }
     }
 
-  fun <F> Reducible<F>.sizeConsistent(cf: Arb<Kind<F, Int>>, EQ: Eq<Long>) =
+  private suspend fun <F> Reducible<F>.sizeConsistent(cf: Arb<Kind<F, Int>>, EQ: Eq<Long>) =
     forAll(cf) { fa: Kind<F, Int> ->
       with(Long.monoid()) {
         fa.size(this).equalUnderTheLaw(fa.reduceMap(this) { 1L }, EQ)

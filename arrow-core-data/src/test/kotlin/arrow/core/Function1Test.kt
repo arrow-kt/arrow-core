@@ -27,6 +27,8 @@ import arrow.typeclasses.EqK2
 import arrow.typeclasses.conest
 import arrow.typeclasses.counnest
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.constant
+import io.kotest.property.arbitrary.map
 import io.kotest.property.forAll
 
 class Function1Test : UnitSpec() {

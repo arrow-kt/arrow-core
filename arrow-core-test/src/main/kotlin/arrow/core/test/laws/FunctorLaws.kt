@@ -16,6 +16,7 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.Functor
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.string
 import io.kotest.property.forAll
 
 object FunctorLaws {
@@ -54,98 +55,115 @@ object FunctorLaws {
     )
   }
 
-  fun <F> Functor<F>.covariantIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Functor<F>.covariantIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
     forAll(G) { fa: Kind<F, Int> ->
       fa.map(::identity).equalUnderTheLaw(fa, EQ)
     }
+  }
 
-  fun <F> Functor<F>.covariantComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Functor<F>.covariantComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
     forAll(G, Arb.functionAToB<Int, Int>(Arb.int()), Arb.functionAToB<Int, Int>(Arb.int())) { fa: Kind<F, Int>, f, g ->
       fa.map(f).map(g).equalUnderTheLaw(fa.map(f andThen g), EQ)
     }
+  }
 
-  fun <F> Functor<F>.liftIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Functor<F>.liftIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
     forAll(G) { fa: Kind<F, Int> ->
       val f: (Kind<F, Int>) -> Kind<F, Int> = lift(::identity)
       f(fa).equalUnderTheLaw(fa, EQ)
     }
+  }
 
-  fun <F> Functor<F>.liftComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Functor<F>.liftComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
     forAll(G, Arb.functionAToB<Int, Int>(Arb.int()), Arb.functionAToB<Int, Int>(Arb.int())) { fa: Kind<F, Int>, f, g ->
       val ff = lift(f)
       val gg = lift(g)
       val fg = lift(f andThen g)
       gg(ff(fa)).equalUnderTheLaw(fg(fa), EQ)
     }
+  }
 
-  fun <F> Functor<F>.unitIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Unit>>): Unit =
+  private suspend fun <F> Functor<F>.unitIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Unit>>) {
     forAll(G) { fa: Kind<F, Int> ->
       fa.unit().equalUnderTheLaw(fa.map { Unit }, EQ)
     }
+  }
 
-  fun <F> Functor<F>.unitComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Unit>>): Unit =
+  private suspend fun <F> Functor<F>.unitComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Unit>>) {
     forAll(G) { fa: Kind<F, Int> ->
       fa.unit().unit().equalUnderTheLaw(fa.map { Unit }, EQ)
     }
+  }
 
-  fun <F> Functor<F>.fproductIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Int, String>>>): Unit =
+  private suspend fun <F> Functor<F>.fproductIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Int, String>>>) {
     forAll(G, Arb.string()) { fa: Kind<F, Int>, b: String ->
       fa.fproduct { _ -> b }.equalUnderTheLaw(fa.map { a -> Tuple2(a, b) }, EQ)
     }
+  }
 
-  fun <F> Functor<F>.fproductComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Tuple2<Int, String>, String>>>): Unit =
+  private suspend fun <F> Functor<F>.fproductComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Tuple2<Int, String>, String>>>) {
     forAll(G, Arb.functionAToB<Int, String>(Arb.string()), Arb.functionAToB<Tuple2<Int, String>, String>(Arb.string())) { fa: Kind<F, Int>, f, g ->
       val ff: Kind<F, Tuple2<Int, String>> = fa.fproduct(f)
       val gg: Kind<F, Tuple2<Tuple2<Int, String>, String>> = ff.fproduct(g)
       val t: Kind<F, Tuple2<Tuple2<Int, String>, String>> = fa.map { a -> Tuple2(a, f(a)) }.map { tuple -> Tuple2(tuple, g(tuple)) }
       gg.equalUnderTheLaw(t, EQ)
     }
+  }
 
-  fun <F> Functor<F>.mapConstValueIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, String>>): Unit =
+  private suspend fun <F> Functor<F>.mapConstValueIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, String>>) {
     forAll(G, Arb.string()) { fa: Kind<F, Int>, b: String ->
       fa.mapConst(b).equalUnderTheLaw(fa.map { b }, EQ)
     }
+  }
 
-  fun <F> Functor<F>.mapConstValueComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Functor<F>.mapConstValueComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
     forAll(G, Arb.string(), Arb.int()) { fa: Kind<F, Int>, b: String, c: Int ->
       fa.mapConst(b).mapConst(c).equalUnderTheLaw(fa.map { c }, EQ)
     }
+  }
 
-  fun <F> Functor<F>.mapConstKindIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, String>>): Unit =
+  private suspend fun <F> Functor<F>.mapConstKindIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, String>>) {
     forAll(G, Arb.string()) { fb: Kind<F, Int>, a: String ->
       a.mapConst(fb).equalUnderTheLaw(fb.map { a }, EQ)
     }
+  }
 
-  fun <F> Functor<F>.mapConstKindComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Functor<F>.mapConstKindComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
     forAll(G, Arb.int(), Arb.string()) { fa: Kind<F, Int>, b: Int, c: String ->
       c.mapConst(fa).mapConst(b).equalUnderTheLaw(fa.map { b }, EQ)
     }
+  }
 
-  fun <F> Functor<F>.tupleLeftIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<String, Int>>>): Unit =
+  private suspend fun <F> Functor<F>.tupleLeftIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<String, Int>>>) {
     forAll(G, Arb.string()) { fa: Kind<F, Int>, b: String ->
       fa.tupleLeft(b).equalUnderTheLaw(fa.map { a -> Tuple2(b, a) }, EQ)
     }
+  }
 
-  fun <F> Functor<F>.tupleLeftComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Int, Tuple2<String, Int>>>>): Unit =
+  private suspend fun <F> Functor<F>.tupleLeftComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Int, Tuple2<String, Int>>>>) {
     forAll(G, Arb.string(), Arb.int()) { fa: Kind<F, Int>, b: String, c: Int ->
       fa.tupleLeft(b).tupleLeft(c).equalUnderTheLaw(fa.map { a -> Tuple2(b, a) }.map { tuple2 -> Tuple2(c, tuple2) }, EQ)
     }
+  }
 
-  fun <F> Functor<F>.tupleRightIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Int, String>>>): Unit =
+  private suspend fun <F> Functor<F>.tupleRightIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Int, String>>>) {
     forAll(G, Arb.string()) { fa: Kind<F, Int>, b: String ->
       fa.tupleRight(b).equalUnderTheLaw(fa.map { a -> Tuple2(a, b) }, EQ)
     }
+  }
 
-  fun <F> Functor<F>.tupleRightComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Tuple2<Int, String>, Int>>>): Unit =
+  private suspend fun <F> Functor<F>.tupleRightComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Tuple2<Int, String>, Int>>>) {
     forAll(G, Arb.string(), Arb.int()) { fa: Kind<F, Int>, b: String, c: Int ->
       val t: Kind<F, Tuple2<Tuple2<Int, String>, Int>> = fa.map { a -> Tuple2(a, b) }.map { tuple2 -> Tuple2(tuple2, c) }
       fa.tupleRight(b).tupleRight(c).equalUnderTheLaw(t, EQ)
     }
+  }
 
-  fun widenIdentity(): Unit =
+  private suspend fun widenIdentity() {
     forAll(Arb.int()) { a: Int ->
       val list: List<Some<Int>> = listOf(Some(a))
       val widened: List<Option<Int>> = list.widen()
       widened == list.map { identity(it) }
     }
+  }
 }

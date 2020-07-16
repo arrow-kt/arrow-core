@@ -12,7 +12,7 @@ object ShowLaws {
       Law("Show Laws: equality") { S.equalShow(EQ, GEN) }
     )
 
-  private suspend fun <F> Show<F>.equalShow(EQ: Eq<F>, GEN: Arb<F>): Unit =
+  private suspend fun <F> Show<F>.equalShow(EQ: Eq<F>, GEN: Arb<F>) =
     forAll(GEN, GEN) { a, b ->
       if (EQ.run { a.eqv(b) })
         a.show() == b.show()

@@ -34,31 +34,28 @@ object AlternativeLaws {
     )
   }
 
-  fun <F> Alternative<F>.alternativeRightAbsorption(G: Arb<Kind<F, (Int) -> Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Alternative<F>.alternativeRightAbsorption(G: Arb<Kind<F, (Int) -> Int>>, EQ: Eq<Kind<F, Int>>) =
     forAll(G) { fa: Kind<F, (Int) -> Int> ->
       empty<Int>().ap(fa).equalUnderTheLaw(empty(), EQ)
     }
 
-  fun <F> Alternative<F>.alternativeLeftDistributivity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
-    forAll(G, G, Arb.functionAToB<Int, Int>(Arb.int())
-    ) { fa: Kind<F, Int>, fa2: Kind<F, Int>, f: (Int) -> Int ->
+  private suspend fun <F> Alternative<F>.alternativeLeftDistributivity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) =
+    forAll(G, G, Arb.functionAToB<Int, Int>(Arb.int())) { fa: Kind<F, Int>, fa2: Kind<F, Int>, f: (Int) -> Int ->
       fa.combineK(fa2).map(f).equalUnderTheLaw(fa.map(f).combineK(fa2.map(f)), EQ)
     }
 
-  fun <F> Alternative<F>.alternativeRightDistributivity(
+  private suspend fun <F> Alternative<F>.alternativeRightDistributivity(
     G: Arb<Kind<F, Int>>,
     GF: Arb<Kind<F, (Int) -> Int>>,
     EQ: Eq<Kind<F, Int>>
-  ): Unit =
-    forAll(G, GF, GF) { fa: Kind<F, Int>, ff: Kind<F, (Int) -> Int>, fg: Kind<F, (Int) -> Int> ->
-      fa.ap(ff.combineK(fg)).equalUnderTheLaw(fa.ap(ff).combineK(fa.ap(fg)), EQ)
-    }
+  ) = forAll(G, GF, GF) { fa: Kind<F, Int>, ff: Kind<F, (Int) -> Int>, fg: Kind<F, (Int) -> Int> ->
+    fa.ap(ff.combineK(fg)).equalUnderTheLaw(fa.ap(ff).combineK(fa.ap(fg)), EQ)
+  }
 
-  fun <F> Alternative<F>.alternativeAssociativity(
+  private suspend fun <F> Alternative<F>.alternativeAssociativity(
     G: Arb<Kind<F, Int>>,
     EQ: Eq<Kind<F, Int>>
-  ): Unit =
-    forAll(G, G, G) { fa: Kind<F, Int>, fa2: Kind<F, Int>, fa3: Kind<F, Int> ->
-      (fa alt (fa2 alt fa3)).equalUnderTheLaw((fa alt fa2) alt fa3, EQ)
-    }
+  ) = forAll(G, G, G) { fa: Kind<F, Int>, fa2: Kind<F, Int>, fa3: Kind<F, Int> ->
+    (fa alt (fa2 alt fa3)).equalUnderTheLaw((fa alt fa2) alt fa3, EQ)
+  }
 }

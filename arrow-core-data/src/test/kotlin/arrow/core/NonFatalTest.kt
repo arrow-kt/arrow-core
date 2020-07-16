@@ -1,10 +1,11 @@
 package arrow.core
 
 import arrow.core.test.UnitSpec
-import io.kotlintest.shouldBe
-import io.kotlintest.shouldThrowAny
+import io.kotest.assertions.throwables.shouldThrowAny
+import io.kotest.matchers.shouldBe
 
 class NonFatalTest : UnitSpec() {
+
   init {
     val nonFatals: List<Throwable> =
       listOf(
@@ -19,6 +20,7 @@ class NonFatalTest : UnitSpec() {
         NonFatal(it) shouldBe true
       }
     }
+
     "Test nonfatals using Throwable#nonFatalOrThrow" {
       nonFatals.forEach {
         it.nonFatalOrThrow() shouldBe it
@@ -40,6 +42,7 @@ class NonFatalTest : UnitSpec() {
         NonFatal(it) shouldBe false
       }
     }
+
     "Test fatals using Throwable#nonFatalOrThrow" {
       fatals.forEach {
         shouldThrowAny {

@@ -14,11 +14,14 @@ import arrow.core.test.laws.BimonadLaws
 import arrow.core.test.laws.FxLaws
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
-import io.kotlintest.fail
+import io.kotest.assertions.fail
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.forAll
-import io.kotlintest.shouldBe
+import io.kotest.matchers.shouldBe
+import io.kotest.property.arbitrary.choice
+import io.kotest.property.arbitrary.create
+import io.kotest.property.arbitrary.map
 
 class EvalTest : UnitSpec() {
 
@@ -168,11 +171,11 @@ class EvalTest : UnitSpec() {
       class Defer : O()
 
       companion object {
-        val gen = Arb.oneOf<O>(
-          Arb.create { O.Map { it + 1 } },
-          Arb.create { O.FlatMap { Eval.Now(it) } },
-          Arb.create { O.Memoize() },
-          Arb.create { O.Defer() }
+        val gen: Arb<O> = Arb.choice(
+          Arb.create { Map { it + 1 } },
+          Arb.create { FlatMap { Eval.Now(it) } },
+          Arb.create { Memoize() },
+          Arb.create { Defer() }
         )
       }
     }
@@ -202,7 +205,7 @@ class EvalTest : UnitSpec() {
 
       val gen = Arb.create {
         val leaf = { Eval.Now(0) }
-        val eval = build(leaf, O.gen.random().take(maxDepth).toList())
+        val eval = build(leaf, O.gen.values(it).map { it.value }.take(maxDepth).toList())
         DeepEval(eval)
       }
     }

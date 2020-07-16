@@ -30,6 +30,7 @@ import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
 import arrow.core.test.laws.UnzipLaws
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.bool
 import io.kotest.property.arbitrary.int
 import io.kotest.property.forAll
 import kotlin.math.max

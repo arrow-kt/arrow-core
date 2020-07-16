@@ -19,7 +19,9 @@ import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import io.kotest.property.Arb
 import io.kotest.property.forAll
-import io.kotlintest.shouldBe
+import io.kotest.matchers.shouldBe
+import io.kotest.property.arbitrary.constant
+import io.kotest.property.arbitrary.map
 
 class Function0Test : UnitSpec() {
   val EQ1: Eq<Kind<ForFunction0, Int>> = Eq { a, b ->

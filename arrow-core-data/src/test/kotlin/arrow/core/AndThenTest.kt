@@ -29,7 +29,9 @@ import arrow.typeclasses.counnest
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.forAll
-import io.kotlintest.shouldBe
+import io.kotest.matchers.shouldBe
+import io.kotest.property.arbitrary.list
+import io.kotest.property.arbitrary.map
 
 class AndThenTest : UnitSpec() {
 

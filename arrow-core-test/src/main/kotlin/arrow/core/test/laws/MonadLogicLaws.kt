@@ -15,7 +15,8 @@ import arrow.typeclasses.reflect
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.forAll
-import io.kotlintest.shouldBe
+import io.kotest.matchers.shouldBe
+import io.kotest.property.arbitrary.string
 
 object MonadLogicLaws {
 
@@ -101,7 +102,7 @@ object MonadLogicLaws {
       ls.equalUnderTheLaw(rs, EQ)
     }
 
-  fun <F, A, B> MonadLogic<F>.iftePicksSecondOnFailure(
+  private suspend fun <F, A, B> MonadLogic<F>.iftePicksSecondOnFailure(
     iterations: Int,
     genA: Arb<A>,
     genFunAToFB: Arb<(A) -> Kind<F, B>>,
@@ -112,7 +113,7 @@ object MonadLogicLaws {
       zeroM<A>().ifThen(fb, funA).equalUnderTheLaw(fb, EQ)
     }
 
-  fun <F, A, B> MonadLogic<F>.ifteReturnsRemainingComputation(
+  private suspend fun <F, A, B> MonadLogic<F>.ifteReturnsRemainingComputation(
     iterations: Int,
     genA: Arb<A>,
     genFA: Arb<Kind<F, A>>,
@@ -127,7 +128,7 @@ object MonadLogicLaws {
       ls.equalUnderTheLaw(rs, EQ)
     }
 
-  fun <F, A> MonadLogic<F>.msplitReflect(iterations: Int, genFA: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
+  private suspend fun <F, A> MonadLogic<F>.msplitReflect(iterations: Int, genFA: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
     forAll(iterations, genFA) { fa ->
       fa.splitM().flatMap {
         it.reflect(this@msplitReflect)

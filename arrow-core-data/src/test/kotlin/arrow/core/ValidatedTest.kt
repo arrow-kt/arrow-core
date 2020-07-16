@@ -29,10 +29,12 @@ import arrow.core.test.laws.SemigroupKLaws
 import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
 import arrow.typeclasses.Semigroup
-import io.kotlintest.fail
+import io.kotest.assertions.fail
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
-import io.kotlintest.shouldBe
+import io.kotest.matchers.shouldBe
+import io.kotest.property.arbitrary.map
+import io.kotest.property.arbitrary.string
 
 @Suppress("RedundantSuspendModifier")
 class ValidatedTest : UnitSpec() {

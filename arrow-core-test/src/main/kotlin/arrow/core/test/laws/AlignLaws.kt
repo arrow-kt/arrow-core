@@ -41,12 +41,12 @@ object AlignLaws {
     Law("Align Laws: align left empty") { A.alignLeftEmpty(GENK.genK(Arb.int()), EQK.liftEq(iorEq)) }
   )
 
-  fun <F, A> Align<F>.alignRightEmpty(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<A, A>>>) =
+  private suspend fun <F, A> Align<F>.alignRightEmpty(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<A, A>>>) =
     forAll(G) { a ->
       align(a, empty<A>()).equalUnderTheLaw(a.map { Ior.Left(it) }, EQ)
     }
 
-  fun <F, A> Align<F>.alignLeftEmpty(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<A, A>>>) =
+  private suspend fun <F, A> Align<F>.alignLeftEmpty(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, Ior<A, A>>>) =
     forAll(G) { a ->
       align(empty<A>(), a).equalUnderTheLaw(a.map { Ior.Right(it) }, EQ)
     }

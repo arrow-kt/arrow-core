@@ -25,13 +25,12 @@ import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
-import io.kotlintest.fail
-import io.kotlintest.matchers.beTheSameInstanceAs
+import io.kotest.assertions.fail
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.forAll
-import io.kotlintest.should
-import io.kotlintest.shouldBe
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeSameInstanceAs
 
 class TryTest : UnitSpec() {
 
@@ -114,7 +113,7 @@ class TryTest : UnitSpec() {
         try {
           Success(1).fold({ 2 }, { throw ex })
         } catch (e: Exception) {
-          ex should beTheSameInstanceAs(e)
+          ex shouldBeSameInstanceAs e
         }
       }
     }

@@ -13,7 +13,7 @@ object HashLaws {
       Law("Hash Laws: Multiple calls to hash should result in the same hash") { equalHashM(HF, G) }
     )
 
-  private fun <F> equalHash(HF: Hash<F>, EQ: Eq<F>, G: Arb<F>) {
+  private suspend fun <F> equalHash(HF: Hash<F>, EQ: Eq<F>, G: Arb<F>) {
     forAll(G, G) { a, b ->
       if (EQ.run { a.eqv(b) })
         HF.run { a.hash() == b.hash() }
@@ -22,7 +22,7 @@ object HashLaws {
     }
   }
 
-  private fun <F> equalHashM(HF: Hash<F>, G: Arb<F>) {
+  private suspend fun <F> equalHashM(HF: Hash<F>, G: Arb<F>) {
     forAll(G) { a ->
       HF.run { a.hash() == a.hash() }
     }

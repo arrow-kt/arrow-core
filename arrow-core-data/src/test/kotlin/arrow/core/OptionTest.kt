@@ -46,8 +46,8 @@ import arrow.typeclasses.Eq
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.forAll
-import io.kotlintest.shouldBe
-import io.kotlintest.shouldNotBe
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 
 class OptionTest : UnitSpec() {
 

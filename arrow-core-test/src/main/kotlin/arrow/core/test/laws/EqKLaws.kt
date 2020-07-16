@@ -22,15 +22,15 @@ object EqKLaws {
       )
     }
 
-  fun <F> EqK<F>.eqkReflexivity(G: Arb<Kind<F, Int>>) = forAll(G) { x: Kind<F, Int> ->
+  private suspend fun <F> EqK<F>.eqkReflexivity(G: Arb<Kind<F, Int>>) = forAll(G) { x: Kind<F, Int> ->
     x.eqK(x, Int.eq())
   }
 
-  fun <F> EqK<F>.eqKSymmetry(G: Arb<Kind<F, Int>>) = forAll(G, G) { x: Kind<F, Int>, y: Kind<F, Int> ->
+  private suspend fun <F> EqK<F>.eqKSymmetry(G: Arb<Kind<F, Int>>) = forAll(G, G) { x: Kind<F, Int>, y: Kind<F, Int> ->
     x.eqK(y, Int.eq()) == y.eqK(x, Int.eq())
   }
 
-  fun <F> EqK<F>.eqKTransitivity(G: Arb<Kind<F, Int>>) = forAll(G, G, G) { x: Kind<F, Int>, y: Kind<F, Int>, z: Kind<F, Int> ->
+  private suspend fun <F> EqK<F>.eqKTransitivity(G: Arb<Kind<F, Int>>) = forAll(G, G, G) { x: Kind<F, Int>, y: Kind<F, Int>, z: Kind<F, Int> ->
     !(x.eqK(y, Int.eq()) && y.eqK(z, Int.eq())) || x.eqK(z, Int.eq())
   }
 }

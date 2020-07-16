@@ -17,6 +17,8 @@ import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semiring
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.numericDoubles
+import io.kotest.property.arbitrary.numericFloats
 import io.kotest.property.forAll
 
 class NumberInstancesTest : UnitSpec() {

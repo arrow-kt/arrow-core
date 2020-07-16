@@ -2,6 +2,7 @@ package arrow.core.test.laws
 
 import arrow.Kind
 import arrow.Kind2
+import arrow.core.ForListK
 import arrow.core.ListK
 import arrow.core.extensions.eq
 import arrow.core.extensions.listk.align.align
@@ -26,9 +27,9 @@ object BicrosswalkLaws {
     EQK: EqK2<T>
   ): List<Law> {
 
-    val funGen = arb<(Int) -> ListK<String>>(
+    val funGen = arb<(Int) -> Kind<ForListK, String>>(
       listOf(
-        { _: Int -> ListK.empty<String>() }, { _: Int -> ListK.just("value") }
+        { _: Int -> ListK.empty<String>() }, { ListK.just("value") }
       )
     ) {
       generateSequence({ int: Int -> List(abs(int % 1000)) { "$it" }.k() }) { it }
@@ -48,7 +49,7 @@ object BicrosswalkLaws {
     )
   }
 
-  fun <T, F, A, B, C, D> Bicrosswalk<T>.bicrosswalkEmpty(
+  private suspend fun <T, F, A, B, C, D> Bicrosswalk<T>.bicrosswalkEmpty(
     ALIGN: Align<F>,
     G: Arb<Kind2<T, A, B>>,
     EQ: Eq<Kind<F, Kind2<T, C, D>>>
@@ -60,7 +61,7 @@ object BicrosswalkLaws {
     ls.equalUnderTheLaw(rs, EQ)
   }
 
-  fun <T, F, A, B, C, D> Bicrosswalk<T>.bicrosswalkSequencelEquality(
+  private suspend fun <T, F, A, B, C, D> Bicrosswalk<T>.bicrosswalkSequencelEquality(
     ALIGN: Align<F>,
     G: Arb<Kind2<T, A, B>>,
     faGen: Arb<(A) -> Kind<F, C>>,

@@ -37,22 +37,35 @@ import arrow.core.toOption
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.ApplicativeError
 import io.kotest.property.Arb
+import io.kotest.property.RandomSource
+import io.kotest.property.Sample
+import io.kotest.property.arbitrary.DoubleShrinker
+import io.kotest.property.arbitrary.FloatShrinker
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.arb
-import io.kotlintest.properties.shrinking.DoubleShrinker
-import io.kotlintest.properties.shrinking.FloatShrinker
+import io.kotest.property.arbitrary.bind
+import io.kotest.property.arbitrary.choice
+import io.kotest.property.arbitrary.create
+import io.kotest.property.arbitrary.filter
+import io.kotest.property.arbitrary.flatMap
+import io.kotest.property.arbitrary.list
+import io.kotest.property.arbitrary.long
+import io.kotest.property.arbitrary.map
+import io.kotest.property.arbitrary.of
+import io.kotest.property.arbitrary.orNull
+import io.kotest.property.arbitrary.set
 
 fun Arb.Companion.short(): Arb<Short> =
-  Arb.choose(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).map { it.toShort() }
+  Arb.int(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).map { it.toShort() }
 
 fun Arb.Companion.byte(): Arb<Byte> =
-  Arb.choose(Byte.MIN_VALUE.toInt(), Byte.MAX_VALUE.toInt()).map { it.toByte() }
+  Arb.int(Byte.MIN_VALUE.toInt(), Byte.MAX_VALUE.toInt()).map { it.toByte() }
 
 fun <F, A> Arb<A>.applicative(AP: Applicative<F>): Arb<Kind<F, A>> =
   map { AP.just(it) }
 
 fun <F, A, E> Arb.Companion.applicativeError(genA: Arb<A>, errorGen: Arb<E>, AP: ApplicativeError<F, E>): Arb<Kind<F, A>> =
-  Arb.oneOf<Either<E, A>>(genA.map(::Right), errorGen.map(::Left)).map {
+  Arb.choice(genA.map(::Right), errorGen.map(::Left)).map {
     it.fold(AP::raiseError, AP::just)
   }
 
@@ -69,9 +82,11 @@ fun <A, B> Arb.Companion.functionABToB(gen: Arb<B>): Arb<(A, B) -> B> = gen.map 
 
 fun <A> Arb.Companion.functionToA(gen: Arb<A>): Arb<() -> A> = gen.map { a: A -> { a } }
 
-fun Arb.Companion.throwable(): Arb<Throwable> = Arb.from(listOf(RuntimeException(), NoSuchElementException(), IllegalArgumentException()))
+fun Arb.Companion.throwable(): Arb<Throwable> =
+  Arb.of(RuntimeException(), NoSuchElementException(), IllegalArgumentException())
 
-fun Arb.Companion.fatalThrowable(): Arb<Throwable> = Arb.from(listOf(ThreadDeath(), StackOverflowError(), OutOfMemoryError(), InterruptedException()))
+fun Arb.Companion.fatalThrowable(): Arb<Throwable> =
+  Arb.of(ThreadDeath(), StackOverflowError(), OutOfMemoryError(), InterruptedException())
 
 fun Arb.Companion.doubleSmall(): Arb<Double> =
   arb(DoubleShrinker, listOf(0.0)) { it.random.nextInt(100).toDouble() }
@@ -79,15 +94,20 @@ fun Arb.Companion.doubleSmall(): Arb<Double> =
 fun Arb.Companion.floatSmall(): Arb<Float> =
   arb(FloatShrinker, listOf(0F)) { it.random.nextInt(100).toFloat() }
 
-fun Arb.Companion.intSmall(): Arb<Int> = Arb.oneOf(Arb.choose(Int.MIN_VALUE / 10000, -1), Arb.choose(0, Int.MAX_VALUE / 10000))
+fun Arb.Companion.intSmall(): Arb<Int> =
+  Arb.choice(Arb.int(Int.MIN_VALUE / 10000, -1), Arb.int(0, Int.MAX_VALUE / 10000))
 
-fun Arb.Companion.byteSmall(): Arb<Byte> = Arb.oneOf(Arb.choose(Byte.MIN_VALUE / 10, -1), Arb.choose(0, Byte.MAX_VALUE / 10)).map { it.toByte() }
+fun Arb.Companion.byteSmall(): Arb<Byte> =
+  Arb.choice(Arb.int(Byte.MIN_VALUE / 10, -1), Arb.int(0, Byte.MAX_VALUE / 10)).map { it.toByte() }
 
-fun Arb.Companion.shortSmall(): Arb<Short> = Arb.oneOf(Arb.choose(Short.MIN_VALUE / 1000, -1), Arb.choose(0, Short.MAX_VALUE / 1000)).map { it.toShort() }
+fun Arb.Companion.shortSmall(): Arb<Short> =
+  Arb.choice(Arb.int(Short.MIN_VALUE / 1000, -1), Arb.int(0, Short.MAX_VALUE / 1000)).map { it.toShort() }
 
-fun Arb.Companion.longSmall(): Arb<Long> = Arb.oneOf(Arb.choose(Long.MIN_VALUE / 100000L, -1L), Arb.choose(0L, Long.MAX_VALUE / 100000L))
+fun Arb.Companion.longSmall(): Arb<Long> =
+  Arb.choice(Arb.long(Long.MIN_VALUE / 100000L, -1L), Arb.long(0L, Long.MAX_VALUE / 100000L))
 
-fun <A, B> Arb.Companion.tuple2(genA: Arb<A>, genB: Arb<B>): Arb<Tuple2<A, B>> = Arb.bind(genA, genB) { a: A, b: B -> Tuple2(a, b) }
+fun <A, B> Arb.Companion.tuple2(genA: Arb<A>, genB: Arb<B>): Arb<Tuple2<A, B>> =
+  Arb.bind(genA, genB) { a: A, b: B -> Tuple2(a, b) }
 
 fun <A, B, C> Arb.Companion.tuple3(genA: Arb<A>, genB: Arb<B>, genC: Arb<C>): Arb<Tuple3<A, B, C>> =
   Arb.bind(genA, genB, genC) { a: A, b: B, c: C -> Tuple3(a, b, c) }
@@ -113,16 +133,17 @@ fun <A, B, C, D, E, F, G, H, I> Arb.Companion.tuple9(genA: Arb<A>, genB: Arb<B>,
 fun <A, B, C, D, E, F, G, H, I, J> Arb.Companion.tuple10(genA: Arb<A>, genB: Arb<B>, genC: Arb<C>, genD: Arb<D>, genE: Arb<E>, genF: Arb<F>, genG: Arb<G>, genH: Arb<H>, genI: Arb<I>, genJ: Arb<J>): Arb<Tuple10<A, B, C, D, E, F, G, H, I, J>> =
   Arb.bind(Arb.tuple9(genA, genB, genC, genD, genE, genF, genG, genH, genI), genJ) { tuple: Tuple9<A, B, C, D, E, F, G, H, I>, j: J -> Tuple10(tuple.a, tuple.b, tuple.c, tuple.d, tuple.e, tuple.f, tuple.g, tuple.h, tuple.i, j) }
 
-fun Arb.Companion.nonZeroInt(): Arb<Int> = Arb.int().filter { it != 0 }
+fun Arb.Companion.nonZeroInt(): Arb<Int> =
+  Arb.int().filter { it != 0 }
 
 fun Arb.Companion.intPredicate(): Arb<(Int) -> Boolean> =
   Arb.nonZeroInt().flatMap { num ->
     val absNum = Math.abs(num)
-    Arb.from(listOf<(Int) -> Boolean>(
+    listOf<(Int) -> Boolean>(
       { it > num },
       { it <= num },
       { it % absNum == 0 },
-      { it % absNum == absNum - 1 })
+      { it % absNum == absNum - 1 }
     )
   }
 
@@ -132,12 +153,13 @@ fun <B> Arb.Companion.option(gen: Arb<B>): Arb<Option<B>> =
   gen.orNull().map { it.toOption() }
 
 fun <E, A> Arb.Companion.either(genE: Arb<E>, genA: Arb<A>): Arb<Either<E, A>> {
-  val genLeft = genE.map<Either<E, A>> { Left(it) }
-  val genRight = genA.map<Either<E, A>> { Right(it) }
-  return Arb.oneOf(genLeft, genRight)
+  val genLeft = genE.map { Left(it) }
+  val genRight = genA.map { Right(it) }
+  return Arb.choice(genLeft, genRight)
 }
 
-fun <E, A> Arb<E>.or(genA: Arb<A>): Arb<Either<E, A>> = Arb.either(this, genA)
+fun <E, A> Arb<E>.or(genA: Arb<A>): Arb<Either<E, A>> =
+  Arb.either(this, genA)
 
 fun <E, A> Arb.Companion.validated(genE: Arb<E>, genA: Arb<A>): Arb<Validated<E, A>> =
   Arb.either(genE, genA).map { Validated.fromEither(it) }
@@ -145,8 +167,16 @@ fun <E, A> Arb.Companion.validated(genE: Arb<E>, genA: Arb<A>): Arb<Validated<E,
 fun <A> Arb.Companion.`try`(genA: Arb<A>, genThrowable: Arb<Throwable> = throwable()): Arb<Try<A>> =
   Arb.either(genThrowable, genA).map { it.fold({ Failure(it) }, { Success(it) }) }
 
-fun <A> Arb.Companion.nonEmptyList(gen: Arb<A>): Arb<NonEmptyList<A>> =
-  gen.flatMap { head -> Arb.list(gen).map { NonEmptyList(head, it) } }
+fun <A> Arb.Companion.nonEmptyList(gen: Arb<A>): Arb<NonEmptyList<A>> = object : Arb<NonEmptyList<A>>() {
+  override fun edgecases(): List<NonEmptyList<A>> = gen.edgecases().map { NonEmptyList(it) }
+
+  override fun values(rs: RandomSource): Sequence<Sample<NonEmptyList<A>>> =
+    gen.values(rs).flatMap { head ->
+      Arb.list(gen).values(rs).map {
+        NonEmptyList(head.value, it.value)
+      }
+    }.map { Sample(it) }
+}
 
 fun <K : Comparable<K>, V> Arb.Companion.sortedMapK(genK: Arb<K>, genV: Arb<V>): Arb<SortedMapK<K, V>> =
   Arb.bind(genK, genV) { k: K, v: V -> sortedMapOf(k to v) }.map { it.k() }
@@ -154,40 +184,41 @@ fun <K : Comparable<K>, V> Arb.Companion.sortedMapK(genK: Arb<K>, genV: Arb<V>):
 fun <K, V> Arb.Companion.mapK(genK: Arb<K>, genV: Arb<V>): Arb<MapK<K, V>> =
   Arb.map(genK, genV).map { it.k() }
 
-fun <A> Arb.Companion.listK(genA: Arb<A>): Arb<ListK<A>> = Arb.list(genA).map { it.k() }
+fun <A> Arb.Companion.listK(genA: Arb<A>): Arb<ListK<A>> =
+  Arb.list(genA).map { it.k() }
 
-fun <A> Arb.Companion.sequenceK(genA: Arb<A>): Arb<SequenceK<A>> = Arb.list(genA).map { it.asSequence().k() }
+fun <A> Arb.Companion.sequenceK(genA: Arb<A>): Arb<SequenceK<A>> =
+  Arb.list(genA).map { it.asSequence().k() }
 
-fun <A> Arb.Companion.genSetK(genA: Arb<A>): Arb<SetK<A>> = Arb.set(genA).map { it.k() }
+fun <A> Arb.Companion.genSetK(genA: Arb<A>): Arb<SetK<A>> =
+  Arb.set(genA).map { it.k() }
 
 fun Arb.Companion.unit(): Arb<Unit> =
-  create { Unit }
+  Arb.create { Unit }
 
 fun <T> Arb.Companion.id(gen: Arb<T>): Arb<Id<T>> =
-  arb(gen.constants().map { Id.just(it) }) { gen.random().map { Id.just(it) } }
+  gen.map { Id.just(it) }
 
 fun <A, B> Arb.Companion.ior(genA: Arb<A>, genB: Arb<B>): Arb<Ior<A, B>> =
   arb(
-    (genA.orNull().constants().asSequence().k() to genB.orNull().constants().asSequence().k()).let { (ls, rs) ->
+    (genA.orNull().edgecases().asSequence().k() to genB.orNull().edgecases().asSequence().k()).let { (ls, rs) ->
       SequenceK.apply().run { ls.product(rs) }.filterMap {
         Ior.fromOptions(Option.fromNullable(it.a), Option.fromNullable(it.b))
-      }.asIterable()
+      }.toList()
     }
   ) {
-    (Arb.option(genA).random() to Arb.option(genB).random()).let { (ls, rs) ->
+    (Arb.option(genA).values(it) to Arb.option(genB).values(it)).let { (ls, rs) ->
       ls.zip(rs).filterMap {
-        Ior.fromOptions(it.first, it.second)
+        Ior.fromOptions(it.first.value, it.second.value)
       }
     }
   }
 
 fun <A, B> Arb.Companion.genConst(gen: Arb<A>): Arb<Const<A, B>> =
-  gen.map {
-    Const<A, B>(it)
-  }
+  gen.map { Const<A, B>(it) }
 
 fun <A> Arb<A>.eval(): Arb<Eval<A>> =
   map { Eval.just(it) }
 
 fun Arb.Companion.char(): Arb<Char> =
-  Arb.from(('A'..'Z') + ('a'..'z') + ('0'..'9') + "!@#$%%^&*()_-~`,<.?/:;}{][±§".toList())
+  Arb.of(('A'..'Z') + ('a'..'z') + ('0'..'9') + "!@#$%%^&*()_-~`,<.?/:;}{][±§".toList())

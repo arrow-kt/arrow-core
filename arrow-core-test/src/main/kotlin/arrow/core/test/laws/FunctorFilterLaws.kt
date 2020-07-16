@@ -15,6 +15,7 @@ import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.FunctorFilter
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.bool
 import io.kotest.property.arbitrary.int
 import io.kotest.property.forAll
 
@@ -33,7 +34,7 @@ object FunctorFilterLaws {
     )
   }
 
-  fun <F> FunctorFilter<F>.filterMapComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> FunctorFilter<F>.filterMapComposition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) =
     forAll(
       G,
       Arb.functionAToB<Int, Option<Int>>(Arb.option(Arb.intSmall())),
@@ -42,7 +43,7 @@ object FunctorFilterLaws {
       fa.filterMap(f).filterMap(g).equalUnderTheLaw(fa.filterMap { a -> f(a).flatMap(g) }, EQ)
     }
 
-  fun <F> FunctorFilter<F>.filterMapMapConsistency(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> FunctorFilter<F>.filterMapMapConsistency(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) =
     forAll(
       G,
       Arb.functionAToB<Int, Int>(Arb.int())
@@ -50,14 +51,14 @@ object FunctorFilterLaws {
       fa.filterMap { Some(f(it)) }.equalUnderTheLaw(fa.map(f), EQ)
     }
 
-  fun <F> FunctorFilter<F>.flattenOptionConsistentWithfilterMap(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> FunctorFilter<F>.flattenOptionConsistentWithfilterMap(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) =
     forAll(
       G
     ) { fa: Kind<F, Int> ->
       fa.map { it.some() }.flattenOption().equalUnderTheLaw(fa.filterMap { Some(identity(it)) }, EQ)
     }
 
-  fun <F> FunctorFilter<F>.filterConsistentWithfilterMap(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> FunctorFilter<F>.filterConsistentWithfilterMap(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) =
     forAll(
       G,
       Arb.functionAToB<Int, Boolean>(Arb.bool())
@@ -65,7 +66,7 @@ object FunctorFilterLaws {
       fa.filter(f).equalUnderTheLaw(fa.filterMap { if (f(it)) Some(it) else None }, EQ)
     }
 
-  fun <F> FunctorFilter<F>.filterIsInstanceConsistentWithfilterMap(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> FunctorFilter<F>.filterIsInstanceConsistentWithfilterMap(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) =
     forAll(
       G
     ) { fa: Kind<F, Int> ->

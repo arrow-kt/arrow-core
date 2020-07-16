@@ -14,6 +14,7 @@ import arrow.core.test.generators.either
 import arrow.core.test.generators.intSmall
 import arrow.core.test.laws.BifoldableLaws
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.map
 
 class BifoldableTests : UnitSpec() {
   init {

@@ -34,7 +34,9 @@ import arrow.core.test.laws.UnalignLaws
 import arrow.core.test.laws.UnzipLaws
 import arrow.typeclasses.Eq
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.bool
 import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.long
 import io.kotest.property.forAll
 
 class MapKTest : UnitSpec() {
@@ -96,7 +98,7 @@ class MapKTest : UnitSpec() {
         MapK.semialign<Long>().run {
           val aligned = align(a, b).fix()
           (a.keys - b.keys).all { key ->
-            aligned[key]?.let { it.isLeft } ?: false
+            aligned[key]?.isLeft ?: false
           }
         }
       }
@@ -106,7 +108,7 @@ class MapKTest : UnitSpec() {
         MapK.semialign<Long>().run {
           val aligned = align(a, b).fix()
           (b.keys - a.keys).all { key ->
-            aligned[key]?.let { it.isRight } ?: false
+            aligned[key]?.isRight ?: false
           }
         }
       }

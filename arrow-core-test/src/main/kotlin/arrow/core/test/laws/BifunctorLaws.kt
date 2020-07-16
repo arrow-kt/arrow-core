@@ -24,12 +24,13 @@ object BifunctorLaws {
     )
   }
 
-  fun <F> Bifunctor<F>.identity(G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): Unit =
+  private suspend fun <F> Bifunctor<F>.identity(G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>) {
     forAll(G) { fa: Kind2<F, Int, Int> ->
       fa.bimap({ it }, { it }).equalUnderTheLaw(fa, EQ)
     }
+  }
 
-  fun <F> Bifunctor<F>.composition(G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): Unit =
+  private suspend fun <F> Bifunctor<F>.composition(G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>) {
     forAll(
       G,
       Arb.functionAToB<Int, Int>(Arb.int()),
@@ -39,4 +40,5 @@ object BifunctorLaws {
     ) { fa: Kind2<F, Int, Int>, ff, g, x, y ->
       fa.bimap(ff, g).bimap(x, y).equalUnderTheLaw(fa.bimap(ff andThen x, g andThen y), EQ)
     }
+  }
 }

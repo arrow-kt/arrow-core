@@ -4,6 +4,7 @@ import arrow.core.test.UnitSpec
 import arrow.core.test.laws.HashLaws
 import arrow.core.test.laws.ShowLaws
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.string
 
 class StringInstancesTest : UnitSpec() {
   init {

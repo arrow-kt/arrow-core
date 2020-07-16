@@ -26,6 +26,7 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.Functor
 import arrow.typeclasses.Traverse
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.map
 import io.kotest.property.forAll
 
 typealias TI<A> = Tuple2<IdOf<A>, IdOf<A>>
@@ -92,8 +93,8 @@ object TraverseLaws {
 
   private suspend fun <F> Traverse<F>.sequentialComposition(GEN: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) = Id.applicative().run {
     val idApp = this
-    forAll(Arb.functionAToB<Int, Kind<ForId, Int>>(Arb.intSmall().map(::Id)),
-      Arb.functionAToB<Int, Kind<ForId, Int>>(Arb.intSmall().map(::Id)),
+    forAll(Arb.functionAToB(Arb.intSmall().map(::Id)),
+      Arb.functionAToB(Arb.intSmall().map(::Id)),
       GEN) { f: (Int) -> Kind<ForId, Int>, g: (Int) -> Kind<ForId, Int>, fha: Kind<F, Int> ->
 
       val fa = fha.traverse(idApp, f).fix()

@@ -36,7 +36,7 @@ object BifoldableLaws {
       }
     }
 
-  fun <F> Bifoldable<F>.bifoldRightConsistentWithBifoldMap(G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Int>) =
+  private suspend fun <F> Bifoldable<F>.bifoldRightConsistentWithBifoldMap(G: Arb<Kind2<F, Int, Int>>, EQ: Eq<Int>) =
     forAll(Arb.functionAToB<Int, Int>(Arb.intSmall()), Arb.functionAToB<Int, Int>(Arb.intSmall()), G
     ) { f: (Int) -> Int, g: (Int) -> Int, fab: Kind2<F, Int, Int> ->
       with(Int.monoid()) {

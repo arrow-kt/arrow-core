@@ -11,6 +11,7 @@ import arrow.typeclasses.Functor
 import arrow.typeclasses.MonadFilter
 import arrow.typeclasses.Selective
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.bool
 import io.kotest.property.arbitrary.int
 import io.kotest.property.forAll
 
@@ -54,22 +55,22 @@ object MonadFilterLaws {
       FunctorFilterLaws.laws(MF, GENK, EQK) +
       monadFilterLaws(MF, GENK, EQK)
 
-  private suspend fun <F, A> MonadFilter<F>.monadFilterLeftEmpty(G: Arb<Function1<A, Kind<F, A>>>, EQ: Eq<Kind<F, A>>): Unit =
+  private suspend fun <F, A> MonadFilter<F>.monadFilterLeftEmpty(G: Arb<Function1<A, Kind<F, A>>>, EQ: Eq<Kind<F, A>>) =
     forAll(G) { f: (A) -> Kind<F, A> ->
       empty<A>().flatMap(f).equalUnderTheLaw(empty(), EQ)
     }
 
-  private suspend fun <F, A> MonadFilter<F>.monadFilterRightEmpty(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>): Unit =
+  private suspend fun <F, A> MonadFilter<F>.monadFilterRightEmpty(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
     forAll(G) { fa: Kind<F, A> ->
       fa.flatMap { empty<A>() }.equalUnderTheLaw(empty(), EQ)
     }
 
-  private suspend fun <F, A> MonadFilter<F>.monadFilterConsistency(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>): Unit =
+  private suspend fun <F, A> MonadFilter<F>.monadFilterConsistency(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
     forAll(Arb.functionAToB<A, Boolean>(Arb.bool()), G) { f: (A) -> Boolean, fa: Kind<F, A> ->
       fa.filter(f).equalUnderTheLaw(fa.flatMap { a -> if (f(a)) just(a) else empty() }, EQ)
     }
 
-  fun <F> MonadFilter<F>.monadFilterEmptyComprehensions(EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> MonadFilter<F>.monadFilterEmptyComprehensions(EQ: Eq<Kind<F, Int>>) =
     forAll(Arb.bool(), Arb.int()) { guard: Boolean, n: Int ->
       fx.monadFilter {
         continueIf(guard)
@@ -77,7 +78,7 @@ object MonadFilterLaws {
       }.equalUnderTheLaw(if (!guard) empty() else just(n), EQ)
     }
 
-  fun <F, A> MonadFilter<F>.monadFilterBindWithFilterComprehensions(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>): Unit =
+  private suspend fun <F, A> MonadFilter<F>.monadFilterBindWithFilterComprehensions(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
     forAll(Arb.bool(), G) { guard: Boolean, fa: Kind<F, A> ->
       fx.monadFilter {
         val x = fa.bindWithFilter { guard }

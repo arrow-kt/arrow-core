@@ -28,32 +28,37 @@ object ComonadLaws {
       )
   }
 
-  fun <F> Comonad<F>.duplicateThenExtractIsId(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Comonad<F>.duplicateThenExtractIsId(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
     forAll(G) { fa: Kind<F, Int> ->
       fa.duplicate().extract().equalUnderTheLaw(fa, EQ)
     }
+  }
 
-  fun <F> Comonad<F>.duplicateThenMapExtractIsId(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Comonad<F>.duplicateThenMapExtractIsId(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
     forAll(G) { fa: Kind<F, Int> ->
       fa.duplicate().map { it.extract() }.equalUnderTheLaw(fa, EQ)
     }
+  }
 
-  fun <F> Comonad<F>.mapAndCoflatmapCoherence(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Comonad<F>.mapAndCoflatmapCoherence(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
     forAll(G, Arb.functionAToB<Int, Int>(Arb.int())) { fa: Kind<F, Int>, f: (Int) -> Int ->
       fa.map(f).equalUnderTheLaw(fa.coflatMap { f(it.extract()) }, EQ)
     }
+  }
 
-  fun <F> Comonad<F>.comonadLeftIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Comonad<F>.comonadLeftIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
     forAll(G) { fa: Kind<F, Int> ->
       fa.coflatMap { it.extract() }.equalUnderTheLaw(fa, EQ)
     }
+  }
 
-  fun <F> Comonad<F>.comonadRightIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Comonad<F>.comonadRightIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
     forAll(G, Arb.functionAToB<Kind<F, Int>, Kind<F, Int>>(G)) { fa: Kind<F, Int>, f: (Kind<F, Int>) -> Kind<F, Int> ->
       fa.coflatMap(f).extract().equalUnderTheLaw(f(fa), EQ)
     }
+  }
 
-  fun <F> Comonad<F>.cobinding(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Comonad<F>.cobinding(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
     forAll(G) { fa: Kind<F, Int> ->
       val comonad = fx.comonad {
         val x = fa.extract()
@@ -63,4 +68,5 @@ object ComonadLaws {
       val b = fa.map { it * 3 }
       comonad.equalUnderTheLaw(b, EQ)
     }
+  }
 }

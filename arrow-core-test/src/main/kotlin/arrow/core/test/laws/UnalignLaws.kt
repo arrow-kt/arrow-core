@@ -14,9 +14,8 @@ import arrow.typeclasses.Foldable
 import arrow.typeclasses.Semialign
 import arrow.typeclasses.Unalign
 import io.kotest.property.Arb
-import io.kotest.property.RandomSource
+import io.kotest.property.arbitrary.bind
 import io.kotest.property.arbitrary.int
-import io.kotest.property.arbitrary.arb
 import io.kotest.property.forAll
 
 object UnalignLaws {
@@ -68,21 +67,5 @@ private fun <F, A, B> iorGen(
   SA: Semialign<F>,
   genA: Arb<Kind<F, A>>,
   genB: Arb<Kind<F, B>>
-): Arb<Kind<F, Ior<A, B>>> = arb<Kind<F, Ior<A, B>>>(
-    genA.edgecases().zip(genB.edgecases()).map { SA.align(it.first, it.second) }
-) {
-  sequence {
-    val vsA = genA.values(RandomSource.Default).iterator()
-    val vsB = genB.values(RandomSource.Default).iterator()
-
-    while (vsA.hasNext()) {
-      val a = vsA.next()
-
-      if (vsB.hasNext()) {
-        val b = vsB.next()
-
-        yield(SA.align(a, b))
-      }
-    }
-  }
-}
+): Arb<Kind<F, Ior<A, B>>> =
+  Arb.bind(genA, genB) { a, b -> SA.align(a, b) }

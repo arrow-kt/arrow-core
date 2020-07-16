@@ -23,7 +23,7 @@ import arrow.syntax.function.untripled
 import arrow.syntax.function.untupled
 import arrow.core.Tuple2
 import arrow.core.test.UnitSpec
-import io.kotlintest.shouldBe
+import io.kotest.matchers.shouldBe
 import java.util.Random
 
 class FunctionSyntaxTest : UnitSpec() {

@@ -15,6 +15,7 @@ import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK2
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.map
 import io.kotest.property.forAll
 
 object BitraverseLaws {
@@ -27,7 +28,7 @@ object BitraverseLaws {
     return BifoldableLaws.laws(BT, GENK) + listOf(Law("Bitraverse Laws: Identity") { BT.identityBitraverse(BT, G, EQ) })
   }
 
-  fun <F> Bitraverse<F>.identityBitraverse(BT: Bitraverse<F>, GEN: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>) =
+  private suspend fun <F> Bitraverse<F>.identityBitraverse(BT: Bitraverse<F>, GEN: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>) =
     Id.applicative().run {
       val idApp = this
       forAll(Arb.functionAToB<Int, Kind<ForId, Int>>(Arb.intSmall().map(::Id)),

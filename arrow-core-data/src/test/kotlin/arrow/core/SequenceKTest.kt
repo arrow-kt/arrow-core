@@ -42,9 +42,11 @@ import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
 import arrow.core.test.laws.UnalignLaws
 import arrow.core.test.laws.UnzipLaws
-import io.kotlintest.matchers.sequences.shouldBeEmpty
+import io.kotest.matchers.sequences.shouldBeEmpty
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.filter
 import io.kotest.property.arbitrary.int
+import io.kotest.property.arbitrary.positiveInts
 import io.kotest.property.arbitrary.string
 import io.kotest.property.forAll
 import kotlin.math.max
@@ -147,7 +149,7 @@ class SequenceKTest : UnitSpec() {
       val seq2 = generateSequence(0) { it + 1 }.k()
 
       SequenceK.semialign().run {
-        forAll(10, Arb.positiveIntegers().filter { it < 10_000 }) { idx: Int ->
+        forAll(10, Arb.positiveInts().filter { it < 10_000 }) { idx: Int ->
           val element = align(seq1, seq2).fix().drop(idx).first()
 
           element == Ior.Both("A", idx)

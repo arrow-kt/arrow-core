@@ -30,17 +30,17 @@ object MonadPlusLaws {
       Law("MonadPlus Laws: Right zero") { MP.rightZero(G, EQ) }
     )
 
-  fun <F, A> MonadPlus<F>.leftIdentity(GEN: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>): Unit =
+  private suspend fun <F, A> MonadPlus<F>.leftIdentity(GEN: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
     forAll(GEN) { a ->
       (zeroM<A>().plusM(a)).equalUnderTheLaw(a, EQ)
     }
 
-  fun <F, A> MonadPlus<F>.rightIdentity(GEN: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>): Unit =
+  private suspend fun <F, A> MonadPlus<F>.rightIdentity(GEN: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
     forAll(GEN) { a ->
       a.plusM(zeroM<A>()).equalUnderTheLaw(a, EQ)
     }
 
-  fun <F, A> MonadPlus<F>.associativity(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>): Unit =
+  private suspend fun <F, A> MonadPlus<F>.associativity(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
     forAll(G, G, G) { m, n, o ->
       val ls = m.plusM(n.plusM(o))
       val rs = m.plusM(n).plusM(o)
@@ -48,7 +48,7 @@ object MonadPlusLaws {
       ls.equalUnderTheLaw(rs, EQ)
     }
 
-  fun <F, A> MonadPlus<F>.leftZero(GEN: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>): Unit =
+  private suspend fun <F, A> MonadPlus<F>.leftZero(GEN: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
     forAll(GEN) { a ->
       val r = zeroM<A>().flatMap {
         a
@@ -57,7 +57,7 @@ object MonadPlusLaws {
       r.equalUnderTheLaw(zeroM(), EQ)
     }
 
-  fun <F, A> MonadPlus<F>.rightZero(GEN: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>): Unit =
+  private suspend fun <F, A> MonadPlus<F>.rightZero(GEN: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>) =
     forAll(GEN) { a ->
       val r = a.flatMap {
         zeroM<A>()

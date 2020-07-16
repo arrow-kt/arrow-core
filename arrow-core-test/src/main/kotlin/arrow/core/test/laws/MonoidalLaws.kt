@@ -33,12 +33,12 @@ object MonoidalLaws {
     )
   }
 
-  private fun <F> Monoidal<F>.monoidalLeftIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Int, Int>>>): Unit =
+  private suspend fun <F> Monoidal<F>.monoidalLeftIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Int, Int>>>) =
     forAll(G) { fa: Kind<F, Int> ->
       identity<Int>().product(fa).equalUnderTheLaw(identity(), EQ)
     }
 
-  private fun <F> Monoidal<F>.monoidalRightIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Int, Int>>>): Unit =
+  private suspend fun <F> Monoidal<F>.monoidalRightIdentity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Tuple2<Int, Int>>>) =
     forAll(G) { fa: Kind<F, Int> ->
       fa.product(identity<Int>()).equalUnderTheLaw(identity(), EQ)
     }

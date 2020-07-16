@@ -29,12 +29,12 @@ object ProfunctorLaws {
       )
   }
 
-  fun <F> Profunctor<F>.identity(f: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): Unit =
+  private suspend fun <F> Profunctor<F>.identity(f: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>) =
     forAll(f) { fa: Kind2<F, Int, Int> ->
       fa.dimap<Int, Int, Int, Int>({ it }, { it }).equalUnderTheLaw(fa, EQ)
     }
 
-  fun <F> Profunctor<F>.composition(f: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): Unit =
+  private suspend fun <F> Profunctor<F>.composition(f: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>) =
     forAll(
       f,
       Arb.functionAToB<Int, Int>(Arb.int()),
@@ -45,17 +45,17 @@ object ProfunctorLaws {
       fa.dimap(ff, g).dimap(x, y).equalUnderTheLaw(fa.dimap(x andThen ff, g andThen y), EQ)
     }
 
-  fun <F> Profunctor<F>.lMapIdentity(f: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): Unit =
+  private suspend fun <F> Profunctor<F>.lMapIdentity(f: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>) =
     forAll(f) { fa: Kind2<F, Int, Int> ->
       fa.lmap<Int, Int, Int> { it }.equalUnderTheLaw(fa, EQ)
     }
 
-  fun <F> Profunctor<F>.rMapIdentity(f: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): Unit =
+  private suspend fun <F> Profunctor<F>.rMapIdentity(f: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>) =
     forAll(f) { fa: Kind2<F, Int, Int> ->
       fa.rmap { it }.equalUnderTheLaw(fa, EQ)
     }
 
-  fun <F> Profunctor<F>.lMapComposition(f: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): Unit =
+  private suspend fun <F> Profunctor<F>.lMapComposition(f: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>) =
     forAll(
       f,
       Arb.functionAToB<Int, Int>(Arb.int()),
@@ -64,7 +64,7 @@ object ProfunctorLaws {
       fa.lmap(g).lmap(ff).equalUnderTheLaw(fa.lmap(ff andThen g), EQ)
     }
 
-  fun <F> Profunctor<F>.rMapComposition(f: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): Unit =
+  private suspend fun <F> Profunctor<F>.rMapComposition(f: Arb<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>) =
     forAll(
       f,
       Arb.functionAToB<Int, Int>(Arb.int()),

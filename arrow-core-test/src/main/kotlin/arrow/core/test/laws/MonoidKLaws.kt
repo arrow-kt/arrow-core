@@ -23,17 +23,17 @@ object MonoidKLaws {
         Law("MonoidK Laws: Fold with Monoid instance") { SGK.monoidKFold(GEN, EQ) })
   }
 
-  fun <F> MonoidK<F>.monoidKLeftIdentity(GEN: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> MonoidK<F>.monoidKLeftIdentity(GEN: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) =
     forAll(GEN) { fa: Kind<F, Int> ->
       empty<Int>().combineK(fa).equalUnderTheLaw(fa, EQ)
     }
 
-  fun <F> MonoidK<F>.monoidKRightIdentity(GEN: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> MonoidK<F>.monoidKRightIdentity(GEN: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) =
     forAll(GEN) { fa: Kind<F, Int> ->
       fa.combineK(empty<Int>()).equalUnderTheLaw(fa, EQ)
     }
 
-  fun <F> MonoidK<F>.monoidKFold(GEN: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
+  private suspend fun <F> MonoidK<F>.monoidKFold(GEN: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) {
     val mo = this
     forAll(GEN) { fa: Kind<F, Int> ->
       listOf(fa).fold(mo.algebra()).equalUnderTheLaw(fa, EQ)

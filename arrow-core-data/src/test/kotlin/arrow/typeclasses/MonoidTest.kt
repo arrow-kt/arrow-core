@@ -8,6 +8,7 @@ import arrow.core.test.generators.GenK
 import arrow.core.test.laws.InvariantLaws
 import arrow.core.test.laws.equalUnderTheLaw
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.constant
 
 class MonoidTest : UnitSpec() {
 

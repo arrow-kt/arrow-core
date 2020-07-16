@@ -25,13 +25,13 @@ object InvariantLaws {
       )
   }
 
-  fun <F> Invariant<F>.identity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Invariant<F>.identity(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) =
     forAll(G) { fa: Kind<F, Int> ->
-      val imap: Kind<F, Int> = fa.imap<Int, Int>(::identity, ::identity)
+      val imap: Kind<F, Int> = fa.imap<Int, Int>({ identity(it) }, { identity(it) })
       imap.equalUnderTheLaw(fa, EQ)
     }
 
-  fun <F> Invariant<F>.composition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> Invariant<F>.composition(G: Arb<Kind<F, Int>>, EQ: Eq<Kind<F, Int>>) =
     forAll(
       G,
       Arb.functionAToB<Int, Int>(Arb.int()),

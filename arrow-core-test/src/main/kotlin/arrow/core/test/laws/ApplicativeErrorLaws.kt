@@ -40,50 +40,59 @@ object ApplicativeErrorLaws {
     )
   }
 
-  private suspend fun <F> ApplicativeError<F, Throwable>.applicativeErrorHandle(EQ: Eq<Kind<F, Int>>): Unit =
-    forAll(Arb.functionAToB<Throwable, Int>(Arb.int()), Arb.throwable()) { f: (Throwable) -> Int, e: Throwable ->
+  private suspend fun <F> ApplicativeError<F, Throwable>.applicativeErrorHandle(EQ: Eq<Kind<F, Int>>) {
+    forAll(Arb.functionAToB(Arb.int()), Arb.throwable()) { f: (Throwable) -> Int, e: Throwable ->
       raiseError<Int>(e).handleError(f).equalUnderTheLaw(just(f(e)), EQ)
     }
+  }
 
-  private suspend fun <F> ApplicativeError<F, Throwable>.applicativeErrorHandleWith(EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> ApplicativeError<F, Throwable>.applicativeErrorHandleWith(EQ: Eq<Kind<F, Int>>) {
     forAll(Arb.functionAToB<Throwable, Kind<F, Int>>(Arb.int().applicativeError(this)), Arb.throwable()) { f: (Throwable) -> Kind<F, Int>, e: Throwable ->
       raiseError<Int>(e).handleErrorWith(f).equalUnderTheLaw(f(e), EQ)
     }
+  }
 
-  private suspend fun <F> ApplicativeError<F, Throwable>.applicativeErrorHandleWithPure(EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> ApplicativeError<F, Throwable>.applicativeErrorHandleWithPure(EQ: Eq<Kind<F, Int>>) {
     forAll(Arb.functionAToB<Throwable, Kind<F, Int>>(Arb.int().applicativeError(this)), Arb.int()) { f: (Throwable) -> Kind<F, Int>, a: Int ->
       just(a).handleErrorWith(f).equalUnderTheLaw(just(a), EQ)
     }
+  }
 
-  private suspend fun <F> ApplicativeError<F, Throwable>.redeemIsDerivedFromMapHandleError(EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> ApplicativeError<F, Throwable>.redeemIsDerivedFromMapHandleError(EQ: Eq<Kind<F, Int>>) {
     forAll(Arb.int().applicativeError(this), Arb.functionAToB<Throwable, Int>(Arb.int()), Arb.functionAToB<Int, Int>(Arb.int())) { fa, fe, fb ->
       fa.redeem(fe, fb).equalUnderTheLaw(fa.map(fb).handleError(fe), EQ)
     }
+  }
 
-  private suspend fun <F> ApplicativeError<F, Throwable>.applicativeErrorAttemptError(EQ: Eq<Kind<F, Either<Throwable, Int>>>): Unit =
+  private suspend fun <F> ApplicativeError<F, Throwable>.applicativeErrorAttemptError(EQ: Eq<Kind<F, Either<Throwable, Int>>>) {
     forAll(Arb.throwable()) { e: Throwable ->
       raiseError<Int>(e).attempt().equalUnderTheLaw(just(Left(e)), EQ)
     }
+  }
 
-  private suspend fun <F> ApplicativeError<F, Throwable>.applicativeErrorAttemptSuccess(EQ: Eq<Kind<F, Either<Throwable, Int>>>): Unit =
+  private suspend fun <F> ApplicativeError<F, Throwable>.applicativeErrorAttemptSuccess(EQ: Eq<Kind<F, Either<Throwable, Int>>>) {
     forAll(Arb.int()) { a: Int ->
       just(a).attempt().equalUnderTheLaw(just(Right(a)), EQ)
     }
+  }
 
-  private suspend fun <F> ApplicativeError<F, Throwable>.applicativeErrorAttemptFromEitherConsistentWithPure(EQ: Eq<Kind<F, Either<Throwable, Int>>>): Unit =
+  private suspend fun <F> ApplicativeError<F, Throwable>.applicativeErrorAttemptFromEitherConsistentWithPure(EQ: Eq<Kind<F, Either<Throwable, Int>>>) {
     forAll(Arb.either(Arb.throwable(), Arb.int())) { either: Either<Throwable, Int> ->
       either.fromEither { it }.attempt().equalUnderTheLaw(just(either), EQ)
     }
+  }
 
-  private suspend fun <F> ApplicativeError<F, Throwable>.applicativeErrorCatch(EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> ApplicativeError<F, Throwable>.applicativeErrorCatch(EQ: Eq<Kind<F, Int>>) {
     forAll(Arb.either(Arb.throwable(), Arb.int())) { either: Either<Throwable, Int> ->
       catch { either.fold({ throw it }, ::identity) }.equalUnderTheLaw(either.fold({ raiseError<Int>(it) }, { just(it) }), EQ)
     }
+  }
 
-  private suspend fun <F> ApplicativeError<F, Throwable>.applicativeErrorEffectCatch(EQ: Eq<Kind<F, Int>>): Unit =
+  private suspend fun <F> ApplicativeError<F, Throwable>.applicativeErrorEffectCatch(EQ: Eq<Kind<F, Int>>) {
     forAll(Arb.either(Arb.throwable(), Arb.int())) { either: Either<Throwable, Int> ->
       runBlocking {
         effectCatch { either.fold({ throw it }, ::identity) }
       }.equalUnderTheLaw(either.fold({ raiseError<Int>(it) }, { just(it) }), EQ)
     }
+  }
 }

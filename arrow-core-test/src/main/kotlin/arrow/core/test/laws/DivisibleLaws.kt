@@ -25,19 +25,17 @@ object DivisibleLaws {
       )
   }
 
-  fun <F> Divisible<F>.leftIdentity(
+  private suspend fun <F> Divisible<F>.leftIdentity(
     G: Arb<Kind<F, Int>>,
     EQ: Eq<Kind<F, Int>>
-  ): Unit =
-    forAll(G) { fa ->
-      divide<Int, Int, Int>(fa, conquer()) { DivideLaws.delta(it) }.equalUnderTheLaw(fa, EQ)
-    }
+  ) = forAll(G) { fa ->
+    divide<Int, Int, Int>(fa, conquer()) { DivideLaws.delta(it) }.equalUnderTheLaw(fa, EQ)
+  }
 
-  fun <F> Divisible<F>.rightIdentity(
+  private suspend fun <F> Divisible<F>.rightIdentity(
     G: Arb<Kind<F, Int>>,
     EQ: Eq<Kind<F, Int>>
-  ): Unit =
-    forAll(G) { fa ->
-      divide<Int, Int, Int>(conquer(), fa) { DivideLaws.delta(it) }.equalUnderTheLaw(fa, EQ)
-    }
+  ) = forAll(G) { fa ->
+    divide<Int, Int, Int>(conquer(), fa) { DivideLaws.delta(it) }.equalUnderTheLaw(fa, EQ)
+  }
 }

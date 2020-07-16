@@ -2,7 +2,7 @@ package arrow.core
 
 import arrow.syntax.collections.collect
 import arrow.core.test.UnitSpec
-import io.kotlintest.shouldBe
+import io.kotest.matchers.shouldBe
 
 class IterableTests : UnitSpec() {
 
