@@ -13,7 +13,7 @@ apply from: "$PUBLISH_CONF"
 dependencies {
     compile project(":arrow-core")
     compile project(":arrow-core-data")
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KOTLIN_VERSION"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$KOTLINX_COROUTINES_VERSION"
     testRuntime "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
     api "io.kotest:kotest-runner-junit5-jvm:$KOTEST_VERSION" // for kotest framework
@@ -21,4 +21,10 @@ dependencies {
     api "io.kotest:kotest-property-jvm:$KOTEST_VERSION" // for kotest property test
     api "io.kotest:kotest-runner-console-jvm:$KOTEST_VERSION" // for kotest plugin
     kapt project(":arrow-meta")
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = JAVA_VERSION
+    }
 }

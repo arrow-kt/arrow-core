@@ -14,7 +14,7 @@ apply from: "$PUBLISH_CONF"
 apply plugin: 'kotlinx-atomicfu'
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KOTLIN_VERSION"
     compile project(":arrow-annotations")
     kapt project(":arrow-meta")
     kaptTest project(":arrow-meta")
