@@ -1,22 +1,14 @@
 package arrow.core
 
+import io.kotlintest.matchers.collections.shouldContainAll
 import io.kotlintest.matchers.types.shouldBeNull
 import io.kotlintest.matchers.types.shouldNotBeNull
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
-fun <A> List<A>.forkPath(choice1: A, choice2: A): Pair<List<A>, List<A>> =
-  Pair(this + choice1, this + choice2)
-
-fun <A> List<List<A>>.forkPaths(choice1: A, choice2: A): List<List<A>> =
-  this.fold(emptyList()) { acc: List<List<A>>, path: List<A> ->
-    val paths: Pair<List<A>, List<A>> = path.forkPath(choice1, choice2)
-    acc.plusElement(paths.first).plusElement(paths.second)
-  }
-
-fun <A> generateAllPathsForNForks(choice1: A, choice2: A, n: Int): List<List<A>> =
-  IntRange(1, n).fold(emptyList()) { acc: List<List<A>>, _ ->
-    acc.forkPaths(choice1, choice2)
-  }
+/*
+----------------------------------------------------------------------------------------------------
+ */
 
 class NullableTest : StringSpec({
   "map1 short circuits if any arg is null" {
@@ -115,6 +107,51 @@ class NullableTest : StringSpec({
       }
   }
 })
+
+/*
+----------------------------------------------------------------------------------------------------
+Helper functions for generating exhaustive test scenarios
+ */
+
+private fun <A> List<A>.forkPath(choice1: A, choice2: A): Pair<List<A>, List<A>> =
+  Pair(this + choice1, this + choice2)
+
+private fun <A> List<List<A>>.forkPaths(choice1: A, choice2: A): List<List<A>> =
+  this.fold(emptyList()) { acc: List<List<A>>, path: List<A> ->
+    val paths: Pair<List<A>, List<A>> = path.forkPath(choice1, choice2)
+    acc.plusElement(paths.first).plusElement(paths.second)
+  }
+
+private fun <A> generateAllPathsForNForks(choice1: A, choice2: A, n: Int): List<List<A>> =
+  IntRange(1, n).fold(listOf(emptyList())) { acc: List<List<A>>, _ ->
+    acc.forkPaths(choice1, choice2)
+  }
+
+class GenerateAllPathsForNForksTest : StringSpec({
+  "for 0 forks" {
+    generateAllPathsForNForks("a", "b", 0) shouldContainAll emptyList()
+  }
+
+  "for 1 fork" {
+    generateAllPathsForNForks("a", "b", 1) shouldBe listOf(
+      listOf("a"),
+      listOf("b")
+    )
+  }
+
+  "for 2 forks" {
+    generateAllPathsForNForks(0, 1, 2) shouldBe listOf(
+      listOf(0, 0),
+      listOf(0, 1),
+      listOf(1, 0),
+      listOf(1, 1)
+    )
+  }
+})
+
+/*
+----------------------------------------------------------------------------------------------------
+ */
 
 private operator fun <E> List<E>.component6(): E = this[5]
 private operator fun <E> List<E>.component7(): E = this[6]
