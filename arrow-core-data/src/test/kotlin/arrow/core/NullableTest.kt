@@ -7,14 +7,20 @@ import io.kotlintest.shouldBe
 class NullableTest : UnitSpec() {
 
   init {
-    "fail" {
-      true shouldBe false
-//      val exception = Exception("My Exception")
-//      val result: Validated<Throwable, String> = Invalid(exception)
-//      result.fold(
-//        { e -> e.message + " Checked" },
-//        { fail("Some should not be called") }
-//      ) shouldBe "My Exception Checked"
+    "map2 should return null if a is null" {
+      map2<String, String, String>(null, "b") { a, b -> a + b } shouldBe null
+    }
+
+    "map2 should return null if b is null" {
+      map2<String, String, String>("a", null) { a, b -> a + b } shouldBe null
+    }
+
+    "map2 should return null if both a and b are null" {
+      map2<Int, Int, Int>(null, null) { a, b -> a + b } shouldBe null
+    }
+
+    "map2 should return R if both a and b are not null" {
+      map2(1, 2) { a, b -> a + b } shouldBe 3
     }
   }
 }
