@@ -13,8 +13,10 @@ sealed class Reflect<F> {
 }
 
 class ReflectM<A>(val prompt: Prompt<A, *>) : Reflect<A>() {
-  override suspend fun <B> A.invoke(): B =
-    prompt.suspend(this) as B
+  override suspend fun <B> A.invoke(): B {
+    println("invokeSuspend: $prompt")
+    return prompt.suspend(this) as B
+  }
   // since we know the receiver of this suspend is the
   // call to flatMap, the casts are safe
 }
@@ -28,13 +30,15 @@ class ReflectM<A>(val prompt: Prompt<A, *>) : Reflect<A>() {
  */
 fun <F> reify(): ReifyBuilder<F> = ReifyBuilder()
 
+fun <F, A> reify(MM: Monad<F>, prog: In<A, F>): A =
+  reifyImpl(MM) { prog(it) }
+
 class ReifyBuilder<F> {
   operator fun <A> invoke(
     MM: Monad<F>,
     prog: In<A, F>
   ): A = reifyImpl(MM) { prog(it) }
 }
-
 
 // this method is private since overloading and partially applying
 // type parameters conflicts and results in non-helpful error messages.
@@ -58,6 +62,7 @@ private fun <F, A> reifyImpl(
   }
 
   fun step(x: A): Either<F, A> {
+    println("Step : $x")
     coroutine.continuation.resumeWith(Result.success(x))
     return if (coroutine.isDone())
       Right(coroutine.result())
@@ -82,7 +87,7 @@ private fun <F, A> reifyImpl(
             }
           }
         }
-        //.flatten<Kind<M, Any?>>()
+        // .flatten<Kind<M, Any?>>()
       } as A
     }
 

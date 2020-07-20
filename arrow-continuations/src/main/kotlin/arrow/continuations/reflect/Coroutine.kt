@@ -50,12 +50,15 @@ class Coroutine<A, B, C>(prog: suspend (Prompt<A, B>) -> C) {
 
   private open inner class InnerPrompt : Prompt<A, B> /*ContinuationScope("cats-reflect")*/ {
     override suspend fun suspend(value: A): B {
-      return suspendCoroutineUninterceptedOrReturn {
+      return suspendCoroutineUninterceptedOrReturn { cont ->
         send(value)
+        println("Put value in channel: $value in $channel")
+
         val res = continuation.getResult()
+
         if (res == COROUTINE_SUSPENDED) COROUTINE_SUSPENDED
         else {
-          it.resumeWith(Result.success(res) as Result<B>)
+          cont.resumeWith(Result.success(res) as Result<B>)
           COROUTINE_SUSPENDED
         }
       }
@@ -97,6 +100,7 @@ class Coroutine<A, B, C>(prog: suspend (Prompt<A, B>) -> C) {
 
             when {
               r == null -> {
+                println("resumeWith: result = $result")
                 throw result.exceptionOrNull()!!
 //                parent.resumeWithException(result.exceptionOrNull()!!)
 //                return
@@ -107,11 +111,11 @@ class Coroutine<A, B, C>(prog: suspend (Prompt<A, B>) -> C) {
           }
           else -> { // If not `UNDECIDED` then we need to pass result to `parent`
             val res: Result<C> = result.fold({ Result.success(it) }, { t ->
-              if (t is ShortCircuit) throw t //Result.success(t.recover())
+              if (t is ShortCircuit) throw t // Result.success(t.recover())
               else Result.failure(t)
             })
             send(res.getOrThrow())
-            //parent.resumeWith(res)
+            // parent.resumeWith(res)
             return
           }
         }
@@ -134,7 +138,7 @@ class Coroutine<A, B, C>(prog: suspend (Prompt<A, B>) -> C) {
           else it
         }
       } catch (e: Throwable) {
-        if (e is ShortCircuit) throw e //e.recover()
+        if (e is ShortCircuit) throw e // e.recover()
         else throw e
       }
 
