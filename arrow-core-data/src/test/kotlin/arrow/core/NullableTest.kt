@@ -37,4 +37,86 @@ class NullableTest : StringSpec({
         }
       }
   }
+
+  "map3 only performs action when all arguments are not null" {
+    generateAllPathsForNForks("a", null, 3)
+      .forEach { (a: String?, b: String?, c: String?) ->
+        if (listOf(a, b, c).all { it != null }) {
+          map3(a, b, c, { _, _, _ -> Unit }).shouldNotBeNull()
+        } else {
+          map3(a, b, c, { _, _, _ -> Unit }).shouldBeNull()
+        }
+      }
+  }
+
+  "map4 only performs action when all arguments are not null" {
+    generateAllPathsForNForks(1, null, 4)
+      .forEach { (a: Int?, b: Int?, c: Int?, d: Int?) ->
+        if (listOf(a, b, c, d).all { it != null }) {
+          map4(a, b, c, d, { _, _, _, _ -> Unit }).shouldNotBeNull()
+        } else {
+          map4(a, b, c, d, { _, _, _, _ -> Unit }).shouldBeNull()
+        }
+      }
+  }
+
+  "map5 only performs action when all arguments are not null" {
+    generateAllPathsForNForks(1, null, 5)
+      .forEach { (a: Int?, b: Int?, c: Int?, d: Int?, e: Int?) ->
+        if (listOf(a, b, c, d, e).all { it != null }) {
+          map5(a, b, c, d, e, { _, _, _, _, _ -> Unit }).shouldNotBeNull()
+        } else {
+          map5(a, b, c, d, e, { _, _, _, _, _ -> Unit }).shouldBeNull()
+        }
+      }
+  }
+
+  "map6 only performs action when all arguments are not null" {
+    generateAllPathsForNForks(1, null, 6)
+      .forEach { (a: Int?, b: Int?, c: Int?, d: Int?, e: Int?, f: Int?) ->
+        if (listOf(a, b, c, d, e, f).all { it != null }) {
+          map6(a, b, c, d, e, f, { _, _, _, _, _, _ -> Unit }).shouldNotBeNull()
+        } else {
+          map6(a, b, c, d, e, f, { _, _, _, _, _, _ -> Unit }).shouldBeNull()
+        }
+      }
+  }
+
+  "map7 only performs action when all arguments are not null" {
+    generateAllPathsForNForks(1, null, 7)
+      .forEach { (a: Int?, b: Int?, c: Int?, d: Int?, e: Int?, f: Int?, g: Int?) ->
+        if (listOf(a, b, c, d, e, f, g).all { it != null }) {
+          map7(a, b, c, d, e, f, g, { _, _, _, _, _, _, _ -> Unit }).shouldNotBeNull()
+        } else {
+          map7(a, b, c, d, e, f, g, { _, _, _, _, _, _, _ -> Unit }).shouldBeNull()
+        }
+      }
+  }
+
+  "map8 only performs action when all arguments are not null" {
+    generateAllPathsForNForks(1, null, 8)
+      .forEach { (a: Int?, b: Int?, c: Int?, d: Int?, e: Int?, f: Int?, g: Int?, h: Int?) ->
+        if (listOf(a, b, c, d, e, f, g, h).all { it != null }) {
+          map8(a, b, c, d, e, f, g, h, { _, _, _, _, _, _, _, _ -> Unit }).shouldNotBeNull()
+        } else {
+          map8(a, b, c, d, e, f, g, h, { _, _, _, _, _, _, _, _ -> Unit }).shouldBeNull()
+        }
+      }
+  }
+
+  "map9 only performs action when all arguments are not null" {
+    generateAllPathsForNForks(1, null, 9)
+      .forEach { (a: Int?, b: Int?, c: Int?, d: Int?, e: Int?, f: Int?, g: Int?, h: Int?, i: Int?) ->
+        if (listOf(a, b, c, d, e, f, g, h, i).all { it != null }) {
+          map9(a, b, c, d, e, f, g, h, i, { _, _, _, _, _, _, _, _, _ -> Unit }).shouldNotBeNull()
+        } else {
+          map9(a, b, c, d, e, f, g, h, i, { _, _, _, _, _, _, _, _, _ -> Unit }).shouldBeNull()
+        }
+      }
+  }
 })
+
+private operator fun <E> List<E>.component6(): E = this[5]
+private operator fun <E> List<E>.component7(): E = this[6]
+private operator fun <E> List<E>.component8(): E = this[7]
+private operator fun <E> List<E>.component9(): E = this[8]
