@@ -9,8 +9,12 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.RestrictsSuspension
 import kotlin.coroutines.intrinsics.*
+import kotlin.coroutines.resume
 
-class DelimitedContinuation<A>(val prompt: Prompt<A>, val f: suspend () -> A) : Continuation<A> {
+class DelimitedContinuation<A>(
+  val prompt: Prompt<A>,
+  val f: suspend DelimitedContinuation<A>.() -> A
+) : Continuation<A> {
 
   override val context: CoroutineContext = EmptyCoroutineContext
 
@@ -57,7 +61,7 @@ class DelimitedContinuation<A>(val prompt: Prompt<A>, val f: suspend () -> A) : 
     _decision.value is Completed<*>
 
   fun run(): Unit {
-    f.startCoroutineUninterceptedOrReturn(this)
+    f.startCoroutineUninterceptedOrReturn(this, this)
     _decision.loop { decision ->
       when (decision) {
         UNDECIDED -> if (this._decision.compareAndSet(UNDECIDED, prompt)) Unit //loop again
@@ -67,12 +71,10 @@ class DelimitedContinuation<A>(val prompt: Prompt<A>, val f: suspend () -> A) : 
   }
 
   companion object {
-    suspend fun <A> yield(p: Prompt<A>) {
-      suspendCoroutineUninterceptedOrReturn<DelimitedContinuationScope> {
-        it.resumeWith(Result.success(p))
-        COROUTINE_SUSPENDED
-      }
-    }
+    suspend fun yield(prompt: Prompt<Any?>) =
+      DelimCC.runCont<Unit>(DelimitedContinuation(prompt) {
+        resume(prompt)
+      })
   }
 }
 
@@ -115,7 +117,7 @@ object DelimCC {
       val bodyPrompt: Prompt<Any?> = Prompt()
       val bodyCont: DelimitedContinuation<*> =
         DelimitedContinuation<Any?>(bodyPrompt) {
-          result = (body as CPS<Any?, Any?>).invoke(Cont { value ->
+          result = (body as CPS<Any?, Any?>)(Cont { value ->
             // yield and wait until the subcontinuation has been
             // evaluated.
             arg = value
@@ -205,10 +207,10 @@ suspend fun test2() {
 }
 
 fun main() {
-    suspend {
-      DelimCC.run {
-        test1()
-        test2()
-      }
-    }.startCoroutineUninterceptedOrReturn(DelimitedContinuation(Prompt()){})
+  DelimitedContinuation<Unit>(Prompt()) {
+    DelimCC.run {
+      test1()
+      test2()
+    }
+  }.run()
 }
