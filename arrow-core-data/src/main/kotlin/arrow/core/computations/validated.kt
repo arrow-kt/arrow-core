@@ -1,11 +1,22 @@
-package arrow.core
+package arrow.core.computations
 
 import arrow.Kind
+import arrow.core.EagerBind
+import arrow.core.Invalid
+import arrow.core.MonadContinuation
+import arrow.core.ShortCircuit
+import arrow.core.SuspendMonadContinuation
+import arrow.core.Valid
+import arrow.core.Validated
+import arrow.core.ValidatedOf
+import arrow.core.ValidatedPartialOf
+import arrow.core.fix
+import arrow.core.identity
 import arrow.typeclasses.suspended.BindSyntax
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
-object validatedFx {
+object validated {
   fun <E, A> eager(c: suspend EagerBind<ValidatedPartialOf<E>>.() -> A): Validated<E, A> {
     val continuation: ValidatedContinuation<E, A> = ValidatedContinuation()
     return continuation.startCoroutineUninterceptedAndReturn {

@@ -1,11 +1,19 @@
-package arrow.core
+package arrow.core.computations
 
 import arrow.Kind
+import arrow.core.Const
+import arrow.core.ConstOf
+import arrow.core.ConstPartialOf
+import arrow.core.EagerBind
+import arrow.core.MonadContinuation
+import arrow.core.ShortCircuit
+import arrow.core.SuspendMonadContinuation
+import arrow.core.value
 import arrow.typeclasses.suspended.BindSyntax
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
-object constFx {
+object const {
   fun <A, T> eager(c: suspend EagerBind<ConstPartialOf<A>>.() -> A): Const<A, T> {
     val continuation: ConstContinuation<A, A> = ConstContinuation()
     return continuation.startCoroutineUninterceptedAndReturn {

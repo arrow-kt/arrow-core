@@ -1,11 +1,19 @@
-package arrow.core
+package arrow.core.computations
 
 import arrow.Kind
+import arrow.core.EagerBind
+import arrow.core.Eval
+import arrow.core.EvalOf
+import arrow.core.ForEval
+import arrow.core.MonadContinuation
+import arrow.core.ShortCircuit
+import arrow.core.SuspendMonadContinuation
+import arrow.core.fix
 import arrow.typeclasses.suspended.BindSyntax
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
-object evalFx {
+object eval {
   fun <A> eager(c: suspend EagerBind<ForEval>.() -> A): Eval<A> {
     val continuation: EvalContinuation<A> = EvalContinuation()
     return continuation.startCoroutineUninterceptedAndReturn {

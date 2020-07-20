@@ -1,11 +1,20 @@
-package arrow.core
+package arrow.core.computations
 
 import arrow.Kind
+import arrow.core.EagerBind
+import arrow.core.Either
+import arrow.core.EitherOf
+import arrow.core.EitherPartialOf
+import arrow.core.MonadContinuation
+import arrow.core.ShortCircuit
+import arrow.core.SuspendMonadContinuation
+import arrow.core.fix
+import arrow.core.identity
 import arrow.typeclasses.suspended.BindSyntax
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
-object eitherFx {
+object either {
   fun <E, A> eager(c: suspend EagerBind<EitherPartialOf<E>>.() -> A): Either<E, A> {
     val continuation: EitherContinuation<E, A> = EitherContinuation()
     return continuation.startCoroutineUninterceptedAndReturn {
