@@ -4,6 +4,8 @@ package arrow.core
 import io.kotlintest.matchers.collections.shouldContainAll
 import io.kotlintest.matchers.types.shouldBeNull
 import io.kotlintest.matchers.types.shouldNotBeNull
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
@@ -20,115 +22,99 @@ class NullableTest : StringSpec({
   }
 
   "map2 only performs action when all arguments are not null" {
-    generateAllPathsForNForks("a", null, 2)
-      .forEach { (a: String?, b: String?) ->
-        if (listOf(a, b).all { it != null }) {
-          mapN(a, b, { a, b -> a + b }).let {
-            it.shouldNotBeNull()
-            it shouldBe a!! + b!!
-          }
-        } else {
-          mapN(a, b, { _, _ -> Unit }).shouldBeNull()
+    forAll(combGen("a", null, 2)) { (a: String?, b: String?) ->
+      if (listOf(a, b).all { it != null }) {
+        mapN(a, b, { a, b -> a + b }).let {
+          it == a!! + b!!
         }
+      } else {
+        mapN(a, b, { _, _ -> Unit }) == null
       }
+    }
   }
 
   "map3 only performs action when all arguments are not null" {
-    generateAllPathsForNForks("a", null, 3)
-      .forEach { (a: String?, b: String?, c: String?) ->
-        if (listOf(a, b, c).all { it != null }) {
-          mapN(a, b, c, { a, b, c -> a + b + c }).let {
-            it.shouldNotBeNull()
-            it shouldBe a!! + b!! + c!!
-          }
-        } else {
-          mapN(a, b, c, { _, _, _ -> Unit }).shouldBeNull()
+    forAll(combGen("a", null, 3)) { (a: String?, b: String?, c: String?) ->
+      if (listOf(a, b, c).all { it != null }) {
+        mapN(a, b, c, { a, b, c -> a + b + c }).let {
+          it == a!! + b!! + c!!
         }
+      } else {
+        mapN(a, b, c, { _, _, _ -> Unit }) == null
       }
+    }
   }
 
   "map4 only performs action when all arguments are not null" {
-    generateAllPathsForNForks(1, null, 4)
-      .forEach { (a: Int?, b: Int?, c: Int?, d: Int?) ->
-        if (listOf(a, b, c, d).all { it != null }) {
-          mapN(a, b, c, d, { a, b, c, d -> a + b + c + d }).let {
-            it.shouldNotBeNull()
-            it shouldBe a!! + b!! + c!! + d!!
-          }
-        } else {
-          mapN(a, b, c, d, { _, _, _, _ -> Unit }).shouldBeNull()
+    forAll(combGen(1, null, 4)) { (a: Int?, b: Int?, c: Int?, d: Int?) ->
+      if (listOf(a, b, c, d).all { it != null }) {
+        mapN(a, b, c, d, { a, b, c, d -> a + b + c + d }).let {
+          it == a!! + b!! + c!! + d!!
         }
+      } else {
+        mapN(a, b, c, d, { _, _, _, _ -> Unit }) == null
       }
+    }
   }
 
   "map5 only performs action when all arguments are not null" {
-    generateAllPathsForNForks(1, null, 5)
-      .forEach { (a: Int?, b: Int?, c: Int?, d: Int?, e: Int?) ->
-        if (listOf(a, b, c, d, e).all { it != null }) {
-          mapN(a, b, c, d, e, { a, b, c, d, e -> a + b + c + d + e }).let {
-            it.shouldNotBeNull()
-            it shouldBe a!! + b!! + c!! + d!! + e!!
-          }
-        } else {
-          mapN(a, b, c, d, e, { _, _, _, _, _ -> Unit }).shouldBeNull()
+    forAll(combGen(1, null, 5)) { (a: Int?, b: Int?, c: Int?, d: Int?, e: Int?) ->
+      if (listOf(a, b, c, d, e).all { it != null }) {
+        mapN(a, b, c, d, e, { a, b, c, d, e -> a + b + c + d + e }).let {
+          it == a!! + b!! + c!! + d!! + e!!
         }
+      } else {
+        mapN(a, b, c, d, e, { _, _, _, _, _ -> Unit }) == null
       }
+    }
   }
 
   "map6 only performs action when all arguments are not null" {
-    generateAllPathsForNForks(1, null, 6)
-      .forEach { (a: Int?, b: Int?, c: Int?, d: Int?, e: Int?, f: Int?) ->
-        if (listOf(a, b, c, d, e, f).all { it != null }) {
-          mapN(a, b, c, d, e, f, { a, b, c, d, e, f -> a + b + c + d + e + f }).let {
-            it.shouldNotBeNull()
-            it shouldBe a!! + b!! + c!! + d!! + e!! + f!!
-          }
-        } else {
-          mapN(a, b, c, d, e, f, { _, _, _, _, _, _ -> Unit }).shouldBeNull()
+    forAll(combGen(1, null, 6)) { (a: Int?, b: Int?, c: Int?, d: Int?, e: Int?, f: Int?) ->
+      if (listOf(a, b, c, d, e, f).all { it != null }) {
+        mapN(a, b, c, d, e, f, { a, b, c, d, e, f -> a + b + c + d + e + f }).let {
+          it == a!! + b!! + c!! + d!! + e!! + f!!
         }
+      } else {
+        mapN(a, b, c, d, e, f, { _, _, _, _, _, _ -> Unit }) == null
       }
+    }
   }
 
   "map7 only performs action when all arguments are not null" {
-    generateAllPathsForNForks(1, null, 7)
-      .forEach { (a: Int?, b: Int?, c: Int?, d: Int?, e: Int?, f: Int?, g: Int?) ->
-        if (listOf(a, b, c, d, e, f, g).all { it != null }) {
-          mapN(a, b, c, d, e, f, g, { a, b, c, d, e, f, g -> a + b + c + d + e + f + g }).let {
-            it.shouldNotBeNull()
-            it shouldBe a!! + b!! + c!! + d!! + e!! + f!! + g!!
-          }
-        } else {
-          mapN(a, b, c, d, e, f, g, { _, _, _, _, _, _, _ -> Unit }).shouldBeNull()
+    forAll(combGen(1, null, 7)) { (a: Int?, b: Int?, c: Int?, d: Int?, e: Int?, f: Int?, g: Int?) ->
+      if (listOf(a, b, c, d, e, f, g).all { it != null }) {
+        mapN(a, b, c, d, e, f, g, { a, b, c, d, e, f, g -> a + b + c + d + e + f + g }).let {
+          it == a!! + b!! + c!! + d!! + e!! + f!! + g!!
         }
+      } else {
+        mapN(a, b, c, d, e, f, g, { _, _, _, _, _, _, _ -> Unit }) == null
       }
+    }
   }
 
   "map8 only performs action when all arguments are not null" {
-    generateAllPathsForNForks(1, null, 8)
-      .forEach { (a: Int?, b: Int?, c: Int?, d: Int?, e: Int?, f: Int?, g: Int?, h: Int?) ->
-        if (listOf(a, b, c, d, e, f, g, h).all { it != null }) {
-          mapN(a, b, c, d, e, f, g, h, { a, b, c, d, e, f, g, h -> a + b + c + d + e + f + g + h }).let {
-            it.shouldNotBeNull()
-            it shouldBe a!! + b!! + c!! + d!! + e!! + f!! + g!! + h!!
-          }
-        } else {
-          mapN(a, b, c, d, e, f, g, h, { _, _, _, _, _, _, _, _ -> Unit }).shouldBeNull()
+    forAll(combGen(1, null, 8)) { (a: Int?, b: Int?, c: Int?, d: Int?, e: Int?, f: Int?, g: Int?, h: Int?) ->
+      if (listOf(a, b, c, d, e, f, g, h).all { it != null }) {
+        mapN(a, b, c, d, e, f, g, h, { a, b, c, d, e, f, g, h -> a + b + c + d + e + f + g + h }).let {
+          it == a!! + b!! + c!! + d!! + e!! + f!! + g!! + h!!
         }
+      } else {
+        mapN(a, b, c, d, e, f, g, h, { _, _, _, _, _, _, _, _ -> Unit }) == null
       }
+    }
   }
 
   "map9 only performs action when all arguments are not null" {
-    generateAllPathsForNForks(1, null, 9)
-      .forEach { (a: Int?, b: Int?, c: Int?, d: Int?, e: Int?, f: Int?, g: Int?, h: Int?, i: Int?) ->
-        if (listOf(a, b, c, d, e, f, g, h, i).all { it != null }) {
-          mapN(a, b, c, d, e, f, g, h, i, { a, b, c, d, e, f, g, h, i -> a + b + c + d + e + f + g + h + i }).let {
-            it.shouldNotBeNull()
-            it shouldBe a!! + b!! + c!! + d!! + e!! + f!! + g!! + h!! + i!!
-          }
-        } else {
-          mapN(a, b, c, d, e, f, g, h, i, { _, _, _, _, _, _, _, _, _ -> Unit }).shouldBeNull()
+    forAll(combGen(1, null, 9)) { (a: Int?, b: Int?, c: Int?, d: Int?, e: Int?, f: Int?, g: Int?, h: Int?, i: Int?) ->
+      if (listOf(a, b, c, d, e, f, g, h, i).all { it != null }) {
+        mapN(a, b, c, d, e, f, g, h, i, { a, b, c, d, e, f, g, h, i -> a + b + c + d + e + f + g + h + i }).let {
+          it == a!! + b!! + c!! + d!! + e!! + f!! + g!! + h!! + i!!
         }
+      } else {
+        mapN(a, b, c, d, e, f, g, h, i, { _, _, _, _, _, _, _, _, _ -> Unit }) == null
       }
+    }
   }
 })
 
@@ -145,6 +131,12 @@ private fun <A> generateAllPathsForNForks(choice1: A, choice2: A, n: Int): List<
   IntRange(1, n).fold(listOf(emptyList())) { acc: List<List<A>>, _ ->
     acc.forkPaths(choice1, choice2)
   }
+
+private fun <A> combGen(choice1: A, choice2: A, n: Int) = object : Gen<List<A>> {
+  override fun constants(): Iterable<List<A>> = emptyList()
+
+  override fun random(): Sequence<List<A>> = generateAllPathsForNForks(choice1, choice2, n).asSequence()
+}
 
 class GenerateAllPathsForNForksTest : StringSpec({
   "for 0 forks" {
