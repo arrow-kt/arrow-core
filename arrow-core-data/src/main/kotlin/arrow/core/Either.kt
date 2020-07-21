@@ -643,7 +643,7 @@ import arrow.typeclasses.Show
  *
  * ```kotlin:ank:playground
  * import arrow.core.Either
- * import arrow.core.either
+ * import arrow.core.computations.either
  *
  * suspend fun main() {
  * val value =

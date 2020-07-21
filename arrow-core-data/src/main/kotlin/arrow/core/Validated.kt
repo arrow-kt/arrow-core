@@ -139,7 +139,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Option
  * import arrow.core.Some
  * import arrow.core.Validated
- * import arrow.core.validated
+ * import arrow.core.computations.validated
  * import arrow.core.valid
  * import arrow.core.invalid
  *
@@ -241,7 +241,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Option
  * import arrow.core.Some
  * import arrow.core.Validated
- * import arrow.core.validated
+ * import arrow.core.computations.validated
  * import arrow.core.valid
  * import arrow.core.invalid
  * import arrow.core.NonEmptyList
@@ -308,7 +308,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Option
  * import arrow.core.Some
  * import arrow.core.Validated
- * import arrow.core.validated
+ * import arrow.core.computations.validated
  * import arrow.core.valid
  * import arrow.core.invalid
  * import arrow.core.NonEmptyList
@@ -382,7 +382,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.right
  * import arrow.core.Some
  * import arrow.core.Validated
- * import arrow.core.validated
+ * import arrow.core.computations.validated
  * import arrow.core.valid
  * import arrow.core.invalid
  *
