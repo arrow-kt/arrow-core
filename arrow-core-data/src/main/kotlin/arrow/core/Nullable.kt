@@ -1,3 +1,4 @@
+@file:Suppress("NAME_SHADOWING")
 package arrow.core
 
 inline fun <A, R> map1(a: A?, fn: (A) -> R): R? =
