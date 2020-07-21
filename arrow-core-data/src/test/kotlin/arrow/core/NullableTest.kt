@@ -1,6 +1,7 @@
 @file:Suppress("NAME_SHADOWING")
 package arrow.core
 
+import arrow.core.test.generators.intSmall
 import io.kotlintest.matchers.collections.shouldContainAll
 import io.kotlintest.matchers.types.shouldBeNull
 import io.kotlintest.matchers.types.shouldNotBeNull
@@ -11,13 +12,12 @@ import io.kotlintest.specs.StringSpec
 
 class NullableTest : StringSpec({
   "map1 short circuits if any arg is null" {
-    mapN(null) { _ -> Unit }.shouldBeNull()
+    mapN(null) { Unit }.shouldBeNull()
   }
 
   "map1 performs action when arg is not null" {
-    mapN(1) { a -> a + 1 }.let {
-      it.shouldNotBeNull()
-      it shouldBe 2
+    forAll(Gen.intSmall()) { a ->
+      mapN(a) { it + 1 } == a + 1
     }
   }
 
