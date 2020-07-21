@@ -4,7 +4,6 @@ package arrow.core
 import arrow.core.test.generators.intSmall
 import io.kotlintest.matchers.collections.shouldContainAll
 import io.kotlintest.matchers.types.shouldBeNull
-import io.kotlintest.matchers.types.shouldNotBeNull
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
