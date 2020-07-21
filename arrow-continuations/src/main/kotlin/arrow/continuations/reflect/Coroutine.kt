@@ -48,24 +48,19 @@ class Coroutine<A, B, C>(prog: suspend (Prompt<A, B>) -> C) {
     return v as A
   }
 
-  private open inner class InnerPrompt : Prompt<A, B> /*ContinuationScope("cats-reflect")*/ {
+  open inner class InnerPrompt : Prompt<A, B> /*ContinuationScope("cats-reflect")*/ {
     override suspend fun suspend(value: A): B {
+      send(value)
       return suspendCoroutineUninterceptedOrReturn { cont ->
-        send(value)
         println("Put value in channel: $value in $channel")
-
-        val res = continuation.getResult()
-
-        if (res == COROUTINE_SUSPENDED) COROUTINE_SUSPENDED
-        else {
-          cont.resumeWith(Result.success(res) as Result<B>)
-          COROUTINE_SUSPENDED
-        }
+        val res = receive<B>()
+        if (isDone()) cont.resumeWith(Result.success(res))
+        COROUTINE_SUSPENDED
       }
     }
   }
 
-  private val prompt = InnerPrompt()
+  val prompt = InnerPrompt()
 
   @RestrictsSuspension
   inner class Continuation(
@@ -74,9 +69,14 @@ class Coroutine<A, B, C>(prog: suspend (Prompt<A, B>) -> C) {
 
     override val context: CoroutineContext = EmptyCoroutineContext
 
+    var started = false
+
     fun run(): Unit {
       continuation.startCoroutineUninterceptedOrReturn {
-        f()
+        if (!started) {
+          f()
+          started = true
+        }
         suspendCoroutineUninterceptedOrReturn {
           while (!isDone()) {
           }

@@ -4,18 +4,20 @@ import arrow.Kind
 import arrow.core.Either
 import arrow.core.Left
 import arrow.core.Right
+import arrow.core.identity
 import arrow.typeclasses.Monad
 
-typealias In<A, F> = suspend (Reflect<F>) -> A
+typealias In<A, F> = suspend (Reflect<F, A>) -> A
 
-sealed class Reflect<F> {
-  abstract suspend operator fun <A> F.invoke(): A
+sealed class Reflect<F, A> {
+  abstract suspend operator fun Kind<F, A>.invoke(): A
 }
 
-class ReflectM<A>(val prompt: Prompt<A, *>) : Reflect<A>() {
-  override suspend fun <B> A.invoke(): B {
+class ReflectM<F, A>(val prompt: Prompt<Kind<F, A>, *>) : Reflect<F, A>() {
+  override suspend fun Kind<F, A>.invoke(): A {
     println("invokeSuspend: $prompt")
-    return prompt.suspend(this) as B
+    val result = prompt.suspend(this)
+    return result as A
   }
   // since we know the receiver of this suspend is the
   // call to flatMap, the casts are safe
@@ -30,14 +32,14 @@ class ReflectM<A>(val prompt: Prompt<A, *>) : Reflect<A>() {
  */
 fun <F> reify(): ReifyBuilder<F> = ReifyBuilder()
 
-fun <F, A> reify(MM: Monad<F>, prog: In<A, F>): A =
+fun <F, A> reify(MM: Monad<F>, prog: In<A, F>): Kind<F, A> =
   reifyImpl(MM) { prog(it) }
 
 class ReifyBuilder<F> {
   operator fun <A> invoke(
     MM: Monad<F>,
     prog: In<A, F>
-  ): A = reifyImpl(MM) { prog(it) }
+  ): Kind<F, A> = reifyImpl(MM) { prog(it) }
 }
 
 // this method is private since overloading and partially applying
@@ -51,45 +53,41 @@ class ReifyBuilder<F> {
 private fun <F, A> reifyImpl(
   MM: Monad<F>,
   prog: In<A, F>
-): A {
+): Kind<F, A> {
+
+  var currentPrompt: Prompt<Kind<F, A>, Any?>? = null
 
   // The coroutine keeps sending monadic values until it completes
   // with a monadic value
-  val coroutine = Coroutine<F, Any?, A> { prompt ->
+  val coroutine = Coroutine<Kind<F, A>, Any?, A> { prompt ->
+    currentPrompt = prompt
     // capability to reflect M
     val reflect = ReflectM(prompt)
-    MM.just(prog(reflect)) as A
+    prog(reflect)
   }
 
-  fun step(x: A): Either<F, A> {
+  fun step(x: A): Either<Kind<F, A>, A> {
     println("Step : $x")
-    coroutine.continuation.resumeWith(Result.success(x))
     return if (coroutine.isDone())
       Right(coroutine.result())
-    else
+    else {
+      coroutine.continuation.resumeWith(Result.success(x))
       Left(coroutine.value())
+    }
   }
 
-  fun run(): A =
-    if (coroutine.isDone())
-      coroutine.result()
-    else {
-      MM.run {
-        MM.tailRecM<F, A>(coroutine.value()) { f ->
-          when (f) {
-            is Kind<*, *> -> {
-              f as Kind<F, A>
-              f.flatMap { f.map { step(it) } }
-            }
-            else -> {
-              val c = step(f as A)
-              just(step(f as A))
-            }
-          }
-        }
+  fun run(): Kind<F, A> =
+    MM.run {
+      if (coroutine.isDone())
+        coroutine.result().just()
+      else {
+        MM.tailRecM(coroutine.value()) {
+          it.map(::step)
+        }.flatMap { just(it) }
         // .flatten<Kind<M, Any?>>()
-      } as A
+      }
     }
+
 
   return run()
 }
