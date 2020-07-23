@@ -888,8 +888,13 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     inline fun <L, R> conditionally(test: Boolean, ifFalse: () -> L, ifTrue: () -> R): Either<L, R> = if (test) right(ifTrue()) else left(ifFalse())
 
     suspend fun <R> catch(f: suspend () -> R): Either<Throwable, R> =
-      catch(::identity, f)
+      try {
+        f().right()
+      } catch (t: Throwable) {
+        t.nonFatalOrThrow().left()
+      }
 
+    @Deprecated("Use catch with mapLeft instead", ReplaceWith("catch(f).mapLeft(fe)"))
     suspend fun <L, R> catch(fe: (Throwable) -> L, f: suspend () -> R): Either<L, R> =
       try {
         f().right()
