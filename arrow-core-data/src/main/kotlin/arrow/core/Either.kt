@@ -808,6 +808,9 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
    *
    * Example:
    * ```kotlin:ank:playground
+   * import arrow.core.Right
+   * import arrow.core.Left
+   *
    * Right(12).orNull() // Result: 12
    * Left(12).orNull()  // Result: null
    * ```

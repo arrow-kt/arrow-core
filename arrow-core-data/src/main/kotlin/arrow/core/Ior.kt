@@ -258,9 +258,9 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    *
    * Example:
    * ```
-   * Right(12).pad() // Result: Pair(None, Some(12))
-   * Left(12).pad()  // Result: Pair(Some(12), None)
-   * Both("power", 12).pad()  // Result: Pair(Some("power"), Some(12))
+   * Ior.Right(12).pad()          // Result: Pair(None, Some(12))
+   * Ior.Left(12).pad()           // Result: Pair(Some(12), None)
+   * Ior.Both("power", 12).pad()  // Result: Pair(Some("power"), Some(12))
    * ```
    */
   @Deprecated("Deprecated, use `padNull` instead", ReplaceWith("padNull()"))
@@ -275,9 +275,10 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    *
    * Example:
    * ```kotlin:ank:playground
-   * Right(12).pad()          // Result: Pair(null, 12)
-   * Left(12).pad()           // Result: Pair(12, null)
-   * Both("power", 12).pad()  // Result: Pair("power", 12)
+   * import arrow.core.Ior
+   * Ior.Right(12).padNull()          // Result: Pair(null, 12)
+   * Ior.Left(12).padNull()           // Result: Pair(12, null)
+   * Ior.Both("power", 12).padNull()  // Result: Pair("power", 12)
    * ```
    */
   fun padNull(): Pair<A?, B?> = fold(
@@ -321,9 +322,10 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    *
    * Example:
    * ```kotlin:ank:playground
-   * Right(12).orNull()          // Result: 12
-   * Left(12).orNull()           // Result: null
-   * Both(12, "power").orNull()  // Result: "power"
+   * import arrow.core.Ior
+   * Ior.Right(12).orNull()          // Result: 12
+   * Ior.Left(12).orNull()           // Result: null
+   * Ior.Both(12, "power").orNull()  // Result: "power"
    * ```
    */
   fun orNull(): B? =
@@ -350,9 +352,10 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    *
    * Example:
    * ```kotlin:ank:playground
-   * Right(12).leftOrNull()          // Result: null
-   * Left(12).leftOrNull()           // Result: 12
-   * Both(12, "power").leftOrNull()  // Result: 12
+   * import arrow.core.Ior
+   * Ior.Right(12).leftOrNull()          // Result: null
+   * Ior.Left(12).leftOrNull()           // Result: 12
+   * Ior.Both(12, "power").leftOrNull()  // Result: 12
    * ```
    */
   fun leftOrNull(): A? =
