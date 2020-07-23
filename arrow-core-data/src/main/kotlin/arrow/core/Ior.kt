@@ -274,7 +274,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    * Return this [Ior] as [Pair] of nullables]
    *
    * Example:
-   * ```
+   * ```kotlin:ank:playground
    * Right(12).pad()          // Result: Pair(null, 12)
    * Left(12).pad()           // Result: Pair(12, null)
    * Both("power", 12).pad()  // Result: Pair("power", 12)
@@ -320,7 +320,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    * and [null] if this is a [Left].
    *
    * Example:
-   * ```
+   * ```kotlin:ank:playground
    * Right(12).orNull()          // Result: 12
    * Left(12).orNull()           // Result: null
    * Both(12, "power").orNull()  // Result: "power"
@@ -349,7 +349,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    * and [null] if this is a [Right].
    *
    * Example:
-   * ```
+   * ```kotlin:ank:playground
    * Right(12).leftOrNull()          // Result: null
    * Left(12).leftOrNull()           // Result: 12
    * Both(12, "power").leftOrNull()  // Result: 12

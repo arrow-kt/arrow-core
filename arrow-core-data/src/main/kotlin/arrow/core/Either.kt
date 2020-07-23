@@ -807,7 +807,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
    * Returns the right value if it exists, otherwise null
    *
    * Example:
-   * ```
+   * ```kotlin:ank:playground
    * Right(12).orNull() // Result: 12
    * Left(12).orNull()  // Result: null
    * ```
