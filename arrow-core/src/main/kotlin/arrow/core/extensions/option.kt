@@ -45,6 +45,7 @@ import arrow.typeclasses.MonadSyntax
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.MonoidK
 import arrow.typeclasses.Monoidal
+import arrow.typeclasses.Order
 import arrow.typeclasses.Repeat
 import arrow.typeclasses.Selective
 import arrow.typeclasses.Semialign
@@ -502,3 +503,14 @@ interface OptionCrosswalk : Crosswalk<ForOption>, OptionFunctor, OptionFoldable 
 
 @extension
 interface OptionMonadPlus : MonadPlus<ForOption>, OptionMonad, OptionAlternative
+
+@extension
+interface OptionOrder<A> : Order<Option<A>> {
+  fun ORD(): Order<A>
+  override fun Option<A>.compare(b: Option<A>): Int =
+    fold({ if (b.isDefined()) -1 else 0 }, { a ->
+      b.fold({ 1 }, { b ->
+        ORD().run { a.compare(b) }
+      })
+    })
+}

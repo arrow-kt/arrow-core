@@ -27,6 +27,7 @@ fun Boolean.Companion.eq(): Eq<Boolean> =
 fun Boolean.Companion.hash(): Hash<Boolean> =
   object : BooleanHash {}
 
+@Deprecated("Use the monoid instance from the And wrapper defined at arrow.core.semigroup.And")
 object AndMonoid : Monoid<Boolean> {
   override fun Boolean.combine(b: Boolean): Boolean = this && b
   override fun empty(): Boolean = true

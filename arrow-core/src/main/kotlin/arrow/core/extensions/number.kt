@@ -3,6 +3,7 @@ package arrow.core.extensions
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
+import arrow.typeclasses.Num
 import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Semiring
@@ -11,10 +12,12 @@ import arrow.typeclasses.Show
 // ////////
 // Byte
 // ////////
+@Deprecated("Use the semigroup instance from arrow.core.semigroup.Sum")
 interface ByteSemigroup : Semigroup<Byte> {
   override fun Byte.combine(b: Byte): Byte = (this + b).toByte()
 }
 
+@Deprecated("Use the monoid instance from arrow.core.semigroup.Sum")
 interface ByteMonoid : Monoid<Byte>, ByteSemigroup {
   override fun empty(): Byte = 0
 }
@@ -43,6 +46,17 @@ interface ByteHash : Hash<Byte>, ByteEq {
   override fun Byte.hash(): Int = hashCode()
 }
 
+interface ByteNum : Num<Byte> {
+  override fun Long.fromLong(): Byte = toByte()
+  override fun Byte.plus(b: Byte): Byte = bytePlus(b)
+  override fun Byte.times(b: Byte): Byte = byteTimes(b)
+}
+private inline infix fun Byte.bytePlus(b: Byte): Byte = this.plus(b).toByte()
+private inline infix fun Byte.byteTimes(b: Byte): Byte = this.times(b).toByte()
+
+fun Byte.Companion.num(): Num<Byte> =
+  object : ByteNum {}
+
 fun Byte.Companion.hash(): Hash<Byte> =
   object : ByteHash {}
 
@@ -55,9 +69,11 @@ fun Byte.Companion.eq(): Eq<Byte> =
 fun Byte.Companion.order(): Order<Byte> =
   object : ByteOrder {}
 
+@Deprecated("Use the semigroup instance from arrow.core.semigroup.Sum")
 fun Byte.Companion.semigroup(): Semigroup<Byte> =
   object : ByteSemigroup {}
 
+@Deprecated("Use the monoid instance from arrow.core.semigroup.Sum")
 fun Byte.Companion.monoid(): Monoid<Byte> =
   object : ByteMonoid {}
 
@@ -67,11 +83,12 @@ fun Byte.Companion.semiring(): Semiring<Byte> =
 // ////////
 // Double
 // ////////
-
+@Deprecated("Use the semigroup instance from arrow.core.semigroup.Sum")
 interface DoubleSemigroup : Semigroup<Double> {
   override fun Double.combine(b: Double): Double = this + b
 }
 
+@Deprecated("Use the monoid instance from arrow.core.semigroup.Sum")
 interface DoubleMonoid : Monoid<Double>, DoubleSemigroup {
   override fun empty(): Double = .0
 }
@@ -100,6 +117,17 @@ interface DoubleHash : Hash<Double>, DoubleEq {
   override fun Double.hash(): Int = hashCode()
 }
 
+interface DoubleNum : Num<Double> {
+  override fun Long.fromLong(): Double = toDouble()
+  override fun Double.plus(b: Double): Double = doublePlus(b)
+  override fun Double.times(b: Double): Double = doubleTimes(b)
+}
+private inline infix fun Double.doublePlus(b: Double): Double = this.plus(b)
+private inline infix fun Double.doubleTimes(b: Double): Double = this.times(b)
+
+fun Double.Companion.num(): Num<Double> =
+  object : DoubleNum {}
+
 fun Double.Companion.hash(): Hash<Double> =
   object : DoubleHash {}
 
@@ -112,9 +140,11 @@ fun Double.Companion.eq(): Eq<Double> =
 fun Double.Companion.order(): Order<Double> =
   object : DoubleOrder {}
 
+@Deprecated("Use the semigroup instance from arrow.core.semigroup.Sum")
 fun Double.Companion.semigroup(): Semigroup<Double> =
   object : DoubleSemigroup {}
 
+@Deprecated("Use the monoid instance from arrow.core.semigroup.Sum")
 fun Double.Companion.monoid(): Monoid<Double> =
   object : DoubleMonoid {}
 
@@ -124,10 +154,12 @@ fun Double.Companion.semiring(): Semiring<Double> =
 // ////////
 // Int
 // ////////
+@Deprecated("Use the semigroup instance from arrow.core.semigroup.Sum")
 interface IntSemigroup : Semigroup<Int> {
   override fun Int.combine(b: Int): Int = this + b
 }
 
+@Deprecated("Use the monoid instance from arrow.core.semigroup.Sum")
 interface IntMonoid : Monoid<Int>, IntSemigroup {
   override fun empty(): Int = 0
 }
@@ -156,6 +188,17 @@ interface IntHash : Hash<Int>, IntEq {
   override fun Int.hash(): Int = hashCode()
 }
 
+interface IntNum : Num<Int> {
+  override fun Long.fromLong(): Int = toInt()
+  override fun Int.plus(b: Int): Int = intPlus(b)
+  override fun Int.times(b: Int): Int = intTimes(b)
+}
+private inline infix fun Int.intPlus(b: Int): Int = this.plus(b)
+private inline infix fun Int.intTimes(b: Int): Int = this.times(b)
+
+fun Int.Companion.num(): Num<Int> =
+  object : IntNum {}
+
 fun Int.Companion.hash(): Hash<Int> =
   object : IntHash {}
 
@@ -168,9 +211,11 @@ fun Int.Companion.eq(): Eq<Int> =
 fun Int.Companion.order(): Order<Int> =
   object : IntOrder {}
 
+@Deprecated("Use the semigroup instance from arrow.core.semigroup.Sum")
 fun Int.Companion.semigroup(): Semigroup<Int> =
   object : IntSemigroup {}
 
+@Deprecated("Use the monoid instance from arrow.core.semigroup.Sum")
 fun Int.Companion.monoid(): Monoid<Int> =
   object : IntMonoid {}
 
@@ -180,11 +225,12 @@ fun Int.Companion.semiring(): Semiring<Int> =
 // ////////
 // Long
 // ////////
-
+@Deprecated("Use the semigroup instance from arrow.core.semigroup.Sum")
 interface LongSemigroup : Semigroup<Long> {
   override fun Long.combine(b: Long): Long = this + b
 }
 
+@Deprecated("Use the monoid instance from arrow.core.semigroup.Sum")
 interface LongMonoid : Monoid<Long>, LongSemigroup {
   override fun empty(): Long = 0L
 }
@@ -213,6 +259,17 @@ interface LongHash : Hash<Long>, LongEq {
   override fun Long.hash(): Int = hashCode()
 }
 
+interface LongNum : Num<Long> {
+  override fun Long.fromLong(): Long = toLong()
+  override fun Long.plus(b: Long): Long = longPlus(b)
+  override fun Long.times(b: Long): Long = longTimes(b)
+}
+private inline infix fun Long.longPlus(b: Long): Long = this.plus(b)
+private inline infix fun Long.longTimes(b: Long): Long = this.times(b)
+
+fun Long.Companion.num(): Num<Long> =
+  object : LongNum {}
+
 fun Long.Companion.hash(): Hash<Long> =
   object : LongHash {}
 
@@ -225,9 +282,11 @@ fun Long.Companion.eq(): Eq<Long> =
 fun Long.Companion.order(): Order<Long> =
   object : LongOrder {}
 
+@Deprecated("Use the semigroup instance from arrow.core.semigroup.Sum")
 fun Long.Companion.semigroup(): Semigroup<Long> =
   object : LongSemigroup {}
 
+@Deprecated("Use the monoid instance from arrow.core.semigroup.Sum")
 fun Long.Companion.monoid(): Monoid<Long> =
   object : LongMonoid {}
 
@@ -237,11 +296,12 @@ fun Long.Companion.semiring(): Semiring<Long> =
 // ////////
 // Short
 // ////////
-
+@Deprecated("Use the semigroup instance from arrow.core.semigroup.Sum")
 interface ShortSemigroup : Semigroup<Short> {
   override fun Short.combine(b: Short): Short = (this + b).toShort()
 }
 
+@Deprecated("Use the monoid instance from arrow.core.semigroup.Sum")
 interface ShortMonoid : Monoid<Short>, ShortSemigroup {
   override fun empty(): Short = 0
 }
@@ -270,6 +330,17 @@ interface ShortHash : Hash<Short>, ShortEq {
   override fun Short.hash(): Int = hashCode()
 }
 
+interface ShortNum : Num<Short> {
+  override fun Long.fromLong(): Short = toShort()
+  override fun Short.plus(b: Short): Short = shortPlus(b)
+  override fun Short.times(b: Short): Short = shortTimes(b)
+}
+private inline infix fun Short.shortPlus(b: Short): Short = this.plus(b).toShort()
+private inline infix fun Short.shortTimes(b: Short): Short = this.times(b).toShort()
+
+fun Short.Companion.num(): Num<Short> =
+  object : ShortNum {}
+
 fun Short.Companion.hash(): Hash<Short> =
   object : ShortHash {}
 
@@ -282,9 +353,11 @@ fun Short.Companion.eq(): Eq<Short> =
 fun Short.Companion.order(): Order<Short> =
   object : ShortOrder {}
 
+@Deprecated("Use the semigroup instance from arrow.core.semigroup.Sum")
 fun Short.Companion.semigroup(): Semigroup<Short> =
   object : ShortSemigroup {}
 
+@Deprecated("Use the monoid instance from arrow.core.semigroup.Sum")
 fun Short.Companion.monoid(): Monoid<Short> =
   object : ShortMonoid {}
 
@@ -294,11 +367,12 @@ fun Short.Companion.semiring(): Semiring<Short> =
 // ////////
 // Float
 // ////////
-
+@Deprecated("Use the semigroup instance from arrow.core.semigroup.Sum")
 interface FloatSemigroup : Semigroup<Float> {
   override fun Float.combine(b: Float): Float = this + b
 }
 
+@Deprecated("Use the monoid instance from arrow.core.semigroup.Sum")
 interface FloatMonoid : Monoid<Float>, FloatSemigroup {
   override fun empty(): Float = 0f
 }
@@ -327,6 +401,17 @@ interface FloatHash : Hash<Float>, FloatEq {
   override fun Float.hash(): Int = hashCode()
 }
 
+interface FloatNum : Num<Float> {
+  override fun Long.fromLong(): Float = toFloat()
+  override fun Float.plus(b: Float): Float = floatPlus(b)
+  override fun Float.times(b: Float): Float = floatTimes(b)
+}
+private inline infix fun Float.floatPlus(b: Float): Float = this.plus(b)
+private inline infix fun Float.floatTimes(b: Float): Float = this.times(b)
+
+fun Float.Companion.num(): Num<Float> =
+  object : FloatNum {}
+
 fun Float.Companion.hash(): Hash<Float> =
   object : FloatHash {}
 
@@ -339,9 +424,11 @@ fun Float.Companion.eq(): Eq<Float> =
 fun Float.Companion.order(): Order<Float> =
   object : FloatOrder {}
 
+@Deprecated("Use the semigroup instance from arrow.core.semigroup.Sum")
 fun Float.Companion.semigroup(): Semigroup<Float> =
   object : FloatSemigroup {}
 
+@Deprecated("Use the monoid instance from arrow.core.semigroup.Sum")
 fun Float.Companion.monoid(): Monoid<Float> =
   object : FloatMonoid {}
 

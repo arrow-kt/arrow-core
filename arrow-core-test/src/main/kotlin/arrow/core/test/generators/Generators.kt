@@ -3,7 +3,7 @@ package arrow.core.test.generators
 import arrow.Kind
 import arrow.core.Const
 import arrow.core.Either
-import arrow.core.Endo
+import arrow.core.semigroup.Endo
 import arrow.core.Eval
 import arrow.core.Failure
 import arrow.core.Id
@@ -33,6 +33,25 @@ import arrow.core.extensions.sequence.functorFilter.filterMap
 import arrow.core.extensions.sequencek.apply.apply
 import arrow.core.extensions.sequencek.functorFilter.filterMap
 import arrow.core.k
+import arrow.core.semigroup.All
+import arrow.core.semigroup.Alt
+import arrow.core.semigroup.Ap
+import arrow.core.semigroup.Dual
+import arrow.core.semigroup.First
+import arrow.core.semigroup.ForAlt
+import arrow.core.semigroup.ForAp
+import arrow.core.semigroup.ForDual
+import arrow.core.semigroup.ForFirst
+import arrow.core.semigroup.ForLast
+import arrow.core.semigroup.ForMax
+import arrow.core.semigroup.ForMin
+import arrow.core.semigroup.ForProduct
+import arrow.core.semigroup.ForSum
+import arrow.core.semigroup.Last
+import arrow.core.semigroup.Max
+import arrow.core.semigroup.Min
+import arrow.core.semigroup.Product
+import arrow.core.semigroup.Sum
 import arrow.core.toOption
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.ApplicativeError
@@ -204,3 +223,42 @@ fun <A> Gen<A>.eval(): Gen<Eval<A>> =
 
 fun Gen.Companion.char(): Gen<Char> =
   Gen.from(('A'..'Z') + ('a'..'z') + ('0'..'9') + "!@#$%%^&*()_-~`,<.?/:;}{][±§".toList())
+
+fun Gen.Companion.all(): Gen<All> = bool().map(::All)
+fun Gen.Companion.any(): Gen<arrow.core.semigroup.Any> = bool().map { arrow.core.semigroup.Any(it) }
+fun <F, A> Gen<Kind<F, A>>.alt(): Gen<Alt<F, A>> = map(::Alt)
+fun <F> GenK<F>.alt(): GenK<Kind<ForAlt, F>> = object: GenK<Kind<ForAlt, F>> {
+  override fun <A> genK(gen: Gen<A>): Gen<Kind<Kind<ForAlt, F>, A>> = this@alt.genK(gen).map(::Alt)
+}
+fun <F, A> Gen<Kind<F, A>>.ap(): Gen<Ap<F, A>> = map(::Ap)
+fun <F> GenK<F>.ap(): GenK<Kind<ForAp, F>> = object: GenK<Kind<ForAp, F>> {
+  override fun <A> genK(gen: Gen<A>): Gen<Kind<Kind<ForAp, F>, A>> = this@ap.genK(gen).map(::Ap)
+}
+fun <A> Gen<A>.dual(): Gen<Dual<A>> = map(::Dual)
+fun Dual.Companion.genK(): GenK<ForDual> = object : GenK<ForDual> {
+  override fun <A> genK(gen: Gen<A>): Gen<Kind<ForDual, A>> = gen.dual().map { it as Kind<ForDual, A> }
+}
+fun <A> Gen<A>.first(): Gen<First<A>> = map(::First)
+fun First.Companion.genK(): GenK<ForFirst> = object : GenK<ForFirst> {
+  override fun <A> genK(gen: Gen<A>): Gen<Kind<ForFirst, A>> = gen.first().map { it as Kind<ForFirst, A> }
+}
+fun <A> Gen<A>.last(): Gen<Last<A>> = map(::Last)
+fun Last.Companion.genK(): GenK<ForLast> = object : GenK<ForLast> {
+  override fun <A> genK(gen: Gen<A>): Gen<Kind<ForLast, A>> = gen.last().map { it as Kind<ForLast, A> }
+}
+fun <A> Gen<A>.min(): Gen<Min<A>> = map(::Min)
+fun Min.Companion.genK(): GenK<ForMin> = object : GenK<ForMin> {
+  override fun <A> genK(gen: Gen<A>): Gen<Kind<ForMin, A>> = gen.min().map { it as Kind<ForMin, A> }
+}
+fun <A> Gen<A>.max(): Gen<Max<A>> = map(::Max)
+fun Max.Companion.genK(): GenK<ForMax> = object : GenK<ForMax> {
+  override fun <A> genK(gen: Gen<A>): Gen<Kind<ForMax, A>> = gen.max().map { it as Kind<ForMax, A> }
+}
+fun <A> Gen<A>.product(): Gen<Product<A>> = map(::Product)
+fun Product.Companion.genK(): GenK<ForProduct> = object : GenK<ForProduct> {
+  override fun <A> genK(gen: Gen<A>): Gen<Kind<ForProduct, A>> = gen.product().map { it as Kind<ForProduct, A> }
+}
+fun <A> Gen<A>.sum(): Gen<Sum<A>> = map(::Sum)
+fun Sum.Companion.genK(): GenK<ForSum> = object : GenK<ForSum> {
+  override fun <A> genK(gen: Gen<A>): Gen<Kind<ForSum, A>> = gen.sum().map { it as Kind<ForSum, A> }
+}
