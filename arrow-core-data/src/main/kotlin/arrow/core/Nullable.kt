@@ -1,9 +1,6 @@
 @file:Suppress("NAME_SHADOWING")
 package arrow.core
 
-inline fun <A, R> mapN(a: A?, fn: (A) -> R): R? =
-  mapN(a, Unit) { a, _ -> fn(a) }
-
 inline fun <A, B, R> mapN(a: A?, b: B?, fn: (A, B) -> R): R? =
   mapN(a, b, Unit) { a, b, _ -> fn(a, b) }
 

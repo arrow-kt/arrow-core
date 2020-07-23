@@ -1,24 +1,15 @@
 @file:Suppress("NAME_SHADOWING")
+
 package arrow.core
 
-import arrow.core.test.generators.intSmall
-import io.kotlintest.matchers.collections.shouldContainAll
-import io.kotlintest.matchers.types.shouldBeNull
-import io.kotlintest.properties.Gen
-import io.kotlintest.properties.forAll
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.StringSpec
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.shouldBe
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.arb
+import io.kotest.property.forAll
 
 class NullableTest : StringSpec({
-  "map1 short circuits if any arg is null" {
-    mapN(null) { Unit }.shouldBeNull()
-  }
-
-  "map1 performs action when arg is not null" {
-    forAll(Gen.intSmall()) { a ->
-      mapN(a) { it + 1 } == a + 1
-    }
-  }
 
   "map2 only performs action when all arguments are not null" {
     forAll(combGen("a", null, 2)) { (a: String?, b: String?) ->
@@ -122,8 +113,8 @@ private fun <A> List<A>.forkPath(choice1: A, choice2: A): Pair<List<A>, List<A>>
 
 private fun <A> List<List<A>>.forkPaths(choice1: A, choice2: A): List<List<A>> =
   this.fold(emptyList()) { acc: List<List<A>>, path: List<A> ->
-    val paths: Pair<List<A>, List<A>> = path.forkPath(choice1, choice2)
-    acc.plusElement(paths.first).plusElement(paths.second)
+    val (first, second) = path.forkPath(choice1, choice2)
+    acc.plusElement(first).plusElement(second)
   }
 
 private fun <A> generateAllPathsForNForks(choice1: A, choice2: A, n: Int): List<List<A>> =
@@ -131,10 +122,8 @@ private fun <A> generateAllPathsForNForks(choice1: A, choice2: A, n: Int): List<
     acc.forkPaths(choice1, choice2)
   }
 
-private fun <A> combGen(choice1: A, choice2: A, n: Int) = object : Gen<List<A>> {
-  override fun constants(): Iterable<List<A>> = emptyList()
-
-  override fun random(): Sequence<List<A>> = generateAllPathsForNForks(choice1, choice2, n).asSequence()
+private fun <A> combGen(choice1: A, choice2: A, size: Int): Arb<List<A>> = arb {
+  generateAllPathsForNForks(choice1, choice2, size).asSequence()
 }
 
 class GenerateAllPathsForNForksTest : StringSpec({
