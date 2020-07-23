@@ -83,8 +83,8 @@ class ValidatedTest : UnitSpec() {
     }
 
     "leftMap should modify error" {
-      Valid(10).leftMap { fail("None should not be called") } shouldBe Valid(10)
-      Invalid(13).leftMap { i -> i.toString() + " is Coming soon!" } shouldBe Invalid("13 is Coming soon!")
+      Valid(10).mapLeft { fail("None should not be called") } shouldBe Valid(10)
+      Invalid(13).mapLeft { i -> "$i is Coming soon!" } shouldBe Invalid("13 is Coming soon!")
     }
 
     "exist should return false if is Invalid" {

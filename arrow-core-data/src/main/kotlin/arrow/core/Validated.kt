@@ -770,11 +770,15 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
   inline fun <B> map(f: (A) -> B): Validated<E, B> =
     bimap(::identity, f)
 
+  @Deprecated("Use mapLeft for consistency", ReplaceWith("mapLeft(f)"))
+  inline fun <EE> leftMap(f: (E) -> EE): Validated<EE, A> =
+    mapLeft(f)
+
   /**
    * Apply a function to an Invalid value, returning a new Invalid value.
    * Or, if the original valid was Valid, return it.
    */
-  inline fun <EE> leftMap(f: (E) -> EE): Validated<EE, A> =
+  inline fun <EE> mapLeft(f: (E) -> EE): Validated<EE, A> =
     bimap(f, ::identity)
 
   /**
