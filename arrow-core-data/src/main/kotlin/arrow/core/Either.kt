@@ -601,7 +601,6 @@ import arrow.typeclasses.Show
  * ```
  *
  * Arrow contains `Either` instances for many useful typeclasses that allows you to use and transform right values.
- * Option does not require a type parameter with the following functions, but it is specifically used for Either.Left
  *
  * [`Functor`](../../../../arrow/typeclasses/functor/)
  *
@@ -799,8 +798,20 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
    * Left(12).toOption()  // Result: None
    * ```
    */
+  @Deprecated("Deprecated, use `orNull` instead", ReplaceWith("orNull()"))
   fun toOption(): Option<B> =
     fold({ None }, { Some(it) })
+
+  /**
+   * Returns the right value if it exists, otherwise null
+   *
+   * Example:
+   * ```
+   * Right(12).orNull() // Result: 12
+   * Left(12).orNull()  // Result: null
+   * ```
+   */
+  fun orNull(): B? = fold({ null }, { it })
 
   /**
    * The left side of the disjoint union, as opposed to the [Right] side.

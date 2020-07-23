@@ -145,6 +145,15 @@ class IorTest : UnitSpec() {
       }
     }
 
+    "fromNullables() should build a correct Ior" {
+      forAll { a: Int, b: String ->
+        Ior.fromNullables(a, null) == Ior.Left(a) &&
+          Ior.fromNullables(a, b) == Ior.Both(a, b) &&
+          Ior.fromNullables(null, b) == Ior.Right(b) &&
+          Ior.fromNullables(null, null) == null
+      }
+    }
+
     "getOrElse() should return value" {
       forAll { a: Int, b: Int ->
         Ior.Right(a).getOrElse { b } == a &&

@@ -76,7 +76,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
      * @return [None] if both [oa] and [ob] are [None]. Otherwise [Some] wrapping
      * an [Ior.Left], [Ior.Right], or [Ior.Both] if [oa], [ob], or both are defined (respectively).
      */
-
+    @Deprecated("Deprecated, use `fromNullables` instead", ReplaceWith("fromNullables(a, b)"))
     fun <A, B> fromOptions(oa: Option<A>, ob: Option<B>): Option<Ior<A, B>> = when (oa) {
       is Some -> when (ob) {
         is Some -> Some(Both(oa.t, ob.t))
@@ -86,6 +86,27 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
         is Some -> Some(Right(ob.t))
         is None -> None
       }
+    }
+
+    /**
+     * Create an [Ior] from two nullables if at least one of them is defined.
+     *
+     * @param a an element (nullable) for the left side of the [Ior]
+     * @param b an element (nullable) for the right side of the [Ior]
+     *
+     * @return [null] if both [a] and [b] are [null]. Otherwise
+     * an [Ior.Left], [Ior.Right], or [Ior.Both] if [a], [b], or both are defined (respectively).
+     */
+    fun <A, B> fromNullables(a: A?, b: B?): Ior<A, B>? =
+      when (a != null) {
+        true -> when (b != null) {
+          true -> Both(a, b)
+          false -> Left(a)
+        }
+        false -> when (b != null) {
+          true -> Right(b)
+          false -> null
+        }
     }
 
     private tailrec fun <L, A, B> Semigroup<L>.loop(v: Ior<L, Either<A, B>>, f: (A) -> IorOf<L, Either<A, B>>): Ior<L, B> = when (v) {
