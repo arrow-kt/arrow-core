@@ -601,6 +601,7 @@ import arrow.typeclasses.Show
  * ```
  *
  * Arrow contains `Either` instances for many useful typeclasses that allows you to use and transform right values.
+ * Option does not require a type parameter with the following functions, but it is specifically used for Either.Left
  *
  * [`Functor`](../../../../arrow/typeclasses/functor/)
  *

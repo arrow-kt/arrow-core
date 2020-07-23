@@ -340,6 +340,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    * Both(12, "power").toLeftOption()  // Result: Some(12)
    * ```
    */
+  @Deprecated("Deprecated, use `leftOrNull` instead", ReplaceWith("leftOrNull()"))
   fun toLeftOption(): Option<A> =
     fold({ Option.just(it) }, { Option.empty() }, { a, _ -> Option.just(a) })
 
