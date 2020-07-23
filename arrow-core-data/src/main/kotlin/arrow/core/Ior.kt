@@ -1,6 +1,8 @@
 package arrow.core
 
 import arrow.Kind
+import arrow.core.Ior.Left
+import arrow.core.Ior.Right
 import arrow.higherkind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Semigroup
@@ -261,10 +263,27 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    * Both("power", 12).pad()  // Result: Pair(Some("power"), Some(12))
    * ```
    */
+  @Deprecated("Deprecated, use `padNull` instead", ReplaceWith("padNull()"))
   fun pad(): Pair<Option<A>, Option<B>> = fold(
     { Pair(Some(it), None) },
     { Pair(None, Some(it)) },
     { a, b -> Pair(Some(a), Some(b)) }
+  )
+
+  /**
+   * Return this [Ior] as [Pair] of nullables]
+   *
+   * Example:
+   * ```
+   * Right(12).pad()          // Result: Pair(null, 12)
+   * Left(12).pad()           // Result: Pair(12, null)
+   * Both("power", 12).pad()  // Result: Pair("power", 12)
+   * ```
+   */
+  fun padNull(): Pair<A?, B?> = fold(
+    { Pair(it, null) },
+    { Pair(null, it) },
+    { a, b -> Pair(a, b) }
   )
 
   /**
@@ -292,8 +311,23 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    * Both(12, "power").toOption()  // Result: Some("power")
    * ```
    */
+  @Deprecated("Deprecated, use `orNull` instead", ReplaceWith("orNull()"))
   fun toOption(): Option<B> =
     fold({ None }, { Some(it) }, { _, b -> Some(b) })
+
+  /**
+   * Returns the [Right] value or `B` if this is [Right] or [Both]
+   * and [null] if this is a [Left].
+   *
+   * Example:
+   * ```
+   * Right(12).orNull()          // Result: 12
+   * Left(12).orNull()           // Result: null
+   * Both(12, "power").orNull()  // Result: "power"
+   * ```
+   */
+  fun orNull(): B? =
+    fold({ null }, { it }, { _, b -> b })
 
   /**
    * Returns a [Some] containing the [Left] value or `A` if this is [Left] or [Both]
@@ -308,6 +342,20 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    */
   fun toLeftOption(): Option<A> =
     fold({ Option.just(it) }, { Option.empty() }, { a, _ -> Option.just(a) })
+
+  /**
+   * Returns the [Left] value or `A` if this is [Left] or [Both]
+   * and [null] if this is a [Right].
+   *
+   * Example:
+   * ```
+   * Right(12).toLeftOption()          // Result: null
+   * Left(12).toLeftOption()           // Result: 12
+   * Both(12, "power").toLeftOption()  // Result: 12
+   * ```
+   */
+  fun leftOrNull(): A? =
+    fold({ it }, { null }, { a, _ -> a })
 
   /**
    * Returns a [Validated.Valid] containing the [Right] value or `B` if this is [Right] or [Both]

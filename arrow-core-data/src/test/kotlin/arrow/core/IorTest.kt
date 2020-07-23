@@ -112,6 +112,14 @@ class IorTest : UnitSpec() {
       }
     }
 
+    "padNull() should return the correct Pair of nullables" {
+      forAll { a: Int, b: String ->
+        Ior.Left(a).padNull() == Pair(a, null) &&
+          Ior.Right(b).padNull() == Pair(null, b) &&
+          Ior.Both(a, b).padNull() == Pair(a, b)
+      }
+    }
+
     "toEither() should convert values into a valid Either" {
       forAll { a: Int, b: String ->
         Ior.Left(a).toEither() == Either.Left(a) &&
@@ -125,6 +133,22 @@ class IorTest : UnitSpec() {
         Ior.Left(a).toOption() == None &&
           Ior.Right(b).toOption() == Some(b) &&
           Ior.Both(a, b).toOption() == Some(b)
+      }
+    }
+
+    "orNull() should convert right values into a nullable" {
+      forAll { a: Int, b: String ->
+        Ior.Left(a).orNull() == null &&
+          Ior.Right(b).orNull() == b &&
+          Ior.Both(a, b).orNull() == b
+      }
+    }
+
+    "leftOrNull() should convert left values into a nullable" {
+      forAll { a: Int, b: String ->
+        Ior.Left(a).leftOrNull() == a &&
+          Ior.Right(b).leftOrNull() == null &&
+          Ior.Both(a, b).leftOrNull() == a
       }
     }
 

@@ -187,7 +187,6 @@ class EitherTest : UnitSpec() {
       }
     }
 
-    @Suppress("​ConstantConditionIf")
     "orNull should convert" {
       forAll { a: Int ->
         Right(a).orNull() == a &&
