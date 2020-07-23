@@ -349,9 +349,9 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    *
    * Example:
    * ```
-   * Right(12).toLeftOption()          // Result: null
-   * Left(12).toLeftOption()           // Result: 12
-   * Both(12, "power").toLeftOption()  // Result: 12
+   * Right(12).leftOrNull()          // Result: null
+   * Left(12).leftOrNull()           // Result: 12
+   * Both(12, "power").leftOrNull()  // Result: 12
    * ```
    */
   fun leftOrNull(): A? =
