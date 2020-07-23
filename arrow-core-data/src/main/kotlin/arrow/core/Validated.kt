@@ -667,7 +667,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
      * Converts an `Option<A>` to a `Validated<E, A>`, where the provided `ifNone` output value is returned as [Invalid]
      * when the specified `Option` is `None`.
      */
-    fun <E, A> fromOption(o: Option<A>, ifNone: () -> E): Validated<E, A> =
+    inline fun <E, A> fromOption(o: Option<A>, ifNone: () -> E): Validated<E, A> =
       o.fold(
         { Invalid(ifNone()) },
         { Valid(it) }
@@ -677,7 +677,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
      * Converts a nullable `A?` to a `Validated<E, A>`, where the provided `ifNull` output value is returned as [Invalid]
      * when the specified value is null.
      */
-    fun <E, A> fromNullable(value: A?, ifNull: () -> E): Validated<E, A> =
+    inline fun <E, A> fromNullable(value: A?, ifNull: () -> E): Validated<E, A> =
       value?.let(::Valid) ?: Invalid(ifNull())
 
     suspend fun <A> catch(f: suspend () -> A): Validated<Throwable, A> =

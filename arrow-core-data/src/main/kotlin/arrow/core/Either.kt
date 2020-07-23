@@ -718,7 +718,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
       }
     }
 
-  fun <C> foldRight(initial: Eval<C>, rightOperation: (B, Eval<C>) -> Eval<C>): Eval<C> =
+  inline fun <C> foldRight(initial: Eval<C>, crossinline rightOperation: (B, Eval<C>) -> Eval<C>): Eval<C> =
     fix().let { either ->
       when (either) {
         is Right -> Eval.defer { rightOperation(either.b, initial) }
@@ -1026,7 +1026,7 @@ inline fun <A, B> EitherOf<A, B>.filterOrOther(predicate: (B) -> Boolean, defaul
  * Left(12).leftIfNull({ -1 })    // Result: Left(12)
  * ```
  */
-fun <A, B> EitherOf<A, B?>.leftIfNull(default: () -> A): Either<A, B> =
+inline fun <A, B> EitherOf<A, B?>.leftIfNull(default: () -> A): Either<A, B> =
   fix().flatMap { it.rightIfNotNull { default() } }
 
 /**
