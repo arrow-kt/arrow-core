@@ -185,22 +185,20 @@ sealed class Eval<out A> : EvalOf<A> {
             currComp.start<A>().let { cc ->
               when (cc) {
                 is FlatMap -> {
-                  val inStartFun: (Any?) -> Eval<A> = { cc.run(it) }
-                  val outStartFun: (Any?) -> Eval<A> = { currComp.run(it) }
                   curr = cc.start<A>()
-                  fs.add(0, outStartFun)
-                  fs.add(0, inStartFun)
+                  fs.add(0, currComp::run)
+                  fs.add(0, cc::run)
                 }
                 is Memoize -> {
                   cc.result.fold(
                     {
                       curr = cc.eval
-                      fs.add(0) { currComp.run(it) }
+                      fs.add(0, currComp::run)
                       fs.add(0, addToMemo(cc as Memoize<Any?>))
                     },
                     {
                       curr = Now(it)
-                      fs.add(0) { currComp.run(it) }
+                      fs.add(0, currComp::run)
                     }
                   )
                 }
@@ -211,12 +209,12 @@ sealed class Eval<out A> : EvalOf<A> {
             }
           }
           is Memoize -> {
-            val currComp = curr as Memoize<A>
+            val currComp = curr as Memoize<Any?>
             val eval = currComp.eval
             currComp.result.fold(
               {
                 curr = eval
-                fs.add(0, addToMemo(currComp as Memoize<Any?>))
+                fs.add(0, addToMemo(currComp))
               },
               {
                 if (fs.isNotEmpty()) {

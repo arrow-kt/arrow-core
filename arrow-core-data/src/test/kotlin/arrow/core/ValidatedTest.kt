@@ -212,28 +212,24 @@ class ValidatedTest : UnitSpec() {
 
     "catch should return Valid(result) when f does not throw" {
       suspend fun loadFromNetwork(): Int = 1
-      val validated = Validated.catch { loadFromNetwork() }
-      validated shouldBe Valid(1)
+      Validated.catch { loadFromNetwork() } shouldBe Valid(1)
     }
 
     "catch should return Invalid(result) when f throws" {
       val exception = MyException("Boom!")
       suspend fun loadFromNetwork(): Int = throw exception
-      val validated = Validated.catch { loadFromNetwork() }
-      validated shouldBe Invalid(exception)
+      Validated.catch { loadFromNetwork() } shouldBe Invalid(exception)
     }
 
     "catchNel should return Valid(result) when f does not throw" {
       suspend fun loadFromNetwork(): Int = 1
-      val validated = Validated.catchNel { loadFromNetwork() }
-      validated shouldBe Valid(1)
+      Validated.catchNel { loadFromNetwork() } shouldBe Valid(1)
     }
 
     "catchNel should return Invalid(Nel(result)) when f throws" {
       val exception = MyException("Boom!")
       suspend fun loadFromNetwork(): Int = throw exception
-      val validated = Validated.catchNel { loadFromNetwork() }
-      validated shouldBe Invalid(NonEmptyList(exception))
+      Validated.catchNel { loadFromNetwork() } shouldBe Invalid(NonEmptyList(exception))
     }
 
     with(VAL_AP) {
