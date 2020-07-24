@@ -167,8 +167,12 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
       }
     }
 
+  @Deprecated("Deprecated, use filterNullMap(f: (A) -> B?) instead", ReplaceWith("filterNullMap(f: (A) -> B?)"))
   fun <B> filterMap(f: (A) -> Option<B>): ListK<B> =
     flatMap { a -> f(a).fold({ empty<B>() }, { just(it) }) }
+
+  fun <B> filterNullMap(f: (A) -> B?): ListK<B> =
+    flatMap { a -> mapN(f(a)) { just(it) } ?: empty<B>() }
 
   override fun hashCode(): Int = list.hashCode()
 

@@ -186,6 +186,28 @@ class ListKTest : UnitSpec() {
         result.map { it.a }.equalUnderTheLaw(a, ListK.eq(Int.eq()))
       }
     }
+
+    "filterMap() should map list and filter out None values" {
+      forAll(Gen.listK(Gen.int())) { listk ->
+          listk.filterMap {
+            when (it % 2 == 0) {
+              true -> it.toString().toOption()
+              else -> None
+            }
+          } == listk.toList().filter { it % 2 == 0 }.map { it.toString() }.k()
+      }
+    }
+
+    "filterNullMap() should map list and filter out null values" {
+      forAll(Gen.listK(Gen.int())) { listk ->
+        listk.filterNullMap {
+          when (it % 2 == 0) {
+            true -> it.toString()
+            else -> null
+          }
+        } == listk.toList().filter { it % 2 == 0 }.map { it.toString() }.k()
+      }
+    }
   }
 
   private fun bijection(from: Kind<ForListK, Tuple2<Tuple2<Int, Int>, Int>>): ListK<Tuple2<Int, Tuple2<Int, Int>>> =
