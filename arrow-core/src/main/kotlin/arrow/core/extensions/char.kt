@@ -1,8 +1,12 @@
 package arrow.core.extensions
 
+import arrow.typeclasses.EQ
 import arrow.typeclasses.Eq
+import arrow.typeclasses.GT
 import arrow.typeclasses.Hash
+import arrow.typeclasses.LT
 import arrow.typeclasses.Order
+import arrow.typeclasses.Ordering
 import arrow.typeclasses.Show
 
 interface CharShow : Show<Char> {
@@ -17,8 +21,8 @@ interface CharEq : Eq<Char> {
 interface CharOrder : Order<Char> {
   override fun Char.eqv(b: Char): Boolean = this == b
 
-  override fun Char.compare(b: Char): Int =
-    if (this < b) -1 else if (this > b) 1 else 0
+  override fun Char.compare(b: Char): Ordering =
+    if (this < b) LT else if (this > b) GT else EQ
 
   override fun Char.lt(b: Char): Boolean = this < b
 

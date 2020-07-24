@@ -17,12 +17,14 @@ import arrow.core.extensions.listk.monadLogic.monadLogic
 import arrow.core.extensions.listk.monoid.monoid
 import arrow.core.extensions.listk.monoidK.monoidK
 import arrow.core.extensions.listk.monoidal.monoidal
+import arrow.core.extensions.listk.order.order
 import arrow.core.extensions.listk.semialign.semialign
 import arrow.core.extensions.listk.semigroupK.semigroupK
 import arrow.core.extensions.listk.show.show
 import arrow.core.extensions.listk.traverse.traverse
 import arrow.core.extensions.listk.unalign.unalign
 import arrow.core.extensions.listk.unzip.unzip
+import arrow.core.extensions.order
 import arrow.core.extensions.show
 import arrow.core.test.UnitSpec
 import arrow.core.test.generators.genK
@@ -36,6 +38,7 @@ import arrow.core.test.laws.MonadLogicLaws
 import arrow.core.test.laws.MonoidKLaws
 import arrow.core.test.laws.MonoidLaws
 import arrow.core.test.laws.MonoidalLaws
+import arrow.core.test.laws.OrderLaws
 import arrow.core.test.laws.SemigroupKLaws
 import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
@@ -43,6 +46,7 @@ import arrow.core.test.laws.UnalignLaws
 import arrow.core.test.laws.UnzipLaws
 import arrow.core.test.laws.equalUnderTheLaw
 import arrow.typeclasses.Eq
+import arrow.typeclasses.Order
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
@@ -77,6 +81,7 @@ class ListKTest : UnitSpec() {
       TraverseLaws.laws(ListK.traverse(), ListK.applicative(), ListK.genK(), ListK.eqK()),
 
       HashLaws.laws(ListK.hash(Int.hash()), Gen.listK(Gen.int()), ListK.eq(Int.eq())),
+      OrderLaws.laws(ListK.order(Int.order()), Gen.listK(Gen.int()).map { it as ListKOf<Int> }),
       EqKLaws.laws(
         ListK.eqK(),
         ListK.genK()

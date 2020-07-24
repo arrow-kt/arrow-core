@@ -28,7 +28,11 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.EqK2
 import arrow.typeclasses.Foldable
 import arrow.typeclasses.Functor
+import arrow.typeclasses.GT
 import arrow.typeclasses.Hash
+import arrow.typeclasses.LT
+import arrow.typeclasses.Order
+import arrow.typeclasses.Ordering
 import arrow.typeclasses.Selective
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.SemigroupK
@@ -186,6 +190,17 @@ interface ValidatedHash<L, R> : Hash<Validated<L, R>>, ValidatedEq<L, R> {
     HL().run { it.hash() }
   }, {
     HR().run { it.hash() }
+  })
+}
+
+@extension
+interface ValidatedOrder<L, R> : Order<Validated<L, R>> {
+  fun OL(): Order<L>
+  fun OR(): Order<R>
+  override fun Validated<L, R>.compare(b: Validated<L, R>): Ordering = fold({ l1 ->
+    b.fold({ l2 -> OL().run { l1.compare(l2) } }, { LT })
+  }, { r1 ->
+    b.fold({ GT }, { r2 -> OR().run { r1.compare(r2) } })
   })
 }
 

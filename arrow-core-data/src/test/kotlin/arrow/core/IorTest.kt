@@ -13,8 +13,10 @@ import arrow.core.extensions.ior.eqK2.eqK2
 import arrow.core.extensions.ior.functor.functor
 import arrow.core.extensions.ior.hash.hash
 import arrow.core.extensions.ior.monad.monad
+import arrow.core.extensions.ior.order.order
 import arrow.core.extensions.ior.show.show
 import arrow.core.extensions.ior.traverse.traverse
+import arrow.core.extensions.order
 import arrow.core.extensions.semigroup
 import arrow.core.extensions.show
 import arrow.core.test.UnitSpec
@@ -28,6 +30,7 @@ import arrow.core.test.laws.CrosswalkLaws
 import arrow.core.test.laws.EqK2Laws
 import arrow.core.test.laws.HashLaws
 import arrow.core.test.laws.MonadLaws
+import arrow.core.test.laws.OrderLaws
 import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
 import arrow.typeclasses.Eq
@@ -62,6 +65,7 @@ class IorTest : UnitSpec() {
         Ior.eqK(Int.eq())
       ),
       HashLaws.laws(Ior.hash(String.hash(), Int.hash()), Gen.ior(Gen.string(), Gen.int()), Ior.eq(String.eq(), Int.eq())),
+      OrderLaws.laws(Ior.order(String.order(), Int.order()), Gen.ior(Gen.string(), Gen.int())),
       BitraverseLaws.laws(Ior.bitraverse(), Ior.genK2(), Ior.eqK2()),
       CrosswalkLaws.laws(Ior.crosswalk(), Ior.genK(Gen.int()), Ior.eqK(Int.eq())),
       BicrosswalkLaws.laws(Ior.bicrosswalk(), Ior.genK2(), Ior.eqK2())

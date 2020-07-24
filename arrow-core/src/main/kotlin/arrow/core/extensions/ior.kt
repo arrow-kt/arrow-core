@@ -29,9 +29,13 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.EqK2
 import arrow.typeclasses.Foldable
 import arrow.typeclasses.Functor
+import arrow.typeclasses.GT
 import arrow.typeclasses.Hash
+import arrow.typeclasses.LT
 import arrow.typeclasses.Monad
 import arrow.typeclasses.MonadSyntax
+import arrow.typeclasses.Order
+import arrow.typeclasses.Ordering
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.Traverse
@@ -209,6 +213,19 @@ interface IorHash<L, R> : Hash<Ior<L, R>>, IorEq<L, R> {
     is Ior.Right -> HR().run { value.hash() }
     is Ior.Both -> 31 * HL().run { leftValue.hash() } + HR().run { rightValue.hash() }
   }
+}
+
+@extension
+interface IorOrder<L, R> : Order<Ior<L, R>> {
+  fun OL(): Order<L>
+  fun OR(): Order<R>
+  override fun Ior<L, R>.compare(b: Ior<L, R>): Ordering = fold({ l1 ->
+    b.fold({ l2 -> OL().run { l1.compare(l2) } }, { LT }, { _, _ -> LT })
+  }, { r1 ->
+    b.fold({ GT }, { r2 -> OR().run { r1.compare(r2) } }, { _, _ -> LT })
+  }, { l1, r1 ->
+    b.fold({ GT }, { GT }, { l2, r2 -> OL().run { l1.compare(l2) } + OR().run { r1.compare(r2) } })
+  })
 }
 
 fun <L, R> Ior.Companion.fx(SL: Semigroup<L>, c: suspend MonadSyntax<IorPartialOf<L>>.() -> R): Ior<L, R> =

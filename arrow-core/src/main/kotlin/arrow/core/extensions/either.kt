@@ -30,12 +30,16 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.EqK2
 import arrow.typeclasses.Foldable
 import arrow.typeclasses.Functor
+import arrow.typeclasses.GT
 import arrow.typeclasses.Hash
+import arrow.typeclasses.LT
 import arrow.typeclasses.Monad
 import arrow.typeclasses.MonadError
 import arrow.typeclasses.MonadFx
 import arrow.typeclasses.MonadSyntax
 import arrow.typeclasses.Monoid
+import arrow.typeclasses.Order
+import arrow.typeclasses.Ordering
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.SemigroupK
 import arrow.typeclasses.Show
@@ -250,6 +254,17 @@ interface EitherHash<L, R> : Hash<Either<L, R>>, EitherEq<L, R> {
     HL().run { it.hash() }
   }, {
     HR().run { it.hash() }
+  })
+}
+
+@extension
+interface EitherOrder<L, R> : Order<Either<L, R>> {
+  fun OL(): Order<L>
+  fun OR(): Order<R>
+  override fun Either<L, R>.compare(b: Either<L, R>): Ordering = fold({ l1 ->
+    b.fold({ l2 -> OL().run { l1.compare(l2) } }, { LT })
+  }, { r1 ->
+    b.fold({ GT }, { r2 -> OR().run { r1.compare(r2) }  })
   })
 }
 

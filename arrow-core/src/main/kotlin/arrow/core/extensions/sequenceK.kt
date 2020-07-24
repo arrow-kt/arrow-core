@@ -18,6 +18,7 @@ import arrow.core.extensions.sequence.foldable.foldLeft
 import arrow.core.extensions.sequence.foldable.foldRight
 import arrow.core.extensions.sequence.foldable.isEmpty
 import arrow.core.extensions.sequence.monadFilter.filterMap
+import arrow.core.extensions.sequencek.align.align
 import arrow.core.extensions.sequencek.eq.eq
 import arrow.core.extensions.sequencek.foldable.firstOption
 import arrow.core.extensions.sequencek.monad.map
@@ -32,12 +33,15 @@ import arrow.typeclasses.Alternative
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Apply
 import arrow.typeclasses.Crosswalk
+import arrow.typeclasses.EQ
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.Foldable
 import arrow.typeclasses.Functor
 import arrow.typeclasses.FunctorFilter
+import arrow.typeclasses.GT
 import arrow.typeclasses.Hash
+import arrow.typeclasses.LT
 import arrow.typeclasses.Monad
 import arrow.typeclasses.MonadCombine
 import arrow.typeclasses.MonadFilter
@@ -47,6 +51,8 @@ import arrow.typeclasses.MonadSyntax
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.MonoidK
 import arrow.typeclasses.Monoidal
+import arrow.typeclasses.Order
+import arrow.typeclasses.Ordering
 import arrow.typeclasses.Repeat
 import arrow.typeclasses.Semialign
 import arrow.typeclasses.Semigroup
@@ -206,6 +212,18 @@ interface SequenceKHash<A> : Hash<SequenceK<A>>, SequenceKEq<A> {
   override fun SequenceK<A>.hash(): Int = foldLeft(1) { hash, a ->
     31 * hash + HA().run { a.hash() }
   }
+}
+
+@extension
+interface SequenceKOrder<A> : Order<SequenceK<A>> {
+  fun OA(): Order<A>
+  override fun SequenceK<A>.compare(b: SequenceK<A>): Ordering =
+    SequenceK.align().alignWith(this, b) { ior -> ior.fold({ GT }, { LT }, { a1, a2 -> OA().run { a1.compare(a2) } }) }
+      // we cannot use fold(Ordering.monoid()) because that won't short circuit
+      .fix().foldRight<Ordering>(Eval.now(EQ)) { v, acc ->
+        if (v == EQ) acc // delegate to the remaining sequence
+        else Eval.now(v) // We can short circuit here if an ordering has been found
+      }.value()
 }
 
 @extension
