@@ -201,8 +201,8 @@ class NonEmptyList<out A>(
 
   private constructor(list: List<A>) : this(list[0], list.drop(1))
 
-  override val size: Int
-    get() = 1 + tail.size
+  override val size: Int =
+    1 + tail.size
 
   val all: List<A>
     get() = toList()
