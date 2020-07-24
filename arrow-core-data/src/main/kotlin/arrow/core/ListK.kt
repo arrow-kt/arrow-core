@@ -1,6 +1,7 @@
 package arrow.core
 
 import arrow.Kind
+import arrow.core.Ior.*
 import arrow.higherkind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Show
@@ -171,6 +172,21 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
   fun <B> filterMap(f: (A) -> Option<B>): ListK<B> =
     flatMap { a -> f(a).fold({ empty<B>() }, { just(it) }) }
 
+  /**
+   * Returns a [ListK] containing the transformed values from the original
+   * [ListK] as long as they are non-null.
+   *
+   * Example:
+   * ```kotlin:ank:playground
+   * import arrow.core.*
+   * listOf(1, 2).k().filterNullMap {
+   *   when (it % 2 == 0) {
+   *     true -> it.toString()
+   *     else -> null
+   *   }
+   * } // Result: listOf("2").k()
+   * ```
+   */
   fun <B> filterNullMap(f: (A) -> B?): ListK<B> =
     flatMap { a -> mapN(f(a)) { just(it) } ?: empty<B>() }
 
