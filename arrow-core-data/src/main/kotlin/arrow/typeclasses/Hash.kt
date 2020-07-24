@@ -130,17 +130,10 @@ interface Hash<in F> {
  */
 private fun Int.combineHashes(h: Int): Int = (this * 16777619) xor h
 
-interface IntHash : Hash<Int> {
-  override fun Int.hash(): Int = hashCode()
-}
-
-fun Int.Companion.hash(): Hash<Int> =
-  object : IntHash {}
-
 /**
  * Convenience because a lot of hash instances use this
  */
-fun Int.hashWithSalt(salt: Int): Int = Int.hash().run { hashWithSalt(salt) }
+fun Int.hashWithSalt(salt: Int): Int = salt.combineHashes(this.hashCode())
 
 private val defaultSalt: Int = 0x087fc72c
 
