@@ -1,6 +1,7 @@
 package arrow.core
 
 import arrow.higherkind
+import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 
 fun <A> EvalOf<A>.value(): A = this.fix().value()
 
@@ -253,6 +254,7 @@ sealed class Eval<out A> : EvalOf<A> {
     when (this) {
       is FlatMap<A> -> object : FlatMap<B>() {
         override fun <S> start(): Eval<S> = (this@Eval).start()
+        @IgnoreJRERequirement
         override fun <S> run(s: S): Eval<B> =
           object : FlatMap<B>() {
             override fun <S1> start(): Eval<S1> = (this@Eval).run(s) as Eval<S1>
