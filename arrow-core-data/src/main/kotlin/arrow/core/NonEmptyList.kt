@@ -226,7 +226,7 @@ class NonEmptyList<out A>(
     fix().flatMap { a -> ff.fix().map { f -> f(a) } }.fix()
 
   operator fun plus(l: NonEmptyList<@UnsafeVariance A>): NonEmptyList<A> =
-    NonEmptyList(all + all)
+    NonEmptyList(all + l.all)
 
   operator fun plus(l: List<@UnsafeVariance A>): NonEmptyList<A> =
     NonEmptyList(all + l)
