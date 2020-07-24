@@ -26,3 +26,9 @@ dependencies {
     testCompile project(":arrow-core")
     testCompile "io.arrow-kt:arrow-mtl-data:$VERSION_NAME"
 }
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = JAVA_VERSION
+    }
+}
