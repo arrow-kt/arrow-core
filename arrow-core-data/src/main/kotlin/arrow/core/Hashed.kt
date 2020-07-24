@@ -8,6 +8,6 @@ import arrow.higherkind
  * Provides a fast inequality check with its [Eq] instance and its [Hash] instance will use the cached hash.
  */
 @higherkind
-data class Hashed<A>(val hash: Int, val value: A): HashedOf<A> {
+data class Hashed<A>(val hash: Int, val value: A) : HashedOf<A> {
   companion object
 }

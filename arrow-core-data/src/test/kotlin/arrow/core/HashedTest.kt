@@ -1,6 +1,7 @@
 package arrow.core
 
 import arrow.core.extensions.eq
+import arrow.core.extensions.hash
 import arrow.core.extensions.hashed.eq.eq
 import arrow.core.extensions.hashed.eqK.eqK
 import arrow.core.extensions.hashed.foldable.foldable
@@ -15,7 +16,6 @@ import arrow.core.test.laws.EqLaws
 import arrow.core.test.laws.FoldableLaws
 import arrow.core.test.laws.HashLaws
 import arrow.core.test.laws.ShowLaws
-import arrow.typeclasses.hash
 import io.kotlintest.properties.Gen
 
 class HashedTest : UnitSpec() {
