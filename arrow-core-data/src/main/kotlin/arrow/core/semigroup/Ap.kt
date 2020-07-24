@@ -34,6 +34,6 @@ import arrow.higherkind
  * ```
  */
 @higherkind
-data class Ap<F, A>(val getAp: Kind<F, A>): ApOf<F, A> {
+data class Ap<F, A>(val getAp: Kind<F, A>) : ApOf<F, A> {
   companion object
 }

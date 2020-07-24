@@ -135,4 +135,3 @@ interface AltMonoid<F, A> : Monoid<Alt<F, A>>, AltSemigroup<F, A> {
   override fun AF(): Alternative<F>
   override fun empty(): Alt<F, A> = Alt(AF().empty())
 }
-

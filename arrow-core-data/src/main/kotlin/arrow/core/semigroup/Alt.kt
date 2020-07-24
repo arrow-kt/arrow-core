@@ -28,6 +28,6 @@ import arrow.higherkind
  * ```
  */
 @higherkind
-data class Alt<F, A>(val getAlt: Kind<F, A>): AltOf<F, A> {
+data class Alt<F, A>(val getAlt: Kind<F, A>) : AltOf<F, A> {
   companion object
 }

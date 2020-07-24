@@ -227,11 +227,11 @@ fun Gen.Companion.char(): Gen<Char> =
 fun Gen.Companion.all(): Gen<All> = bool().map(::All)
 fun Gen.Companion.any(): Gen<arrow.core.semigroup.Any> = bool().map { arrow.core.semigroup.Any(it) }
 fun <F, A> Gen<Kind<F, A>>.alt(): Gen<Alt<F, A>> = map(::Alt)
-fun <F> GenK<F>.alt(): GenK<Kind<ForAlt, F>> = object: GenK<Kind<ForAlt, F>> {
+fun <F> GenK<F>.alt(): GenK<Kind<ForAlt, F>> = object : GenK<Kind<ForAlt, F>> {
   override fun <A> genK(gen: Gen<A>): Gen<Kind<Kind<ForAlt, F>, A>> = this@alt.genK(gen).map(::Alt)
 }
 fun <F, A> Gen<Kind<F, A>>.ap(): Gen<Ap<F, A>> = map(::Ap)
-fun <F> GenK<F>.ap(): GenK<Kind<ForAp, F>> = object: GenK<Kind<ForAp, F>> {
+fun <F> GenK<F>.ap(): GenK<Kind<ForAp, F>> = object : GenK<Kind<ForAp, F>> {
   override fun <A> genK(gen: Gen<A>): Gen<Kind<Kind<ForAp, F>, A>> = this@ap.genK(gen).map(::Ap)
 }
 fun <A> Gen<A>.dual(): Gen<Dual<A>> = map(::Dual)

@@ -21,6 +21,6 @@ import arrow.higherkind
  * ```
  */
 @higherkind
-data class Sum<A>(val getSum: A): SumOf<A> {
+data class Sum<A>(val getSum: A) : SumOf<A> {
   companion object
 }

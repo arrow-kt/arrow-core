@@ -138,4 +138,3 @@ interface ApMonoid<F, A> : Monoid<Ap<F, A>>, ApSemigroup<F, A> {
   override fun SA(): Semigroup<A> = MA()
   override fun empty(): Ap<F, A> = Ap(AF().just(MA().empty()))
 }
-

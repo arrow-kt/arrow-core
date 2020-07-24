@@ -86,7 +86,6 @@ interface FirstMonad : Monad<ForFirst>, FirstApplicative {
   override fun <A, B> Kind<ForFirst, A>.map(f: (A) -> B): Kind<ForFirst, B> = First(f(fix().getFirst))
 }
 
-
 @extension
 interface FirstFoldable : Foldable<ForFirst> {
   override fun <A, B> Kind<ForFirst, A>.foldLeft(b: B, f: (B, A) -> B): B =

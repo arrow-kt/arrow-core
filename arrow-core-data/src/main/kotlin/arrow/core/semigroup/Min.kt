@@ -21,6 +21,6 @@ import arrow.higherkind
  * ```
  */
 @higherkind
-data class Min<A>(val getMin: A): MinOf<A> {
+data class Min<A>(val getMin: A) : MinOf<A> {
   companion object
 }

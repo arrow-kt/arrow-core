@@ -21,6 +21,6 @@ import arrow.higherkind
  * ```
  */
 @higherkind
-data class Max<A>(val getMax: A): MaxOf<A> {
+data class Max<A>(val getMax: A) : MaxOf<A> {
   companion object
 }

@@ -31,6 +31,6 @@ import arrow.higherkind
  * ```
  */
 @higherkind
-data class Last<A>(val getLast: A): LastOf<A> {
+data class Last<A>(val getLast: A) : LastOf<A> {
   companion object
 }

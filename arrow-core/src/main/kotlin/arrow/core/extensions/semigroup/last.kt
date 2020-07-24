@@ -86,7 +86,6 @@ interface LastMonad : Monad<ForLast>, LastApplicative {
   override fun <A, B> Kind<ForLast, A>.map(f: (A) -> B): Kind<ForLast, B> = Last(f(fix().getLast))
 }
 
-
 @extension
 interface LastFoldable : Foldable<ForLast> {
   override fun <A, B> Kind<ForLast, A>.foldLeft(b: B, f: (B, A) -> B): B =

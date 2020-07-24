@@ -14,6 +14,6 @@ import arrow.higherkind
  * ```
  */
 @higherkind
-data class Dual<A>(val getDual: A): DualOf<A> {
+data class Dual<A>(val getDual: A) : DualOf<A> {
   companion object
 }

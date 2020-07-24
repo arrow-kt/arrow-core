@@ -1,7 +1,6 @@
 package arrow.core.semigroup
 
 import arrow.core.extensions.semigroup.endo.monoid.monoid
-import arrow.core.semigroup.Endo
 import arrow.core.test.UnitSpec
 import arrow.core.test.generators.endo
 import arrow.core.test.laws.MonoidLaws
