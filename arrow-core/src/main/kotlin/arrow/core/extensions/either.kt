@@ -264,7 +264,7 @@ interface EitherOrder<L, R> : Order<Either<L, R>> {
   override fun Either<L, R>.compare(b: Either<L, R>): Ordering = fold({ l1 ->
     b.fold({ l2 -> OL().run { l1.compare(l2) } }, { LT })
   }, { r1 ->
-    b.fold({ GT }, { r2 -> OR().run { r1.compare(r2) }  })
+    b.fold({ GT }, { r2 -> OR().run { r1.compare(r2) } })
   })
 }
 

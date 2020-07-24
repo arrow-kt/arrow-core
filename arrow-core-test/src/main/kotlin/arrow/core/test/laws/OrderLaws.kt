@@ -67,5 +67,3 @@ private fun <F> Order<F>.gteEqualsLteReversed(gen: Gen<F>) =
   forAll(gen, gen) { x, y ->
     x.gte(y) == y.lte(x)
   }
-
-

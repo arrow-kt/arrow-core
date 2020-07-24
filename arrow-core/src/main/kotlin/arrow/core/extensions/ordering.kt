@@ -3,9 +3,7 @@ package arrow.core.extensions
 import arrow.extension
 import arrow.typeclasses.EQ
 import arrow.typeclasses.Eq
-import arrow.typeclasses.GT
 import arrow.typeclasses.Hash
-import arrow.typeclasses.LT
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Ordering
