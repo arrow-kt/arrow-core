@@ -1,6 +1,7 @@
 package arrow.core
 
 import arrow.higherkind
+import arrow.typeclasses.Hash
 
 /**
  * Wrapper type that caches a values precomputed hash with the value
@@ -9,5 +10,7 @@ import arrow.higherkind
  */
 @higherkind
 data class Hashed<A>(val hash: Int, val value: A) : HashedOf<A> {
-  companion object
+  companion object {
+    fun <A> A.fromHash(HA: Hash<A>): Hashed<A> = Hashed(HA.run { this@fromHash.hash() }, this)
+  }
 }
