@@ -36,9 +36,9 @@ sealed class Ordering {
     }
   }
 }
-object LT: Ordering()
-object GT: Ordering()
-object EQ: Ordering()
+object LT : Ordering()
+object GT : Ordering()
+object EQ : Ordering()
 
 /**
  * ank_macro_hierarchy(arrow.typeclasses.Order)

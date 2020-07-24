@@ -46,7 +46,6 @@ import arrow.core.test.laws.UnalignLaws
 import arrow.core.test.laws.UnzipLaws
 import arrow.core.test.laws.equalUnderTheLaw
 import arrow.typeclasses.Eq
-import arrow.typeclasses.Order
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
