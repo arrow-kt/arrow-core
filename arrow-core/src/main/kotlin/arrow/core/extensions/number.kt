@@ -7,6 +7,7 @@ import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Semiring
 import arrow.typeclasses.Show
+import arrow.typeclasses.hash
 
 // ////////
 // Byte
@@ -152,12 +153,8 @@ interface IntOrder : Order<Int> {
   override fun Int.compare(b: Int): Int = compareTo(b)
 }
 
-interface IntHash : Hash<Int>, IntEq {
-  override fun Int.hash(): Int = hashCode()
-}
-
-fun Int.Companion.hash(): Hash<Int> =
-  object : IntHash {}
+// Re-export from here for convenience
+fun Int.Companion.hash(): Hash<Int> = Int.hash()
 
 fun Int.Companion.show(): Show<Int> =
   object : IntShow {}

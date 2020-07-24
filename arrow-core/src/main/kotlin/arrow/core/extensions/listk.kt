@@ -11,6 +11,7 @@ import arrow.core.Option
 import arrow.core.Tuple2
 import arrow.core.extensions.list.monad.flatten
 import arrow.core.extensions.listk.eq.eq
+import arrow.core.extensions.listk.foldable.foldLeft
 import arrow.core.extensions.listk.monad.monad
 import arrow.core.extensions.listk.semigroup.plus
 import arrow.core.fix
@@ -47,6 +48,7 @@ import arrow.typeclasses.Traverse
 import arrow.typeclasses.Unalign
 import arrow.typeclasses.Unzip
 import arrow.typeclasses.Zip
+import arrow.typeclasses.hashWithSalt
 import arrow.core.combineK as listCombineK
 import kotlin.collections.plus as listPlus
 import kotlin.collections.zip as listZip
@@ -200,15 +202,12 @@ interface ListKMonoidK : MonoidK<ForListK> {
 }
 
 @extension
-interface ListKHash<A> : Hash<ListKOf<A>>, ListKEq<A> {
+interface ListKHash<A> : Hash<ListKOf<A>> {
 
   fun HA(): Hash<A>
 
-  override fun EQ(): Eq<A> = HA()
-
-  override fun ListKOf<A>.hash(): Int = fix().foldLeft(1) { hash, a ->
-    31 * hash + HA().run { a.hash() }
-  }
+  override fun ListKOf<A>.hashWithSalt(salt: Int): Int =
+    HA().run { foldLeft(salt) { hash, x -> x.hashWithSalt(hash) } }.hashWithSalt(fix().size)
 }
 
 @extension
