@@ -7,15 +7,9 @@ import arrow.higherkind
  *
  * ```kotlin:ank
  * import arrow.core.semigroup.First
- * import arrow.core.extensions.semigroup.first.monoid.monoid
+ * import arrow.core.extensions.semigroup.first.semigroup.semigroup
  * //sampleStart
  * First.semigroup<Int>().run { First(1) + First(2) }.getFirst
- * //sampleEnd
- * ```
- * ```kotlin:ank
- * import arrow.core.extensions.list.foldable.foldMap
- * //sampleStart
- * listOf(1,2,3,4,5).foldMap(First.monoid(), ::First).getFirst
  * //sampleEnd
  * ```
  * ```kotlin:ank
@@ -23,10 +17,11 @@ import arrow.higherkind
  * import arrow.core.Option
  * import arrow.core.Some
  * import arrow.core.extensions.option.monoid.monoid
+ * import arrow.core.extensions.list.foldable.foldMap
  * //sampleStart
- * listOf(1,2,3,4,5).foldMap(Option.monoid(First.monoid())) { x ->
+ * listOf(1,2,3,4,5).foldMap(Option.monoid(First.semigroup<Int>())) { x ->
  *   if (x.rem(2) == 0) None else Some(First(x))
- * }.getFirst
+ * }.map { it.getFirst }
  * //sampleEnd
  * ```
  */

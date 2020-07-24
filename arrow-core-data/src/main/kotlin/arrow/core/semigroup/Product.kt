@@ -7,6 +7,7 @@ import arrow.higherkind
  *
  * ```kotlin:ank
  * import arrow.core.semigroup.Product
+ * import arrow.core.extensions.semigroup.product.monoid.monoid
  * import arrow.core.extensions.num
  * //sampleStart
  * Product.monoid(Int.num()).run {

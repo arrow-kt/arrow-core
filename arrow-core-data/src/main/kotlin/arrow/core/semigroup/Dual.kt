@@ -8,6 +8,7 @@ import arrow.higherkind
  * ```kotlin:ank
  * import arrow.core.semigroup.Dual
  * import arrow.core.extensions.semigroup.dual.monoid.monoid
+ * import arrow.core.extensions.monoid
  * //sampleStart
  * Dual.monoid(String.monoid()).run { Dual("World") + Dual("Hello ") }.getDual
  * //sampleEnd

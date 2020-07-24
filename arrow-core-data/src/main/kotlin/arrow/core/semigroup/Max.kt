@@ -7,16 +7,11 @@ import arrow.higherkind
  *
  * ```kotlin:ank
  * import arrow.core.semigroup.Max
- * import arrow.core.extensions.semigroup.max.monoid.monoid
+ * import arrow.core.extensions.semigroup.max.semigroup.semigroup
+ * import arrow.core.extensions.order
  *
  * //sampleStart
- * Max.monoid(Int.order()).run { Max(10) + Max(15) }.getMax
- * //sampleEnd
- * ```
- * ```kotlin:ank
- * import arrow.core.extensions.list.foldable.foldMap
- * //sampleStart
- * listOf(1, 6, 10, 3, 6).foldMap(Max.monoid(), :: Max).getMax
+ * Max.semigroup(Int.order()).run { Max(10) + Max(15) }.getMax
  * //sampleEnd
  * ```
  */

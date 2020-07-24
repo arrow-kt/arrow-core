@@ -8,7 +8,7 @@ import arrow.higherkind
  *
  * ```kotlin:ank
  * import arrow.core.semigroup.Alt
- * import arrow.core.extensions.alt.monoid.monoid
+ * import arrow.core.extensions.semigroup.alt.monoid.monoid
  * import arrow.core.extensions.option.alternative.alternative
  * import arrow.core.ForOption
  * import arrow.core.Option
@@ -23,7 +23,7 @@ import arrow.higherkind
  * import arrow.core.extensions.list.foldable.foldMap
  *
  * //sampleStart
- * listOf(None, Some(1), Some(10)).foldMap(Alt.monoid<ForOption, Int>(Option.alternative()), ::Alt).getAlt
+ * listOf(none<Int>(), Some(1), Some(10)).foldMap(Alt.monoid<ForOption, Int>(Option.alternative())) { Alt(it) }.getAlt
  * //sampleEnd
  * ```
  */

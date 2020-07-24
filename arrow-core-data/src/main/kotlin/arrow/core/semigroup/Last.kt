@@ -7,15 +7,9 @@ import arrow.higherkind
  *
  * ```kotlin:ank
  * import arrow.core.semigroup.Last
- * import arrow.core.extensions.semigroup.last.monoid.monoid
+ * import arrow.core.extensions.semigroup.last.semigroup.semigroup
  * //sampleStart
  * Last.semigroup<Int>().run { Last(1) + Last(2) }.getLast
- * //sampleEnd
- * ```
- * ```kotlin:ank
- * import arrow.core.extensions.list.foldable.foldMap
- * //sampleStart
- * listOf(1,2,3,4,5).foldMap(Last.monoid(), ::Last).getLast
  * //sampleEnd
  * ```
  * ```kotlin:ank
@@ -23,10 +17,11 @@ import arrow.higherkind
  * import arrow.core.Option
  * import arrow.core.Some
  * import arrow.core.extensions.option.monoid.monoid
+ * import arrow.core.extensions.list.foldable.foldMap
  * //sampleStart
- * listOf(1,2,3,4,5).foldMap(Option.monoid(Last.monoid())) { x ->
+ * listOf(1,2,3,4,5).foldMap(Option.monoid(Last.semigroup<Int>())) { x ->
  *   if (x.rem(2) == 0) None else Some(Last(x))
- * }.getLast
+ * }.map { it.getLast }
  * //sampleEnd
  * ```
  */

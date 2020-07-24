@@ -7,16 +7,11 @@ import arrow.higherkind
  *
  * ```kotlin:ank
  * import arrow.core.semigroup.Min
- * import arrow.core.extensions.semigroup.min.monoid.monoid
+ * import arrow.core.extensions.semigroup.min.semigroup.semigroup
+ * import arrow.core.extensions.order
  *
  * //sampleStart
- * Min.monoid(Int.order()).run { Min(10) + Min(15) }.getMin
- * //sampleEnd
- * ```
- * ```kotlin:ank
- * import arrow.core.extensions.list.foldable.foldMap
- * //sampleStart
- * listOf(1, 6, 10, 3, 6).foldMap(Min.monoid(), :: Min).getMin
+ * Min.semigroup(Int.order()).run { Min(10) + Min(15) }.getMin
  * //sampleEnd
  * ```
  */
