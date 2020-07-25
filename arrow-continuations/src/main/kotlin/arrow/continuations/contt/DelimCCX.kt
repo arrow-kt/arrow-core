@@ -28,6 +28,17 @@ private class DelimitedScopeImpl<T> : DelimitedScope<T>(), Continuation<T>, Deli
   private var invokeValue: Stack<Any?> = Stack()
   private var completions: Stack<Result<T>> = Stack()
 
+  private fun stateHeader(): String =
+    "shiftedBody\tshiftCont\tinvokeCont\tinvokeValue\tcompletions"
+
+  private fun stateLog(): String =
+    "${shiftedBody.size}\t\t\t${shiftCont.size}\t\t\t${invokeCont.size}\t\t\t${invokeValue.size}\t\t\t${completions.size}"
+
+
+  private fun log(value: String): Unit {
+    println("${stateLog()}\t\t\t$value")
+  }
+
   override val context: CoroutineContext = EmptyCoroutineContext
 
   override fun resumeWith(result: Result<T>) {
@@ -54,26 +65,27 @@ private class DelimitedScopeImpl<T> : DelimitedScope<T>(), Continuation<T>, Deli
 
   suspend fun runReset(): T =
     suspendCoroutineUninterceptedOrReturn<T> { parent ->
-      println("[SUSPENDED] runReset()")
+      println(stateHeader())
+      log("[SUSPENDED] runReset()")
       //var result: Result<T>? = null
       // Trampoline loop to avoid call stack usage
       resetLoop@ while (true) {
-        println("\t-> resetLoop")
+        log("\t-> resetLoop")
         if (pushCompletion(currentCont)) break
         // Shift has suspended - check if shift { ... } body had invoked continuation
         shiftLoop@ while (shiftCont.isNotEmpty()) {
-          println("\t\t-> shiftLoop")
+          log("\t\t-> shiftLoop")
           currentCont = takeInvokeCont() ?: continue@resetLoop
           val shift = takeShiftCont()
             ?: error("Delimited continuation is single-shot and cannot be invoked twice")
           val invokeVal = invokeValue.pop()
-          println("\t\t!! resumeWith: $invokeVal")
+          log("\t\t!! resumeWith: $invokeVal")
           shift.resumeWith(Result.success(invokeVal as T))
-          println("\t\t<- shift loop")
+          log("\t\t<- shift loop")
         }
         // Propagate the result to all pending continuations in shift { ... } bodies
         if (propagateCompletions(currentCont as Continuation<Any?>)) continue@resetLoop
-        println("\t<- resetLoop")
+        log("\t<- resetLoop")
       }
       COROUTINE_SUSPENDED
     }
@@ -83,33 +95,23 @@ private class DelimitedScopeImpl<T> : DelimitedScope<T>(), Continuation<T>, Deli
       when (val r = completions.pop()) {
 //        null -> TODO("Impossible result is null")
         else -> {
-          println("\t<- propagateCompletion: $r")
+          log("\t<- propagateCompletion: $r")
           //completions.push(r)
           //resume first shot if invoked
 
           val block: suspend DelimitedScope<T>.(cont: DelimitedContinuation<T, Any?>) -> T = {
-            suspendCoroutineUninterceptedOrReturn<T> {
-              println("\t\t!! [shifted yield on]: $r")
-              //check(invokeCont == null)
-              //invokeCont.pop().resumeWith(r)
+            suspendCoroutineUninterceptedOrReturn {
+              //shiftedBody.push(block as ShiftedFun<T>)
+              shiftCont.push(it as Continuation<Any?>)
               COROUTINE_SUSPENDED
             }
           }
-
-          val prompt = suspend {
-              println("\t*> New Prompt starts for `$r`: $this")
-              completions.push(r)
-              invokeCont.push(currentCont)
-              shiftedBody.push(block as ShiftedFun<T>)
-              shiftCont.push(currentCont as Continuation<Any?>)
-              runReset()
-          }
-          prompt.startCoroutine(this)
+          suspend { block(this) }.startCoroutine(this)
 
           //proceed to next value if invoked
           //invokeValue.push(r.getOrThrow())
 
-          return true
+          return false
           // Return the final result
           //resetCont.resumeWith(r)
         }
@@ -125,13 +127,13 @@ private class DelimitedScopeImpl<T> : DelimitedScope<T>(), Continuation<T>, Deli
       val shifted = takeShifted() ?: return true
       val value = shifted.invoke(this, this, currentCont)
       if (value !== COROUTINE_SUSPENDED) {
-        println("-> pushCompletion: $value")
+        log("-> pushCompletion: $value")
         completions.push(Result.success(value as T))
         //continue@loop
         //break //TODO or loop again?
       }
     } catch (e: Throwable) {
-      println("-> pushCompletion: $e")
+      log("-> pushCompletion: $e")
       completions.push(Result.failure(e))
       //continue@loop
       //break //TODO or loop again?
