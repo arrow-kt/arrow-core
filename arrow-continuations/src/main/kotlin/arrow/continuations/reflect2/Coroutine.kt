@@ -1,7 +1,5 @@
 package arrow.continuations.reflect2
 
-package arrow.continuations
-
 import arrow.fx.coroutines.UnsafePromise
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.loop
