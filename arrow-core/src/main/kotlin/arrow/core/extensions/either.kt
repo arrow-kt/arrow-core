@@ -9,7 +9,10 @@ import arrow.core.EitherOf
 import arrow.core.EitherPartialOf
 import arrow.core.Eval
 import arrow.core.ForEither
+import arrow.core.GT
+import arrow.core.LT
 import arrow.core.Left
+import arrow.core.Ordering
 import arrow.core.Right
 import arrow.core.extensions.either.eq.eq
 import arrow.core.extensions.either.monad.monad
@@ -30,16 +33,13 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.EqK2
 import arrow.typeclasses.Foldable
 import arrow.typeclasses.Functor
-import arrow.typeclasses.GT
 import arrow.typeclasses.Hash
-import arrow.typeclasses.LT
 import arrow.typeclasses.Monad
 import arrow.typeclasses.MonadError
 import arrow.typeclasses.MonadFx
 import arrow.typeclasses.MonadSyntax
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
-import arrow.typeclasses.Ordering
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.SemigroupK
 import arrow.typeclasses.Show

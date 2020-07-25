@@ -1,10 +1,10 @@
 package arrow.core.extensions
 
+import arrow.core.Ordering
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
-import arrow.typeclasses.Ordering
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Semiring
 import arrow.typeclasses.Show

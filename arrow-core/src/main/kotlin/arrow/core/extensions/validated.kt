@@ -5,8 +5,11 @@ import arrow.Kind2
 import arrow.core.Either
 import arrow.core.Eval
 import arrow.core.ForValidated
+import arrow.core.GT
 import arrow.core.Invalid
+import arrow.core.LT
 import arrow.core.NonEmptyList
+import arrow.core.Ordering
 import arrow.core.Valid
 import arrow.core.Validated
 import arrow.core.ValidatedOf
@@ -28,11 +31,8 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.EqK2
 import arrow.typeclasses.Foldable
 import arrow.typeclasses.Functor
-import arrow.typeclasses.GT
 import arrow.typeclasses.Hash
-import arrow.typeclasses.LT
 import arrow.typeclasses.Order
-import arrow.typeclasses.Ordering
 import arrow.typeclasses.Selective
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.SemigroupK

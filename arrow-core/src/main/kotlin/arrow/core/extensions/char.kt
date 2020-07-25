@@ -1,9 +1,9 @@
 package arrow.core.extensions
 
+import arrow.core.Ordering
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Order
-import arrow.typeclasses.Ordering
 import arrow.typeclasses.Show
 
 interface CharShow : Show<Char> {

@@ -4,13 +4,15 @@ import arrow.Kind
 import arrow.core.Either
 import arrow.core.Eval
 import arrow.core.ForListK
+import arrow.core.GT
 import arrow.core.Ior
+import arrow.core.LT
 import arrow.core.ListK
 import arrow.core.ListKOf
 import arrow.core.Option
+import arrow.core.Ordering
 import arrow.core.Tuple2
 import arrow.core.extensions.list.foldable.fold
-import arrow.core.extensions.list.monad.flatten
 import arrow.core.extensions.listk.eq.eq
 import arrow.core.extensions.listk.monad.monad
 import arrow.core.extensions.listk.semigroup.plus
@@ -30,9 +32,7 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.Foldable
 import arrow.typeclasses.Functor
 import arrow.typeclasses.FunctorFilter
-import arrow.typeclasses.GT
 import arrow.typeclasses.Hash
-import arrow.typeclasses.LT
 import arrow.typeclasses.Monad
 import arrow.typeclasses.MonadCombine
 import arrow.typeclasses.MonadFilter
@@ -43,7 +43,6 @@ import arrow.typeclasses.Monoid
 import arrow.typeclasses.MonoidK
 import arrow.typeclasses.Monoidal
 import arrow.typeclasses.Order
-import arrow.typeclasses.Ordering
 import arrow.typeclasses.Semialign
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.SemigroupK

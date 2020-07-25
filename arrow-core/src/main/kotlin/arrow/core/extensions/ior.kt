@@ -5,9 +5,12 @@ import arrow.Kind2
 import arrow.core.Either
 import arrow.core.Eval
 import arrow.core.ForIor
+import arrow.core.GT
 import arrow.core.Ior
 import arrow.core.IorOf
 import arrow.core.IorPartialOf
+import arrow.core.LT
+import arrow.core.Ordering
 import arrow.core.ap
 import arrow.core.extensions.ior.eq.eq
 import arrow.core.extensions.ior.monad.monad
@@ -29,13 +32,10 @@ import arrow.typeclasses.EqK
 import arrow.typeclasses.EqK2
 import arrow.typeclasses.Foldable
 import arrow.typeclasses.Functor
-import arrow.typeclasses.GT
 import arrow.typeclasses.Hash
-import arrow.typeclasses.LT
 import arrow.typeclasses.Monad
 import arrow.typeclasses.MonadSyntax
 import arrow.typeclasses.Order
-import arrow.typeclasses.Ordering
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.Traverse

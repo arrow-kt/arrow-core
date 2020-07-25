@@ -1,13 +1,17 @@
 package arrow.core.extensions
 
 import arrow.Kind
+import arrow.core.EQ
 import arrow.core.Either
 import arrow.core.Eval
 import arrow.core.ForSequenceK
+import arrow.core.GT
 import arrow.core.Ior
+import arrow.core.LT
 import arrow.core.ListK
 import arrow.core.None
 import arrow.core.Option
+import arrow.core.Ordering
 import arrow.core.SequenceK
 import arrow.core.SequenceKOf
 import arrow.core.Tuple2
@@ -33,15 +37,12 @@ import arrow.typeclasses.Alternative
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Apply
 import arrow.typeclasses.Crosswalk
-import arrow.typeclasses.EQ
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.Foldable
 import arrow.typeclasses.Functor
 import arrow.typeclasses.FunctorFilter
-import arrow.typeclasses.GT
 import arrow.typeclasses.Hash
-import arrow.typeclasses.LT
 import arrow.typeclasses.Monad
 import arrow.typeclasses.MonadCombine
 import arrow.typeclasses.MonadFilter
@@ -52,7 +53,6 @@ import arrow.typeclasses.Monoid
 import arrow.typeclasses.MonoidK
 import arrow.typeclasses.Monoidal
 import arrow.typeclasses.Order
-import arrow.typeclasses.Ordering
 import arrow.typeclasses.Repeat
 import arrow.typeclasses.Semialign
 import arrow.typeclasses.Semigroup

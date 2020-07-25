@@ -9,6 +9,7 @@ import arrow.core.ListK
 import arrow.core.Nel
 import arrow.core.NonEmptyList
 import arrow.core.NonEmptyListOf
+import arrow.core.Ordering
 import arrow.core.Tuple2
 import arrow.core.extensions.listk.eq.eq
 import arrow.core.extensions.listk.order.order
@@ -31,7 +32,6 @@ import arrow.typeclasses.Hash
 import arrow.typeclasses.Monad
 import arrow.typeclasses.MonadSyntax
 import arrow.typeclasses.Order
-import arrow.typeclasses.Ordering
 import arrow.typeclasses.Reducible
 import arrow.typeclasses.Semialign
 import arrow.typeclasses.Semigroup

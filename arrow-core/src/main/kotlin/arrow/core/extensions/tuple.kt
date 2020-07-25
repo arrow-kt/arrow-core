@@ -8,6 +8,7 @@ import arrow.core.Either.Left
 import arrow.core.Either.Right
 import arrow.core.Eval
 import arrow.core.ForTuple2
+import arrow.core.Ordering
 import arrow.core.Tuple10
 import arrow.core.Tuple2
 import arrow.core.Tuple2Of
@@ -38,7 +39,6 @@ import arrow.typeclasses.Hash
 import arrow.typeclasses.Monad
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
-import arrow.typeclasses.Ordering
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.Traverse

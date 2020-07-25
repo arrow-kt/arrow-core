@@ -1,10 +1,10 @@
 package arrow.core.test.laws
 
-import arrow.typeclasses.EQ
-import arrow.typeclasses.GT
-import arrow.typeclasses.LT
+import arrow.core.EQ
+import arrow.core.GT
+import arrow.core.LT
+import arrow.core.Ordering
 import arrow.typeclasses.Order
-import arrow.typeclasses.Ordering
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 

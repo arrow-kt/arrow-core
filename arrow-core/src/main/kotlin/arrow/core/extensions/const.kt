@@ -6,6 +6,7 @@ import arrow.core.ConstOf
 import arrow.core.ConstPartialOf
 import arrow.core.Eval
 import arrow.core.Option
+import arrow.core.Ordering
 import arrow.core.Tuple2
 import arrow.core.extensions.const.eq.eq
 import arrow.core.fix
@@ -24,7 +25,6 @@ import arrow.typeclasses.Hash
 import arrow.typeclasses.Invariant
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
-import arrow.typeclasses.Ordering
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.Traverse
