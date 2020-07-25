@@ -5,13 +5,12 @@ import kotlin.coroutines.*
 import kotlin.coroutines.intrinsics.*
 
 suspend fun <T> reset(body: suspend DelimitedScope<T>.() -> T): T =
-  DelimitedScopeImpl<T>().also { impl ->
-    body.startCoroutine(impl, impl)
-  }.runReset()
+  DelimitedScopeImpl<T>().run {
+    body.startCoroutine(this, this)
+    runReset()
+  }
 
-interface DelimitedContinuation<T, R> {
-  fun addResult(result: Result<T>): Unit
-}
+interface DelimitedContinuation<T, R>
 
 //@RestrictsSuspension
 abstract class DelimitedScope<T> {
@@ -29,14 +28,9 @@ private class DelimitedScopeImpl<T> : DelimitedScope<T>(), Continuation<T>, Deli
   private var invokeValue: Stack<Any?> = Stack()
   private var completions: Stack<Result<T>> = Stack()
 
-  override val context: CoroutineContext
-    get() = EmptyCoroutineContext
+  override val context: CoroutineContext = EmptyCoroutineContext
 
   override fun resumeWith(result: Result<T>) {
-    completions.push(result)
-  }
-
-  override fun addResult(result: Result<T>) {
     completions.push(result)
   }
 
@@ -55,65 +49,95 @@ private class DelimitedScopeImpl<T> : DelimitedScope<T>(), Continuation<T>, Deli
       COROUTINE_SUSPENDED
     }
 
+  // This is the stack of continuation in the `shift { ... }` after call to delimited continuation
+  var currentCont: Continuation<T> = this
+
   suspend fun runReset(): T =
-    suspendCoroutineUninterceptedOrReturn<T> { resetCont ->
-      println("starts runReset")
-      // This is the stack of continuation in the `shift { ... }` after call to delimited continuation
-      var currentCont: Continuation<T> = this
+    suspendCoroutineUninterceptedOrReturn<T> { parent ->
+      println("[SUSPENDED] runReset()")
       //var result: Result<T>? = null
       // Trampoline loop to avoid call stack usage
-      loop@ while (true) {
-        println("start looping while true")
-        try {
-          // Call shift { ... } body or break if there are no more shift calls
-          // If shift does not call any continuation, then its value is pushed and break out of the loop
-          val shifted = takeShifted() ?: break
-          val value = shifted.invoke(this, this, currentCont)
-          println("value from shift: $value")
-          if (value !== COROUTINE_SUSPENDED) {
-            println("completion: $value")
-            completions.push(Result.success(value as T))
-            //continue@loop
-            //break //TODO or loop again?
-          }
-        } catch (e: Throwable) {
-          println("completion: $e")
-          completions.push(Result.failure(e))
-          //continue@loop
-          //break //TODO or loop again?
-        }
+      resetLoop@ while (true) {
+        println("\t-> resetLoop")
+        if (pushCompletion(currentCont)) break
         // Shift has suspended - check if shift { ... } body had invoked continuation
-        while (shiftCont.isNotEmpty()) {
-          println("starts shift loop")
-          currentCont = takeInvokeCont() ?: continue@loop
+        shiftLoop@ while (shiftCont.isNotEmpty()) {
+          println("\t\t-> shiftLoop")
+          currentCont = takeInvokeCont() ?: continue@resetLoop
           val shift = takeShiftCont()
             ?: error("Delimited continuation is single-shot and cannot be invoked twice")
           val invokeVal = invokeValue.pop()
-          println("invoke Value: $invokeVal")
+          println("\t\t!! resumeWith: $invokeVal")
           shift.resumeWith(Result.success(invokeVal as T))
-          println("after shift resume with $invokeVal")
-          println("end shift loop")
-          continue@loop
+          println("\t\t<- shift loop")
         }
+        // Propagate the result to all pending continuations in shift { ... } bodies
+        if (propagateCompletions(currentCont as Continuation<Any?>)) continue@resetLoop
+        println("\t<- resetLoop")
       }
-      // Propagate the result to all pending continuations in shift { ... } bodies
-      if (completions.isNotEmpty()) {
-        when (val r = completions.pop()) {
-          null -> TODO("Impossible result is null")
-          else -> {
-            suspend {
-              completions.push(r)
-              currentCont.resumeWith(r)
-              runReset()
-            }.startCoroutine(this)
-            // Return the final result
-            //resetCont.resumeWith(r)
-          }
-        }
-      }
-      println("SUSPENDING RESET")
       COROUTINE_SUSPENDED
     }
+
+  private fun propagateCompletions(currentCont: Continuation<Any?>?): Boolean {
+    if (completions.isNotEmpty()) {
+      when (val r = completions.pop()) {
+//        null -> TODO("Impossible result is null")
+        else -> {
+          println("\t<- propagateCompletion: $r")
+          //completions.push(r)
+          //resume first shot if invoked
+
+          val block: suspend DelimitedScope<T>.(cont: DelimitedContinuation<T, Any?>) -> T = {
+            suspendCoroutineUninterceptedOrReturn<T> {
+              println("\t\t!! [shifted yield on]: $r")
+              //check(invokeCont == null)
+              //invokeCont.pop().resumeWith(r)
+              COROUTINE_SUSPENDED
+            }
+          }
+
+          val prompt = suspend {
+              println("\t*> New Prompt starts for `$r`: $this")
+              completions.push(r)
+              invokeCont.push(currentCont)
+              shiftedBody.push(block as ShiftedFun<T>)
+              shiftCont.push(currentCont as Continuation<Any?>)
+              runReset()
+          }
+          prompt.startCoroutine(this)
+
+          //proceed to next value if invoked
+          //invokeValue.push(r.getOrThrow())
+
+          return true
+          // Return the final result
+          //resetCont.resumeWith(r)
+        }
+      }
+    }
+    return false
+  }
+
+  private fun pushCompletion(currentCont: Continuation<T>): Boolean {
+    try {
+      // Call shift { ... } body or break if there are no more shift calls
+      // If shift does not call any continuation, then its value is pushed and break out of the loop
+      val shifted = takeShifted() ?: return true
+      val value = shifted.invoke(this, this, currentCont)
+      if (value !== COROUTINE_SUSPENDED) {
+        println("-> pushCompletion: $value")
+        completions.push(Result.success(value as T))
+        //continue@loop
+        //break //TODO or loop again?
+      }
+    } catch (e: Throwable) {
+      println("-> pushCompletion: $e")
+      completions.push(Result.failure(e))
+      //continue@loop
+      //break //TODO or loop again?
+    }
+    return false
+  }
 
   private fun takeShifted() = if (shiftedBody.isNotEmpty()) shiftedBody.pop() else null
   private fun takeShiftCont() = if (shiftCont.isNotEmpty()) shiftCont.pop() else null
@@ -122,8 +146,8 @@ private class DelimitedScopeImpl<T> : DelimitedScope<T>(), Continuation<T>, Deli
 
 suspend fun <A, B> DelimitedScope<List<A>>.bind(list: List<B>): B =
   shift { cb ->
-    list.fold(emptyList<A>()) { acc, b ->
-      acc + cb(b)
+    list.flatMap {
+      cb(it)
     }
   }
 
