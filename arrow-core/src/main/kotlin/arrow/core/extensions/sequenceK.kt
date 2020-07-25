@@ -58,6 +58,7 @@ import arrow.typeclasses.Unalign
 import arrow.typeclasses.Unzip
 import arrow.typeclasses.Zip
 import arrow.core.combineK as sequenceCombineK
+import arrow.core.ap as seqAp
 
 @extension
 interface SequenceKSemigroup<A> : Semigroup<SequenceK<A>> {
@@ -67,7 +68,7 @@ interface SequenceKSemigroup<A> : Semigroup<SequenceK<A>> {
 @extension
 interface SequenceKSemigroupal : Semigroupal<ForSequenceK> {
   override fun <A, B> Kind<ForSequenceK, A>.product(fb: Kind<ForSequenceK, B>): Kind<ForSequenceK, Tuple2<A, B>> =
-    fb.fix().ap(this.map { a: A -> { b: B -> Tuple2(a, b) } })
+    map { a -> { b: B -> a toT b } }.seqAp(fb)
 }
 
 @extension
@@ -110,8 +111,8 @@ interface SequenceKFunctor : Functor<ForSequenceK> {
 
 @extension
 interface SequenceKApply : Apply<ForSequenceK> {
-  override fun <A, B> Kind<ForSequenceK, A>.ap(ff: Kind<ForSequenceK, (A) -> B>): SequenceK<B> =
-    fix().ap(ff)
+  override fun <A, B> Kind<ForSequenceK, (A) -> B>.ap(ff: Kind<ForSequenceK, A>): Kind<ForSequenceK, B> =
+    seqAp(ff)
 
   override fun <A, B> Kind<ForSequenceK, A>.map(f: (A) -> B): SequenceK<B> =
     fix().map(f)
@@ -122,8 +123,8 @@ interface SequenceKApply : Apply<ForSequenceK> {
 
 @extension
 interface SequenceKApplicative : Applicative<ForSequenceK>, SequenceKApply {
-  override fun <A, B> Kind<ForSequenceK, A>.ap(ff: Kind<ForSequenceK, (A) -> B>): SequenceK<B> =
-    fix().ap(ff)
+  override fun <A, B> Kind<ForSequenceK, (A) -> B>.ap(ff: Kind<ForSequenceK, A>): Kind<ForSequenceK, B> =
+    seqAp(ff)
 
   override fun <A, B> Kind<ForSequenceK, A>.map(f: (A) -> B): SequenceK<B> =
     fix().map(f)
@@ -137,8 +138,8 @@ interface SequenceKApplicative : Applicative<ForSequenceK>, SequenceKApply {
 
 @extension
 interface SequenceKMonad : Monad<ForSequenceK> {
-  override fun <A, B> Kind<ForSequenceK, A>.ap(ff: Kind<ForSequenceK, (A) -> B>): SequenceK<B> =
-    fix().ap(ff)
+  override fun <A, B> Kind<ForSequenceK, (A) -> B>.ap(ff: Kind<ForSequenceK, A>): Kind<ForSequenceK, B> =
+    seqAp(ff)
 
   override fun <A, B> Kind<ForSequenceK, A>.flatMap(f: (A) -> Kind<ForSequenceK, B>): SequenceK<B> =
     fix().flatMap(f)
@@ -222,8 +223,8 @@ interface SequenceKMonadFilter : MonadFilter<ForSequenceK> {
   override fun <A, B> Kind<ForSequenceK, A>.filterMap(f: (A) -> Option<B>): SequenceK<B> =
     fix().filterMap(f)
 
-  override fun <A, B> Kind<ForSequenceK, A>.ap(ff: Kind<ForSequenceK, (A) -> B>): SequenceK<B> =
-    fix().ap(ff)
+  override fun <A, B> Kind<ForSequenceK, (A) -> B>.ap(ff: Kind<ForSequenceK, A>): Kind<ForSequenceK, B> =
+    seqAp(ff)
 
   override fun <A, B> Kind<ForSequenceK, A>.flatMap(f: (A) -> Kind<ForSequenceK, B>): SequenceK<B> =
     fix().flatMap(f)
@@ -249,8 +250,8 @@ interface SequenceKMonadCombine : MonadCombine<ForSequenceK>, SequenceKAlternati
   override fun <A, B> Kind<ForSequenceK, A>.filterMap(f: (A) -> Option<B>): SequenceK<B> =
     fix().filterMap(f)
 
-  override fun <A, B> Kind<ForSequenceK, A>.ap(ff: Kind<ForSequenceK, (A) -> B>): SequenceK<B> =
-    fix().ap(ff)
+  override fun <A, B> Kind<ForSequenceK, (A) -> B>.ap(ff: Kind<ForSequenceK, A>): Kind<ForSequenceK, B> =
+    seqAp(ff)
 
   override fun <A, B> Kind<ForSequenceK, A>.flatMap(f: (A) -> Kind<ForSequenceK, B>): SequenceK<B> =
     fix().flatMap(f)
@@ -396,8 +397,8 @@ interface SequenceKEqK : EqK<ForSequenceK> {
 
 @extension
 interface SequenceKMonadPlus : MonadPlus<ForSequenceK>, SequenceKMonad, SequenceKAlternative {
-  override fun <A, B> Kind<ForSequenceK, A>.ap(ff: Kind<ForSequenceK, (A) -> B>): SequenceK<B> =
-    fix().ap(ff)
+  override fun <A, B> Kind<ForSequenceK, (A) -> B>.ap(ff: Kind<ForSequenceK, A>): Kind<ForSequenceK, B> =
+    seqAp(ff)
 
   override fun <A, B> Kind<ForSequenceK, A>.map(f: (A) -> B): SequenceK<B> =
     fix().map(f)

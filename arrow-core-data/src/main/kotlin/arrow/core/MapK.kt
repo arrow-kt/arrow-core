@@ -20,9 +20,6 @@ data class MapK<K, out A>(private val map: Map<K, A>) : MapKOf<K, A>, Map<K, A> 
     if (fb.value().isEmpty()) Eval.now(emptyMap<K, Z>().k())
     else fb.map { b -> this.map2(b, f) }
 
-  fun <B> ap(ff: MapK<K, (A) -> B>): MapK<K, B> =
-    ff.flatMap { this.map(it) }
-
   fun <B, Z> ap2(f: MapK<K, (A, B) -> Z>, fb: MapK<K, B>): Map<K, Z> =
     f.map.flatMap { (k, f) ->
       this.flatMap { a -> fb.flatMap { b -> mapOf(Tuple2(k, f(a, b))).k() } }
@@ -43,7 +40,7 @@ data class MapK<K, out A>(private val map: Map<K, A>) : MapKOf<K, A>, Map<K, A> 
 
   fun <G, B> traverse(GA: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, MapK<K, B>> = GA.run {
     map.iterator().iterateRight(Eval.always { just(emptyMap<K, B>().k()) }) { kv, lbuf ->
-      f(kv.value).apEval(lbuf.map { it.map { m -> { b: B -> (mapOf(kv.key to b).k() + m).k() } } })
+      f(kv.value).map { b: B -> { xs: MapK<K, B> -> (mapOf(kv.key toT b) + xs).k() } }.apEval(lbuf)
     }.value()
   }
 
@@ -91,3 +88,6 @@ fun <K, A, B> Map<K, A>.foldRight(b: Map<K, B>, f: (Map.Entry<K, A>, Map<K, B>) 
 
 fun <K, V> mapOf(vararg tuple: Tuple2<K, V>): MapK<K, V> =
   if (tuple.isNotEmpty()) tuple.map { it.a to it.b }.toMap().k() else emptyMap<K, V>().k()
+
+fun <K, V, B> MapKOf<K, (V) -> B>.ap(ff: MapKOf<K, V>): MapK<K, B> =
+  fix().flatMap { f -> ff.fix().map(f) }

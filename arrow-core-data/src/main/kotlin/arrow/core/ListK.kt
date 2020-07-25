@@ -153,11 +153,9 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
       else -> false
     }
 
-  fun <B> ap(ff: ListKOf<(A) -> B>): ListK<B> = flatMap { a -> ff.fix().map { f -> f(a) } }
-
   fun <G, B> traverse(GA: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, ListK<B>> =
     foldRight(Eval.now(GA.just(emptyList<B>().k()))) { a, eval ->
-      GA.run { f(a).apEval(eval.map { it.map { xs -> { a: B -> (listOf(a) + xs).k() } } }) }
+      GA.run { f(a).map { b -> { xs: ListK<B> -> (listOf(b) + xs).k() } }.apEval(eval) }
     }.value()
 
   fun <B, Z> map2(fb: ListKOf<B>, f: (Tuple2<A, B>) -> Z): ListK<Z> =
@@ -284,3 +282,6 @@ fun <A> List<A>.k(): ListK<A> = ListK(this)
 
 fun <A> listKOf(vararg elements: A): ListK<A> =
   listOf(*elements).k()
+
+fun <A, B> ListKOf<(A) -> B>.ap(ff: ListKOf<A>): ListK<B> =
+  fix().flatMap { f -> ff.fix().map(f) }

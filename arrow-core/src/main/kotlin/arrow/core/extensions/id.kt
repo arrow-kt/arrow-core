@@ -41,6 +41,7 @@ import arrow.typeclasses.Unzip
 import arrow.typeclasses.Zip
 import arrow.core.extensions.traverse as idTraverse
 import arrow.core.select as idSelect
+import arrow.core.ap as idAp
 
 @extension
 interface IdSemigroup<A> : Semigroup<Id<A>> {
@@ -80,18 +81,15 @@ interface IdFunctor : Functor<ForId> {
 
 @extension
 interface IdApply : Apply<ForId> {
-  override fun <A, B> IdOf<A>.ap(ff: IdOf<(A) -> B>): Id<B> =
-    fix().ap(ff)
+  override fun <A, B> Kind<ForId, (A) -> B>.ap(ff: Kind<ForId, A>): Kind<ForId, B> =
+    idAp(ff)
 
   override fun <A, B> IdOf<A>.map(f: (A) -> B): Id<B> =
     fix().map(f)
 }
 
 @extension
-interface IdApplicative : Applicative<ForId> {
-  override fun <A, B> IdOf<A>.ap(ff: IdOf<(A) -> B>): Id<B> =
-    fix().ap(ff)
-
+interface IdApplicative : Applicative<ForId>, IdApply {
   override fun <A, B> IdOf<A>.map(f: (A) -> B): Id<B> =
     fix().map(f)
 
@@ -107,8 +105,8 @@ interface IdSelective : Selective<ForId>, IdApplicative {
 
 @extension
 interface IdMonad : Monad<ForId> {
-  override fun <A, B> IdOf<A>.ap(ff: IdOf<(A) -> B>): Id<B> =
-    fix().ap(ff)
+  override fun <A, B> Kind<ForId, (A) -> B>.ap(ff: Kind<ForId, A>): Kind<ForId, B> =
+    idAp(ff)
 
   override fun <A, B> IdOf<A>.flatMap(f: (A) -> IdOf<B>): Id<B> =
     fix().flatMap(f)
@@ -149,8 +147,8 @@ interface IdComonad : Comonad<ForId> {
 
 @extension
 interface IdBimonad : Bimonad<ForId> {
-  override fun <A, B> IdOf<A>.ap(ff: IdOf<(A) -> B>): Id<B> =
-    fix().ap(ff)
+  override fun <A, B> Kind<ForId, (A) -> B>.ap(ff: Kind<ForId, A>): Kind<ForId, B> =
+    idAp(ff)
 
   override fun <A, B> IdOf<A>.flatMap(f: (A) -> IdOf<B>): Id<B> =
     fix().flatMap(f)

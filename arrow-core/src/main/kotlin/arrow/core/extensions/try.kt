@@ -11,6 +11,7 @@ import arrow.core.Try.Failure
 import arrow.core.TryOf
 import arrow.core.extensions.`try`.eq.eq
 import arrow.core.extensions.`try`.monadThrow.monadThrow
+import arrow.core.failure
 import arrow.core.fix
 import arrow.core.identity
 import arrow.extension
@@ -34,6 +35,7 @@ import arrow.typeclasses.Show
 import arrow.typeclasses.Traverse
 import arrow.core.extensions.traverse as tryTraverse
 import arrow.core.handleErrorWith as tryHandleErrorWith
+import arrow.core.ap as tryAp
 
 fun <A> Try<A>.combine(SG: Semigroup<A>, b: Try<A>): Try<A> =
   flatMap { a ->
@@ -115,11 +117,11 @@ interface TryFunctor : Functor<ForTry> {
 
 @extension
 interface TryApply : Apply<ForTry> {
-  override fun <A, B> TryOf<A>.ap(ff: TryOf<(A) -> B>): Try<B> =
-    fix().ap(ff)
+  override fun <A, B> Kind<ForTry, (A) -> B>.ap(ff: Kind<ForTry, A>): Kind<ForTry, B> =
+    tryAp(ff)
 
-  override fun <A, B> Kind<ForTry, A>.apEval(ff: Eval<Kind<ForTry, (A) -> B>>): Eval<Kind<ForTry, B>> =
-    fix().fold({ t -> Eval.now(Try.raiseError(t)) }, { a -> ff.map { it.fix().map { f -> f(a) } } })
+  override fun <A, B> Kind<ForTry, (A) -> B>.apEval(ff: Eval<Kind<ForTry, A>>): Eval<Kind<ForTry, B>> =
+    fix().fold({ Eval.now(it.failure()) }, { f -> ff.map { it.fix().map(f) } })
 
   override fun <A, B> TryOf<A>.map(f: (A) -> B): Try<B> =
     fix().map(f)
@@ -127,8 +129,8 @@ interface TryApply : Apply<ForTry> {
 
 @extension
 interface TryApplicative : Applicative<ForTry> {
-  override fun <A, B> TryOf<A>.ap(ff: TryOf<(A) -> B>): Try<B> =
-    fix().ap(ff)
+  override fun <A, B> Kind<ForTry, (A) -> B>.ap(ff: Kind<ForTry, A>): Kind<ForTry, B> =
+    tryAp(ff)
 
   override fun <A, B> TryOf<A>.map(f: (A) -> B): Try<B> =
     fix().map(f)
@@ -139,8 +141,8 @@ interface TryApplicative : Applicative<ForTry> {
 
 @extension
 interface TryMonad : Monad<ForTry> {
-  override fun <A, B> TryOf<A>.ap(ff: TryOf<(A) -> B>): Try<B> =
-    fix().ap(ff)
+  override fun <A, B> Kind<ForTry, (A) -> B>.ap(ff: Kind<ForTry, A>): Kind<ForTry, B> =
+    tryAp(ff)
 
   override fun <A, B> TryOf<A>.flatMap(f: (A) -> TryOf<B>): Try<B> =
     fix().flatMap(f)

@@ -364,8 +364,8 @@ inline fun <A, B, D> Ior<A, B>.flatMap(SG: Semigroup<A>, f: (B) -> Ior<A, D>): I
   }
 )
 
-fun <A, B, D> Ior<A, B>.ap(SG: Semigroup<A>, ff: IorOf<A, (B) -> D>): Ior<A, D> =
-  flatMap(SG) { a -> ff.fix().map { f -> f(a) } }
+fun <A, B, D> IorOf<A, (B) -> D>.ap(SG: Semigroup<A>, ff: IorOf<A, B>): Ior<A, D> =
+  fix().flatMap(SG) { f -> ff.fix().map(f) }
 
 inline fun <A, B> Ior<A, B>.getOrElse(default: () -> B): B =
   fold({ default() }, ::identity, { _, b -> b })

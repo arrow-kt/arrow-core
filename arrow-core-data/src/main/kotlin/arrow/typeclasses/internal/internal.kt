@@ -5,6 +5,7 @@ import arrow.core.Either
 import arrow.core.ForId
 import arrow.core.Id
 import arrow.core.fix
+import arrow.core.value
 import arrow.typeclasses.Bimonad
 
 val IdBimonad: Bimonad<ForId> = object : Bimonad<ForId> {
@@ -17,8 +18,8 @@ val IdBimonad: Bimonad<ForId> = object : Bimonad<ForId> {
   override fun <A> just(a: A): Kind<ForId, A> =
     Id(a)
 
-  override fun <A, B> Kind<ForId, A>.ap(ff: Kind<ForId, (A) -> B>): Kind<ForId, B> =
-    fix().ap(ff)
+  override fun <A, B> Kind<ForId, (A) -> B>.ap(ff: Kind<ForId, A>): Kind<ForId, B> =
+    Id(value().invoke(ff.value()))
 
   override fun <A, B> Kind<ForId, A>.map(f: (A) -> B): Kind<ForId, B> =
     fix().map(f)

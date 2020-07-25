@@ -44,8 +44,8 @@ data class SortedMapK<A : Comparable<A>, B>(private val map: SortedMap<A, B>) : 
     this.map.foldLeft(c) { m: SortedMap<A, C>, (a, b) -> f(m.k(), Tuple2(a, b)) }.k()
 
   fun <G, C> traverse(GA: Applicative<G>, f: (B) -> Kind<G, C>): Kind<G, SortedMapK<A, C>> = GA.run {
-    map.iterator().iterateRight(Eval.always { just(sortedMapOf<A, C>().k()) }) { kv, lbuf ->
-      f(kv.value).apEval(lbuf.map { it.map { xs -> { b: C -> (mapOf(kv.key to b).k() + xs).toSortedMap().k() } } })
+    map.iterator().iterateRight<Map.Entry<A, B>, Kind<G, SortedMapK<A, C>>>(Eval.always { just(sortedMapOf<A, C>().k()) }) { kv, lbuf ->
+      f(kv.value).map { c -> { xs: SortedMapK<A, C> -> (mapOf(kv.key toT c) + xs).toSortedMap().k() } }.apEval(lbuf)
     }.value()
   }
 

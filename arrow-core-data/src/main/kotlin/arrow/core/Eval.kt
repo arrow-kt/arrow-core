@@ -246,8 +246,6 @@ sealed class Eval<out A> : EvalOf<A> {
 
   fun <B> map(f: (A) -> B): Eval<B> = flatMap { a -> Now(f(a)) }
 
-  fun <B> ap(ff: EvalOf<(A) -> B>): Eval<B> = ff.fix().flatMap { f -> map(f) }.fix()
-
   @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE", "UNCHECKED_CAST")
   fun <B> flatMap(f: (A) -> EvalOf<B>): Eval<B> =
     when (this) {
@@ -363,3 +361,6 @@ fun <A, B> Iterator<A>.iterateRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Ev
     Eval.defer { if (this.hasNext()) f(this.next(), loop()) else lb }
   return loop()
 }
+
+fun <A, B> EvalOf<(A) -> B>.ap(ff: EvalOf<A>): Eval<B> =
+  fix().flatMap { f -> ff.fix().map(f) }

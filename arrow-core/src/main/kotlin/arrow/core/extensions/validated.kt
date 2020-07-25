@@ -37,6 +37,7 @@ import arrow.typeclasses.Traverse
 import arrow.undocumented
 import arrow.core.handleErrorWith as validatedHandleErrorWith
 import arrow.core.traverse as validatedTraverse
+import arrow.core.ap as validatedAp
 
 @extension
 @undocumented
@@ -59,7 +60,8 @@ interface ValidatedApplicative<E> : Applicative<ValidatedPartialOf<E>>, Validate
 
   override fun <A, B> Kind<ValidatedPartialOf<E>, A>.map(f: (A) -> B): Validated<E, B> = fix().map(f)
 
-  override fun <A, B> Kind<ValidatedPartialOf<E>, A>.ap(ff: Kind<ValidatedPartialOf<E>, (A) -> B>): Validated<E, B> = fix().ap(SE(), ff.fix())
+  override fun <A, B> Kind<ValidatedPartialOf<E>, (A) -> B>.ap(ff: Kind<ValidatedPartialOf<E>, A>): Kind<ValidatedPartialOf<E>, B> =
+    validatedAp(SE(), ff)
 }
 
 @extension

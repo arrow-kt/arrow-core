@@ -22,6 +22,7 @@ import arrow.typeclasses.Monoid
 import arrow.typeclasses.Selective
 import arrow.typeclasses.Semigroup
 import arrow.core.select as fun0Select
+import arrow.core.ap as fun0Ap
 
 @extension
 interface Function0Semigroup<A> : Semigroup<Function0<A>> {
@@ -47,18 +48,15 @@ interface Function0Functor : Functor<ForFunction0> {
 
 @extension
 interface Function0Apply : Apply<ForFunction0> {
-  override fun <A, B> Function0Of<A>.ap(ff: Function0Of<(A) -> B>): Function0<B> =
-    fix().ap(ff)
+  override fun <A, B> Kind<ForFunction0, (A) -> B>.ap(ff: Kind<ForFunction0, A>): Kind<ForFunction0, B> =
+    fun0Ap(ff)
 
   override fun <A, B> Function0Of<A>.map(f: (A) -> B): Function0<B> =
     fix().map(f)
 }
 
 @extension
-interface Function0Applicative : Applicative<ForFunction0> {
-  override fun <A, B> Function0Of<A>.ap(ff: Function0Of<(A) -> B>): Function0<B> =
-    fix().ap(ff)
-
+interface Function0Applicative : Applicative<ForFunction0>, Function0Apply {
   override fun <A, B> Function0Of<A>.map(f: (A) -> B): Function0<B> =
     fix().map(f)
 
@@ -74,8 +72,8 @@ interface Function0Selective : Selective<ForFunction0>, Function0Applicative {
 
 @extension
 interface Function0Monad : Monad<ForFunction0> {
-  override fun <A, B> Function0Of<A>.ap(ff: Function0Of<(A) -> B>): Function0<B> =
-    fix().ap(ff)
+  override fun <A, B> Kind<ForFunction0, (A) -> B>.ap(ff: Kind<ForFunction0, A>): Kind<ForFunction0, B> =
+    fun0Ap(ff)
 
   override fun <A, B> Function0Of<A>.flatMap(f: (A) -> Function0Of<B>): Function0<B> =
     fix().flatMap(f)
@@ -116,8 +114,8 @@ interface Function0Comonad : Comonad<ForFunction0> {
 
 @extension
 interface Function0Bimonad : Bimonad<ForFunction0> {
-  override fun <A, B> Function0Of<A>.ap(ff: Function0Of<(A) -> B>): Function0<B> =
-    fix().ap(ff)
+  override fun <A, B> Kind<ForFunction0, (A) -> B>.ap(ff: Kind<ForFunction0, A>): Kind<ForFunction0, B> =
+    fun0Ap(ff)
 
   override fun <A, B> Function0Of<A>.flatMap(f: (A) -> Function0Of<B>): Function0<B> =
     fix().flatMap(f)

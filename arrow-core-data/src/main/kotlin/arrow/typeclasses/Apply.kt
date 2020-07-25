@@ -13,6 +13,7 @@ import arrow.core.Tuple6
 import arrow.core.Tuple7
 import arrow.core.Tuple8
 import arrow.core.Tuple9
+import arrow.core.toT
 
 interface Apply<F> : Functor<F> {
 
@@ -36,20 +37,12 @@ interface Apply<F> : Functor<F> {
    * }
    * ```
    */
-  @Deprecated(
-    "ap will have its type signature changed to fun <A, B> Kind<F, (A) -> B>.ap(ff: Kind<F, A>): Kind<F, B> in future versions. You can either keep it as is and change it then, or use mapN as a stable replacement",
-    ReplaceWith("mapN(this, ff) { (a, f) -> f(a) }")
-  )
-  fun <A, B> Kind<F, A>.ap(ff: Kind<F, (A) -> B>): Kind<F, B>
+  fun <A, B> Kind<F, (A) -> B>.ap(ff: Kind<F, A>): Kind<F, B>
 
-  @Deprecated(
-    "apEval will have its type signature changed to fun <A, B> Kind<F, (A) -> B>.ap(ff: Eval<Kind<F, A>>): Eval<Kind<F, B>> in future versions. You can either keep it as is and change it then, or use map2Eval as a stable replacement",
-    ReplaceWith("map2Eval(ff) { (a, f) -> f(a) }")
-  )
-  fun <A, B> Kind<F, A>.apEval(ff: Eval<Kind<F, (A) -> B>>): Eval<Kind<F, B>> = ff.map { this.ap(it) }
+  fun <A, B> Kind<F, (A) -> B>.apEval(ff: Eval<Kind<F, A>>): Eval<Kind<F, B>> = ff.map { this.ap(it) }
 
   fun <A, B, Z> Kind<F, A>.map2Eval(fb: Eval<Kind<F, B>>, f: (Tuple2<A, B>) -> Z): Eval<Kind<F, Z>> =
-    apEval(fb.map { it.map { b -> { a: A -> f(Tuple2(a, b)) } } })
+    map { a -> { b: B -> f(a toT b) } }.apEval(fb)
 
   @Deprecated(
     "map is being renamed to mapN",
@@ -295,7 +288,7 @@ interface Apply<F> : Functor<F> {
     product(fb).map(f)
 
   fun <A, B> Kind<F, A>.product(fb: Kind<F, B>): Kind<F, Tuple2<A, B>> =
-    ap(fb.map { b: B -> { a: A -> Tuple2(a, b) } })
+    map { a -> { b: B -> a toT b } }.ap(fb)
 
   fun <A, B, Z> Kind<F, Tuple2<A, B>>.product(
     other: Kind<F, Z>,

@@ -13,9 +13,6 @@ data class Tuple2<out A, out B>(val a: A, val b: B) : Tuple2Of<A, B> {
   fun <C, D> bimap(fl: (A) -> C, fr: (B) -> D) =
     fl(a) toT fr(b)
 
-  fun <C> ap(f: Tuple2Of<*, (B) -> C>) =
-    map(f.fix().b)
-
   fun <C> flatMap(f: (B) -> Tuple2Of<@UnsafeVariance A, C>) =
     f(b).fix()
 
@@ -40,6 +37,9 @@ data class Tuple2<out A, out B>(val a: A, val b: B) : Tuple2Of<A, B> {
 
   companion object
 }
+
+fun <A, B, C> Tuple2Of<A, (B) -> C>.ap(ff: Tuple2Of<A, B>): Tuple2<A, C> =
+  fix().flatMap { f -> ff.fix().map(f) }
 
 @higherkind
 data class Tuple3<out A, out B, out C>(val a: A, val b: B, val c: C) : Tuple3Of<A, B, C> {

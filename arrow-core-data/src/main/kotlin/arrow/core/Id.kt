@@ -59,8 +59,6 @@ data class Id<out A>(private val value: A) : IdOf<A> {
 
   fun extract(): A = value
 
-  fun <B> ap(ff: IdOf<(A) -> B>): Id<B> = ff.fix().flatMap { f -> map(f) }.fix()
-
   companion object {
 
     tailrec fun <A, B> tailRecM(a: A, f: (A) -> IdOf<Either<A, B>>): Id<B> {
@@ -80,4 +78,7 @@ data class Id<out A>(private val value: A) : IdOf<A> {
 }
 
 fun <A, B> Id<Either<A, B>>.select(f: IdOf<(A) -> B>): Id<B> =
-  flatMap { it.fold({ l -> just(l).ap(f) }, { r -> just(r) }) }
+  flatMap { it.fold({ l -> f.ap(just(l)) }, { r -> just(r) }) }
+
+fun <A, B> IdOf<(A) -> B>.ap(ff: IdOf<A>): Id<B> =
+  fix().flatMap { f -> ff.fix().map(f) }

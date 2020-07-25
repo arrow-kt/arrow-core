@@ -73,7 +73,7 @@ interface ConstApply<A> : Apply<ConstPartialOf<A>> {
 
   override fun <T, U> ConstOf<A, T>.map(f: (T) -> U): Const<A, U> = fix().retag()
 
-  override fun <T, U> ConstOf<A, T>.ap(ff: ConstOf<A, (T) -> U>): Const<A, U> =
+  override fun <T, U> Kind<ConstPartialOf<A>, (T) -> U>.ap(ff: Kind<ConstPartialOf<A>, T>): Kind<ConstPartialOf<A>, U> =
     constAp(MA(), ff)
 }
 
@@ -89,7 +89,7 @@ interface ConstApplicative<A> : Applicative<ConstPartialOf<A>> {
     override fun MA(): Monoid<A> = this@ConstApplicative.MA()
   }.empty().fix()
 
-  override fun <T, U> ConstOf<A, T>.ap(ff: ConstOf<A, (T) -> U>): Const<A, U> =
+  override fun <T, U> Kind<ConstPartialOf<A>, (T) -> U>.ap(ff: Kind<ConstPartialOf<A>, T>): Kind<ConstPartialOf<A>, U> =
     constAp(MA(), ff)
 }
 

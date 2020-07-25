@@ -16,8 +16,8 @@ import arrow.core.value
 interface TraverseFilter<F> : Traverse<F>, FunctorFilter<F> {
 
   private object IdApplicative : Applicative<ForId> {
-    override fun <A, B> IdOf<A>.ap(ff: IdOf<(A) -> B>): Id<B> =
-      fix().ap(ff)
+    override fun <A, B> Kind<ForId, (A) -> B>.ap(ff: Kind<ForId, A>): Kind<ForId, B> =
+      Id(value().invoke(ff.value()))
 
     override fun <A, B> IdOf<A>.map(f: (A) -> B): Id<B> =
       fix().map(f)

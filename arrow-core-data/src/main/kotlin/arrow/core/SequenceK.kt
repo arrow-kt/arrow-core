@@ -10,8 +10,6 @@ data class SequenceK<out A>(val sequence: Sequence<A>) : SequenceKOf<A>, Sequenc
 
   fun <B> flatMap(f: (A) -> SequenceKOf<B>): SequenceK<B> = sequence.flatMap { f(it).fix().sequence }.k()
 
-  fun <B> ap(ff: SequenceKOf<(A) -> B>): SequenceK<B> = flatMap { a -> ff.fix().map { f -> f(a) } }
-
   fun <B> map(f: (A) -> B): SequenceK<B> = sequence.map(f).k()
 
   fun <B> foldLeft(b: B, f: (B, A) -> B): B = fold(b, f)
@@ -23,8 +21,8 @@ data class SequenceK<out A>(val sequence: Sequence<A>) : SequenceKOf<A>, Sequenc
   }
 
   fun <G, B> traverse(GA: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, SequenceK<B>> =
-    foldRight(Eval.now(GA.just(emptyList<B>().k()))) { a, eval ->
-      GA.run { f(a).apEval(eval.map { it.map { xs -> { b: B -> (listOf(b) + xs).k() } } }) }
+    foldRight(Eval.now(GA.just(emptyList<B>()))) { a, eval ->
+      GA.run { f(a).map { b: B -> { xs: List<B> -> listOf(b) + xs } }.apEval(eval) }
     }.value().let { GA.run { it.map { it.asSequence().k() } } }
 
   fun <B, Z> map2(fb: SequenceKOf<B>, f: (Tuple2<A, B>) -> Z): SequenceK<Z> =
@@ -85,3 +83,6 @@ fun <A, G> SequenceKOf<Kind<G, A>>.sequence(GA: Applicative<G>): Kind<G, Sequenc
   fix().traverse(GA, ::identity)
 
 fun <A> Sequence<A>.k(): SequenceK<A> = SequenceK(this)
+
+fun <A, B> SequenceKOf<(A) -> B>.ap(ff: SequenceKOf<A>): SequenceK<B> =
+  fix().flatMap { f -> ff.fix().map(f) }

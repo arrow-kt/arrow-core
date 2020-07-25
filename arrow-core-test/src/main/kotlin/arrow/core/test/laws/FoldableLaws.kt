@@ -281,7 +281,7 @@ object FoldableLaws {
   fun <F, G> Foldable<F>.`traverse_ consistent with foldRight`(GA: Applicative<G>, GF: Gen<Kind<F, Int>>, GG: GenK<G>, EQG: Eq<Kind<G, Unit>>) =
     forAll(Gen.functionAToB<Int, Kind<G, Int>>(GG.genK(Gen.intSmall())), GF) { f: (Int) -> Kind<G, Int>, fa: Kind<F, Int> ->
       GA.run {
-        val expected = fa.foldRight(always { GA.just(Unit) }) { a, acc -> GA.run { f(a).apEval(acc.map { it.map { { _: Int -> Unit } } }) } }.value()
+        val expected = fa.foldRight(always { GA.just(Unit) }) { a, acc -> GA.run { f(a).map { { _: Unit -> Unit } }.apEval(acc) } }.value()
         fa.traverse_(this, f).equalUnderTheLaw(expected, EQG)
       }
     }

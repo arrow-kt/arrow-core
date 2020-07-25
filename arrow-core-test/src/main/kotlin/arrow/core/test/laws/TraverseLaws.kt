@@ -46,8 +46,8 @@ fun <F, G, A> Kind<F, Kind<G, A>>.nest(): Kind<Nested<F, G>, A> = this as Kind<N
 fun <F, G, A> Kind<Nested<F, G>, A>.unnest(): Kind<F, Kind<G, A>> = this as Kind<F, Kind<G, A>>
 
 fun <F, G> ComposedApplicative(apF: Applicative<F>, apG: Applicative<G>): Applicative<Nested<F, G>> = object : Applicative<Nested<F, G>> {
-  override fun <A, B> Kind<Nested<F, G>, A>.ap(ff: Kind<Nested<F, G>, (A) -> B>): Kind<Nested<F, G>, B> =
-    apF.run { unnest().ap(ff.unnest().map { gf -> { ga: Kind<G, A> -> apG.run { ga.ap(gf) } } }).nest() }
+  override fun <A, B> Kind<Nested<F, G>, (A) -> B>.ap(ff: Kind<Nested<F, G>, A>): Kind<Nested<F, G>, B> =
+    apF.run { unnest().map { gf -> { ga: Kind<G, A> -> apG.run { gf.ap(ga) } } }.ap(ff.unnest()).nest() }
 
   override fun <A> just(a: A): Kind<Nested<F, G>, A> = apF.just(apG.just(a)).nest()
 }
@@ -109,10 +109,10 @@ object TraverseLaws {
         override fun <A> just(a: A): Kind<TIF, A> =
           TIC(Id(a) toT Id(a))
 
-        override fun <A, B> Kind<TIF, A>.ap(ff: Kind<TIF, (A) -> B>): Kind<TIF, B> {
-          val (fam, fan) = fix().ti
-          val (fm, fn) = ff.fix().ti
-          return TIC(Id.applicative().run { fam.ap(fm) toT fan.ap(fn) })
+        override fun <A, B> Kind<TIF, (A) -> B>.ap(ff: Kind<TIF, A>): Kind<TIF, B> {
+          val (fm, fn) = fix().ti
+          val (fa, fan) = ff.fix().ti
+          return TIC(Id.applicative().run { fm.ap(fa) toT fn.ap(fan) })
         }
       }
 

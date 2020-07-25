@@ -97,11 +97,11 @@ interface EitherApply<L> : Apply<EitherPartialOf<L>>, EitherFunctor<L> {
 
   override fun <A, B> EitherOf<L, A>.map(f: (A) -> B): Either<L, B> = fix().map(f)
 
-  override fun <A, B> Kind<EitherPartialOf<L>, A>.apEval(ff: Eval<Kind<EitherPartialOf<L>, (A) -> B>>): Eval<Kind<EitherPartialOf<L>, B>> =
-    fix().fold({ l -> Eval.now(l.left()) }, { r -> ff.map { it.fix().map { f -> f(r) } } })
+  override fun <A, B> Kind<EitherPartialOf<L>, (A) -> B>.apEval(ff: Eval<Kind<EitherPartialOf<L>, A>>): Eval<Kind<EitherPartialOf<L>, B>> =
+    fix().fold({ Eval.now(Left(it)) }, { f -> ff.map { it.fix().map(f) } })
 
-  override fun <A, B> EitherOf<L, A>.ap(ff: EitherOf<L, (A) -> B>): Either<L, B> =
-    fix().eitherAp(ff)
+  override fun <A, B> Kind<EitherPartialOf<L>, (A) -> B>.ap(ff: Kind<EitherPartialOf<L>, A>): Kind<EitherPartialOf<L>, B> =
+    eitherAp(ff)
 }
 
 @extension
@@ -117,8 +117,8 @@ interface EitherMonad<L> : Monad<EitherPartialOf<L>>, EitherApplicative<L> {
 
   override fun <A, B> EitherOf<L, A>.map(f: (A) -> B): Either<L, B> = fix().map(f)
 
-  override fun <A, B> EitherOf<L, A>.ap(ff: EitherOf<L, (A) -> B>): Either<L, B> =
-    fix().eitherAp(ff)
+  override fun <A, B> Kind<EitherPartialOf<L>, (A) -> B>.ap(ff: Kind<EitherPartialOf<L>, A>): Kind<EitherPartialOf<L>, B> =
+    eitherAp(ff)
 
   override fun <A, B> EitherOf<L, A>.flatMap(f: (A) -> EitherOf<L, B>): Either<L, B> =
     fix().eitherFlatMap { f(it).fix() }

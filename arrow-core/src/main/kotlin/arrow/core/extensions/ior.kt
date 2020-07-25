@@ -9,6 +9,7 @@ import arrow.core.Ior
 import arrow.core.IorOf
 import arrow.core.IorPartialOf
 import arrow.core.ap
+import arrow.core.extensions.ior.bifunctor.bimap
 import arrow.core.extensions.ior.eq.eq
 import arrow.core.extensions.ior.monad.monad
 import arrow.core.fix
@@ -36,6 +37,7 @@ import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.Traverse
 import arrow.undocumented
+import arrow.core.ap as iorAp
 
 @extension
 @undocumented
@@ -56,23 +58,23 @@ interface IorApply<L> : Apply<IorPartialOf<L>>, IorFunctor<L> {
 
   override fun <A, B> Kind<IorPartialOf<L>, A>.map(f: (A) -> B): Ior<L, B> = fix().map(f)
 
-  override fun <A, B> Kind<IorPartialOf<L>, A>.ap(ff: Kind<IorPartialOf<L>, (A) -> B>): Ior<L, B> =
-    fix().ap(SL(), ff)
+  override fun <A, B> Kind<IorPartialOf<L>, (A) -> B>.ap(ff: Kind<IorPartialOf<L>, A>): Kind<IorPartialOf<L>, B> =
+    iorAp(SL(), ff)
 
-  override fun <A, B> Kind<IorPartialOf<L>, A>.apEval(ff: Eval<Kind<IorPartialOf<L>, (A) -> B>>): Eval<Kind<IorPartialOf<L>, B>> =
-    fix().fold({ l ->
-      Eval.now(l.leftIor())
-    }, { r ->
-      ff.map { it.fix().map { f -> f(r) } }
-    }, { l, r ->
-      ff.map { it.fix().fold({ ll ->
-        SL().run { l + ll }.leftIor()
-      }, { f ->
-        Ior.Both(l, f(r))
-      }, { ll, f ->
-        Ior.Both(SL().run { l + ll }, f(r))
-      }) }
-    })
+  override fun <A, B> Kind<IorPartialOf<L>, (A) -> B>.apEval(ff: Eval<Kind<IorPartialOf<L>, A>>): Eval<Kind<IorPartialOf<L>, B>> =
+    fix().fold(
+      { l -> Eval.now(l.leftIor()) },
+      { f -> ff.map { it.fix().map(f) } },
+      { l1, f ->
+        ff.map {
+          it.fix().fold(
+            { l2 -> SL().run { l1.combine(l2) }.leftIor() },
+            { a -> Ior.Both(l1, f(a)) },
+            { l2, a -> Ior.Both(SL().run { l1.combine(l2) }, f(a)) }
+          )
+        }
+      }
+    )
 }
 
 @extension
@@ -83,9 +85,6 @@ interface IorApplicative<L> : Applicative<IorPartialOf<L>>, IorApply<L> {
   override fun <A> just(a: A): Ior<L, A> = Ior.Right(a)
 
   override fun <A, B> Kind<IorPartialOf<L>, A>.map(f: (A) -> B): Ior<L, B> = fix().map(f)
-
-  override fun <A, B> Kind<IorPartialOf<L>, A>.ap(ff: Kind<IorPartialOf<L>, (A) -> B>): Ior<L, B> =
-    fix().ap(SL(), ff)
 }
 
 @extension
@@ -98,8 +97,8 @@ interface IorMonad<L> : Monad<IorPartialOf<L>>, IorApplicative<L> {
   override fun <A, B> Kind<IorPartialOf<L>, A>.flatMap(f: (A) -> Kind<IorPartialOf<L>, B>): Ior<L, B> =
     fix().flatMap(SL()) { f(it).fix() }
 
-  override fun <A, B> Kind<IorPartialOf<L>, A>.ap(ff: Kind<IorPartialOf<L>, (A) -> B>): Ior<L, B> =
-    fix().ap(SL(), ff)
+  override fun <A, B> Kind<IorPartialOf<L>, (A) -> B>.ap(ff: Kind<IorPartialOf<L>, A>): Kind<IorPartialOf<L>, B> =
+    iorAp(SL(), ff)
 
   override fun <A, B> tailRecM(a: A, f: (A) -> IorOf<L, Either<A, B>>): Ior<L, B> =
     Ior.tailRecM(a, f, SL())

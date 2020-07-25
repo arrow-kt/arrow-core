@@ -225,9 +225,6 @@ class NonEmptyList<out A> private constructor(
   inline fun <B> flatMap(f: (A) -> NonEmptyListOf<B>): NonEmptyList<B> =
     f(head).fix() + tail.flatMap { f(it).fix().all }
 
-  fun <B> ap(ff: NonEmptyListOf<(A) -> B>): NonEmptyList<B> =
-    fix().flatMap { a -> ff.fix().map { f -> f(a) } }.fix()
-
   operator fun plus(l: NonEmptyList<@UnsafeVariance A>): NonEmptyList<A> =
     NonEmptyList(all + l.all)
 
@@ -334,3 +331,6 @@ fun <A, G> NonEmptyListOf<Kind<G, A>>.sequence(GA: Applicative<G>): Kind<G, NonE
 
 fun <A> NonEmptyListOf<A>.combineK(y: NonEmptyListOf<A>): NonEmptyList<A> =
   fix().plus(y.fix())
+
+fun <A, B> NonEmptyListOf<(A) -> B>.ap(ff: NonEmptyListOf<A>): NonEmptyList<B> =
+  fix().flatMap { f -> ff.fix().map(f) }
