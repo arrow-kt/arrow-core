@@ -276,9 +276,18 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    * Example:
    * ```kotlin:ank:playground
    * import arrow.core.Ior
-   * Ior.Right(12).padNull()          // Result: Pair(null, 12)
-   * Ior.Left(12).padNull()           // Result: Pair(12, null)
-   * Ior.Both("power", 12).padNull()  // Result: Pair("power", 12)
+   *
+   * //sampleStart
+   * val right = Ior.Right(12).padNull()         // Result: Pair(null, 12)
+   * val left = Ior.Left(12).padNull()           // Result: Pair(12, null)
+   * val both = Ior.Both("power", 12).padNull()  // Result: Pair("power", 12)
+   * //sampleEnd
+   *
+   * fun main() {
+   *   println("right = $right")
+   *   println("left = $left")
+   *   println("both = $both")
+   * }
    * ```
    */
   fun padNull(): Pair<A?, B?> = fold(
@@ -323,9 +332,17 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    * Example:
    * ```kotlin:ank:playground
    * import arrow.core.Ior
-   * Ior.Right(12).orNull()          // Result: 12
-   * Ior.Left(12).orNull()           // Result: null
-   * Ior.Both(12, "power").orNull()  // Result: "power"
+   *
+   * //sampleStart
+   * val right = Ior.Right(12).orNull()         // Result: 12
+   * val left = Ior.Left(12).orNull()           // Result: null
+   * val both = Ior.Both(12, "power").orNull()  // Result: "power"
+   * //sampleEnd
+   * fun main() {
+   *   println("right = $right")
+   *   println("left = $left")
+   *   println("both = $both")
+   * }
    * ```
    */
   fun orNull(): B? =
@@ -353,9 +370,18 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    * Example:
    * ```kotlin:ank:playground
    * import arrow.core.Ior
-   * Ior.Right(12).leftOrNull()          // Result: null
-   * Ior.Left(12).leftOrNull()           // Result: 12
-   * Ior.Both(12, "power").leftOrNull()  // Result: 12
+   *
+   * //sampleStart
+   * val right = Ior.Right(12).leftOrNull()         // Result: null
+   * val left = Ior.Left(12).leftOrNull()           // Result: 12
+   * val both = Ior.Both(12, "power").leftOrNull()  // Result: 12
+   * //sampleEnd
+   *
+   * fun main() {
+   *   println("right = $right")
+   *   println("left = $left")
+   *   println("both = $both")
+   * }
    * ```
    */
   fun leftOrNull(): A? =
