@@ -88,7 +88,7 @@ Arrow provides `OrderLaws` in the form of test cases for internal verification o
 Order has a constructor to create an `Order` instance from a compare function `(F, F) -> Ordering`.
 
 ```kotlin:ank
-
+import arrow.core.Ordering
 Order { a: Int, b: Int -> Ordering.fromInt(b - a) }.run {
   1.lt(2)
 }
