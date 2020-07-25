@@ -1,8 +1,6 @@
 package arrow.core
 
 import arrow.Kind
-import arrow.core.Ior.Left
-import arrow.core.Ior.Right
 import arrow.higherkind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Semigroup
