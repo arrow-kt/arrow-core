@@ -464,8 +464,8 @@ import arrow.core.ValidatedNel
  * import arrow.typeclasses.Applicative
  *
  * interface IdApplicative : Applicative<ForId> {
- *   override fun <A, B> IdOf<A>.ap(ff: IdOf<(A) -> B>): Id<B> =
- *     Id(ff.extract().invoke(extract()))
+ *   override fun <A, B> IdOf<(A) -> B>.ap(ff: IdOf<A>): Id<B> =
+ *     Id(extract().invoke(ff.extract()))
  *
  *   override fun <A> just(a: A): Id<A> =
  *     Id(a)

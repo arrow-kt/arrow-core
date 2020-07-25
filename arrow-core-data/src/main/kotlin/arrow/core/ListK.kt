@@ -111,7 +111,7 @@ import arrow.typeclasses.Show
  *
  * val value =
  * //sampleStart
- *  listOf(1, 2, 3).ap(listOf({ x: Int -> x + 10 }, { x: Int -> x * 2 }))
+ *  listOf({ x: Int -> x + 10 }, { x: Int -> x * 2 }).ap(listOf(1, 2, 3))
  * //sampleEnd
  * fun main() {
  *  println(value)

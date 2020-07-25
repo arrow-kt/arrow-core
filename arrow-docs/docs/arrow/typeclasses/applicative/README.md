@@ -68,10 +68,10 @@ Option.just(1) // Some(1)
 
 Apply a function inside the type constructor's context.
 
-`fun <A, B> Kind<F, A>.ap(ff: Kind<F, (A) -> B>): Kind<F, B>`
+`fun <A, B> Kind<F, (A) -> B>.ap(ff: Kind<F, A>): Kind<F, B>`
 
 ```kotlin:ank
-Option.applicative().run { Some(1).ap(Some({ n: Int -> n + 1 })) }
+Option.applicative().run { Some({ n: Int -> n + 1 }).ap(Some(1)) }
 ```
 
 #### Other combinators
@@ -120,7 +120,7 @@ A closely related type class is Apply, which is identical to Applicative, modulo
 import arrow.typeclasses.Functor
 
 interface Apply<F> : Functor<F> {
-  fun <A, B> Kind<F, A>.ap(ff: Kind<F, (A) -> B>): Kind<F, B>
+  fun <A, B> Kind<F, (A) -> B>.ap(ff: Kind<F, A): Kind<F, B>
 }
 
 interface Applicative<F> : Apply<F> {

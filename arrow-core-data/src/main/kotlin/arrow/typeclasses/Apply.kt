@@ -24,14 +24,15 @@ interface Apply<F> : Functor<F> {
    * import arrow.core.Option
    * import arrow.core.Some
    * import arrow.core.none
+   * import arrow.core.ap
    *
    * fun main() {
    *   //sampleStart
    *   val someF: Option<(Int) -> Long> = Some { i: Int -> i.toLong() + 1 }
    *
-   *   val a = Some(3).ap(someF)
-   *   val b = none<Int>().ap(someF)
-   *   val c = Some(3).ap(none<(Int) -> Long>())
+   *   val a = someF.ap(Some(3))
+   *   val b = someF.ap(none<Int>())
+   *   val c = none<(Int) -> Long>().ap(Some(3))
    *   //sampleEnd
    *   println("a: $a, b: $b, c: $c")
    * }

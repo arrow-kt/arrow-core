@@ -56,11 +56,11 @@ val eggsBag: MapK<String, Int> = firstBag.map2(secondBag) { firstBagMatch, secon
 `ap` function is used when you want to apply map of transformations from `Map<K, (A)-> B>` to `Map<K,A>`. For example:
 
 ```kotlin:ank
-val map1: MapK<String, Int> = mapOf("one" to 1, "two" to 2).k()
-
 val f1: (Int) -> String = { i: Int -> "f1 to \"$i\"" }
 val f2: (Int) -> String = { i: Int -> "f2 to \"$i\"" }
-val map2: MapK<String, (Int) -> String> = mapOf("one" to f1, "two" to f2).k()
+val map1: MapK<String, (Int) -> String> = mapOf("one" to f1, "two" to f2).k()
+
+val map2: MapK<String, Int> = mapOf("one" to 1, "two" to 2).k()
 
 val apResult = map1.ap(map2)
 apResult
