@@ -61,7 +61,7 @@ fun <A, B> Continuation<A, B>.compile(): A =
 
 
 
-object ListScope : Scope<List<*>>() {
+class ListScope : Scope<List<*>>() {
   override val result: ArrayList<Any?> = arrayListOf()
   suspend operator fun <B> List<B>.invoke(): B =
     shift { cb ->
@@ -73,7 +73,7 @@ object ListScope : Scope<List<*>>() {
 }
 
 inline fun <A> list(block: ListScope.() -> A): List<A> =
-  listOf(block(ListScope))
+  listOf(block(ListScope()))
 
 
 suspend fun main() {
