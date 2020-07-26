@@ -41,7 +41,7 @@ fun <A, B> Continuation<A, B>.compile(): A =
     is Scope -> TODO()
   }
 
-class ListScope<A> : Scope<List<A>>() {
+object ListScope : Scope<List<*>>() {
   suspend inline operator fun <B> List<B>.invoke(): B =
     shift { cb ->
       this@invoke.flatMap {
@@ -50,8 +50,8 @@ class ListScope<A> : Scope<List<A>>() {
     }
 }
 
-inline fun <A> list(block: ListScope<*>.() -> A): List<A> =
-  listOf(block(ListScope<A>()))
+inline fun <A> list(block: ListScope.() -> A): List<A> =
+  listOf(block(ListScope))
 
 
 suspend fun main() {
