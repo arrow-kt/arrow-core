@@ -5,6 +5,7 @@ import kotlin.coroutines.suspendCoroutine
 typealias Scope<A> = Continuation.Scope<A>
 typealias Shift<A, B> = Continuation.Scope<A>.Shift<B>
 typealias Invoke<A, B> = Continuation<A, B>.Invoke
+typealias ShortCircuit<A> = Continuation<A, *>.ShortCircuit
 typealias Intercepted<A> = Continuation.Intercepted<A>
 typealias KotlinContinuation<A> = kotlin.coroutines.Continuation<A>
 
@@ -14,6 +15,7 @@ sealed class Continuation<A, B> {
     val continuation: KotlinContinuation<A>,
     val prompt: Continuation<*, *>
   ) : Continuation<A, Any?>()
+  inner class ShortCircuit(val value: A) : Continuation<A, Any?>()
   inner class Invoke(val value: A) : Continuation<B, A>() {
     val parent: Continuation<A, B> = this@Continuation
   }
@@ -53,15 +55,15 @@ fun <A, B> Continuation<A, B>.compile(): A =
       val prompt: Continuation<*, *> = prompt
       TODO()
     }
-    is Scope -> {
-      val result: A = result
-      TODO()
-    }
+    is Scope -> result
+    is ShortCircuit<A> -> value
   }
+
+
 
 object ListScope : Scope<List<*>>() {
   override val result: ArrayList<Any?> = arrayListOf()
-  suspend inline operator fun <B> List<B>.invoke(): B =
+  suspend operator fun <B> List<B>.invoke(): B =
     shift { cb ->
       this@invoke.flatMap {
         this@ListScope.result.addAll(cb(it))
