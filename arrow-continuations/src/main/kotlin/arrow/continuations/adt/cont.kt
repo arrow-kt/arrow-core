@@ -14,8 +14,11 @@ sealed class Continuation<A, B> {
     val continuation: KotlinContinuation<A>,
     val prompt: Continuation<*, *>
   ) : Continuation<A, Any?>()
-  inner class Invoke(val value: A) : Continuation<B, A>()
+  inner class Invoke(val value: A) : Continuation<B, A>() {
+    val parent: Continuation<A, B> = this@Continuation
+  }
   abstract class Scope<A>: Continuation<A, Any?>() {
+    abstract val result: A
     inner class Shift<B>(val block: suspend Scope<B>.(Continuation<B, A>) -> A) : Continuation<B, A>() {
       val scope: Scope<A> = this@Scope
     }
@@ -29,23 +32,40 @@ suspend fun <A, B> Scope<A>.shift(block: suspend Scope<B>.(Continuation<B, A>) -
 
 suspend operator fun <A, B> Continuation<A, B>.invoke(value: A): B =
   suspendCoroutine {
-    it.context
     Intercepted(this, it, Invoke(value)).compile()
   }
 
 fun <A, B> Continuation<A, B>.compile(): A =
   when (this) {
-    is Shift -> TODO()
-    is Invoke -> TODO()
-    is Intercepted -> TODO()
-    is Scope -> TODO()
+    is Shift -> {
+      val block: suspend (Continuation.Scope<A>, Continuation<A, B>) -> B = block
+      val scope: Continuation.Scope<B> = scope
+      TODO()
+    }
+    is Invoke -> {
+      val value: B = value
+      val parent: Continuation<B, A> = parent
+      TODO()
+    }
+    is Intercepted -> {
+      val parent: Continuation<*, *> = parent
+      val continuation: KotlinContinuation<A> = continuation
+      val prompt: Continuation<*, *> = prompt
+      TODO()
+    }
+    is Scope -> {
+      val result: A = result
+      TODO()
+    }
   }
 
 object ListScope : Scope<List<*>>() {
+  override val result: ArrayList<Any?> = arrayListOf()
   suspend inline operator fun <B> List<B>.invoke(): B =
     shift { cb ->
       this@invoke.flatMap {
-        cb(it)
+        this@ListScope.result.addAll(cb(it))
+        this@ListScope.result
       }
     }
 }
