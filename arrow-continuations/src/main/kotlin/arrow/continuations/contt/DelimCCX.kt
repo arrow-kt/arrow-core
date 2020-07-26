@@ -1,11 +1,12 @@
 package arrow.continuations.conttxxxx
 
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.coroutines.*
 import kotlin.coroutines.intrinsics.*
 
 suspend fun <T> reset(body: suspend DelimitedScope<T>.() -> T): T =
-  DelimitedScopeImpl<T>().run {
+  DelimitedScopeImpl<T>(body).run {
     body.startCoroutine(this, this)
     runReset()
   }
@@ -21,12 +22,13 @@ abstract class DelimitedScope<T> {
 private typealias ShiftedFun<T> = (DelimitedScope<T>, DelimitedContinuation<T, Any?>, Continuation<T>) -> Any?
 
 @Suppress("UNCHECKED_CAST")
-private class DelimitedScopeImpl<T> : DelimitedScope<T>(), Continuation<T>, DelimitedContinuation<T, Any?> {
+private class DelimitedScopeImpl<T>(val body: suspend DelimitedScope<T>.() -> T) : DelimitedScope<T>(), Continuation<T>, DelimitedContinuation<T, Any?> {
   private val shiftedBody: Stack<ShiftedFun<T>> = Stack()
   private var shiftCont: Stack<Continuation<Any?>> = Stack()
   private var invokeCont: Stack<Continuation<T>> = Stack()
   private var invokeValue: Stack<Any?> = Stack()
   private var completions: Stack<Result<T>> = Stack()
+  private var lastShiftedBody: ShiftedFun<T>? = null
 
   private fun stateHeader(): String =
     "shiftedBody\tshiftCont\tinvokeCont\tinvokeValue\tcompletions"
@@ -47,6 +49,7 @@ private class DelimitedScopeImpl<T> : DelimitedScope<T>(), Continuation<T>, Deli
 
   override suspend fun <R> shift(block: suspend DelimitedScope<T>.(DelimitedContinuation<T, R>) -> T): R =
     suspendCoroutineUninterceptedOrReturn {
+      this.lastShiftedBody = block as ShiftedFun<T>
       this.shiftedBody.push(block as ShiftedFun<T>)
       this.shiftCont.push(it as Continuation<Any?>)
       COROUTINE_SUSPENDED
@@ -84,13 +87,13 @@ private class DelimitedScopeImpl<T> : DelimitedScope<T>(), Continuation<T>, Deli
           log("\t\t<- shift loop")
         }
         // Propagate the result to all pending continuations in shift { ... } bodies
-        if (propagateCompletions(currentCont as Continuation<Any?>)) continue@resetLoop
+        if (propagateCompletions()) continue@resetLoop
         log("\t<- resetLoop")
       }
       COROUTINE_SUSPENDED
     }
 
-  private fun propagateCompletions(currentCont: Continuation<Any?>?): Boolean {
+  private fun propagateCompletions(): Boolean {
     if (completions.isNotEmpty()) {
       when (val r = completions.pop()) {
 //        null -> TODO("Impossible result is null")
@@ -99,25 +102,24 @@ private class DelimitedScopeImpl<T> : DelimitedScope<T>(), Continuation<T>, Deli
           //completions.push(r)
           //resume first shot if invoked
 
-          val block: suspend DelimitedScope<T>.(cont: DelimitedContinuation<T, Any?>) -> T = {
-            suspendCoroutineUninterceptedOrReturn {
-              //shiftedBody.push(block as ShiftedFun<T>)
-              shiftCont.push(it as Continuation<Any?>)
-              COROUTINE_SUSPENDED
+          suspend {
+            suspendCoroutine<T> {
+              //shiftedBody.push(lastShiftedBody)
+              //invokeValue.push(r.getOrThrow())
+              it.resumeWith(r)
             }
-          }
-          suspend { block(this) }.startCoroutine(this)
+          }.createCoroutine(this).resumeWith(Result.success(Unit))
 
           //proceed to next value if invoked
           //invokeValue.push(r.getOrThrow())
 
-          return false
+          return true
           // Return the final result
           //resetCont.resumeWith(r)
         }
       }
     }
-    return false
+    return true
   }
 
   private fun pushCompletion(currentCont: Continuation<T>): Boolean {
@@ -146,12 +148,19 @@ private class DelimitedScopeImpl<T> : DelimitedScope<T>(), Continuation<T>, Deli
   private fun takeInvokeCont() = if (invokeCont.isNotEmpty()) invokeCont.pop() else null
 }
 
-suspend fun <A, B> DelimitedScope<List<A>>.bind(list: List<B>): B =
-  shift { cb ->
-    list.flatMap {
-      cb(it)
+suspend fun <A, B> DelimitedScope<List<A>>.bind(list: List<B>): B {
+  val result: ArrayList<A> = arrayListOf()
+  return shift { cb ->
+    for (el in list) {
+      reset<Unit> {
+        result.addAll(
+          shift { cb(el) }
+        )
+      }
     }
+    result
   }
+}
 
 suspend fun main() {
   val result: List<String> = reset {

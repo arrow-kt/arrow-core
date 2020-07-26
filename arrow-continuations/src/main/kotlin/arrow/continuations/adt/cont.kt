@@ -1,105 +1,65 @@
 package arrow.continuations.adt
 
-import java.util.*
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.coroutines.startCoroutine
 import kotlin.coroutines.suspendCoroutine
 
-val frames: Stack<Cont<*, *>> = Stack()
+typealias Reset<A> = Continuation.Reset<A>
+typealias Scope<A> = Continuation.Scope<A>
+typealias Shift<A, B> = Continuation.Scope<A>.Shift<B>
+typealias Invoke<A, B> = Continuation<A, B>.Invoke
+typealias Intercepted<A> = Continuation.Intercepted<A>
+typealias KotlinContinuation<A> = kotlin.coroutines.Continuation<A>
 
-sealed class Cont<A, B> {
-
-  class Reset<A>(
-    val f: suspend Reset<A>.() -> A
-  ) : Cont<A, Any?>() {
-
-    val shifts: Stack<Shift<*>> = Stack()
-
-    inner class Shift<B>(
-      val f: suspend Shift<B>.((B) -> B) -> A
-    ) : Cont<B, Any?>() {
-      init {
-        shifts.push(this)
-      }
-      val parent: Reset<A> = this@Reset
-    }
-
+sealed class Continuation<A, B> {
+  data class Reset<A>(val body: suspend Scope<A>.() -> A) : Continuation<A, Any?>()
+  data class Intercepted<A>(val continuation: KotlinContinuation<A>, val prompt: Continuation<*, *>) : Continuation<A, Any?>()
+  inner class Invoke(value: A) : Continuation<B, A>()
+  abstract class Scope<A> {
+    inner class Shift<B>(block: suspend Scope<B>.(Continuation<B, A>) -> A) : Continuation<B, A>()
   }
 }
 
-suspend inline fun <reified A> reset(
-  noinline f: suspend Cont.Reset<*>.() -> A
-): A = Cont.Reset(f).yield()
+suspend fun <A> reset(body: suspend Scope<A>.() -> A): A =
+  suspendCoroutine {
+    Intercepted(it, Reset(body)).compile()
+  }
 
-suspend inline fun <reified A, reified B> Cont.Reset<*>.shift(
-  noinline f: suspend Cont.Reset<A>.Shift<B>.((B) -> B) -> A
-): B {
-  this as Cont.Reset<A>
-  return Shift(f).yield()
-}
+suspend fun <A, B> Scope<A>.shift(block: suspend Scope<B>.(Continuation<B, A>) -> A): B =
+  suspendCoroutine {
+    Intercepted(it, Shift(block)).compile()
+  }
 
-tailrec suspend fun <A> Cont<A, *>.yield(): A =
+suspend operator fun <A, B> Continuation<A, B>.invoke(value: A): B =
+  suspendCoroutine {
+    Intercepted(it, Invoke(value)).compile()
+  }
+
+fun <A, B> Continuation<A, B>.compile(): A =
   when (this) {
-    is Cont.Reset<A> -> {
-      if (shifts.isNotEmpty()) shifts.pop().yield() as A
-      else suspendCoroutine<A> { ca ->
-        val body = suspend {
-          if (frames.isNotEmpty()) frames.pop().yield() as A
-          else null
-        }
-        var res: A? = null
-        body.startCoroutine(object : Continuation<A?> {
-          override val context: CoroutineContext = EmptyCoroutineContext
-          override fun resumeWith(result: Result<A?>) {
-            println("Resume shift: ${result}")
-            res = result.getOrNull()
-          }
-        })
-        res?.let { ca.resumeWith(Result.success(it)) }
-      }
-    }
-    is Cont.Reset<*>.Shift<A> -> {
-      frames as Stack<Cont<A, Any?>>
-      this as Cont.Reset<A>.Shift<A>
-      val body: suspend () -> A = suspend {
-        f { a -> // each bound element when a shift is called within the body
-          println("push $a")
-          frames.push(Cont.Reset { a })
-          a
-        }
-      }
-      var res: A? = null
-      body.startCoroutine(object : Continuation<A> {
-        override val context: CoroutineContext = EmptyCoroutineContext
-        override fun resumeWith(result: Result<A>) {
-          println("Resume shift: ${result}")
-          res = result.getOrNull()
-        }
-      })
-      res!!
-    }
+    is Reset -> TODO()
+    is Shift -> TODO()
+    is Invoke -> TODO()
+    is Intercepted -> TODO()
   }
 
-suspend inline operator fun <reified A> Cont.Reset<*>.times(fa: List<A>): A =
-  shift<List<A>, A> { cb ->
-    fa.flatMap {
-      listOf(cb(it))
+class ListScope<A> : Scope<List<A>>() {
+  suspend inline operator fun <B> List<B>.invoke(): B =
+    shift { cb ->
+      this@invoke.flatMap {
+        cb(it)
+      }
     }
-  }
+}
+
+inline fun <A> list(block: ListScope<*>.() -> A): List<A> =
+  listOf(block(ListScope<A>()))
 
 
 suspend fun main() {
-  val result =
-    reset {
-      val a: Int = this * listOf(1, 2, 3)
-      val b: String = this * listOf("a", "b", "c")
-      listOf("$a$b")
-    }
+  val result = list {
+    val a = listOf(1, 2, 3)()
+    val b = listOf("a", "b", "c")()
+    "$a$b "
+  }
   println(result)
 }
-
-
-
 
