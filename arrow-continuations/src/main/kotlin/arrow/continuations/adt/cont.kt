@@ -4,7 +4,7 @@ import kotlin.coroutines.suspendCoroutine
 
 typealias Scope<A> = Continuation.Scope<A>
 typealias Shift<A, B> = Continuation.Scope<A>.Shift<B>
-typealias Invoke<A, B> = Continuation<A, B>.Invoke
+typealias Invoke<A> = Continuation.Scope<A>.Invoke
 typealias ShortCircuit<A> = Continuation<A, *>.ShortCircuit
 typealias Intercepted<A> = Continuation.Intercepted<A>
 typealias KotlinContinuation<A> = kotlin.coroutines.Continuation<A>
@@ -16,23 +16,23 @@ sealed class Continuation<A, B> {
     val prompt: Continuation<*, *>
   ) : Continuation<A, Any?>()
   inner class ShortCircuit(val value: A) : Continuation<A, Any?>()
-  inner class Invoke(val value: A) : Continuation<B, A>() {
-    val parent: Continuation<A, B> = this@Continuation
-  }
   abstract class Scope<A>: Continuation<A, Any?>() {
     abstract val result: A
-    inner class Shift<B>(val block: suspend Scope<B>.(Continuation<B, A>) -> A) : Continuation<B, A>() {
+    inner class Shift<B>(val block: suspend Scope<A>.(Scope<B>) -> A) : Continuation<B, A>() {
+      val scope: Scope<A> = this@Scope
+    }
+    inner class Invoke(val value: A) : Continuation<A, Any?>() {
       val scope: Scope<A> = this@Scope
     }
   }
 }
 
-suspend fun <A, B> Scope<A>.shift(block: suspend Scope<B>.(Continuation<B, A>) -> A): B =
+suspend fun <A, B> Scope<A>.shift(block: suspend Scope<A>.(Scope<B>) -> A): B =
   suspendCoroutine {
     Intercepted(this, it, Shift(block)).compile()
   }
 
-suspend operator fun <A, B> Continuation<A, B>.invoke(value: A): B =
+suspend operator fun <A, B> Scope<A>.invoke(value: A): B =
   suspendCoroutine {
     Intercepted(this, it, Invoke(value)).compile()
   }
@@ -40,13 +40,13 @@ suspend operator fun <A, B> Continuation<A, B>.invoke(value: A): B =
 fun <A, B> Continuation<A, B>.compile(): A =
   when (this) {
     is Shift -> {
-      val block: suspend (Continuation.Scope<A>, Continuation<A, B>) -> B = block
+      val block: suspend (Continuation.Scope<B>, Continuation.Scope<A>) -> B = block
       val scope: Continuation.Scope<B> = scope
       TODO()
     }
     is Invoke -> {
-      val value: B = value
-      val parent: Continuation<B, A> = parent
+      val value: A = value
+      val scope: Continuation.Scope<A> = scope
       TODO()
     }
     is Intercepted -> {
