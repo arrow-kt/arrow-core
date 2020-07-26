@@ -14,9 +14,11 @@ sealed class Continuation<A, B> {
     val continuation: KotlinContinuation<A>,
     val prompt: Continuation<*, *>
   ) : Continuation<A, Any?>()
-  inner class Invoke(value: A) : Continuation<B, A>()
+  inner class Invoke(val value: A) : Continuation<B, A>()
   abstract class Scope<A>: Continuation<A, Any?>() {
-    inner class Shift<B>(block: suspend Scope<B>.(Continuation<B, A>) -> A) : Continuation<B, A>()
+    inner class Shift<B>(val block: suspend Scope<B>.(Continuation<B, A>) -> A) : Continuation<B, A>() {
+      val scope: Scope<A> = this@Scope
+    }
   }
 }
 
@@ -27,6 +29,7 @@ suspend fun <A, B> Scope<A>.shift(block: suspend Scope<B>.(Continuation<B, A>) -
 
 suspend operator fun <A, B> Continuation<A, B>.invoke(value: A): B =
   suspendCoroutine {
+    it.context
     Intercepted(this, it, Invoke(value)).compile()
   }
 
