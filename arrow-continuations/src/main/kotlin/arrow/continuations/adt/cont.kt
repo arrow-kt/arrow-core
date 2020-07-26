@@ -9,21 +9,25 @@ typealias Intercepted<A> = Continuation.Intercepted<A>
 typealias KotlinContinuation<A> = kotlin.coroutines.Continuation<A>
 
 sealed class Continuation<A, B> {
-  data class Intercepted<A>(val continuation: KotlinContinuation<A>, val prompt: Continuation<*, *>) : Continuation<A, Any?>()
+  data class Intercepted<A>(
+    val parent: Continuation<*, *>,
+    val continuation: KotlinContinuation<A>,
+    val prompt: Continuation<*, *>
+  ) : Continuation<A, Any?>()
   inner class Invoke(value: A) : Continuation<B, A>()
-  abstract class Scope<A> {
+  abstract class Scope<A>: Continuation<A, Any?>() {
     inner class Shift<B>(block: suspend Scope<B>.(Continuation<B, A>) -> A) : Continuation<B, A>()
   }
 }
 
 suspend fun <A, B> Scope<A>.shift(block: suspend Scope<B>.(Continuation<B, A>) -> A): B =
   suspendCoroutine {
-    Intercepted(it, Shift(block)).compile()
+    Intercepted(this, it, Shift(block)).compile()
   }
 
 suspend operator fun <A, B> Continuation<A, B>.invoke(value: A): B =
   suspendCoroutine {
-    Intercepted(it, Invoke(value)).compile()
+    Intercepted(this, it, Invoke(value)).compile()
   }
 
 fun <A, B> Continuation<A, B>.compile(): A =
@@ -31,6 +35,7 @@ fun <A, B> Continuation<A, B>.compile(): A =
     is Shift -> TODO()
     is Invoke -> TODO()
     is Intercepted -> TODO()
+    is Scope -> TODO()
   }
 
 class ListScope<A> : Scope<List<A>>() {
