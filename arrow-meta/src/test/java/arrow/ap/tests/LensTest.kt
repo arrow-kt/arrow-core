@@ -35,7 +35,7 @@ class LensTest : APTest("arrow.ap.objects.lens") {
     testProcessor(AnnotationProcessor(
       name = "Lenses will be generated for secondary constructor arguments",
       sourceFiles = listOf("LensSecondaryConstructor.java"),
-      destFile = "LensSecondaryConstructor.kt",
+      destFile = "LensSecondaryConstructora.kt",
       processor = OpticsProcessor()
     ))
   }
