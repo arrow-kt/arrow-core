@@ -28,7 +28,6 @@ dependencies {
     kaptTest "com.google.auto.service:auto-service:$GOOGLE_AUTO_SERVICE_VERSION"
     testCompile "com.google.testing.compile:compile-testing:$GOOGLE_COMPILE_TESTING_VERSION"
     testCompile fileTree(dir: './src/test/libs', includes: ['*.jar'])
-    testCompile project(":arrow-meta:arrow-meta-test-models")
     testCompile("junit:junit:$JUNIT_VERSION")
     testRuntime("org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION")
     testCompile "io.kotest:kotest-runner-junit5-jvm:$KOTEST_VERSION" // for kotest framework
