@@ -12,6 +12,7 @@ import arrow.core.fix
 import arrow.core.flatMap
 import arrow.core.test.UnitSpec
 import arrow.typeclasses.Monad
+import io.kotlintest.shouldBe
 import kotlin.coroutines.RestrictsSuspension
 import kotlin.random.Random
 
@@ -51,6 +52,25 @@ interface NonDet {
   suspend fun choose(): Boolean
 }
 
+@RestrictsSuspension
+interface ListComputation  {
+  suspend operator fun <C> List<C>.invoke(): C
+}
+
+inline fun <A> list(crossinline f: suspend ListComputation.() -> A): List<A> =
+  prompt {
+    val p = object : ListComputation {
+      override suspend fun <C> List<C>.invoke(): C =
+        control { cb ->
+          flatMap {
+            cb(it)
+          }
+        }
+    }
+    listOf(f(p))
+  }
+
+
 inline fun <A> nonDet(crossinline f: suspend NonDet.() -> A): Sequence<A> = prompt {
   val p = object : NonDet {
     override suspend fun <B> effect(f: suspend () -> B): B = control { it(f()) }
@@ -64,6 +84,13 @@ inline fun <A> nonDet(crossinline f: suspend NonDet.() -> A): Sequence<A> = prom
 // Running tests works fine though, hence I moved it here.
 class Test : UnitSpec() {
   init {
+    "list" {
+      list {
+        val a = listOf(1, 2, 3)()
+        val b = listOf("a", "b", "c")()
+        "$a$b "
+      } shouldBe listOf("1a ", "1b ", "1c ", "2a ", "2b ", "2c ", "3a ", "3b ", "3c ")
+    }
     "testNondet" {
       nonDet {
         var sum = 0
