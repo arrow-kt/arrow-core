@@ -31,7 +31,10 @@ dependencies {
     testCompile project(":arrow-meta:arrow-meta-test-models")
     testCompile("junit:junit:$JUNIT_VERSION")
     testRuntime("org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION")
-    testCompile project(":arrow-core-test")
+    testCompile "io.kotest:kotest-runner-junit5-jvm:$KOTEST_VERSION" // for kotest framework
+    testCompile "io.kotest:kotest-assertions-core-jvm:$KOTEST_VERSION" // for kotest core jvm assertions
+    testCompile "io.kotest:kotest-property-jvm:$KOTEST_VERSION" // for kotest property test
+    testCompile "io.kotest:kotest-runner-console-jvm:$KOTEST_VERSION" // for kotest plugin
     def toolsJar = Jvm.current().getToolsJar()
 
     if (!toolsJar)
