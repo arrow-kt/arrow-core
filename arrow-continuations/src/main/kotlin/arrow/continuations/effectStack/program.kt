@@ -10,16 +10,16 @@ import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-interface DelimitedCont<A, R> {
-  suspend operator fun invoke(a: A): R
+interface DelimitedCont<A, B> {
+  suspend operator fun invoke(a: A): B
 }
 
-interface Delimited<R> {
-  suspend fun <A> control(func: suspend (DelimitedCont<A, R>) -> R): A
-  suspend fun <A> prompt(f: suspend Delimited<A>.() -> A): A
+interface Delimited<A> {
+  suspend fun <B> shift(func: suspend (DelimitedCont<B, A>) -> A): B
+  suspend fun <B> reset(f: suspend Delimited<B>.() -> B): B
 }
 
-suspend fun <A> prompt(f: suspend Delimited<A>.() -> A): A =
+suspend fun <A> reset(f: suspend Delimited<A>.() -> A): A =
   DelimitedScope("Prompt", f).run()
 
 /**
@@ -31,21 +31,21 @@ suspend fun <A> prompt(f: suspend Delimited<A>.() -> A): A =
  * This can be used to implement nondeterminism together with any other effect and so long as the "pure" code in a function
  *  is fast this won't be a problem, but if it isn't this will result in terrible performance (but only if multishot is actually used)
  */
-open class DelimitedScope<R>(val dbgLabel: String, val f: suspend Delimited<R>.() -> R) : Delimited<R> {
+open class DelimitedScope<A>(val dbgLabel: String, val f: suspend Delimited<A>.() -> A) : Delimited<A> {
 
-  private val ref = atomic<R?>(null)
-  private val currF = atomic<(suspend () -> R)?>(null)
+  private val ref = atomic<A?>(null)
+  private val currF = atomic<(suspend () -> A)?>(null)
   internal open val stack: MutableList<Any?> = mutableListOf()
-  private val cbs = mutableListOf<Continuation<R>>()
+  private val cbs = mutableListOf<Continuation<A>>()
 
-  override suspend fun <A> control(func: suspend (DelimitedCont<A, R>) -> R): A {
+  override suspend fun <B> shift(func: suspend (DelimitedCont<B, A>) -> A): B {
     return suspendCoroutine { k ->
       // println("Suspending for control: $label")
       // println("Stack: $stack")
-      val o = object : DelimitedCont<A, R> {
-        val state = atomic<Continuation<A>?>(k)
+      val o = object : DelimitedCont<B, A> {
+        val state = atomic<Continuation<B>?>(k)
         val snapshot = stack.toList()
-        override suspend fun invoke(a: A): R {
+        override suspend fun invoke(a: B): A {
           // println("Invoke cont with state is null: ${state.value == null} && arg $a")
           val cont = state.getAndSet(null)
           // Reexecute f but this time on control we resume the continuation directly with a
@@ -64,9 +64,9 @@ open class DelimitedScope<R>(val dbgLabel: String, val f: suspend Delimited<R>.(
     }
   }
 
-  suspend fun startMultiShot(stack: List<Any?>): R = MultiShotDelimScope(stack, f).run()
+  suspend fun startMultiShot(stack: List<Any?>): A = MultiShotDelimScope(stack, f).run()
 
-  override suspend fun <A> prompt(f: suspend Delimited<A>.() -> A): A =
+  override suspend fun <B> reset(f: suspend Delimited<B>.() -> B): B =
     DelimitedScope("inner", f).let { scope ->
       scope::run.startCoroutineUninterceptedOrReturn(Continuation(EmptyCoroutineContext) {
         TODO("Is this ever resumed?")
@@ -89,11 +89,11 @@ open class DelimitedScope<R>(val dbgLabel: String, val f: suspend Delimited<R>.(
            */
           suspendCoroutine {}
         }
-        else it as A
+        else it as B
       }
     }
 
-  private fun getValue(): R? =
+  private fun getValue(): A? =
     // println("Running suspended $label")
     ref.loop {
       // controls function called a continuation which now finished
@@ -106,14 +106,14 @@ open class DelimitedScope<R>(val dbgLabel: String, val f: suspend Delimited<R>.(
             ref.value = res.getOrThrow()
           }).let {
             // early return controls function did not call its continuation
-            if (it != COROUTINE_SUSPENDED) ref.value = it as R
+            if (it != COROUTINE_SUSPENDED) ref.value = it as A
           }
         // short since we run out of conts to call
         else return@getValue null
       }
     }
 
-  open suspend fun run(): R {
+  open suspend fun run(): A {
     // println("Running $dbgLabel")
     f.startCoroutineUninterceptedOrReturn(this, Continuation(EmptyCoroutineContext) {
       // println("Put value ${(it.getOrThrow() as Sequence<Any?>).toList()}")
@@ -124,7 +124,7 @@ open class DelimitedScope<R>(val dbgLabel: String, val f: suspend Delimited<R>.(
         //  this will block indefinitely if there is no parent scope, but a program like that should not typecheck
         //  at least not when using control
         getValue() ?: return@run suspendCoroutine {}
-      } else return@run res as R
+      } else return@run res as A
     }
 
     // control has been called and its continuations have been invoked, resume the continuations in reverse order
@@ -133,17 +133,17 @@ open class DelimitedScope<R>(val dbgLabel: String, val f: suspend Delimited<R>.(
   }
 }
 
-class MultiShotDelimScope<R>(
+class MultiShotDelimScope<A>(
   localStack: List<Any?>,
-  f: suspend Delimited<R>.() -> R
-) : DelimitedScope<R>("Multishot", f) {
+  f: suspend Delimited<A>.() -> A
+) : DelimitedScope<A>("Multishot", f) {
   private var depth = 0
   override val stack: MutableList<Any?> = localStack.toMutableList()
-  override suspend fun <A> control(func: suspend (DelimitedCont<A, R>) -> R): A =
-    if (stack.size > depth) stack[depth++] as A
+  override suspend fun <B> shift(func: suspend (DelimitedCont<B, A>) -> A): B =
+    if (stack.size > depth) stack[depth++] as B
     else {
       // println("EmptyStack")
       depth++
-      super.control(func)
+      super.shift(func)
     }
 }

@@ -2,31 +2,25 @@ package effectStack
 
 import arrow.Kind
 import arrow.continuations.effectStack.Delimited
-import arrow.continuations.effectStack.prompt
+import arrow.continuations.effectStack.reset
 import arrow.core.Either
 import arrow.core.EitherPartialOf
-import arrow.core.ForListK
 import arrow.core.Left
 import arrow.core.Right
 import arrow.core.Tuple4
-import arrow.core.extensions.either.monad.flatten
 import arrow.core.fix
 import arrow.core.flatMap
-import arrow.core.k
 import arrow.core.test.UnitSpec
-import arrow.typeclasses.Monad
 import io.kotlintest.shouldBe
-import kotlin.coroutines.RestrictsSuspension
-import kotlin.coroutines.suspendCoroutine
 import kotlin.random.Random
 
 interface Monadic<M> {
   suspend operator fun <A> Kind<M, A>.invoke(): A
 }
 
-suspend fun <E, A> either(f: suspend Monadic<EitherPartialOf<E>>.() -> A): Kind<EitherPartialOf<E>, A> = prompt {
+suspend fun <E, A> either(f: suspend Monadic<EitherPartialOf<E>>.() -> A): Kind<EitherPartialOf<E>, A> = reset {
   val m = object : Monadic<EitherPartialOf<E>> {
-    override suspend fun <A> Kind<EitherPartialOf<E>, A>.invoke(): A = control { k -> fix().flatMap { k(it).fix() } }
+    override suspend fun <A> Kind<EitherPartialOf<E>, A>.invoke(): A = shift { k -> fix().flatMap { k(it).fix() } }
   }
 
   Either.Right(f(m))
@@ -37,11 +31,11 @@ interface Error<E> {
   suspend fun <A> catch(handle: suspend Error<E>.(E) -> A, f: suspend Error<E>.() -> A): A
 }
 
-suspend fun <E, A> error(f: suspend Error<E>.() -> A): Either<E, A> = prompt {
+suspend fun <E, A> error(f: suspend Error<E>.() -> A): Either<E, A> = reset {
   val p = object : Error<E> {
-    override suspend fun <A> raise(e: E): A = control { Left(e) }
+    override suspend fun <A> raise(e: E): A = shift { Left(e) }
     override suspend fun <B> catch(handle: suspend Error<E>.(E) -> B, f: suspend Error<E>.() -> B): B =
-      control { k ->
+      shift { k ->
         error<E, B> { f() }.fold({ e -> error<E, B> { handle(e) }.flatMap { k(it) } }, { b -> k(b) })
       }
   }
@@ -59,10 +53,10 @@ interface ListComputation  {
 }
 
 suspend inline fun <A> list(crossinline f: suspend ListComputation.() -> A): List<A> =
-  prompt {this
+  reset {this
     val p = object : ListComputation {
       override suspend fun <C> List<C>.invoke(): C =
-        control { cb ->
+        shift { cb ->
           flatMap {
             cb(it)
           }
@@ -73,11 +67,11 @@ suspend inline fun <A> list(crossinline f: suspend ListComputation.() -> A): Lis
   }
 
 
-suspend inline fun <A> nonDet(crossinline f: suspend NonDet.() -> A): Sequence<A> = prompt {
+suspend inline fun <A> nonDet(crossinline f: suspend NonDet.() -> A): Sequence<A> = reset {
   val p = object : NonDet {
-    override suspend fun <B> effect(f: suspend () -> B): B = control { it(f()) }
-    override suspend fun choose(): Boolean = control { k -> k(true) + k(false) }
-    override suspend fun <A> empty(): A = control { emptySequence() }
+    override suspend fun <B> effect(f: suspend () -> B): B = shift { it(f()) }
+    override suspend fun choose(): Boolean = shift { k -> k(true) + k(false) }
+    override suspend fun <A> empty(): A = shift { emptySequence() }
   }
   sequenceOf(f(p))
 }
@@ -88,8 +82,8 @@ class Test : UnitSpec() {
   init {
     "yield building a list" {
       println("PROGRAM: Run yield building a list")
-      prompt<List<Int>> {
-        suspend fun <A> Delimited<List<A>>.yield(a: A): Unit = control { listOf(a) + it(Unit) }
+      reset<List<Int>> {
+        suspend fun <A> Delimited<List<A>>.yield(a: A): Unit = shift { listOf(a) + it(Unit) }
 
         yield(1)
         yield(2)
@@ -100,20 +94,20 @@ class Test : UnitSpec() {
     }
     "test" {
       println("PROGRAM: Run Test")
-      val res = 10 + prompt<Int> {
-        2 + control<Int> { it(it(3)) + 100 }
+      val res = 10 + reset<Int> {
+        2 + shift<Int> { it(it(3)) + 100 }
       }
       println("PROGRAM: Result $res")
     }
     "multi" {
       println("PROGRAM: multi")
-      prompt<Either<String, Int>> fst@{
+      reset<Either<String, Int>> fst@{
         val ctx = this
-        val i: Int = control { it(2) }
-        Right(i * 2 + prompt<Int> snd@{
-          val k: Int = this@snd.control { it(1) + it(2) }
-          val j: Int = if (i == 5) ctx.control { Left("Not today") }
-            else this@snd.control { it(4) }
+        val i: Int = shift { it(2) }
+        Right(i * 2 + reset<Int> snd@{
+          val k: Int = shift { it(1) + it(2) }
+          val j: Int = if (i == 5) ctx.shift { Left("Not today") }
+          else shift { it(4) }
           j + k
         })
       }.also { println("PROGRAM: Result $it") }
