@@ -16,25 +16,24 @@ import io.kotlintest.shouldBe
 import kotlin.coroutines.RestrictsSuspension
 import kotlin.random.Random
 
-@RestrictsSuspension
 interface Monadic<M> {
   suspend operator fun <A> Kind<M, A>.invoke(): A
 }
 
-fun <E, A> either(f: suspend Monadic<EitherPartialOf<E>>.() -> A): Kind<EitherPartialOf<E>, A> = prompt {
+suspend fun <E, A> either(f: suspend Monadic<EitherPartialOf<E>>.() -> A): Kind<EitherPartialOf<E>, A> = prompt {
   val m = object : Monadic<EitherPartialOf<E>> {
     override suspend fun <A> Kind<EitherPartialOf<E>, A>.invoke(): A = control { k -> fix().flatMap { k(it).fix() } }
   }
+
   Either.Right(f(m))
 }
 
-@RestrictsSuspension
 interface Error<E> {
   suspend fun <A> raise(e: E): A
   suspend fun <A> catch(handle: suspend Error<E>.(E) -> A, f: suspend Error<E>.() -> A): A
 }
 
-fun <E, A> error(f: suspend Error<E>.() -> A): Either<E, A> = prompt {
+suspend fun <E, A> error(f: suspend Error<E>.() -> A): Either<E, A> = prompt {
   val p = object : Error<E> {
     override suspend fun <A> raise(e: E): A = control { Left(e) }
     override suspend fun <B> catch(handle: suspend Error<E>.(E) -> B, f: suspend Error<E>.() -> B): B =
@@ -45,19 +44,17 @@ fun <E, A> error(f: suspend Error<E>.() -> A): Either<E, A> = prompt {
   Right(f(p))
 }
 
-@RestrictsSuspension
 interface NonDet {
   suspend fun <B> effect(f: suspend () -> B): B
   suspend fun <A> empty(): A
   suspend fun choose(): Boolean
 }
 
-@RestrictsSuspension
 interface ListComputation  {
   suspend operator fun <C> List<C>.invoke(): C
 }
 
-inline fun <A> list(crossinline f: suspend ListComputation.() -> A): List<A> =
+suspend fun <A> list(f: suspend ListComputation.() -> A): List<A> =
   prompt {
     val p = object : ListComputation {
       override suspend fun <C> List<C>.invoke(): C =
@@ -67,11 +64,12 @@ inline fun <A> list(crossinline f: suspend ListComputation.() -> A): List<A> =
           }
         }
     }
+
     listOf(f(p))
   }
 
 
-inline fun <A> nonDet(crossinline f: suspend NonDet.() -> A): Sequence<A> = prompt {
+suspend fun <A> nonDet(f: suspend NonDet.() -> A): Sequence<A> = prompt {
   val p = object : NonDet {
     override suspend fun <B> effect(f: suspend () -> B): B = control { it(f()) }
     override suspend fun choose(): Boolean = control { k -> k(true) + k(false) }
@@ -108,6 +106,7 @@ class Test : UnitSpec() {
         Tuple4(i, b, b2, sum)
       }.also { println("PROGRAM: Result ${it.toList()}") }
     }
+
     "testError" {
       error<String, Int> {
         catch({ e ->
@@ -120,6 +119,7 @@ class Test : UnitSpec() {
         }
       }.also { println("PROGRAM: Result $it") }
     }
+
     "either" {
       either<String, Int> {
         val a = Right(11)()

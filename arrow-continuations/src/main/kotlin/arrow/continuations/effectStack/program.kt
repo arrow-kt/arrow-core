@@ -18,7 +18,8 @@ interface Delimited<R> {
   suspend fun <A> control(func: suspend (DelimitedCont<A, R>) -> R): A
 }
 
-fun <A> prompt(f: suspend Delimited<A>.() -> A): A = DelimitedScope("Prompt", f).run()
+fun <A> prompt(f: suspend Delimited<A>.() -> A): A =
+  DelimitedScope("Prompt", f).run()
 
 /**
  * Idea we have two paths:
