@@ -3,13 +3,29 @@ package effectStack
 import arrow.Kind
 import arrow.continuations.effectStack.prompt
 import arrow.core.Either
+import arrow.core.EitherPartialOf
 import arrow.core.Left
 import arrow.core.Right
 import arrow.core.Tuple4
+import arrow.core.extensions.either.monad.flatten
+import arrow.core.fix
 import arrow.core.flatMap
 import arrow.core.test.UnitSpec
+import arrow.typeclasses.Monad
 import kotlin.coroutines.RestrictsSuspension
 import kotlin.random.Random
+
+@RestrictsSuspension
+interface Monadic<M> {
+  suspend operator fun <A> Kind<M, A>.invoke(): A
+}
+
+fun <E, A> either(f: suspend Monadic<EitherPartialOf<E>>.() -> A): Kind<EitherPartialOf<E>, A> = prompt {
+  val m = object : Monadic<EitherPartialOf<E>> {
+    override suspend fun <A> Kind<EitherPartialOf<E>, A>.invoke(): A = control { k -> fix().flatMap { k(it).fix() } }
+  }
+  Either.Right(f(m))
+}
 
 @RestrictsSuspension
 interface Error<E> {
@@ -75,6 +91,13 @@ class Test : UnitSpec() {
           if (rand.rem(2) == 0) raise("No equal numbers")
           else rand
         }
+      }.also { println("PROGRAM: Result $it") }
+    }
+    "either" {
+      either<String, Int> {
+        val a = Right(11)()
+        if (a > 10) Left("Larger than 10")()
+        else a
       }.also { println("PROGRAM: Result $it") }
     }
   }
