@@ -2,78 +2,113 @@ package arrow.continuations.adt
 
 import kotlin.coroutines.suspendCoroutine
 
-typealias Scope<A> = Continuation.Scope<A>
-typealias Shift<A, B> = Continuation.Scope<A>.Shift<B>
-typealias Invoke<A> = Continuation.Scope<A>.Invoke
+typealias Scope<A, B> = Continuation.Scope<A, B>
+typealias Shift<A, B, C> = Continuation.Scope<A, B>.Shift<C>
+typealias Invoke<A, B, C> = Continuation.Scope<A, B>.Shift<C>.Invoke
 typealias ShortCircuit<A> = Continuation<A, *>.ShortCircuit
-typealias Intercepted<A> = Continuation.Intercepted<A>
 typealias KotlinContinuation<A> = kotlin.coroutines.Continuation<A>
 
 sealed class Continuation<A, B> {
-  data class Intercepted<A>(
-    val parent: Continuation<*, *>,
-    val continuation: KotlinContinuation<A>,
-    val prompt: Continuation<*, *>
-  ) : Continuation<A, Any?>()
-  inner class ShortCircuit(val value: A) : Continuation<A, Any?>()
-  abstract class Scope<A>: Continuation<A, Any?>() {
+
+  abstract val parent: Continuation<*, *>
+
+  abstract val state: ContinuationState<*, *, *>
+
+  inner class ShortCircuit(val value: A) : Continuation<A, B>() {
+    override val parent: Continuation<A, B> = this@Continuation
+    override val state: ContinuationState<*, *, *> = this@Continuation.state
+  }
+
+  abstract class Scope<A, B>(
+    override val state: ContinuationState<B, A, *> = ContinuationState<B, A, Any?>()
+  ) : Continuation<A, B>() {
+
+    override val parent: Continuation<A, B> get() = this
+
     abstract val result: A
-    inner class Shift<B>(val block: suspend Scope<A>.(Scope<B>) -> A) : Continuation<B, A>() {
-      val scope: Scope<A> = this@Scope
-    }
-    inner class Invoke(val value: A) : Continuation<A, Any?>() {
-      val scope: Scope<A> = this@Scope
-    }
-  }
-}
 
-suspend fun <A, B> Scope<A>.shift(block: suspend Scope<A>.(Scope<B>) -> A): B =
-  suspendCoroutine {
-    Intercepted(this, it, Shift(block)).compile()
-  }
+    inner class Shift<C>(
+      val block: suspend Scope<A, B>.(Shift<C>) -> A,
+      val continuation: KotlinContinuation<C>
+    ) : Continuation<B, A>(), KotlinContinuation<C> by continuation {
+      val scope: Scope<A, B> = this@Scope
+      override val parent: Continuation<A, B> = scope
+      override val state: ContinuationState<B, A, *> = scope.state
 
-suspend operator fun <A, B> Scope<A>.invoke(value: A): B =
-  suspendCoroutine {
-    Intercepted(this, it, Invoke(value)).compile()
-  }
+      inner class Invoke(val continuation: KotlinContinuation<A>, val value: C) : Continuation<B, A>(), KotlinContinuation<A> by continuation {
+        val shift: Shift<C> = this@Shift
+        override val parent: Shift<C> = this@Shift
+        override val state: ContinuationState<B, A, *> = shift.state
+      }
 
-fun <A, B> Continuation<A, B>.compile(): A =
-  when (this) {
-    is Shift -> {
-      val block: suspend (Continuation.Scope<B>, Continuation.Scope<A>) -> B = block
-      val scope: Continuation.Scope<B> = scope
-      TODO()
-    }
-    is Invoke -> {
-      val value: A = value
-      val scope: Continuation.Scope<A> = scope
-      TODO()
-    }
-    is Intercepted -> {
-      val parent: Continuation<*, *> = parent
-      val continuation: KotlinContinuation<A> = continuation
-      val prompt: Continuation<*, *> = prompt
-      TODO()
-    }
-    is Scope -> result
-    is ShortCircuit<A> -> value
-  }
+      private var _result: C? = null
 
-
-
-class ListScope : Scope<List<*>>() {
-  override val result: ArrayList<Any?> = arrayListOf()
-  suspend operator fun <B> List<B>.invoke(): B =
-    shift { cb ->
-      this@invoke.flatMap {
-        this@ListScope.result.addAll(cb(it))
-        this@ListScope.result
+      override fun resumeWith(result: Result<C>) {
+        this._result = result.getOrThrow()
       }
     }
+
+
+  }
 }
 
-inline fun <A> list(block: ListScope.() -> A): List<A> =
-  listOf(block(ListScope()))
+suspend fun <A, B, C> Scope<A, B>.shift(block: suspend Continuation.Scope<A, B>.(Continuation.Scope<A, B>.Shift<C>) -> A): C =
+  suspendCoroutine {
+    Shift(block, it).compile(state)
+  }
+
+suspend operator fun <A, B, C> Shift<A, B, C>.invoke(value: C): A =
+  suspendCoroutine {
+    Invoke(it, value).compile(state)
+  }
+
+fun <A, B, C> ContinuationState<A, B, C>.unfold(): A =
+  when(val prompt = takePrompt()) {
+    is ShortCircuit -> prompt.value
+    is Scope -> prompt.result
+    null -> TODO()
+    is Shift<*, *, *> -> TODO()
+    is Invoke<*, *, *> -> TODO()
+  }
+
+
+fun <A, B, C> Continuation<A, B>.compile(state: ContinuationState<A, B, C>): A =
+    when (this@compile) {
+      is Shift<*, *, *> -> {
+        state.log("Shift: [parent: $parent, scope: $scope, block: $block]")
+        state.push(this@compile)
+        state.unfold()
+      }
+      is Invoke<*, *, *> -> {
+        state.log("Invoke: [parent: $parent, value: $value]")
+        state.push(this@compile)
+        state.unfold()
+      }
+      is Scope -> {
+        state.log("Scope: [parent: $parent, result: $result]")
+        state.push(this@compile)
+        state.unfold()
+      }
+      is ShortCircuit -> {
+        state.log("ShortCircuit: [parent: $parent, value: $value]")
+        value
+      }
+    }
+
+class ListScope<A> : Scope<List<A>, A>() {
+  private var _result: List<A> = emptyList()
+  override val result: List<A> get () = _result
+  suspend operator fun <C> List<C>.invoke(): C =
+    shift { cb ->
+      _result = flatMap {
+        cb(it)
+      }
+      result
+    }
+}
+
+inline fun <A> list(block: ListScope<*>.() -> A): List<A> =
+  listOf(block(ListScope<Any?>()))
 
 
 suspend fun main() {
