@@ -190,6 +190,13 @@ class EitherTest : UnitSpec() {
       }
     }
 
+    "orNull should convert" {
+      forAll { a: Int ->
+        Right(a).orNull() == a &&
+          Left(a).orNull() == null
+      }
+    }
+
     "contains should check value" {
       forAll(Arb.intSmall(), Arb.intSmall()) { a: Int, b: Int ->
         Right(a).contains(a) &&
