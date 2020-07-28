@@ -18,7 +18,7 @@ abstract class UnitSpec : StringSpec() {
     .flatMap { list: List<Law> -> list.asIterable() }
     .distinctBy { law: Law -> law.name }
     .map { law: Law ->
-      val lawTestCase = createTestCase(TestName(name = law.name), law.test, defaultTestCaseConfig()!!, TestType.Test)
+      val lawTestCase = createTestCase(TestName(name = law.name), law.test, defaultConfig(), TestType.Test)
       lawTestCases.add(lawTestCase)
       lawTestCase
     }
