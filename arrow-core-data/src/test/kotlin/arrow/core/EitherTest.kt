@@ -1,9 +1,9 @@
 package arrow.core
 
 import arrow.Kind
+import arrow.core.computations.either
 import arrow.core.extensions.combine
 import arrow.core.extensions.either.applicative.applicative
-import arrow.core.extensions.either.applicativeError.handleErrorWith
 import arrow.core.extensions.either.bicrosswalk.bicrosswalk
 import arrow.core.extensions.either.bifunctor.bifunctor
 import arrow.core.extensions.either.bitraverse.bitraverse
@@ -71,7 +71,7 @@ class EitherTest : UnitSpec() {
       SemigroupKLaws.laws(Either.semigroupK(), Either.genK(Gen.id(Gen.int())), Either.eqK(Id.eq(Int.eq()))),
       HashLaws.laws(Either.hash(String.hash(), Int.hash()), GEN, Either.eq(String.eq(), Int.eq())),
       BicrosswalkLaws.laws(Either.bicrosswalk(), Either.genK2(), Either.eqK2()),
-      FxLaws.laws<EitherPartialOf<String>, Int>(Gen.int().map(::Right), GEN.map { it }, Either.eqK(String.eq()).liftEq(Int.eq()), ::either, ::either)
+      FxLaws.laws<EitherPartialOf<String>, Int>(Gen.int().map(::Right), GEN.map { it }, Either.eqK(String.eq()).liftEq(Int.eq()), either::eager, either::invoke)
     )
 
     "fromNullable should lift value as a Right if it is not null" {
@@ -187,6 +187,13 @@ class EitherTest : UnitSpec() {
       }
     }
 
+    "orNull should convert" {
+      forAll { a: Int ->
+        Right(a).orNull() == a &&
+          Left(a).orNull() == null
+      }
+    }
+
     "contains should check value" {
       forAll(Gen.intSmall(), Gen.intSmall()) { a: Int, b: Int ->
         Right(a).contains(a) &&
@@ -215,6 +222,17 @@ class EitherTest : UnitSpec() {
         Left(a).handleErrorWith { Right(b) } == Right(b) &&
           Right(a).handleErrorWith { Right(b) } == Right(a)
       }
+    }
+
+    "catch should return Right(result) when f does not throw" {
+      suspend fun loadFromNetwork(): Int = 1
+      Either.catch { loadFromNetwork() } shouldBe Right(1)
+    }
+
+    "catch should return Left(result) when f throws" {
+      val exception = Exception("Boom!")
+      suspend fun loadFromNetwork(): Int = throw exception
+      Either.catch { loadFromNetwork() } shouldBe Left(exception)
     }
   }
 }
