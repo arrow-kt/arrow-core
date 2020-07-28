@@ -28,5 +28,6 @@ configure(subprojects - project("arrow-meta")) {
     apply plugin: 'java'
     dependencies {
         signature('com.toasttab.android:gummy-bears-api-21:0.1.0')
+        implementation "org.codehaus.mojo:animal-sniffer-annotations:1.19"
     }
 }
