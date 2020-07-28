@@ -93,7 +93,10 @@ open class DelimitedScope<A>(val dbgLabel: String, val f: suspend Delimited<A>.(
           val cont = liveContinuation.getAndSet(null)
           // Re-execute f, but in a new scope which contains the stack slice + a and will use that to fill in the first
           //  calls to shift
-          return if (cont == null) startMultiShot(offset, a)
+          return if (cont == null) {
+            trace("Starting multishot with $a and current total stack $stack")
+            startMultiShot(offset, a)
+          }
           // we have a "live" continuation to resume to so we suspend the shift block and do exactly that
           else suspendCoroutineUninterceptedOrReturn {
             trace("Invoke $a")
@@ -219,9 +222,10 @@ open class MultiShotDelimScope<A>(
   final override val parentScope: DelimitedScope<*>,
   localStack: List<Any?>,
   func: suspend Delimited<A>.() -> A,
-  var startingOffset: Int = 0
+  offsetFromStack: Int = 0,
+  private val startingOffset: Int = 0
 ) : DelimitedScope<A>("Multishot-" + unique++, func) {
-  internal var depth by ParentDepth(0, parentScope, startingOffset)
+  internal var depth by ParentDepth(0, parentScope, offsetFromStack)
   internal var done = false
   override val stack: MutableList<Any?> = localStack.toMutableList().also { trace("Running multishot with $localStack") }
 
@@ -240,7 +244,7 @@ open class MultiShotDelimScope<A>(
     if (stack.size > depth && done.not()) {
       trace("Reset from multishot with stack left. Depth $depth")
       // there are still elements on the stack, so run f as Multishot in child mode
-      MultiShotDelimScope(this@MultiShotDelimScope, stack, p, depth)
+      MultiShotDelimScope(this@MultiShotDelimScope, stack.subList(depth, stack.size), p, -depth, depth)
         .let {
           setChildScope(it)
           it.run {
@@ -249,6 +253,7 @@ open class MultiShotDelimScope<A>(
           }
         }
         .also { done = true }.also { trace("Done by reset1: $it. Stack $stack") }
+        .also { setChildScope(null) }
     } else {
       done = true
       trace("Done by reset2")
@@ -257,7 +262,19 @@ open class MultiShotDelimScope<A>(
 
   override suspend fun startMultiShot(end: Int, b: Any?): A {
     trace("Multishot from multishot $startingOffset $end")
-    return super.startMultiShot(startingOffset, end, b)
+    return MultiShotDelimScope(
+      this@MultiShotDelimScope,
+      stack.subList(0, end).toList() + b,
+      f,
+      -depth
+    ).let { scope ->
+      // Tell the parent we are running multishot
+      parentScope.setChildScope(scope)
+      scope.run {
+        trace("Multi cb")
+        parentScope.setMultiChildCb(it)
+      }.also { parentScope.setChildScope(scope.parentScope) }
+    }
   }
 }
 
