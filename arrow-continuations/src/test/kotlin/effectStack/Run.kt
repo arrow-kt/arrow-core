@@ -7,10 +7,14 @@ import arrow.core.Either
 import arrow.core.EitherPartialOf
 import arrow.core.Left
 import arrow.core.Right
+import arrow.core.Some
 import arrow.core.Tuple4
 import arrow.core.fix
 import arrow.core.flatMap
+import arrow.core.some
 import arrow.core.test.UnitSpec
+import effectStack.interleave.Interleave
+import effectStack.interleave.lists
 import io.kotlintest.shouldBe
 import kotlin.random.Random
 
@@ -53,7 +57,7 @@ interface ListComputation  {
 }
 
 suspend inline fun <A> list(crossinline f: suspend ListComputation.() -> A): List<A> =
-  reset {this
+  reset {
     val p = object : ListComputation {
       override suspend fun <C> List<C>.invoke(): C =
         shift { cb ->
@@ -160,5 +164,15 @@ class Test : UnitSpec() {
         else a
       }.also { println("PROGRAM: Result $it") }
     }
+    "lists interleave" {
+      lists { program() } shouldBe listOf(2, 4, 6)
+    }
   }
+}
+
+suspend inline fun Interleave<*>.program(): Int {
+  val a : Int = listOf(1, 2, 3)()
+  val b: Int? = a.some()()
+  val c: Int = b()
+  return c + c
 }
