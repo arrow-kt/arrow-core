@@ -262,9 +262,9 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
    * import arrow.core.*
    *
    * //sampleStart
-   * val padRight = listOf(1, 2).k().padZipWithNull(listOf("a").k())
-   * val padLeft = listOf(1).k().padZipWithNull(listOf("a", "b").k())
-   * val noPadding = listOf(1, 2).k().padZipWithNull(listOf("a", "b").k())
+   * val padRight = listOf(1, 2).k().padZipWithNull(listOf("a").k())        // Result: ListK(Tuple2(1, "a"), Tuple2(2, null))
+   * val padLeft = listOf(1).k().padZipWithNull(listOf("a", "b").k())       // Result: ListK(Tuple2(1, "a"), Tuple2(null, "b"))
+   * val noPadding = listOf(1, 2).k().padZipWithNull(listOf("a", "b").k())  // Result: ListK(Tuple2(1, "a"), Tuple2(2, "b"))
    * //sampleEnd
    *
    * fun main() {
