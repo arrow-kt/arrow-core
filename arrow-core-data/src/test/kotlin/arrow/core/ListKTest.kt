@@ -199,6 +199,15 @@ class ListKTest : UnitSpec() {
       }
     }
 
+    "padZipWithNull" {
+      forAll(Gen.listK(Gen.int()), Gen.listK(Gen.int())) { a, b ->
+        val left = a.map { it }.k() + List(max(0, b.count() - a.count())) { null }.k()
+        val right = b.map { it }.k() + List(max(0, a.count() - b.count())) { null }.k()
+
+        a.padZipWithNull(b) == left.zipWith(right) { l, r -> l toT r }
+      }
+    }
+
     "filterMap() should map list and filter out None values" {
       forAll(Gen.listK(Gen.int())) { listk ->
           listk.filterMap {

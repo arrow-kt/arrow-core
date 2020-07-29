@@ -212,36 +212,35 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
     }
 
   /**
-   * Returns a [ListK] containing the transformed values from the original
-   * [ListK] as long as they are non-null.
+   * Returns a [ListK<Tuple2<A?, B?>] containing the zipped values of the two listKs
+   * with null for padding.
    *
    * Example:
    * ```kotlin:ank:playground
    * import arrow.core.*
    *
    * //sampleStart
-   * val evenStrings = listOf(1, 2).k().filterNullMap {
-   *   when (it % 2 == 0) {
-   *     true -> it.toString()
-   *     else -> null
-   *   }
-   * } // Result: listOf("2").k()
+   * val padRight = listOf(1, 2).k().padZipWithNull(listOf("a").k())
+   * val padLeft = listOf(1).k().padZipWithNull(listOf("a", "b").k())
+   * val noPadding = listOf(1, 2).k().padZipWithNull(listOf("a", "b").k())
    * //sampleEnd
    *
    * fun main() {
-   *   println("evenStrings = $evenStrings")
+   *   println("padRight = $padRight")
+   *   println("padLeft = $padLeft")
+   *   println("noPadding = $noPadding")
    * }
    * ```
    */
-//  fun <B> padZipWithNull(
-//    other: ListK<B>
-//  ): ListK<Tuple2<A?, B?>> =
-//    alignWith(this, other) { ior ->
-//      ior.fold(
-//        { it.some() toT Option.empty<B>() },
-//        { Option.empty<A>() toT it.some() },
-//        { a, b -> a.some() toT b.some() })
-//    }
+  fun <B> padZipWithNull(
+    other: ListK<B>
+  ): ListK<Tuple2<A?, B?>> =
+    alignWith(this, other) { ior ->
+      ior.fold(
+        { it toT null },
+        { null toT it },
+        { a, b -> a toT b })
+    }
 
   /**
    * Align two Lists as in zipWith, but filling in blanks with None.
