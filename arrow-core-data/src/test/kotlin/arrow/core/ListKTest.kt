@@ -199,6 +199,14 @@ class ListKTest : UnitSpec() {
       }
     }
 
+    "padZipWith" {
+      forAll(Gen.listK(Gen.int()), Gen.listK(Gen.int())) { a, b ->
+        val left = a.map { Some(it) }.k() + List(max(0, b.count() - a.count())) { None }.k()
+        val right = b.map { Some(it) }.k() + List(max(0, a.count() - b.count())) { None }.k()
+        a.padZipWith(b) { l, r -> Ior.fromOptions(l, r) } == left.zipWith(right) { l, r -> Ior.fromOptions(l, r) }
+      }
+    }
+
     "padZipWithNull" {
       forAll(Gen.listK(Gen.int()), Gen.listK(Gen.int())) { a, b ->
         val left = a.map { it }.k() + List(max(0, b.count() - a.count())) { null }.k()
