@@ -1,7 +1,6 @@
 package arrow.core
 
 import arrow.Kind
-import arrow.core.Ior.*
 import arrow.higherkind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Show
@@ -179,12 +178,19 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
    * Example:
    * ```kotlin:ank:playground
    * import arrow.core.*
-   * listOf(1, 2).k().filterNullMap {
+   *
+   * //sampleStart
+   * val evenStrings = listOf(1, 2).k().filterNullMap {
    *   when (it % 2 == 0) {
    *     true -> it.toString()
    *     else -> null
    *   }
    * } // Result: listOf("2").k()
+   * //sampleEnd
+   *
+   * fun main() {
+   *   println("evenStrings = $evenStrings")
+   * }
    * ```
    */
   fun <B> filterNullMap(f: (A) -> B?): ListK<B> =
@@ -204,6 +210,38 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
         { Option.empty<A>() toT it.some() },
         { a, b -> a.some() toT b.some() })
     }
+
+  /**
+   * Returns a [ListK] containing the transformed values from the original
+   * [ListK] as long as they are non-null.
+   *
+   * Example:
+   * ```kotlin:ank:playground
+   * import arrow.core.*
+   *
+   * //sampleStart
+   * val evenStrings = listOf(1, 2).k().filterNullMap {
+   *   when (it % 2 == 0) {
+   *     true -> it.toString()
+   *     else -> null
+   *   }
+   * } // Result: listOf("2").k()
+   * //sampleEnd
+   *
+   * fun main() {
+   *   println("evenStrings = $evenStrings")
+   * }
+   * ```
+   */
+//  fun <B> padZipWithNull(
+//    other: ListK<B>
+//  ): ListK<Tuple2<A?, B?>> =
+//    alignWith(this, other) { ior ->
+//      ior.fold(
+//        { it.some() toT Option.empty<B>() },
+//        { Option.empty<A>() toT it.some() },
+//        { a, b -> a.some() toT b.some() })
+//    }
 
   /**
    * Align two Lists as in zipWith, but filling in blanks with None.

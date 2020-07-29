@@ -3,6 +3,7 @@ package arrow.core
 import arrow.Kind
 import arrow.core.extensions.eq
 import arrow.core.extensions.hash
+import arrow.core.extensions.list.zip.zipWith
 import arrow.core.extensions.listk.align.align
 import arrow.core.extensions.listk.applicative.applicative
 import arrow.core.extensions.listk.crosswalk.crosswalk
@@ -23,6 +24,8 @@ import arrow.core.extensions.listk.show.show
 import arrow.core.extensions.listk.traverse.traverse
 import arrow.core.extensions.listk.unalign.unalign
 import arrow.core.extensions.listk.unzip.unzip
+import arrow.core.extensions.listk.zip.zipWith
+import arrow.core.extensions.option.eq.eq
 import arrow.core.extensions.show
 import arrow.core.test.UnitSpec
 import arrow.core.test.generators.genK
@@ -184,6 +187,15 @@ class ListKTest : UnitSpec() {
           }
 
         result.map { it.a }.equalUnderTheLaw(a, ListK.eq(Int.eq()))
+      }
+    }
+
+    "padZip" {
+      forAll(Gen.listK(Gen.int()), Gen.listK(Gen.int())) { a, b ->
+        val left = a.map { Some(it) }.k() + List(max(0, b.count() - a.count())) { None }.k()
+        val right = b.map { Some(it) }.k() + List(max(0, a.count() - b.count())) { None }.k()
+
+        a.padZip(b) == left.zipWith(right) { l, r -> l toT r }
       }
     }
 
