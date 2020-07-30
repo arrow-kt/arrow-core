@@ -283,11 +283,39 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
   /**
    * Left-padded zipWith.
    */
+  @Deprecated("Deprecated, use `leftPadZip(other: ListK<B>, fab: (A?, B) -> C)` instead", ReplaceWith("leftPadZip(other: ListK<B>, fab: (A?, B) -> C)"))
   fun <B, C> lpadZipWith(
     other: ListK<B>,
     fab: (Option<A>, B) -> C
   ): ListK<C> =
     padZipWith(other) { a: Option<A>, b -> b.map { fab(a, it) } }.filterMap(::identity)
+
+  /**
+   * Returns a [ListK<C>] containing the result of applying some transformation `(A?, B) -> C`
+   * on a zip, excluding all cases where the right value is null.
+   *
+   * Example:
+   * ```kotlin:ank:playground
+   * import arrow.core.*
+   *
+   * //sampleStart
+   * val left = listOf(1, 2).k().leftPadZip(listOf("a").k()) { l, r -> l toT r }.k()      // Result: ListK(Tuple2(1, "a"))
+   * val right = listOf(1).k().leftPadZip(listOf("a", "b").k()) { l, r -> l toT r }.k()   // Result: ListK(Tuple2(1, "a"), Tuple2(null, "b"))
+   * val both = listOf(1, 2).k().leftPadZip(listOf("a", "b").k()) { l, r -> l toT r }.k() // Result: ListK(Tuple2(1, "a"), Tuple2(2, "b"))
+   * //sampleEnd
+   *
+   * fun main() {
+   *   println("left = $left")
+   *   println("right = $right")
+   *   println("both = $both")
+   * }
+   * ```
+   */
+  fun <B, C> leftPadZip(
+    other: ListK<B>,
+    fab: (A?, B) -> C
+  ): ListK<C> =
+    padZip(other) { a: A?, b: B? -> b?.let { fab(a, it) } }.filterNullMap(::identity)
 
   /**
    * Left-padded zip.
