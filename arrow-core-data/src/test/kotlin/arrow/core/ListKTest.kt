@@ -203,15 +203,15 @@ class ListKTest : UnitSpec() {
       forAll(Gen.listK(Gen.int()), Gen.listK(Gen.int())) { a, b ->
         val left = a.map { Some(it) }.k() + List(max(0, b.count() - a.count())) { None }.k()
         val right = b.map { Some(it) }.k() + List(max(0, a.count() - b.count())) { None }.k()
-        a.padZipWith(b) { l: Option<Int>, r: Option<Int> -> Ior.fromOptions(l, r) } == left.zipWith(right) { l, r -> Ior.fromOptions(l, r) }
+        a.padZipWith(b) { l, r -> Ior.fromOptions(l, r) } == left.zipWith(right) { l, r -> Ior.fromOptions(l, r) }
       }
     }
 
-    "padZipWithNull" {
+    "padZip (with map)" {
       forAll(Gen.listK(Gen.int()), Gen.listK(Gen.int())) { a, b ->
         val left = a.map { it }.k() + List(max(0, b.count() - a.count())) { null }.k()
         val right = b.map { it }.k() + List(max(0, a.count() - b.count())) { null }.k()
-        a.padZipWithNull(b) { l: Int?, r: Int? -> Ior.fromNullables(l, r) } == left.zipWith(right) { l, r -> Ior.fromNullables(l, r) }
+        a.padZip(b) { l, r -> Ior.fromNullables(l, r) } == left.zipWith(right) { l, r -> Ior.fromNullables(l, r) }
       }
     }
 

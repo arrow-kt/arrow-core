@@ -221,9 +221,9 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
    * import arrow.core.*
    *
    * //sampleStart
-   * val padRight = listOf(1, 2).k().padZipWithNull(listOf("a").k())
-   * val padLeft = listOf(1).k().padZipWithNull(listOf("a", "b").k())
-   * val noPadding = listOf(1, 2).k().padZipWithNull(listOf("a", "b").k())
+   * val padRight = listOf(1, 2).k().padZip(listOf("a").k())        // Result: ListK(Tuple2(1, "a"), Tuple2(2, null))
+   * val padLeft = listOf(1).k().padZip(listOf("a", "b").k())       // Result: ListK(Tuple2(1, "a"), Tuple2(null, "b"))
+   * val noPadding = listOf(1, 2).k().padZip(listOf("a", "b").k())  // Result: ListK(Tuple2(1, "a"), Tuple2(2, "b"))
    * //sampleEnd
    *
    * fun main() {
@@ -246,7 +246,7 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
   /**
    * Align two Lists as in zipWith, but filling in blanks with None.
    */
-  @Deprecated("Deprecated, use `padZipWithNull(other: ListK<B>, fa: (A?, B?) -> C)` instead", ReplaceWith("padZipWithNull(other: ListK<B>, fa: (A?, B?) -> C)"))
+  @Deprecated("Deprecated, use `padZip(other: ListK<B>, fa: (A?, B?) -> C)` instead", ReplaceWith("padZip(other: ListK<B>, fa: (A?, B?) -> C)"))
   fun <B, C> padZipWith(
     other: ListK<B>,
     fa: (Option<A>, Option<B>) -> C
@@ -262,19 +262,19 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
    * import arrow.core.*
    *
    * //sampleStart
-   * val padRight = listOf(1, 2).k().padZipWithNull(listOf("a").k())        // Result: ListK(Tuple2(1, "a"), Tuple2(2, null))
-   * val padLeft = listOf(1).k().padZipWithNull(listOf("a", "b").k())       // Result: ListK(Tuple2(1, "a"), Tuple2(null, "b"))
-   * val noPadding = listOf(1, 2).k().padZipWithNull(listOf("a", "b").k())  // Result: ListK(Tuple2(1, "a"), Tuple2(2, "b"))
+   * val padZipRight = listOf(1, 2).k().padZip(listOf("a").k()) { l, r -> l toT r }.k()     // Result: ListK(Tuple2(1, "a"), Tuple2(2, null))
+   * val padZipLeft = listOf(1).k().padZip(listOf("a", "b").k()) { l, r -> l toT r }.k()    // Result: ListK(Tuple2(1, "a"), Tuple2(null, "b"))
+   * val noPadding = listOf(1, 2).k().padZip(listOf("a", "b").k()) { l, r -> l toT r }.k()  // Result: ListK(Tuple2(1, "a"), Tuple2(2, "b"))
    * //sampleEnd
    *
    * fun main() {
-   *   println("padRight = $padRight")
-   *   println("padLeft = $padLeft")
+   *   println("padZipRight = $padZipRight")
+   *   println("padZipLeft = $padZipLeft")
    *   println("noPadding = $noPadding")
    * }
    * ```
    */
-  fun <B, C> padZipWithNull(
+  fun <B, C> padZip(
     other: ListK<B>,
     fa: (A?, B?) -> C
   ): ListK<C> =
