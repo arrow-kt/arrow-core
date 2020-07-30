@@ -2,7 +2,7 @@ package generic
 
 import arrow.continuations.generic.DelimitedScope
 import arrow.continuations.generic.MultiShotDelimContScope
-import arrow.continuations.generic.SingleShotDelimContScope
+import arrow.continuations.generic.DelimContScope
 import arrow.core.Either
 import arrow.core.Left
 import arrow.core.Tuple2
@@ -12,34 +12,47 @@ import arrow.core.toT
 import io.kotlintest.shouldBe
 
 abstract class ContTestSuite: UnitSpec() {
-  abstract fun <A> reset(func: (suspend DelimitedScope<A>.() -> A)): A
+  abstract fun <A> runScope(func: (suspend DelimitedScope<A>.() -> A)): A
 
   abstract fun capabilities(): Set<ScopeCapabilities>
 
   init {
     "yield a list (also verifies stacksafety)" {
-      reset<List<Int>> {
+      runScope<List<Int>> {
         suspend fun <A> DelimitedScope<List<A>>.yield(a: A): Unit = shift { k -> listOf(a) + k(Unit) }
         for (i in 0..10_000) yield(i)
         emptyList()
       } shouldBe (0..10_000).toList()
     }
     "short circuit" {
-      reset<Either<String, Int>> {
+      runScope<Either<String, Int>> {
         val no: Int = shift { Left("No thank you") }
         throw IllegalStateException("This should not be executed")
       } shouldBe Left("No thank you")
     }
+    "shiftCPS supports multishot regardless of scope" {
+      runScope<Int> {
+        shiftCPS<Int>({ it(1) + it(2) }) { i -> i }
+        throw IllegalStateException("This is unreachable")
+      } shouldBe 3
+    }
+    "reset" {
+      runScope<Int> {
+        reset {
+          shift { it(1) }
+        }
+      } shouldBe 1
+    }
     if (capabilities().contains(ScopeCapabilities.MultiShot)) {
       "multshot nondet" {
-        reset<List<Tuple2<Int, Int>>> {
+        runScope<List<Tuple2<Int, Int>>> {
           val i: Int = shift { k -> k(10) + k(20) }
           val j: Int = shift { k -> k(15) + k(25) }
           listOf(i toT j)
         } shouldBe listOf(10 toT 15, 10 toT 25, 20 toT 15, 20 toT 25)
       }
       "multishot more than twice" {
-        reset<List<Tuple3<Int, Int, Int>>> {
+        runScope<List<Tuple3<Int, Int, Int>>> {
           val i: Int = shift { k -> k(10) + k(20) }
           val j: Int = shift { k -> k(15) + k(25) }
           val k: Int = shift { k -> k(17) + k(27) }
@@ -47,7 +60,7 @@ abstract class ContTestSuite: UnitSpec() {
         } shouldBe listOf(10, 20).flatMap { i -> listOf(15, 25).flatMap { j -> listOf(17, 27).map { k -> Tuple3(i, j, k) } } }
       }
       "multishot more than twice and with more multishot invocations" {
-        reset<List<Tuple3<Int, Int, Int>>> {
+        runScope<List<Tuple3<Int, Int, Int>>> {
           val i: Int = shift { k -> k(10) + k(20) + k(30) + k(40) + k(50) }
           val j: Int = shift { k -> k(15) + k(25) + k(35) + k(45) + k(55) }
           val k: Int = shift { k -> k(17) + k(27) + k(37) + k(47) + k(57) }
@@ -61,7 +74,7 @@ abstract class ContTestSuite: UnitSpec() {
             }
       }
       "multishot is stacksafe regardless of stack size" {
-        reset<Int> {
+        runScope<Int> {
           // bring 10k elements on the stack
           var sum = 0
           for (i0 in 1..10_000) sum += shift<Int> { it(i0) }
@@ -86,14 +99,14 @@ sealed class ScopeCapabilities {
 }
 
 class SingleShotContTestSuite : ContTestSuite() {
-  override fun <A> reset(func: (suspend DelimitedScope<A>.() -> A)): A =
-    SingleShotDelimContScope.reset(func)
+  override fun <A> runScope(func: (suspend DelimitedScope<A>.() -> A)): A =
+    DelimContScope.reset(func)
 
   override fun capabilities(): Set<ScopeCapabilities> = emptySet()
 }
 
 class MultiShotContTestSuite : ContTestSuite() {
-  override fun <A> reset(func: (suspend DelimitedScope<A>.() -> A)): A =
+  override fun <A> runScope(func: (suspend DelimitedScope<A>.() -> A)): A =
     MultiShotDelimContScope.reset(func)
 
   override fun capabilities(): Set<ScopeCapabilities> = setOf(ScopeCapabilities.MultiShot)

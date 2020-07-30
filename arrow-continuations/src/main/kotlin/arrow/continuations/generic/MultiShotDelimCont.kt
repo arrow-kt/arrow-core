@@ -38,10 +38,25 @@ open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) 
       }
   }
 
+  data class CPSCont<A, R>(
+    private val runFunc: suspend DelimitedScope<R>.(A) -> R
+  ): DelimitedContinuation<A, R> {
+    override suspend fun invoke(a: A): R = DelimContScope<R> { runFunc(a) }.invoke()
+  }
+
   override suspend fun <A> shift(func: suspend (DelimitedContinuation<A, R>) -> R): A = suspendCoroutine { continueMain ->
     val c = MultiShotCont(continueMain, f, stack, shiftFnContinuations)
     assert(nextShift.compareAndSet(null, suspend { func(c) }))
   }
+
+  override suspend fun <A> shiftCPS(func: suspend (DelimitedContinuation<A, R>) -> R, c: suspend DelimitedScope<R>.(A) -> R): Nothing =
+    suspendCoroutine {
+      assert(nextShift.compareAndSet(null, suspend { func(CPSCont(c)) }))
+    }
+
+  // This assumes RestrictSuspension or at least assumes the user to never reference the parent scope in f.
+  override fun <A> reset(f: suspend DelimitedScope<A>.() -> A): A =
+    MultiShotDelimContScope(f).invoke()
 
   override fun invoke(): R {
     f.startCoroutineUninterceptedOrReturn(this, Continuation(EmptyCoroutineContext) { result ->

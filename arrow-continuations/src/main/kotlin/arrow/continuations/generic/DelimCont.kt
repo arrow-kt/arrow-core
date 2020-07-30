@@ -10,11 +10,9 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 /**
- * Implements delimited continuations with with single shot mode.
- *
- * This is basically only there to show how the run loop works
+ * Implements delimited continuations with with no multi shot support (apart from shiftCPS which trivially supports it).
  */
-class SingleShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R): RunnableDelimitedScope<R> {
+class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R): RunnableDelimitedScope<R> {
 
   private val resultVar = atomic<R?>(null)
   private val nextShift = atomic<(suspend () -> R)?>(null)
@@ -31,11 +29,25 @@ class SingleShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R): Run
     }
   }
 
+  data class CPSCont<A, R>(
+    private val runFunc: suspend DelimitedScope<R>.(A) -> R
+  ): DelimitedContinuation<A, R> {
+    override suspend fun invoke(a: A): R = DelimContScope<R> { runFunc(a) }.invoke()
+  }
+
   override suspend fun <A> shift(func: suspend (DelimitedContinuation<A, R>) -> R): A =
     suspendCoroutine { continueMain ->
       val delCont = SingleShotCont(continueMain, shiftFnContinuations)
       assert(nextShift.compareAndSet(null, suspend { func(delCont) }))
     }
+
+  override suspend fun <A> shiftCPS(func: suspend (DelimitedContinuation<A, R>) -> R, c: suspend DelimitedScope<R>.(A) -> R): Nothing =
+    suspendCoroutine {
+      assert(nextShift.compareAndSet(null, suspend { func(CPSCont(c)) }))
+    }
+
+  override fun <A> reset(f: suspend DelimitedScope<A>.() -> A): A =
+    DelimContScope(f).invoke()
 
   override fun invoke(): R {
     f.startCoroutineUninterceptedOrReturn(this, Continuation(EmptyCoroutineContext) { result ->
@@ -62,6 +74,6 @@ class SingleShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R): Run
   }
 
   companion object {
-    fun <R> reset(f: suspend DelimitedScope<R>.() -> R): R = SingleShotDelimContScope(f).invoke()
+    fun <R> reset(f: suspend DelimitedScope<R>.() -> R): R = DelimContScope(f).invoke()
   }
 }
