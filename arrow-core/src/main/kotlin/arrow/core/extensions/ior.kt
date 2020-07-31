@@ -6,6 +6,9 @@ import arrow.core.Either
 import arrow.core.Eval
 import arrow.core.ForIor
 import arrow.core.Ior
+import arrow.core.Ior.Both
+import arrow.core.Ior.Left
+import arrow.core.Ior.Right
 import arrow.core.IorOf
 import arrow.core.IorPartialOf
 import arrow.core.ap
@@ -19,6 +22,7 @@ import arrow.extension
 import arrow.typeclasses.Align
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Apply
+import arrow.typeclasses.BiSemigroup
 import arrow.typeclasses.Bicrosswalk
 import arrow.typeclasses.Bifoldable
 import arrow.typeclasses.Bifunctor
@@ -32,10 +36,55 @@ import arrow.typeclasses.Functor
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monad
 import arrow.typeclasses.MonadSyntax
+import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.Traverse
+import arrow.typeclasses.plus
 import arrow.undocumented
+
+fun <L, R> Ior<L, R>.combine(SGL: Semigroup<L>, SGR: Semigroup<R>, b: Ior<L, R>): Ior<L, R> =
+  (SGL + SGR).combine(this, b)
+
+private fun <L, R> BiSemigroup<L, R>.combine(a: Ior<L, R>, b: Ior<L, R>): Ior<L, R> =
+  when (a) {
+    is Left -> when (b) {
+      is Left -> Left(a.value + b.value)
+      is Right -> a//Both(a.value, b.value)
+      is Both -> Both(a.value + b.leftValue, b.rightValue)
+    }
+    is Right -> when (b) {
+      is Left -> b//Both(b.value, a.value)
+      is Right -> Right(a.value + b.value)
+      is Both -> Both(b.leftValue, a.value + b.rightValue)
+    }
+    is Both -> when (b) {
+      is Left -> Both(a.leftValue + b.value, a.rightValue)
+      is Right -> Both(a.leftValue, a.rightValue + b.value)
+      is Both -> Both(a.leftValue + b.leftValue, a.rightValue + b.rightValue)
+    }
+  }
+
+@extension
+interface IorSemigroup<L, R> : Semigroup<Ior<L, R>> {
+
+  fun SGL(): Semigroup<L>
+  fun SGR(): Semigroup<R>
+
+  override fun Ior<L, R>.combine(b: Ior<L, R>): Ior<L, R> = fix().combine(SGL(), SGR(), b)
+
+}
+
+@extension
+interface IorMonoid<L, R> : Monoid<Ior<L, R>>, IorSemigroup<L, R> {
+  fun MOL(): Monoid<L>
+  fun MOR(): Monoid<R>
+
+  override fun SGL(): Semigroup<L> = MOL()
+  override fun SGR(): Semigroup<R> = MOR()
+
+  override fun empty(): Ior<L, R> = Both(MOL().empty(), MOR().empty())
+}
 
 @extension
 @undocumented
@@ -65,13 +114,15 @@ interface IorApply<L> : Apply<IorPartialOf<L>>, IorFunctor<L> {
     }, { r ->
       ff.map { it.fix().map { f -> f(r) } }
     }, { l, r ->
-      ff.map { it.fix().fold({ ll ->
-        SL().run { l + ll }.leftIor()
-      }, { f ->
-        Ior.Both(l, f(r))
-      }, { ll, f ->
-        Ior.Both(SL().run { l + ll }, f(r))
-      }) }
+      ff.map {
+        it.fix().fold({ ll ->
+          SL().run { l + ll }.leftIor()
+        }, { f ->
+          Both(l, f(r))
+        }, { ll, f ->
+          Both(SL().run { l + ll }, f(r))
+        })
+      }
     })
 }
 
@@ -80,7 +131,7 @@ interface IorApplicative<L> : Applicative<IorPartialOf<L>>, IorApply<L> {
 
   override fun SL(): Semigroup<L>
 
-  override fun <A> just(a: A): Ior<L, A> = Ior.Right(a)
+  override fun <A> just(a: A): Ior<L, A> = Right(a)
 
   override fun <A, B> Kind<IorPartialOf<L>, A>.map(f: (A) -> B): Ior<L, B> = fix().map(f)
 
@@ -135,8 +186,8 @@ interface IorBitraverse : Bitraverse<ForIor>, IorBifoldable {
   override fun <G, A, B, C, D> IorOf<A, B>.bitraverse(AP: Applicative<G>, f: (A) -> Kind<G, C>, g: (B) -> Kind<G, D>): Kind<G, IorOf<C, D>> =
     fix().let {
       AP.run {
-        it.fold({ f(it).map { Ior.Left(it) } }, { g(it).map { Ior.Right(it) } },
-          { a, b -> mapN(f(a), g(b)) { Ior.Both(it.a, it.b) } })
+        it.fold({ f(it).map { Left(it) } }, { g(it).map { Right(it) } },
+          { a, b -> mapN(f(a), g(b)) { Both(it.a, it.b) } })
       }
     }
 }
@@ -149,20 +200,20 @@ interface IorEq<L, R> : Eq<Ior<L, R>> {
   fun EQR(): Eq<R>
 
   override fun Ior<L, R>.eqv(b: Ior<L, R>): Boolean = when (this) {
-    is Ior.Left -> when (b) {
-      is Ior.Both -> false
-      is Ior.Right -> false
-      is Ior.Left -> EQL().run { value.eqv(b.value) }
+    is Left -> when (b) {
+      is Both -> false
+      is Right -> false
+      is Left -> EQL().run { value.eqv(b.value) }
     }
-    is Ior.Both -> when (b) {
-      is Ior.Left -> false
-      is Ior.Both -> EQL().run { leftValue.eqv(b.leftValue) } && EQR().run { rightValue.eqv(b.rightValue) }
-      is Ior.Right -> false
+    is Both -> when (b) {
+      is Left -> false
+      is Both -> EQL().run { leftValue.eqv(b.leftValue) } && EQR().run { rightValue.eqv(b.rightValue) }
+      is Right -> false
     }
-    is Ior.Right -> when (b) {
-      is Ior.Left -> false
-      is Ior.Both -> false
-      is Ior.Right -> EQR().run { value.eqv(b.value) }
+    is Right -> when (b) {
+      is Left -> false
+      is Both -> false
+      is Right -> EQR().run { value.eqv(b.value) }
     }
   }
 }
@@ -205,9 +256,9 @@ interface IorHash<L, R> : Hash<Ior<L, R>>, IorEq<L, R> {
   override fun EQR(): Eq<R> = HR()
 
   override fun Ior<L, R>.hash(): Int = when (this) {
-    is Ior.Left -> HL().run { value.hash() }
-    is Ior.Right -> HR().run { value.hash() }
-    is Ior.Both -> 31 * HL().run { leftValue.hash() } + HR().run { rightValue.hash() }
+    is Left -> HL().run { value.hash() }
+    is Right -> HR().run { value.hash() }
+    is Both -> 31 * HL().run { leftValue.hash() } + HR().run { rightValue.hash() }
   }
 }
 
@@ -218,9 +269,9 @@ fun <L, R> Ior.Companion.fx(SL: Semigroup<L>, c: suspend MonadSyntax<IorPartialO
 interface IorCrosswalk<L> : Crosswalk<IorPartialOf<L>>, IorFunctor<L>, IorFoldable<L> {
   override fun <F, A, B> crosswalk(ALIGN: Align<F>, a: Kind<IorPartialOf<L>, A>, fa: (A) -> Kind<F, B>): Kind<F, Kind<IorPartialOf<L>, B>> {
     return when (val ior = a.fix()) {
-      is Ior.Left -> ALIGN.run { empty<Kind<IorPartialOf<L>, B>>() }
-      is Ior.Both -> ALIGN.run { fa(ior.rightValue).map { Ior.Both(ior.leftValue, it) } }
-      is Ior.Right -> ALIGN.run { fa(ior.value).map { it.rightIor() } }
+      is Left -> ALIGN.run { empty<Kind<IorPartialOf<L>, B>>() }
+      is Both -> ALIGN.run { fa(ior.rightValue).map { Both(ior.leftValue, it) } }
+      is Right -> ALIGN.run { fa(ior.value).map { it.rightIor() } }
     }
   }
 }
@@ -234,14 +285,17 @@ interface IorBicrosswalk : Bicrosswalk<ForIor>, IorBifunctor, IorBifoldable {
     fb: (B) -> Kind<F, D>
   ): Kind<F, Kind2<ForIor, C, D>> =
     when (val e = tab.fix()) {
-      is Ior.Left -> ALIGN.run {
+      is Left -> ALIGN.run {
         fa(e.value).map { it.leftIor() }
       }
-      is Ior.Right -> ALIGN.run {
+      is Right -> ALIGN.run {
         fb(e.value).map { it.rightIor() }
       }
-      is Ior.Both -> ALIGN.run {
+      is Both -> ALIGN.run {
         align(fa(e.leftValue), fb(e.rightValue))
       }
     }
 }
+
+operator fun <L, R> Ior<L, R>.component1(): L? = leftOrNull()
+operator fun <L, R> Ior<L, R>.component2(): R? = orNull()
