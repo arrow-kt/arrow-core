@@ -231,6 +231,5 @@ class IorTest : UnitSpec() {
         actualRight shouldBe expectedRight
       }
     }
-
   }
 }
