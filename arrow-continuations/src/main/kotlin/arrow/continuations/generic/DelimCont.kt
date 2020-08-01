@@ -35,10 +35,12 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R): RunnableDelim
     override suspend fun invoke(a: A): R = DelimContScope<R> { runFunc(a) }.invoke()
   }
 
-  override suspend fun <A> shift(func: suspend (DelimitedContinuation<A, R>) -> R): A =
+  // TODO I wrote this in the middle of the night, double check
+  // Note we don't wrap the function [func] in an explicit reset because that is already implicit in our scope
+  override suspend fun <A> shift(func: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
     suspendCoroutine { continueMain ->
       val delCont = SingleShotCont(continueMain, shiftFnContinuations)
-      assert(nextShift.compareAndSet(null, suspend { func(delCont) }))
+      assert(nextShift.compareAndSet(null, suspend { this.func(delCont) }))
     }
 
   override suspend fun <A> shiftCPS(func: suspend (DelimitedContinuation<A, R>) -> R, c: suspend DelimitedScope<R>.(A) -> R): Nothing =

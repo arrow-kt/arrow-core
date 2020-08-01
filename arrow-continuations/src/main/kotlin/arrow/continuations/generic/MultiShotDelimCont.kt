@@ -13,8 +13,10 @@ open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) 
 
   private val resultVar = atomic<R?>(null)
   private val nextShift = atomic<(suspend () -> R)?>(null)
+
   // TODO This can be append only and needs fast reversed access
   private val shiftFnContinuations = mutableListOf<Continuation<R>>()
+
   // TODO This can be append only and needs fast random access and slicing
   internal open val stack = mutableListOf<Any?>()
 
@@ -40,14 +42,17 @@ open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) 
 
   data class CPSCont<A, R>(
     private val runFunc: suspend DelimitedScope<R>.(A) -> R
-  ): DelimitedContinuation<A, R> {
+  ) : DelimitedContinuation<A, R> {
     override suspend fun invoke(a: A): R = DelimContScope<R> { runFunc(a) }.invoke()
   }
 
-  override suspend fun <A> shift(func: suspend (DelimitedContinuation<A, R>) -> R): A = suspendCoroutine { continueMain ->
-    val c = MultiShotCont(continueMain, f, stack, shiftFnContinuations)
-    assert(nextShift.compareAndSet(null, suspend { func(c) }))
-  }
+  // TODO I wrote this in the middle of the night, double check
+  // Note we don't wrap the function [func] in an explicit reset because that is already implicit in our scope
+  override suspend fun <A> shift(func: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
+    suspendCoroutine { continueMain ->
+      val c = MultiShotCont(continueMain, f, stack, shiftFnContinuations)
+      assert(nextShift.compareAndSet(null, suspend { this.func(c) }))
+    }
 
   override suspend fun <A> shiftCPS(func: suspend (DelimitedContinuation<A, R>) -> R, c: suspend DelimitedScope<R>.(A) -> R): Nothing =
     suspendCoroutine {
@@ -74,8 +79,7 @@ open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) 
             }
           } else return@let
         }
-      }
-      else return@invoke it as R
+      } else return@invoke it as R
     }
     assert(resultVar.value != null)
     for (c in shiftFnContinuations.asReversed()) c.resume(resultVar.value!!)
@@ -90,10 +94,10 @@ open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) 
 class PrefilledDelimContScope<R>(
   override val stack: MutableList<Any?>,
   f: suspend DelimitedScope<R>.() -> R
-): MultiShotDelimContScope<R>(f) {
+) : MultiShotDelimContScope<R>(f) {
   var depth = 0
 
-  override suspend fun <A> shift(func: suspend (DelimitedContinuation<A, R>) -> R): A =
+  override suspend fun <A> shift(func: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
     if (stack.size > depth) stack[depth++] as A
     else super.shift(func).also { depth++ }
 }

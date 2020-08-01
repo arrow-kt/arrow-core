@@ -44,6 +44,35 @@ abstract class ContTestSuite: UnitSpec() {
       } shouldBe 1
     }
     if (capabilities().contains(ScopeCapabilities.MultiShot)) {
+      // This comes from http://homes.sice.indiana.edu/ccshan/recur/recur.pdf and shows how reset/shift should behave
+      "multishot reset/shift" {
+        runScope<List<Char>> {
+          listOf('a') + reset<List<Char>> {
+            listOf('b') + shift<List<Char>> { f -> listOf('1') + f(f(listOf('c'))) }
+          }
+        } shouldBe listOf('a', '1', 'b', 'b', 'c')
+        runScope<List<Char>> {
+          listOf('a') + reset<List<Char>> {
+            shiftCPS({ f -> listOf('1') + f(f(listOf('c'))) }) { xs: List<Char> ->
+              listOf('b') + xs
+            }
+          }
+        } shouldBe listOf('a', '1', 'b', 'b', 'c')
+      }
+      // This also comes from http://homes.sice.indiana.edu/ccshan/recur/recur.pdf and shows that shift surrounds the
+      //  captured continuation and the function receiving it with reset. This is done implicitly in our implementation
+      "shift and control distinction" {
+        runScope<String> {
+          reset {
+            suspend fun y() = shift<String> { f -> "a" + f("") }
+            shift<String> { y() }
+          }
+        } shouldBe "a"
+        // TODO this is not very accurate, probably not correct either
+        runScope<String> {
+          shiftCPS({ it("") }, { s: String -> shift { f -> "a" + f("") } })
+        } shouldBe "a"
+      }
       "multshot nondet" {
         runScope<List<Tuple2<Int, Int>>> {
           val i: Int = shift { k -> k(10) + k(20) }

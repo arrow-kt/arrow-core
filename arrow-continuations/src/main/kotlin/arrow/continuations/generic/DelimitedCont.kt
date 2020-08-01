@@ -14,7 +14,7 @@ interface DelimitedContinuation<A, R> {
 // @RestrictsSuspension
 interface DelimitedScope<R> {
   // shift and place an implicit boundary. See shiftCPS for a more accurate definition of what this means
-  suspend fun <A> shift(f: suspend (DelimitedContinuation<A, R>) -> R): A
+  suspend fun <A> shift(f: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A
   // shiftCPS passes the arguments with which the continuation is invoked to the supplied continuation/function c.
   // This means it is trivially multishot because c has the stack in its closure. To enforce that this is the last
   // statement of a reset block we return Nothing here.
