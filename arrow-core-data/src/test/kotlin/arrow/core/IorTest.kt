@@ -1,6 +1,5 @@
 package arrow.core
 
-import arrow.core.computations.either
 import arrow.core.extensions.either.eqK.eqK
 import arrow.core.extensions.either.semigroupK.semigroupK
 import arrow.core.extensions.eq
@@ -17,11 +16,9 @@ import arrow.core.extensions.ior.eqK2.eqK2
 import arrow.core.extensions.ior.functor.functor
 import arrow.core.extensions.ior.hash.hash
 import arrow.core.extensions.ior.monad.monad
-import arrow.core.extensions.ior.monoid.monoid
 import arrow.core.extensions.ior.semigroup.semigroup
 import arrow.core.extensions.ior.show.show
 import arrow.core.extensions.ior.traverse.traverse
-import arrow.core.extensions.monoid
 import arrow.core.extensions.semigroup
 import arrow.core.extensions.show
 import arrow.core.test.UnitSpec
@@ -34,16 +31,14 @@ import arrow.core.test.laws.BifunctorLaws
 import arrow.core.test.laws.BitraverseLaws
 import arrow.core.test.laws.CrosswalkLaws
 import arrow.core.test.laws.EqK2Laws
-import arrow.core.test.laws.FxLaws
 import arrow.core.test.laws.HashLaws
 import arrow.core.test.laws.MonadLaws
-import arrow.core.test.laws.MonoidLaws
 import arrow.core.test.laws.SemigroupKLaws
 import arrow.core.test.laws.SemigroupLaws
 import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Monad
+import io.kotlintest.forAll
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
@@ -60,7 +55,6 @@ class IorTest : UnitSpec() {
     testLaws(
       EqK2Laws.laws(Ior.eqK2(), Ior.genK2()),
       BifunctorLaws.laws(Ior.bifunctor(), Ior.genK2(), Ior.eqK2()),
-      MonoidLaws.laws(Ior.monoid(String.monoid(), Int.monoid()), GEN, EQ),
       ShowLaws.laws(Ior.show(String.show(), Int.show()), EQ, GEN),
       SemigroupLaws.laws(Ior.semigroup(String.semigroup(), Int.semigroup()), GEN, EQ),
       MonadLaws.laws(
@@ -203,5 +197,25 @@ class IorTest : UnitSpec() {
       val iorResult = intIorMonad.run { ior1.flatMap { Ior.Left(7) } }
       iorResult shouldBe Ior.Left(10)
     }
+
+    "combine cases for Semigroup" {
+      fun case(a: Ior<String, Int>, b: Ior<String, Int>, result: Ior<String, Int>) = listOf(a, b, result)
+      Ior.semigroup(String.semigroup(), Int.semigroup()).run {
+        forAll(listOf(
+          case("Hello, ".leftIor(), Ior.Left("Arrow!"), Ior.Left("Hello, Arrow!")),
+          case(Ior.Left("Hello"), Ior.Right(2020), Ior.Both("Hello", 2020)),
+          case(Ior.Left("Hello, "), Ior.Both("number", 1), Ior.Both("Hello, number", 1)),
+          case(Ior.Right(9000), Ior.Left("Over"), Ior.Both("Over", 9000)),
+          case(Ior.Right(9000), Ior.Right(1), Ior.Right(9001)),
+          case(Ior.Right(8000), Ior.Both("Over", 1000), Ior.Both("Over", 9000)),
+          case(Ior.Both("Hello ", 1), Ior.Left("number"), Ior.Both("Hello number", 1)),
+          case(Ior.Both("Hello number", 1), Ior.Right(1), Ior.Both("Hello number", 2)),
+          case(Ior.Both("Hello ", 1), Ior.Both("number", 1), Ior.Both("Hello number", 2))
+        )) { (a, b, expectedResult) ->
+          a + b shouldBe expectedResult
+        }
+      }
+    }
+
   }
 }

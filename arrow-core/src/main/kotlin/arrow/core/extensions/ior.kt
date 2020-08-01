@@ -50,11 +50,11 @@ private fun <L, R> BiSemigroup<L, R>.combine(a: Ior<L, R>, b: Ior<L, R>): Ior<L,
   when (a) {
     is Left -> when (b) {
       is Left -> Left(a.value + b.value)
-      is Right -> a//Both(a.value, b.value)
+      is Right -> Both(a.value, b.value)
       is Both -> Both(a.value + b.leftValue, b.rightValue)
     }
     is Right -> when (b) {
-      is Left -> b//Both(b.value, a.value)
+      is Left -> Both(b.value, a.value)
       is Right -> Right(a.value + b.value)
       is Both -> Both(b.leftValue, a.value + b.rightValue)
     }
@@ -75,16 +75,16 @@ interface IorSemigroup<L, R> : Semigroup<Ior<L, R>> {
 
 }
 
-@extension
-interface IorMonoid<L, R> : Monoid<Ior<L, R>>, IorSemigroup<L, R> {
-  fun MOL(): Monoid<L>
-  fun MOR(): Monoid<R>
-
-  override fun SGL(): Semigroup<L> = MOL()
-  override fun SGR(): Semigroup<R> = MOR()
-
-  override fun empty(): Ior<L, R> = Both(MOL().empty(), MOR().empty())
-}
+//@extension
+//interface IorMonoid<L, R> : Monoid<Ior<L, R>>, IorSemigroup<L, R> {
+//  fun MOL(): Monoid<L>
+//  fun MOR(): Monoid<R>
+//
+//  override fun SGL(): Semigroup<L> = MOL()
+//  override fun SGR(): Semigroup<R> = MOR()
+//
+//  override fun empty(): Ior<L, R> = Both(MOL().empty(), MOR().empty())
+//}
 
 @extension
 @undocumented
