@@ -1,5 +1,7 @@
 package arrow.core
 
+import arrow.core.extensions.component1
+import arrow.core.extensions.component2
 import arrow.core.extensions.either.eqK.eqK
 import arrow.core.extensions.either.semigroupK.semigroupK
 import arrow.core.extensions.eq
@@ -214,6 +216,19 @@ class IorTest : UnitSpec() {
         )) { (a, b, expectedResult) ->
           a + b shouldBe expectedResult
         }
+      }
+    }
+
+    "destructuring declarations" {
+      data class Case(val ior: Ior<String, Int>, val left: String?, val right: Int?)
+      forAll(listOf(
+        Case(Ior.Left("Hey!"), "Hey!", null),
+        Case(Ior.Right(2020), null, 2020),
+        Case(Ior.Both("Hey!", 2020), "Hey!", 2020)
+      )) { (ior, expectedLeft, expectedRight) ->
+        val (actualLeft, actualRight) = ior
+        actualLeft shouldBe expectedLeft
+        actualRight shouldBe expectedRight
       }
     }
 
