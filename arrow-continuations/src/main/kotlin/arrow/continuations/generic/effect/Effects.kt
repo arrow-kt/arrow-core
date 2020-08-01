@@ -2,7 +2,7 @@ package arrow.continuations.generic.effect
 
 interface Error<E> {
   suspend fun raise(e: E): Nothing
-  suspend fun <Eff : Error<E>, A> Eff.catch(f: suspend Eff.() -> A, hdl: suspend Eff.(E) -> A): A
+  suspend fun <A> catch(f: suspend () -> A, hdl: suspend (E) -> A): A
 }
 
 interface Empty {
@@ -12,5 +12,7 @@ interface Empty {
 interface Choose {
   suspend fun choose(): Boolean
 }
+
+suspend inline fun <A> Choose.choice(f: () -> A, g: () -> A): A = if (choose()) f() else g()
 
 interface NonDet : Choose, Empty

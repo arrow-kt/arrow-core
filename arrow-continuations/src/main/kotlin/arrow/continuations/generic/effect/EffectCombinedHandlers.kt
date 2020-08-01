@@ -17,8 +17,8 @@ fun <F, E, A> Either.Companion.errorHandler(
   delimitedScope: DelimitedScope<Kind<F, Kind<EitherPartialOf<E>, A>>>
 ): Error<E> =
   object : Error<E> {
-    override suspend fun <Eff : Error<E>, A> Eff.catch(f: suspend Eff.() -> A, hdl: suspend Eff.(E) -> A): A =
-      TODO("I need more powers over F to do this")
+    override suspend fun <B> catch(f: suspend () -> B, hdl: suspend (E) -> B): B =
+      TODO("This requires proper nested scope support to be sensible")
 
     override suspend fun raise(e: E): Nothing =
       delimitedScope.shift { ap.just(left(e)) }
