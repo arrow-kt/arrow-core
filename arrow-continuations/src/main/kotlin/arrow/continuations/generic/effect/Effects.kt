@@ -1,9 +1,16 @@
 package arrow.continuations.generic.effect
 
-interface Error<E> {
+import arrow.core.Either
+
+interface Raise<E> {
   suspend fun raise(e: E): Nothing
-  suspend fun <A> catch(f: suspend () -> A, hdl: suspend (E) -> A): A
 }
+
+interface Catch<E> {
+  suspend fun <A> catch(f: suspend Raise<E>.() -> A, hdl: suspend (E) -> A): A
+}
+
+interface Error<E> : Raise<E>, Catch<E>
 
 interface Empty {
   suspend fun empty(): Nothing

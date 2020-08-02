@@ -157,7 +157,7 @@ class ParserCtxImpl<A>(val input: String, val scope: DelimitedScope<ParseResult<
     })
   }
    */
-  override suspend fun <A> catch(f: suspend () -> A, hdl: suspend (ParseError) -> A): A = TODO("Not working. Use attempt for now. See note in code on commented part above")
+  override suspend fun <A> catch(f: suspend Raise<ParseError>.() -> A, hdl: suspend (ParseError) -> A): A = TODO("Not working. Use attempt for now. See note in code on commented part above")
 
   override fun <A> attempt(p: Parser<A>): Either<ParseError, A> =
     p.runParser(takeRemaining()).result
