@@ -1,8 +1,10 @@
 package generic
 
+import arrow.continuations.effectStack.reset
 import arrow.continuations.generic.DelimitedScope
 import arrow.continuations.generic.MultiShotDelimContScope
 import arrow.continuations.generic.DelimContScope
+import arrow.continuations.generic.NestedDelimContScope
 import arrow.core.Either
 import arrow.core.Left
 import arrow.core.Tuple2
@@ -120,11 +122,76 @@ abstract class ContTestSuite: UnitSpec() {
         }
       }
     }
+    if (capabilities().contains(ScopeCapabilities.NestedScopes)) {
+      "nested reset calling between scopes" {
+        runScope {
+          val a: Int = shift { it(5) }
+          a + reset<Int> fst@{
+            val i: Int = shift { it(10) }
+            reset<Int> snd@{
+              val j: Int = shift { it(20) }
+              val k: Int = this@fst.shift { it(30) }
+              i + j + k
+            }
+          } shouldBe 65
+        }
+      }
+      "nested reset calling between a lot of scopes" {
+        runScope fst@{
+          val a: Int = shift { it(5) }
+          a + reset<Int> snd@{
+            val i: Int = shift { it(10) }
+            reset<Int> third@{
+              val j: Int = shift { it(20) }
+              val k: Int = this@fst.shift<Int> { it(30) } + this@snd.shift<Int> { it(40) }
+              reset fourth@{
+                val p: Int = shift { it(20) }
+                val k2: Int = this@fst.shift<Int> { it(30) } + this@snd.shift<Int> { it(40) }
+                val t: Int = this@third.shift { it(5) }
+                i + j + k + p + k2 + t
+              }
+            }
+          } shouldBe 200
+        }
+      }
+      "nested reset calling between scopes with short circuit" {
+        runScope {
+          val a: Int = shift { it(5) }
+          a + reset<Int> fst@{
+            val i: Int = shift { it(10) }
+            reset<Int> snd@{
+              val j: Int = shift { it(20) }
+              val k: Int = this@fst.shift { 5 }
+              i + j + k
+            }
+          } shouldBe 10
+        }
+      }
+      "nested reset calling between a lot of scopes and short circuit" {
+        runScope fst@{
+          val a: Int = shift { it(5) }
+          a + reset<Int> snd@{
+            val i: Int = shift { it(10) }
+            reset<Int> third@{
+              val j: Int = shift { it(20) }
+              val k: Int = this@fst.shift<Int> { it(30) } + this@snd.shift<Int> { it(40) }
+              reset fourth@{
+                val p: Int = shift { it(20) }
+                val k2: Int = this@fst.shift<Int> { it(30) } + this@snd.shift<Int> { it(40) }
+                val t: Int = this@third.shift { 5 }
+                i + j + k + p + k2 + t
+              }
+            }
+          } shouldBe 10
+        }
+      }
+    }
   }
 }
 
 sealed class ScopeCapabilities {
   object MultiShot : ScopeCapabilities()
+  object NestedScopes : ScopeCapabilities()
 }
 
 class SingleShotContTestSuite : ContTestSuite() {
@@ -139,4 +206,11 @@ class MultiShotContTestSuite : ContTestSuite() {
     MultiShotDelimContScope.reset(func)
 
   override fun capabilities(): Set<ScopeCapabilities> = setOf(ScopeCapabilities.MultiShot)
+}
+
+class NestedContTestSuite : ContTestSuite() {
+  override fun <A> runScope(func: suspend DelimitedScope<A>.() -> A): A =
+    NestedDelimContScope.reset(func)
+
+  override fun capabilities(): Set<ScopeCapabilities> = setOf(ScopeCapabilities.NestedScopes)
 }

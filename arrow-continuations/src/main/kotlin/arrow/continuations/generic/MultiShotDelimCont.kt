@@ -60,7 +60,7 @@ open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) 
     }
 
   // This assumes RestrictSuspension or at least assumes the user to never reference the parent scope in f.
-  override fun <A> reset(f: suspend DelimitedScope<A>.() -> A): A =
+  override suspend fun <A> reset(f: suspend DelimitedScope<A>.() -> A): A =
     MultiShotDelimContScope(f).invoke()
 
   override fun invoke(): R {

@@ -35,7 +35,7 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R): RunnableDelim
     override suspend fun invoke(a: A): R = DelimContScope<R> { runFunc(a) }.invoke()
   }
 
-  // TODO I wrote this in the middle of the night, double check
+  // TODO I wrote this comment in the middle of the night, double check
   // Note we don't wrap the function [func] in an explicit reset because that is already implicit in our scope
   override suspend fun <A> shift(func: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
     suspendCoroutine { continueMain ->
@@ -48,7 +48,7 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R): RunnableDelim
       assert(nextShift.compareAndSet(null, suspend { func(CPSCont(c)) }))
     }
 
-  override fun <A> reset(f: suspend DelimitedScope<A>.() -> A): A =
+  override suspend fun <A> reset(f: suspend DelimitedScope<A>.() -> A): A =
     DelimContScope(f).invoke()
 
   override fun invoke(): R {

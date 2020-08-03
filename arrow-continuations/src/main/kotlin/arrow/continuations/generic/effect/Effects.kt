@@ -7,6 +7,15 @@ interface Raise<E> {
 }
 
 interface Catch<E> {
+  /**
+   * This is not easy to implement. Best attempt is probably going:
+   * reset<Either<E, A>> {
+   *   val raiseEff = eitherRaise(this@reset) // define handler for raise here
+   *   f(raiseEff)
+   * }.fold({ e -> hdl() }, ::identity)
+   * This runs into another problem though:
+   *  reset as of now is not supporting nested scopes in terms of its runloop or multishot.
+   */
   suspend fun <A> catch(f: suspend Raise<E>.() -> A, hdl: suspend (E) -> A): A
 }
 
