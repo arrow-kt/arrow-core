@@ -43,7 +43,7 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R): RunnableDelim
       assert(nextShift.compareAndSet(null, suspend { this.func(delCont) }))
     }
 
-  override suspend fun <A> shiftCPS(func: suspend (DelimitedContinuation<A, R>) -> R, c: suspend DelimitedScope<R>.(A) -> R): Nothing =
+  override suspend fun <A, B> shiftCPS(func: suspend (DelimitedContinuation<A, B>) -> R, c: suspend DelimitedScope<B>.(A) -> B): Nothing =
     suspendCoroutine {
       assert(nextShift.compareAndSet(null, suspend { func(CPSCont(c)) }))
     }

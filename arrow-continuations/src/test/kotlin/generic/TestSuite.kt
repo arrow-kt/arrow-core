@@ -34,9 +34,9 @@ abstract class ContTestSuite: UnitSpec() {
     }
     "shiftCPS supports multishot regardless of scope" {
       runScope<Int> {
-        shiftCPS<Int>({ it(1) + it(2) }) { i -> i }
+        shiftCPS<Int, Int>({ it(1) + it(2) }) { i -> i + 1 }
         throw IllegalStateException("This is unreachable")
-      } shouldBe 3
+      } shouldBe 5
     }
     "reset" {
       runScope<Int> {
@@ -55,7 +55,7 @@ abstract class ContTestSuite: UnitSpec() {
         } shouldBe listOf('a', '1', 'b', 'b', 'c')
         runScope<List<Char>> {
           listOf('a') + reset<List<Char>> {
-            shiftCPS({ f -> listOf('1') + f(f(listOf('c'))) }) { xs: List<Char> ->
+            shiftCPS<List<Char>, List<Char>>({ f -> listOf('1') + f(f(listOf('c'))) }) { xs: List<Char> ->
               listOf('b') + xs
             }
           }
@@ -72,7 +72,7 @@ abstract class ContTestSuite: UnitSpec() {
         } shouldBe "a"
         // TODO this is not very accurate, probably not correct either
         runScope<String> {
-          shiftCPS({ it("") }, { s: String -> shift { f -> "a" + f("") } })
+          shiftCPS<String, String>({ it("") }, { s: String -> shift { f -> "a" + f("") } })
         } shouldBe "a"
       }
       "multshot nondet" {

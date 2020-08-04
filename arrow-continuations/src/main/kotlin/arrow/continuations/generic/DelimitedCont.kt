@@ -18,7 +18,7 @@ interface DelimitedScope<R> {
   // shiftCPS passes the arguments with which the continuation is invoked to the supplied continuation/function c.
   // This means it is trivially multishot because c has the stack in its closure. To enforce that this is the last
   // statement of a reset block we return Nothing here.
-  suspend fun <A> shiftCPS(f: suspend (DelimitedContinuation<A, R>) -> R, c: suspend DelimitedScope<R>.(A) -> R): Nothing
+  suspend fun <A, B> shiftCPS(f: suspend (DelimitedContinuation<A, B>) -> R, c: suspend DelimitedScope<B>.(A) -> B): Nothing
   suspend fun <A> reset(f: suspend DelimitedScope<A>.() -> A): A
 }
 
