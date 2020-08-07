@@ -249,9 +249,9 @@ class ListKTest : UnitSpec() {
       }
     }
 
-    "filterNullMap() should map list and filter out null values" {
+    "mapNotNull() should map list and filter out null values" {
       forAll(Gen.listK(Gen.int())) { listk ->
-        listk.filterNullMap {
+        listk.mapNotNull {
           when (it % 2 == 0) {
             true -> it.toString()
             else -> null
