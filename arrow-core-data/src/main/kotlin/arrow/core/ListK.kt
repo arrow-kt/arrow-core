@@ -185,7 +185,7 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
    *     true -> it.toString()
    *     else -> null
    *   }
-   * } // Result: listOf("2").k()
+   * }
    * //sampleEnd
    *
    * fun main() {
