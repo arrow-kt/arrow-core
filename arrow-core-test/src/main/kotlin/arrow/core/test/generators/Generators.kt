@@ -29,9 +29,9 @@ import arrow.core.Tuple7
 import arrow.core.Tuple8
 import arrow.core.Tuple9
 import arrow.core.Validated
-import arrow.core.extensions.sequence.functorFilter.filterMap
-import arrow.core.extensions.sequencek.apply.apply
-import arrow.core.extensions.sequencek.functorFilter.filterMap
+import arrow.core.extensions.listk.semialign.semialign
+import arrow.core.extensions.sequencek.semialign.semialign
+import arrow.core.fix
 import arrow.core.k
 import arrow.core.toOption
 import arrow.typeclasses.Applicative
@@ -200,19 +200,7 @@ fun <T> Arb.Companion.id(gen: Arb<T>): Arb<Id<T>> =
   gen.map { Id.just(it) }
 
 fun <A, B> Arb.Companion.ior(genA: Arb<A>, genB: Arb<B>): Arb<Ior<A, B>> =
-  arb(
-    (genA.orNull().edgecases().asSequence().k() to genB.orNull().edgecases().asSequence().k()).let { (ls, rs) ->
-      SequenceK.apply().run { ls.product(rs) }.filterMap {
-        Ior.fromOptions(Option.fromNullable(it.a), Option.fromNullable(it.b))
-      }.toList()
-    }
-  ) {
-    (Arb.option(genA).values(it) to Arb.option(genB).values(it)).let { (ls, rs) ->
-      ls.zip(rs).filterMap {
-        Ior.fromOptions(it.first.value, it.second.value)
-      }
-    }
-  }
+  genA.alignWith(genB) { it }
 
 fun <A, B> Arb.Companion.genConst(gen: Arb<A>): Arb<Const<A, B>> =
   gen.map { Const<A, B>(it) }
@@ -222,3 +210,18 @@ fun <A> Arb<A>.eval(): Arb<Eval<A>> =
 
 fun Arb.Companion.char(): Arb<Char> =
   Arb.of(('A'..'Z') + ('a'..'z') + ('0'..'9') + "!@#$%%^&*()_-~`,<.?/:;}{][±§".toList())
+
+private fun <A, B, R> Arb<A>.alignWith(genB: Arb<B>, transform: (Ior<A, B>) -> R): Arb<R> =
+  arb(
+      ListK.semialign().run {
+        alignWith(this@alignWith.edgecases().toList().k(), genB.edgecases().toList().k(), transform)
+      }.fix()
+  ) {
+      SequenceK.semialign().run {
+        alignWith(
+          this@alignWith.values(it).k().map(Sample<A>::value),
+          genB.values(it).k().map(Sample<B>::value),
+          transform
+        )
+      }.fix()
+  }
