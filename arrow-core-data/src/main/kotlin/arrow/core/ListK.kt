@@ -173,7 +173,7 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
 
   /**
    * Returns a [ListK] containing the transformed values from the original
-   * [ListK] as long as they are non-null.
+   * [ListK] filtering out any null value.
    *
    * Example:
    * ```kotlin:ank:playground
