@@ -208,7 +208,7 @@ class IorTest : UnitSpec() {
     "combine cases for Semigroup" {
       fun case(a: Ior<String, Int>, b: Ior<String, Int>, result: Ior<String, Int>) = listOf(a, b, result)
       Ior.semigroup(String.semigroup(), Int.semigroup()).run {
-        forAll(listOf(
+        listOf(
           case("Hello, ".leftIor(), Ior.Left("Arrow!"), Ior.Left("Hello, Arrow!")),
           case(Ior.Left("Hello"), Ior.Right(2020), Ior.Both("Hello", 2020)),
           case(Ior.Left("Hello, "), Ior.Both("number", 1), Ior.Both("Hello, number", 1)),
@@ -218,7 +218,7 @@ class IorTest : UnitSpec() {
           case(Ior.Both("Hello ", 1), Ior.Left("number"), Ior.Both("Hello number", 1)),
           case(Ior.Both("Hello number", 1), Ior.Right(1), Ior.Both("Hello number", 2)),
           case(Ior.Both("Hello ", 1), Ior.Both("number", 1), Ior.Both("Hello number", 2))
-        )) { (a, b, expectedResult) ->
+        ).forEach { (a, b, expectedResult) ->
           a + b shouldBe expectedResult
         }
       }
@@ -226,11 +226,11 @@ class IorTest : UnitSpec() {
 
     "destructuring declarations" {
       data class Case(val ior: Ior<String, Int>, val left: String?, val right: Int?)
-      forAll(listOf(
+      listOf(
         Case(Ior.Left("Hey!"), "Hey!", null),
         Case(Ior.Right(2020), null, 2020),
         Case(Ior.Both("Hey!", 2020), "Hey!", 2020)
-      )) { (ior, expectedLeft, expectedRight) ->
+      ).forEach { (ior, expectedLeft, expectedRight) ->
         val (actualLeft, actualRight) = ior
         actualLeft shouldBe expectedLeft
         actualRight shouldBe expectedRight
