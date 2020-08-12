@@ -1,6 +1,6 @@
 package arrow.continuations.reflect
 
-import arrow.core.ShortCircuit
+import arrow.core.ShortCircuit // TODO
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.loop
 import kotlin.coroutines.CoroutineContext
