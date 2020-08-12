@@ -187,6 +187,13 @@ class EitherTest : UnitSpec() {
       }
     }
 
+    "orNull should convert" {
+      forAll { a: Int ->
+        Right(a).orNull() == a &&
+          Left(a).orNull() == null
+      }
+    }
+
     "contains should check value" {
       forAll(Gen.intSmall(), Gen.intSmall()) { a: Int, b: Int ->
         Right(a).contains(a) &&
@@ -215,6 +222,17 @@ class EitherTest : UnitSpec() {
         Left(a).handleErrorWith { Right(b) } == Right(b) &&
           Right(a).handleErrorWith { Right(b) } == Right(a)
       }
+    }
+
+    "catch should return Right(result) when f does not throw" {
+      suspend fun loadFromNetwork(): Int = 1
+      Either.catch { loadFromNetwork() } shouldBe Right(1)
+    }
+
+    "catch should return Left(result) when f throws" {
+      val exception = Exception("Boom!")
+      suspend fun loadFromNetwork(): Int = throw exception
+      Either.catch { loadFromNetwork() } shouldBe Left(exception)
     }
   }
 }
