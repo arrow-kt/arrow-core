@@ -193,7 +193,6 @@ fun <A> Gen<A>.eval(): Gen<Eval<A>> =
 fun Gen.Companion.char(): Gen<Char> =
   Gen.from(('A'..'Z') + ('a'..'z') + ('0'..'9') + "!@#$%%^&*()_-~`,<.?/:;}{][±§".toList())
 
-
 fun <A> Gen<A>.hashed(HA: Hash<A>): Gen<Hashed<A>> = map { v -> Hashed(HA.run { v.hash() }, v) }
 
 private fun <A, B, R> Gen<A>.alignWith(genB: Gen<B>, transform: (Ior<A, B>) -> R): Gen<R> =
