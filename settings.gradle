@@ -1,10 +1,17 @@
 rootProject.name = 'arrow-core-lib'
 
-include 'arrow-meta:arrow-meta-test-models'
-include 'arrow-meta'
-include 'arrow-annotations'
-include 'arrow-syntax'
-include 'arrow-core'
-include 'arrow-core-data'
-include 'arrow-core-test'
+// NOTE: It's not possible to change Kotlin version for just one module:
+// 
+//     The Kotlin Gradle plugin was loaded multiple times in different subprojects, which is not supported and may break the build. 
+//     This might happen in subprojects that apply the Kotlin plugins with the Gradle 'plugins { ... }' DSL if they specify explicit versions, even if the versions are equal.
+//     Please add the Kotlin plugin to the common parent project or the root project, then remove the versions in the subprojects.
+//     If the parent project does not need the plugin, add 'apply false' to the plugin line.
+
+// include 'arrow-meta:arrow-meta-test-models'
+// include 'arrow-meta'
+// include 'arrow-annotations'
+// include 'arrow-syntax'
+// include 'arrow-core'
+// include 'arrow-core-data'
+// include 'arrow-core-test'
 include 'arrow-continuations'

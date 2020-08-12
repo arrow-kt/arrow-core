@@ -4,8 +4,8 @@ plugins {
     id "org.jetbrains.kotlin.jvm"
     id "org.jetbrains.kotlin.kapt"
     id "org.jetbrains.dokka"
-    id "org.jlleitschuh.gradle.ktlint"
-    id "ru.vyarus.animalsniffer"
+    // id "org.jlleitschuh.gradle.ktlint"
+    // id "ru.vyarus.animalsniffer"
 }
 
 apply from: "$SUBPROJECT_CONF"
@@ -14,11 +14,11 @@ apply from: "$PUBLISH_CONF"
 apply plugin: 'kotlinx-atomicfu'
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
-    compile project(":arrow-annotations")
-    compile project(":arrow-core")
-    kapt project(":arrow-meta")
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$CUSTOM_KOTLIN_VERSION"
+    compile "io.arrow-kt:arrow-annotations:$VERSION_NAME"
+    compile "io.arrow-kt:arrow-core:$VERSION_NAME"
+    kapt "io.arrow-kt:arrow-meta:$VERSION_NAME"
     testRuntime "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
     testCompile "io.kotlintest:kotlintest-runner-junit5:$KOTLIN_TEST_VERSION", excludeArrow
-    testCompile project(":arrow-core-test")
+    testCompile "io.arrow-kt:arrow-core-test:$VERSION_NAME"
 }
