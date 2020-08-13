@@ -3,6 +3,7 @@ package arrow.core
 import arrow.Kind
 import arrow.core.extensions.eq
 import arrow.core.extensions.hash
+import arrow.core.extensions.list.zip.zipWith
 import arrow.core.extensions.listk.align.align
 import arrow.core.extensions.listk.applicative.applicative
 import arrow.core.extensions.listk.crosswalk.crosswalk
@@ -17,12 +18,16 @@ import arrow.core.extensions.listk.monadLogic.monadLogic
 import arrow.core.extensions.listk.monoid.monoid
 import arrow.core.extensions.listk.monoidK.monoidK
 import arrow.core.extensions.listk.monoidal.monoidal
+import arrow.core.extensions.listk.order.order
 import arrow.core.extensions.listk.semialign.semialign
 import arrow.core.extensions.listk.semigroupK.semigroupK
 import arrow.core.extensions.listk.show.show
 import arrow.core.extensions.listk.traverse.traverse
 import arrow.core.extensions.listk.unalign.unalign
 import arrow.core.extensions.listk.unzip.unzip
+import arrow.core.extensions.order
+import arrow.core.extensions.listk.zip.zipWith
+import arrow.core.extensions.option.eq.eq
 import arrow.core.extensions.show
 import arrow.core.test.UnitSpec
 import arrow.core.test.generators.genK
@@ -36,6 +41,7 @@ import arrow.core.test.laws.MonadLogicLaws
 import arrow.core.test.laws.MonoidKLaws
 import arrow.core.test.laws.MonoidLaws
 import arrow.core.test.laws.MonoidalLaws
+import arrow.core.test.laws.OrderLaws
 import arrow.core.test.laws.SemigroupKLaws
 import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
@@ -48,6 +54,7 @@ import io.kotest.property.arbitrary.int
 import io.kotest.property.forAll
 import io.kotest.matchers.shouldBe
 import io.kotest.property.arbitrary.bool
+import io.kotest.property.arbitrary.map
 import kotlin.math.max
 import kotlin.math.min
 import arrow.core.extensions.list.monad.flatten as monadFlatten
@@ -77,8 +84,8 @@ class ListKTest : UnitSpec() {
         this::bijection),
       MonoidKLaws.laws(ListK.monoidK(), ListK.genK(), ListK.eqK()),
       TraverseLaws.laws(ListK.traverse(), ListK.applicative(), ListK.genK(), ListK.eqK()),
-
       HashLaws.laws(ListK.hash(Int.hash()), Arb.listK(Arb.int()), ListK.eq(Int.eq())),
+      OrderLaws.laws(ListK.order(Int.order()), Arb.listK(Arb.int()).map { it as ListKOf<Int> }),
       EqKLaws.laws(
         ListK.eqK(),
         ListK.genK()
@@ -167,6 +174,20 @@ class ListKTest : UnitSpec() {
       }
     }
 
+    "leftPadZip (with map)" {
+      forAll(Arb.listK(Arb.int()), Arb.listK(Arb.int())) { a, b ->
+        val left = a.map { it }.k() + List(max(0, b.count() - a.count())) { null }.k()
+        val right = b.map { it }.k() + List(max(0, a.count() - b.count())) { null }.k()
+
+        val result =
+          a.leftPadZip(b) { a, b ->
+            a toT b
+          }
+
+        result == left.zipWith(right) { l, r -> l toT r }.filter { it.b != null }
+      }
+    }
+
     "rpadzip" {
       forAll(Arb.listK(Arb.int()), Arb.listK(Arb.int())) { a, b ->
 
@@ -186,6 +207,62 @@ class ListKTest : UnitSpec() {
           }
 
         result.map { it.a }.equalUnderTheLaw(a, ListK.eq(Int.eq()))
+      }
+    }
+
+    "padZip" {
+      forAll(Arb.listK(Arb.int()), Arb.listK(Arb.int())) { a, b ->
+        val left = a.map { Some(it) }.k() + List(max(0, b.count() - a.count())) { None }.k()
+        val right = b.map { Some(it) }.k() + List(max(0, a.count() - b.count())) { None }.k()
+
+        a.padZip(b) == left.zipWith(right) { l, r -> l toT r }
+      }
+    }
+
+    "padZipWith" {
+      forAll(Arb.listK(Arb.int()), Arb.listK(Arb.int())) { a, b ->
+        val left = a.map { Some(it) }.k() + List(max(0, b.count() - a.count())) { None }.k()
+        val right = b.map { Some(it) }.k() + List(max(0, a.count() - b.count())) { None }.k()
+        a.padZipWith(b) { l, r -> Ior.fromOptions(l, r) } == left.zipWith(right) { l, r -> Ior.fromOptions(l, r) }
+      }
+    }
+
+    "padZip (with map)" {
+      forAll(Arb.listK(Arb.int()), Arb.listK(Arb.int())) { a, b ->
+        val left = a.map { it }.k() + List(max(0, b.count() - a.count())) { null }.k()
+        val right = b.map { it }.k() + List(max(0, a.count() - b.count())) { null }.k()
+        a.padZip(b) { l, r -> Ior.fromNullables(l, r) } == left.zipWith(right) { l, r -> Ior.fromNullables(l, r) }
+      }
+    }
+
+    "padZipWithNull" {
+      forAll(Arb.listK(Arb.int()), Arb.listK(Arb.int())) { a, b ->
+        val left = a.map { it }.k() + List(max(0, b.count() - a.count())) { null }.k()
+        val right = b.map { it }.k() + List(max(0, a.count() - b.count())) { null }.k()
+
+        a.padZipWithNull(b) == left.zipWith(right) { l, r -> l toT r }
+      }
+    }
+
+    "filterMap() should map list and filter out None values" {
+      forAll(Arb.listK(Arb.int())) { listk ->
+          listk.filterMap {
+            when (it % 2 == 0) {
+              true -> it.toString().toOption()
+              else -> None
+            }
+          } == listk.toList().filter { it % 2 == 0 }.map { it.toString() }.k()
+      }
+    }
+
+    "mapNotNull() should map list and filter out null values" {
+      forAll(Arb.listK(Arb.int())) { listk ->
+        listk.mapNotNull {
+          when (it % 2 == 0) {
+            true -> it.toString()
+            else -> null
+          }
+        } == listk.toList().filter { it % 2 == 0 }.map { it.toString() }.k()
       }
     }
   }

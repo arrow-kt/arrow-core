@@ -18,9 +18,11 @@ import arrow.core.extensions.ior.eqK2.eqK2
 import arrow.core.extensions.ior.functor.functor
 import arrow.core.extensions.ior.hash.hash
 import arrow.core.extensions.ior.monad.monad
+import arrow.core.extensions.ior.order.order
 import arrow.core.extensions.ior.semigroup.semigroup
 import arrow.core.extensions.ior.show.show
 import arrow.core.extensions.ior.traverse.traverse
+import arrow.core.extensions.order
 import arrow.core.extensions.semigroup
 import arrow.core.extensions.show
 import arrow.core.test.UnitSpec
@@ -35,6 +37,7 @@ import arrow.core.test.laws.CrosswalkLaws
 import arrow.core.test.laws.EqK2Laws
 import arrow.core.test.laws.HashLaws
 import arrow.core.test.laws.MonadLaws
+import arrow.core.test.laws.OrderLaws
 import arrow.core.test.laws.SemigroupKLaws
 import arrow.core.test.laws.SemigroupLaws
 import arrow.core.test.laws.ShowLaws
@@ -68,12 +71,9 @@ class IorTest : UnitSpec() {
         Ior.genK(Arb.int()),
         Ior.eqK(Int.eq())
       ),
-      TraverseLaws.laws(Ior.traverse(),
-        Ior.applicative(Int.semigroup()),
-        Ior.genK(Arb.int()),
-        Ior.eqK(Int.eq())
-      ),
+      TraverseLaws.laws(Ior.traverse(), Ior.applicative(Int.semigroup()), Ior.genK(Arb.int()), Ior.eqK(Int.eq())),
       HashLaws.laws(Ior.hash(String.hash(), Int.hash()), Arb.ior(Arb.string(), Arb.int()), Ior.eq(String.eq(), Int.eq())),
+      OrderLaws.laws(Ior.order(String.order(), Int.order()), Arb.ior(Arb.string(), Arb.int())),
       BitraverseLaws.laws(Ior.bitraverse(), Ior.genK2(), Ior.eqK2()),
       SemigroupKLaws.laws(Either.semigroupK(), Either.genK(Arb.id(Arb.int())), Either.eqK(Id.eq(Int.eq()))),
       CrosswalkLaws.laws(Ior.crosswalk(), Ior.genK(Arb.int()), Ior.eqK(Int.eq())),
