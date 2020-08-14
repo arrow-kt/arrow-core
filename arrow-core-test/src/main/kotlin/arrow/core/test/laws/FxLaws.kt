@@ -74,8 +74,8 @@ object FxLaws {
   }
 
   private suspend fun <F, A> suspendedCanBindSuspendedValues(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
-      runBlocking {
     forAll(PropTestConfig(shrinkingMode = ShrinkingMode.Off), G) { f ->
+      runBlocking {
         fxBlock {
           val res = !f.suspend()
           res
