@@ -8,6 +8,8 @@ import arrow.typeclasses.suspended.BindSyntax
 import io.kotest.assertions.fail
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.property.Arb
+import io.kotest.property.PropTestConfig
+import io.kotest.property.ShrinkingMode
 import io.kotest.property.forAll
 import kotlinx.coroutines.runBlocking
 import kotlin.coroutines.Continuation
@@ -38,7 +40,7 @@ object FxLaws {
   )
 
   private suspend fun <F, A> nonSuspendedCanBindImmediateValues(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
-    forAll(G) { f: Kind<F, A> ->
+    forAll(PropTestConfig(shrinkingMode = ShrinkingMode.Off), G) { f: Kind<F, A> ->
       fxBlock {
         val res = !f
         res
@@ -47,7 +49,7 @@ object FxLaws {
   }
 
   private suspend fun <F, A> nonSuspendedCanBindImmediateException(G: Arb<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
-    forAll(G, Arb.throwable()) { f, exception ->
+    forAll(PropTestConfig(shrinkingMode = ShrinkingMode.Off), G, Arb.throwable()) { f, exception ->
       shouldThrow<Throwable> {
         fxBlock {
           val res = !f
@@ -61,7 +63,7 @@ object FxLaws {
   }
 
   private suspend fun <F, A> suspendedCanBindImmediateValues(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
-    forAll(G) { f ->
+    forAll(PropTestConfig(shrinkingMode = ShrinkingMode.Off), G) { f ->
       runBlocking {
         fxBlock {
           val res = !f
@@ -72,8 +74,8 @@ object FxLaws {
   }
 
   private suspend fun <F, A> suspendedCanBindSuspendedValues(G: Arb<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
-    forAll(G) { f ->
       runBlocking {
+    forAll(PropTestConfig(shrinkingMode = ShrinkingMode.Off), G) { f ->
         fxBlock {
           val res = !f.suspend()
           res
@@ -83,8 +85,7 @@ object FxLaws {
   }
 
   private suspend fun <F, A> suspendedCanBindImmediateExceptions(G: Arb<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
-    forAll(G, Arb.throwable()) { f, exception ->
-      runBlocking {
+    forAll(PropTestConfig(shrinkingMode = ShrinkingMode.Off), G, Arb.throwable()) { f, exception ->
         shouldThrow<Throwable> {
           fxBlock {
             val res = !f
@@ -93,12 +94,11 @@ object FxLaws {
           }
           fail("It should never reach here. fx should've thrown $exception")
         } == exception
-      }
     }
   }
 
   private suspend fun <F, A> suspendedCanBindSuspendedExceptions(G: Arb<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
-    forAll(G, Arb.throwable()) { f, exception ->
+    forAll(PropTestConfig(shrinkingMode = ShrinkingMode.Off), G, Arb.throwable()) { f, exception ->
         shouldThrow<Throwable> {
           fxBlock {
             val res = !f
