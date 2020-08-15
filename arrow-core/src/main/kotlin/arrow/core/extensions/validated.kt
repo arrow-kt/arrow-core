@@ -5,8 +5,11 @@ import arrow.Kind2
 import arrow.core.Either
 import arrow.core.Eval
 import arrow.core.ForValidated
+import arrow.core.GT
 import arrow.core.Invalid
+import arrow.core.LT
 import arrow.core.NonEmptyList
+import arrow.core.Ordering
 import arrow.core.Valid
 import arrow.core.Validated
 import arrow.core.ValidatedOf
@@ -29,6 +32,7 @@ import arrow.typeclasses.EqK2
 import arrow.typeclasses.Foldable
 import arrow.typeclasses.Functor
 import arrow.typeclasses.Hash
+import arrow.typeclasses.Order
 import arrow.typeclasses.Selective
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.SemigroupK
@@ -185,6 +189,17 @@ interface ValidatedHash<L, R> : Hash<Validated<L, R>> {
       { l -> HL().run { l.hashWithSalt(salt.hashWithSalt(0)) } },
       { r -> HR().run { r.hashWithSalt(salt.hashWithSalt(1)) } }
     )
+}
+
+@extension
+interface ValidatedOrder<L, R> : Order<Validated<L, R>> {
+  fun OL(): Order<L>
+  fun OR(): Order<R>
+  override fun Validated<L, R>.compare(b: Validated<L, R>): Ordering = fold({ l1 ->
+    b.fold({ l2 -> OL().run { l1.compare(l2) } }, { LT })
+  }, { r1 ->
+    b.fold({ GT }, { r2 -> OR().run { r1.compare(r2) } })
+  })
 }
 
 fun <E> Validated.Companion.applicativeNel(): ValidatedApplicative<NonEmptyList<E>> =
