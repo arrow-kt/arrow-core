@@ -4,6 +4,7 @@ import arrow.Kind
 import arrow.core.Eval
 import arrow.core.ForHashed
 import arrow.core.Hashed
+import arrow.core.Ordering
 import arrow.core.fix
 import arrow.extension
 import arrow.typeclasses.Eq
@@ -34,13 +35,14 @@ interface HashedEqK : EqK<ForHashed> {
 @extension
 interface HashedOrder<A> : Order<Hashed<A>> {
   fun ORD(): Order<A>
-  override fun Hashed<A>.compare(b: Hashed<A>): Int = ORD().run { value.compare(b.value) }
+  override fun Hashed<A>.compare(b: Hashed<A>): Ordering = ORD().run { value.compare(b.value) }
+  override fun Hashed<A>.eqv(b: Hashed<A>): Boolean =
+    this.hash == b.hash && ORD().run { value.eqv(b.value) }
 }
 
 @extension
 interface HashedShow<A> : Show<Hashed<A>> {
   fun SA(): Show<A>
-
   override fun Hashed<A>.show(): String = "Hashed(${SA().run { value.show() }})"
 }
 
