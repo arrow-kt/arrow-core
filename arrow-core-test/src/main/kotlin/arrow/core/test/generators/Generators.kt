@@ -6,6 +6,7 @@ import arrow.core.Either
 import arrow.core.Endo
 import arrow.core.Eval
 import arrow.core.Failure
+import arrow.core.Hashed
 import arrow.core.Id
 import arrow.core.Ior
 import arrow.core.Left
@@ -36,6 +37,7 @@ import arrow.core.k
 import arrow.core.toOption
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.ApplicativeError
+import arrow.typeclasses.Hash
 import io.kotest.property.Arb
 import io.kotest.property.RandomSource
 import io.kotest.property.Sample
@@ -210,6 +212,8 @@ fun <A> Arb<A>.eval(): Arb<Eval<A>> =
 
 fun Arb.Companion.char(): Arb<Char> =
   Arb.of(('A'..'Z') + ('a'..'z') + ('0'..'9') + "!@#$%%^&*()_-~`,<.?/:;}{][±§".toList())
+
+fun <A> Arb<A>.hashed(HA: Hash<A>): Arb<Hashed<A>> = map { v -> Hashed(HA.run { v.hash() }, v) }
 
 private fun <A, B, R> Arb<A>.alignWith(genB: Arb<B>, transform: (Ior<A, B>) -> R): Arb<R> =
   arb(
