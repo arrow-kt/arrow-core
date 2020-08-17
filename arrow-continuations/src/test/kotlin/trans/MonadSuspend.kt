@@ -1,118 +1,84 @@
 package trans
 
 import arrow.Kind
-import arrow.continuations.effectStack.Delimited
 import arrow.continuations.generic.DelimContScope
 import arrow.continuations.generic.DelimitedScope
 import arrow.core.Eval
 import arrow.core.ForEval
 import arrow.core.ForOption
-import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
 import arrow.core.fix
 import arrow.core.identity
 import arrow.core.value
 
-abstract class MonadSuspend<F, M>(
-  val transScope: TransScope<M>,
-) : DelimitedScope<M> by transScope.scope {
-
-  suspend fun exit(): Nothing =
-    shift { transScope.exit() }
-
-  suspend operator fun <A> invoke(f: suspend MonadSuspend<F, M>.() -> A): Kind<F, A> =
-    f(this).just()
-
-  operator fun <G> div(next: MonadSuspend<G, M>): T<G> =
-    T(next)
-
+abstract class MonadSuspend<F> {
   abstract suspend operator fun <B> Kind<F, B>.invoke(): B
   abstract suspend fun <B> B.just(): Kind<F, B>
-  inner class T<G>(val MG: MonadSuspend<G, M>) : MonadSuspend<G, M>(MG.transScope) {
-
-    @JvmName("divT")
-    suspend operator fun <A, Z> div(f: suspend MonadSuspend<F, M>.T<G>.() -> A): Z where Z : Kind<F, Kind<G, A>> =
-      f(this).just(unit1 = Unit) as Z
-
-    override suspend operator fun <B> Kind<G, B>.invoke(): B =
-      MG.run { this@invoke() }
-
-    suspend operator fun <B> Kind<F, B>.invoke(unit1: Unit = Unit, unit2: Unit = Unit, unit3: Unit = Unit): B =
-      this@MonadSuspend.run { this@invoke() }
-
-    override suspend fun <B> B.just(): Kind<G, B> =
-      MG.run { this@just.just() }
-
-    suspend operator fun <B> Kind<F, Kind<G, B>>.invoke(unit1: Unit = Unit, unit2: Unit = Unit): B =
-      this@MonadSuspend.run { this@invoke() }()
-
-    suspend fun <B> B.just(unit1: Unit = Unit): Kind<F, Kind<G, B>> =
-      this@MonadSuspend.run {
-        MG.run {
-          this@just.just()
-        }.just()
-      }
-
-    inner class T<H>(val MH: MonadSuspend<H, M>) : MonadSuspend<H, M>(MH.transScope) {
-
-      @JvmName("divT2")
-      suspend operator fun <A, Z> div(f: suspend MonadSuspend<F, M>.T<G>.T<H>.() -> A): Z where Z : Kind<F, Kind<G, Kind<H, A>>> =
-        f(this).just(unit1 = Unit) as Z
-
-      override suspend operator fun <B> Kind<H, B>.invoke(): B =
-        MH.run { this@invoke() }
-
-      suspend operator fun <B> Kind<F, B>.invoke(unit1: Unit = Unit, unit2: Unit = Unit, unit3: Unit = Unit): B =
-        this@MonadSuspend.run { this@invoke() }
-
-      override suspend fun <B> B.just(): Kind<H, B> =
-        MH.run { this@just.just() }
-
-      suspend operator fun <B> Kind<F, Kind<H, B>>.invoke(unit1: Unit = Unit, unit2: Unit = Unit): B =
-        this@MonadSuspend.run { this@invoke() }()
-
-      suspend fun <B> B.just(unit1: Unit = Unit): Kind<F, Kind<G, Kind<H, B>>> =
-        this@MonadSuspend.run {
-          MG.run {
-            MH.run {
-              this@just.just()
-            }.just()
-          }.just()
-        }
-    }
-  }
+  operator fun <G> div(other: MonadSuspend<G>): Trans2<F, G> =
+    Trans2(this, other)
+  suspend operator fun <A> div(f: suspend MonadSuspend<F>.() -> A): A =
+    f(this)
 }
 
-class TransScope<A>(
-  val scope: DelimitedScope<A>,
-  val exit: () -> A
-)
+open class Trans2<F, G>(
+  val MF: MonadSuspend<F>,
+  val MG: MonadSuspend<G>
+) {
+  @JvmName("invokeF")
+  suspend operator fun <B> Kind<F, B>.invoke(): B =
+    MF.run { this@invoke() }
 
-suspend fun <A> DelimitedScope<A>.trans(
-  exit: () -> A,
-  f: suspend TransScope<A>.() -> A): A =
-  f(TransScope(this, exit))
+  @JvmName("invokeG")
+  suspend operator fun <B> Kind<G, B>.invoke(): B =
+    MG.run { this@invoke() }
 
-fun <M> TransScope<M>.EvalT(): MonadSuspend<ForEval, M> =
-  object : MonadSuspend<ForEval, M>(this) {
+  @JvmName("invokeFG")
+  suspend operator fun <B> Kind<F, Kind<G, B>>.invoke(): B =
+    MF.run { MG.run { this@invoke() }() }
+
+  suspend fun <B> B.just(): Kind<F, Kind<G, B>> =
+    MF.run { MG.run { this@just.just() }.just() }
+
+  operator fun <H> div(other: MonadSuspend<H>): Trans3<F, G, H> =
+    Trans3(this, other)
+
+  suspend operator fun <Z : Kind<F, Kind<G, A>>, A> div(f: suspend Trans2<F, G>.() -> A): Z =
+    f(this).just() as Z
+}
+
+class Trans3<F, G, H>(
+  val trans2: Trans2<F, G>,
+  val MH: MonadSuspend<H>
+): Trans2<F, G>(trans2.MF, trans2.MG) {
+
+  @JvmName("invokeH")
+  suspend operator fun <B> Kind<H, B>.invoke(): B =
+    MH.run { this@invoke() }
+
+  @JvmName("invokeFGH")
+  suspend operator fun <B> Kind<F, Kind<G, Kind<H, B>>>.invoke(): B =
+    trans2.run { MH.run { this@invoke() }() }
+
+}
+
+fun <A> DelimitedScope<A>.EvalT(): MonadSuspend<ForEval> =
+  object : MonadSuspend<ForEval>() {
     override suspend fun <B> Kind<ForEval, B>.invoke(): B = value()
     override suspend fun <B> B.just(): Kind<ForEval, B> = Eval.now(this)
   }
 
-fun <M> TransScope<M>.OptionT(): MonadSuspend<ForOption, M> =
-  object : MonadSuspend<ForOption, M>(this) {
+fun <A> DelimitedScope<A>.OptionT(): MonadSuspend<ForOption> =
+  object : MonadSuspend<ForOption>() {
     override suspend fun <B> Kind<ForOption, B>.invoke(): B =
-      fix().fold({ exit() }, ::identity)
+      fix().fold({ shift { TODO() } }, ::identity)
 
     override suspend fun <B> B.just(): Kind<ForOption, B> = Some(this)
   }
 
-suspend fun <A> evalOption(f: suspend MonadSuspend<ForEval, *>.T<ForOption>.() -> A): Eval<Option<A>> =
+suspend fun <A> evalOption(f: suspend Trans2<ForEval, ForOption>.() -> A): Eval<Option<A>> =
   DelimContScope.reset {
-    trans({ Eval.now(None) }) {
-      EvalT() / OptionT() / f
-    }
+    EvalT() / OptionT() / f
   }
 
 
