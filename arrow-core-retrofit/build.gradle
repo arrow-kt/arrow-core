@@ -23,7 +23,6 @@ dependencies {
     testCompileOnly project(":arrow-meta")
     testCompile project(":arrow-core-test")
     testRuntime "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
-    testCompile "io.kotlintest:kotlintest-runner-junit5:$KOTLIN_TEST_VERSION", excludeArrow
     testCompile "com.squareup.retrofit2:converter-gson:$RETROFIT_VERSION"
     testCompile "com.squareup.okhttp3:mockwebserver:$MOCKWEBSERVER_VERSION"
 }

@@ -6,8 +6,8 @@ import arrow.core.test.UnitSpec
 import arrow.retrofit.adapter.mock.ErrorMock
 import arrow.retrofit.adapter.mock.ResponseMock
 import arrow.retrofit.adapter.retrofit.SuspedApiClientTest
-import io.kotlintest.Spec
-import io.kotlintest.shouldBe
+import io.kotest.core.spec.Spec
+import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
