@@ -355,11 +355,39 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
   /**
    * Right-padded zipWith.
    */
+  @Deprecated("Deprecated, use `rightPadZip(other: ListK<B>)` instead", ReplaceWith("rightPadZip(other: ListK<B>)"))
   fun <B, C> rpadZipWith(
     other: ListK<B>,
     fa: (A, Option<B>) -> C
   ): ListK<C> =
     other.lpadZipWith(this) { a, b -> fa(b, a) }
+
+  /**
+   * Returns a [ListK<C>] containing the result of applying some transformation `(A, B?) -> C`
+   * on a zip, excluding all cases where the left value is null.
+   *
+   * Example:
+   * ```kotlin:ank:playground
+   * import arrow.core.*
+   *
+   * //sampleStart
+   * val left = listOf(1, 2).k().rightPadZip(listOf("a").k()) { l, r -> l toT r }.k()      // Result: ListK(Tuple2(1, "a"), Tuple2(null, "b"))
+   * val right = listOf(1).k().rightPadZip(listOf("a", "b").k()) { l, r -> l toT r }.k()   // Result: ListK(Tuple2(1, "a"))
+   * val both = listOf(1, 2).k().rightPadZip(listOf("a", "b").k()) { l, r -> l toT r }.k() // Result: ListK(Tuple2(1, "a"), Tuple2(2, "b"))
+   * //sampleEnd
+   *
+   * fun main() {
+   *   println("left = $left")
+   *   println("right = $right")
+   *   println("both = $both")
+   * }
+   * ```
+   */
+  fun <B, C> rightPadZip(
+    other: ListK<B>,
+    fa: (A, B?) -> C
+  ): ListK<C> =
+    other.leftPadZip(this) { a, b -> fa(b, a) }
 
   /**
    * Right-padded zip.
