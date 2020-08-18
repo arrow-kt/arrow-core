@@ -207,6 +207,18 @@ class ListKTest : UnitSpec() {
       }
     }
 
+    "rightPadZip (without map)" {
+      forAll(Gen.listK(Gen.int()), Gen.listK(Gen.int())) { a, b ->
+        val left = a.map { it }.k() + List(max(0, b.count() - a.count())) { null }.k()
+        val right = b.map { it }.k() + List(max(0, a.count() - b.count())) { null }.k()
+
+        val result = a.rightPadZip(b)
+
+        result == left.zipWith(right) { l, r -> l toT r }.filter { it.a != null } &&
+          result.map { it.a }.equalUnderTheLaw(a, ListK.eq(Int.eq()))
+      }
+    }
+
     "rpadzipwith" {
       forAll(Gen.listK(Gen.int()), Gen.listK(Gen.int())) { a, b ->
 
