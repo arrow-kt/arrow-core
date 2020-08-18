@@ -5,9 +5,12 @@ import arrow.Kind2
 import arrow.core.Either
 import arrow.core.Eval
 import arrow.core.ForIor
+import arrow.core.GT
 import arrow.core.Ior
 import arrow.core.IorOf
 import arrow.core.IorPartialOf
+import arrow.core.LT
+import arrow.core.Ordering
 import arrow.core.ap
 import arrow.core.extensions.ior.eq.eq
 import arrow.core.extensions.ior.monad.monad
@@ -32,10 +35,42 @@ import arrow.typeclasses.Functor
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monad
 import arrow.typeclasses.MonadSyntax
+import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.Traverse
+import arrow.typeclasses.hashWithSalt
 import arrow.undocumented
+
+@extension
+interface IorSemigroup<L, R> : Semigroup<Ior<L, R>> {
+
+  fun SGL(): Semigroup<L>
+  fun SGR(): Semigroup<R>
+
+  override fun Ior<L, R>.combine(b: Ior<L, R>): Ior<L, R> =
+    with(SGL()) {
+      with(SGR()) {
+        when (val a = this@combine) {
+          is Ior.Left -> when (b) {
+            is Ior.Left -> Ior.Left(a.value + b.value)
+            is Ior.Right -> Ior.Both(a.value, b.value)
+            is Ior.Both -> Ior.Both(a.value + b.leftValue, b.rightValue)
+          }
+          is Ior.Right -> when (b) {
+            is Ior.Left -> Ior.Both(b.value, a.value)
+            is Ior.Right -> Ior.Right(a.value + b.value)
+            is Ior.Both -> Ior.Both(b.leftValue, a.value + b.rightValue)
+          }
+          is Ior.Both -> when (b) {
+            is Ior.Left -> Ior.Both(a.leftValue + b.value, a.rightValue)
+            is Ior.Right -> Ior.Both(a.leftValue, a.rightValue + b.value)
+            is Ior.Both -> Ior.Both(a.leftValue + b.leftValue, a.rightValue + b.rightValue)
+          }
+        }
+      }
+    }
+}
 
 @extension
 @undocumented
@@ -195,20 +230,29 @@ interface IorShow<L, R> : Show<Ior<L, R>> {
 }
 
 @extension
-interface IorHash<L, R> : Hash<Ior<L, R>>, IorEq<L, R> {
+interface IorHash<L, R> : Hash<Ior<L, R>> {
 
   fun HL(): Hash<L>
   fun HR(): Hash<R>
 
-  override fun EQL(): Eq<L> = HL()
-
-  override fun EQR(): Eq<R> = HR()
-
-  override fun Ior<L, R>.hash(): Int = when (this) {
-    is Ior.Left -> HL().run { value.hash() }
-    is Ior.Right -> HR().run { value.hash() }
-    is Ior.Both -> 31 * HL().run { leftValue.hash() } + HR().run { rightValue.hash() }
+  override fun Ior<L, R>.hashWithSalt(salt: Int): Int = when (this) {
+    is Ior.Left -> HL().run { value.hashWithSalt(salt.hashWithSalt(0)) }
+    is Ior.Right -> HR().run { value.hashWithSalt(salt.hashWithSalt(1)) }
+    is Ior.Both -> HL().run { HR().run { leftValue.hashWithSalt(rightValue.hashWithSalt(salt.hashWithSalt(2))) } }
   }
+}
+
+@extension
+interface IorOrder<L, R> : Order<Ior<L, R>> {
+  fun OL(): Order<L>
+  fun OR(): Order<R>
+  override fun Ior<L, R>.compare(b: Ior<L, R>): Ordering = fold({ l1 ->
+    b.fold({ l2 -> OL().run { l1.compare(l2) } }, { LT }, { _, _ -> LT })
+  }, { r1 ->
+    b.fold({ GT }, { r2 -> OR().run { r1.compare(r2) } }, { _, _ -> LT })
+  }, { l1, r1 ->
+    b.fold({ GT }, { GT }, { l2, r2 -> OL().run { l1.compare(l2) } + OR().run { r1.compare(r2) } })
+  })
 }
 
 fun <L, R> Ior.Companion.fx(SL: Semigroup<L>, c: suspend MonadSyntax<IorPartialOf<L>>.() -> R): Ior<L, R> =
@@ -245,3 +289,6 @@ interface IorBicrosswalk : Bicrosswalk<ForIor>, IorBifunctor, IorBifoldable {
       }
     }
 }
+
+operator fun <L, R> Ior<L, R>.component1(): L? = leftOrNull()
+operator fun <L, R> Ior<L, R>.component2(): R? = orNull()

@@ -5,12 +5,14 @@ import arrow.core.Const
 import arrow.core.ConstPartialOf
 import arrow.core.Either
 import arrow.core.EitherPartialOf
+import arrow.core.ForHashed
 import arrow.core.ForId
 import arrow.core.ForListK
 import arrow.core.ForNonEmptyList
 import arrow.core.ForOption
 import arrow.core.ForSequenceK
 import arrow.core.ForSetK
+import arrow.core.Hashed
 import arrow.core.Id
 import arrow.core.Ior
 import arrow.core.IorPartialOf
@@ -25,6 +27,7 @@ import arrow.core.SortedMapK
 import arrow.core.SortedMapKPartialOf
 import arrow.core.Validated
 import arrow.core.ValidatedPartialOf
+import arrow.typeclasses.Hash
 import io.kotlintest.properties.Gen
 
 interface GenK<F> {
@@ -101,4 +104,8 @@ fun <A> Const.Companion.genK(genA: Gen<A>) = object : GenK<ConstPartialOf<A>> {
     genA.map {
       Const<A, T>(it)
     }
+}
+
+fun Hashed.Companion.genK() = object : GenK<ForHashed> {
+  override fun <A> genK(gen: Gen<A>): Gen<Kind<ForHashed, A>> = gen.hashed(Hash.any()).map { it as Kind<ForHashed, A> } // This isn't great, but will likely work
 }
