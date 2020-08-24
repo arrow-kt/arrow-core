@@ -110,5 +110,25 @@ class MapKTest : UnitSpec() {
         }
       }
     }
+
+    "map2" {
+
+    }
+
+    "map2Eval" {
+
+    }
+
+    "ap2" {
+
+    }
+
+    "flatMap" {
+
+    }
+
+    "traverse" {
+
+    }
   }
 }
