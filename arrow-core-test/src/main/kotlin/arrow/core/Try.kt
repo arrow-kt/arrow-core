@@ -6,7 +6,7 @@ typealias Failure = Try.Failure
 typealias Success<A> = Try.Success<A>
 
 /**
- * Used only for tests runtime until Kotlintest is upgraded to Kotest
+ * TODO Used only for tests runtime until Kotlintest is upgraded to Kotest
  */
 @higherkind
 sealed class Try<out A> : TryOf<A> {
