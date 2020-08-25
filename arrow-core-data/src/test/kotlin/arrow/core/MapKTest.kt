@@ -125,12 +125,20 @@ class MapKTest : UnitSpec() {
       }
     }
 
-    "map2Eval" {
-
-    }
-
     "ap2" {
-
+      forAll(
+        Gen.mapK(Gen.intSmall(), Gen.intSmall()),
+        Gen.mapK(Gen.intSmall(), Gen.intSmall())
+      ) { a, b ->
+        val result = a.ap2(
+          a.map { {x: Int, y: Int -> x + y } },
+          b
+        )
+        val expected: MapK<Int, Int> = a.filter { (k, v) -> b.containsKey(k) }
+          .map { (k, v) -> Tuple2(k, v + b[k]!!) }
+          .let { mapOf(*it.toTypedArray()) }
+        result == expected
+      }
     }
 
     "flatMap" {
