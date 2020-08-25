@@ -20,7 +20,9 @@ plugins {
 apply from: "$ROOT_PROJECT"
 
 // -- Artifacts publication
-subprojects {
+configure(subprojects
+            - project("arrow-meta:arrow-meta-test-models")
+) {
     apply from: "$PUBLICATION"
 }
 
