@@ -13,8 +13,8 @@ data class MapK<K, out A>(private val map: Map<K, A>) : MapKOf<K, A>, Map<K, A> 
   fun <B, Z> map2(fb: MapK<K, B>, f: (A, B) -> Z): MapK<K, Z> =
     if (fb.isEmpty()) emptyMap<K, Z>().k()
     else this.map.flatMap { (k, a) ->
-      fb[k]?.let { Tuple2(k, f(a, it)) }.k().asIterable()
-    }.k()
+      fb[k]?.let { Pair(k, f(a, it)) }.asIterable()
+    }.toMap().k()
 
   fun <B, Z> map2Eval(fb: Eval<MapK<K, B>>, f: (A, B) -> Z): Eval<MapK<K, Z>> =
     if (fb.value().isEmpty()) Eval.now(emptyMap<K, Z>().k())
@@ -26,13 +26,13 @@ data class MapK<K, out A>(private val map: Map<K, A>) : MapKOf<K, A>, Map<K, A> 
   fun <B, Z> ap2(f: MapK<K, (A, B) -> Z>, fb: MapK<K, B>): Map<K, Z> =
     f.map.flatMap { (k, f) ->
       this.flatMap { a -> fb.flatMap { b -> mapOf(Tuple2(k, f(a, b))).k() } }[k]
-        ?.let { Tuple2(k, it) }.k().asIterable()
-    }.k()
+        ?.let { Pair(k, it) }.asIterable()
+    }.toMap().k()
 
   fun <B> flatMap(f: (A) -> MapK<K, B>): MapK<K, B> =
     this.map.flatMap { (k, v) ->
-      f(v)[k]?.let { Tuple2(k, it) }.k().asIterable()
-    }.k()
+      f(v)[k]?.let { Pair(k, it) }.asIterable()
+    }.toMap().k()
 
   fun <B> foldRight(b: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> = this.map.values.iterator().iterateRight(b, f)
 
@@ -90,6 +90,13 @@ fun <K, A, B> Map<K, A>.foldLeft(b: Map<K, B>, f: (Map<K, B>, Map.Entry<K, A>) -
   this.forEach { result = f(result, it) }
   return result
 }
+
+fun <K, A> Pair<K, A>?.asIterable(): Iterable<Pair<K, A>> =
+  when (this) {
+    null -> emptyList()
+    else -> listOf(this)
+  }
+
 
 fun <K, A, B> Map<K, A>.foldRight(b: Map<K, B>, f: (Map.Entry<K, A>, Map<K, B>) -> Map<K, B>): Map<K, B> =
   this.entries.reversed().k().foldLeft(b) { x, y: Map.Entry<K, A> -> f(y, x) }
