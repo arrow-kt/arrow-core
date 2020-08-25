@@ -7,6 +7,7 @@ import arrow.core.extensions.mapk.align.align
 import arrow.core.extensions.mapk.eq.eq
 import arrow.core.extensions.mapk.eqK.eqK
 import arrow.core.extensions.mapk.foldable.foldable
+import arrow.core.extensions.mapk.functorFilter.filterMap
 import arrow.core.extensions.mapk.functorFilter.functorFilter
 import arrow.core.extensions.mapk.hash.hash
 import arrow.core.extensions.mapk.monoid.monoid
@@ -112,7 +113,16 @@ class MapKTest : UnitSpec() {
     }
 
     "map2" {
-
+      forAll(
+        Gen.mapK(Gen.intSmall(), Gen.intSmall()),
+        Gen.mapK(Gen.intSmall(), Gen.intSmall())
+      ) { a, b ->
+        val result = a.map2(b) { left, right -> left + right }
+        val expected: MapK<Int, Int> = a.filter { (k, v) -> b.containsKey(k) }
+          .map { (k, v) -> Tuple2(k, v + b[k]!!) }
+          .let { mapOf(*it.toTypedArray()) }
+        result == expected
+      }
     }
 
     "map2Eval" {
