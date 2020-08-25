@@ -142,7 +142,16 @@ class MapKTest : UnitSpec() {
     }
 
     "flatMap" {
-
+      forAll(
+        Gen.mapK(Gen.string(), Gen.intSmall()),
+        Gen.mapK(Gen.string(), Gen.string())
+      ) { a, b ->
+        val result: MapK<String, String> = a.flatMap { b }
+        val expected: MapK<String, String> = a.filter { (k, _) -> b.containsKey(k) }
+          .map { (k, v) -> Tuple2(k, b[k]!!) }
+          .let { mapOf(*it.toTypedArray()) }
+        result == expected
+      }
     }
 
     "traverse" {
