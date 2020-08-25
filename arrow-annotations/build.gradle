@@ -8,9 +8,9 @@ plugins {
     id "ru.vyarus.animalsniffer"
 }
 
-apply from: "$SUBPROJECT_CONF"
-apply from: "$DOC_CONF"
-apply from: "$PUBLISH_CONF"
+apply from: "$SUB_PROJECT"
+apply from: "$DOC_CREATION"
+apply from: "$PUBLICATION"
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$KOTLIN_VERSION"

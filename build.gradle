@@ -21,7 +21,7 @@ plugins {
     id "ru.vyarus.animalsniffer" version "$ANIMALS_SNIFFER_VERSION"
 }
 
-apply from: "$GENERIC_CONF"
+apply from: "$ROOT_PROJECT"
 
 configure(subprojects - project("arrow-continuations")) { // - project("arrow-meta")) {
     apply plugin: 'ru.vyarus.animalsniffer'

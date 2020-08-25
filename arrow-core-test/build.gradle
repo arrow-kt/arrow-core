@@ -7,8 +7,8 @@ plugins {
     id "ru.vyarus.animalsniffer"
 }
 
-apply from: "$SUBPROJECT_CONF"
-apply from: "$PUBLISH_CONF"
+apply from: "$SUB_PROJECT"
+apply from: "$PUBLICATION"
 
 dependencies {
     compile project(":arrow-core")
