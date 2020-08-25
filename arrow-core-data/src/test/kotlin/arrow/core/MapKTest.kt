@@ -7,7 +7,6 @@ import arrow.core.extensions.mapk.align.align
 import arrow.core.extensions.mapk.eq.eq
 import arrow.core.extensions.mapk.eqK.eqK
 import arrow.core.extensions.mapk.foldable.foldable
-import arrow.core.extensions.mapk.functorFilter.filterMap
 import arrow.core.extensions.mapk.functorFilter.functorFilter
 import arrow.core.extensions.mapk.hash.hash
 import arrow.core.extensions.mapk.monoid.monoid
@@ -23,6 +22,8 @@ import arrow.core.test.generators.genK
 import arrow.core.test.generators.intSmall
 import arrow.core.test.generators.longSmall
 import arrow.core.test.generators.mapK
+import arrow.core.test.generators.option
+import arrow.core.test.generators.tuple2
 import arrow.core.test.laws.AlignLaws
 import arrow.core.test.laws.EqLaws
 import arrow.core.test.laws.FoldableLaws
@@ -152,10 +153,6 @@ class MapKTest : UnitSpec() {
           .let { mapOf(*it.toTypedArray()) }
         result == expected
       }
-    }
-
-    "traverse" {
-
     }
   }
 }
