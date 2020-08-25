@@ -17,8 +17,8 @@ dependencies {
     compileOnly project(":arrow-meta")
     testCompileOnly project(":arrow-meta")
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
-    testCompileOnly project(":arrow-core-test")
+    testImplementation project(":arrow-core-test")
     testCompileOnly project(":arrow-syntax")
     testCompileOnly project(":arrow-core")
-    testCompileOnly "io.arrow-kt:arrow-mtl-data:$VERSION_NAME"
+    testImplementation "io.arrow-kt:arrow-mtl-data:$VERSION_NAME"
 }
