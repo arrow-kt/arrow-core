@@ -16,6 +16,5 @@ dependencies {
     compileOnly project(":arrow-meta")
     testCompileOnly project(":arrow-meta")
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
-    testCompileOnly "io.kotlintest:kotlintest-runner-junit5:$KOTLIN_TEST_VERSION", excludeArrow
     testCompileOnly project(":arrow-core-test")
 }
