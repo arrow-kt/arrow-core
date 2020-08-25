@@ -65,6 +65,7 @@ data class MapK<K, out A>(private val map: Map<K, A>) : MapKOf<K, A>, Map<K, A> 
 
 fun <K, A> Map<K, A>.k(): MapK<K, A> = MapK(this)
 
+@Deprecated("Deprecated, use nullable instead", ReplaceWith("Tuple2<k, A>?.k()"))
 fun <K, A> Option<Tuple2<K, A>>.k(): MapK<K, A> =
   when (this) {
     is Some -> mapOf(this.t).k()
@@ -79,6 +80,7 @@ fun <K, V, G> MapKOf<K, Kind<G, V>>.sequence(GA: Applicative<G>): Kind<G, MapK<K
 
 fun <K, A> List<Map.Entry<K, A>>.k(): MapK<K, A> = this.map { it.key to it.value }.toMap().k()
 
+@Deprecated("Deprecated, use nullable instead", ReplaceWith("map[k]?.let { ... }"))
 fun <K, A> Map<K, A>.getOption(k: K): Option<A> = Option.fromNullable(this[k])
 
 fun <K, A> MapK<K, A>.updated(k: K, value: A): MapK<K, A> = (this + (k to value)).k()
