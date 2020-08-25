@@ -17,13 +17,13 @@ apply from: "$SUB_PROJECT"
 apply from: "$DOC_VALIDATION"
 
 dependencies {
-    compile project(":arrow-core-data")
-    compile project(":arrow-syntax")
-    compile "io.arrow-kt:arrow-fx:$VERSION_NAME"
-    compile "io.arrow-kt:arrow-reflect:$VERSION_NAME"
-    compile "io.arrow-kt:arrow-mtl:$VERSION_NAME"
-    compile "io.arrow-kt:arrow-mtl-data:$VERSION_NAME"
-    compile "io.arrow-kt:arrow-ui:$VERSION_NAME"
-    compile project(":arrow-meta")
+    compileOnly project(":arrow-core-data")
+    compileOnly project(":arrow-syntax")
+    compileOnly "io.arrow-kt:arrow-fx:$VERSION_NAME"
+    compileOnly "io.arrow-kt:arrow-reflect:$VERSION_NAME"
+    compileOnly "io.arrow-kt:arrow-mtl:$VERSION_NAME"
+    compileOnly "io.arrow-kt:arrow-mtl-data:$VERSION_NAME"
+    compileOnly "io.arrow-kt:arrow-ui:$VERSION_NAME"
+    compileOnly project(":arrow-meta")
     kapt project(":arrow-meta")
 }

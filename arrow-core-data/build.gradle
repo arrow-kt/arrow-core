@@ -10,16 +10,16 @@ apply from: "$SUB_PROJECT"
 apply from: "$DOC_CREATION"
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
-    compile project(":arrow-annotations")
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
+    api project(":arrow-annotations")
     kapt project(":arrow-meta")
     kaptTest project(":arrow-meta")
     compileOnly project(":arrow-meta")
     testCompileOnly project(":arrow-meta")
-    testRuntime "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
-    testCompile "io.kotlintest:kotlintest-runner-junit5:$KOTLIN_TEST_VERSION", excludeArrow
-    testCompile project(":arrow-core-test")
-    testCompile project(":arrow-syntax")
-    testCompile project(":arrow-core")
-    testCompile "io.arrow-kt:arrow-mtl-data:$VERSION_NAME"
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
+    testCompileOnly "io.kotlintest:kotlintest-runner-junit5:$KOTLIN_TEST_VERSION", excludeArrow
+    testCompileOnly project(":arrow-core-test")
+    testCompileOnly project(":arrow-syntax")
+    testCompileOnly project(":arrow-core")
+    testCompileOnly "io.arrow-kt:arrow-mtl-data:$VERSION_NAME"
 }
