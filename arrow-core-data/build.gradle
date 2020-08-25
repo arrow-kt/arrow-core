@@ -10,7 +10,7 @@ apply from: "$SUB_PROJECT"
 apply from: "$DOC_CREATION"
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
     api project(":arrow-annotations")
     kapt project(":arrow-meta")
     kaptTest project(":arrow-meta")

@@ -8,7 +8,7 @@ apply from: "$DOC_CREATION"
 
 dependencies {
     implementation project(":arrow-core-data")
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
     implementation "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
     testImplementation project(":arrow-core-test")
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"

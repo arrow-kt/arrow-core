@@ -10,7 +10,7 @@ apply from: "$SUB_PROJECT"
 apply from: "$DOC_CREATION"
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KOTLIN_VERSION"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KOTLIN_VERSION"
     api project(':arrow-annotations')
     api "me.eugeniomarletti.kotlin.metadata:kotlin-metadata:$KOTLIN_METADATA_VERSION"
     api("com.squareup:kotlinpoet:$KOTLIN_POET_VERSION") {
