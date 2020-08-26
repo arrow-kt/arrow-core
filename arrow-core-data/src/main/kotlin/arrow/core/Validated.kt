@@ -5,9 +5,6 @@ import arrow.higherkind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
-import arrow.typeclasses.suspended.BindSyntax
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
 typealias ValidatedNel<E, A> = Validated<Nel<E>, A>
 typealias Valid<A> = Validated.Valid<A>
@@ -142,7 +139,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Option
  * import arrow.core.Some
  * import arrow.core.Validated
- * import arrow.core.validated
+ * import arrow.core.computations.validated
  * import arrow.core.valid
  * import arrow.core.invalid
  *
@@ -244,7 +241,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Option
  * import arrow.core.Some
  * import arrow.core.Validated
- * import arrow.core.validated
+ * import arrow.core.computations.validated
  * import arrow.core.valid
  * import arrow.core.invalid
  * import arrow.core.NonEmptyList
@@ -311,7 +308,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Option
  * import arrow.core.Some
  * import arrow.core.Validated
- * import arrow.core.validated
+ * import arrow.core.computations.validated
  * import arrow.core.valid
  * import arrow.core.invalid
  * import arrow.core.NonEmptyList
@@ -385,7 +382,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.right
  * import arrow.core.Some
  * import arrow.core.Validated
- * import arrow.core.validated
+ * import arrow.core.computations.validated
  * import arrow.core.valid
  * import arrow.core.invalid
  *
@@ -655,12 +652,6 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
 
     fun <E, A> validNel(a: A): ValidatedNel<E, A> = Valid(a)
 
-    @Deprecated(
-      "Try will be deleted soon as it promotes eager execution of effects, so it’s better if you work with Either’s suspend constructors or an effect handler like IO",
-      ReplaceWith("fromEither(t)")
-    )
-    fun <A> fromTry(t: Try<A>): Validated<Throwable, A> = t.fold({ Invalid(it) }, { Valid(it) })
-
     /**
      * Converts an `Either<E, A>` to a `Validated<E, A>`.
      */
@@ -670,7 +661,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
      * Converts an `Option<A>` to a `Validated<E, A>`, where the provided `ifNone` output value is returned as [Invalid]
      * when the specified `Option` is `None`.
      */
-    fun <E, A> fromOption(o: Option<A>, ifNone: () -> E): Validated<E, A> =
+    inline fun <E, A> fromOption(o: Option<A>, ifNone: () -> E): Validated<E, A> =
       o.fold(
         { Invalid(ifNone()) },
         { Valid(it) }
@@ -680,8 +671,22 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
      * Converts a nullable `A?` to a `Validated<E, A>`, where the provided `ifNull` output value is returned as [Invalid]
      * when the specified value is null.
      */
-    fun <E, A> fromNullable(value: A?, ifNull: () -> E): Validated<E, A> =
+    inline fun <E, A> fromNullable(value: A?, ifNull: () -> E): Validated<E, A> =
       value?.let(::Valid) ?: Invalid(ifNull())
+
+    suspend fun <A> catch(f: suspend () -> A): Validated<Throwable, A> =
+      try {
+        f().valid()
+      } catch (e: Throwable) {
+        e.nonFatalOrThrow().invalid()
+      }
+
+    suspend fun <A> catchNel(f: suspend () -> A): ValidatedNel<Throwable, A> =
+      try {
+        f().validNel()
+      } catch (e: Throwable) {
+        e.nonFatalOrThrow().invalidNel()
+      }
   }
 
   fun show(SE: Show<E>, SA: Show<A>): String = fold({
@@ -712,60 +717,70 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
   /**
    * Is this Valid and matching the given predicate
    */
-  fun exist(predicate: (A) -> Boolean): Boolean = fold({ false }, { predicate(it) })
+  inline fun exist(predicate: (A) -> Boolean): Boolean =
+    fold({ false }, predicate)
 
   /**
    * Converts the value to an Either<E, A>
    */
-  fun toEither(): Either<E, A> = fold({ Left(it) }, { Right(it) })
+  fun toEither(): Either<E, A> =
+    fold(::Left, ::Right)
 
   /**
    * Returns Valid values wrapped in Some, and None for Invalid values
    */
-  fun toOption(): Option<A> = fold({ None }, { Some(it) })
+  fun toOption(): Option<A> =
+    fold({ None }, ::Some)
 
   /**
    * Convert this value to a single element List if it is Valid,
    * otherwise return an empty List
    */
-  fun toList(): List<A> = fold({ listOf() }, { listOf(it) })
+  fun toList(): List<A> =
+    fold({ listOf() }, ::listOf)
 
   /** Lift the Invalid value into a NonEmptyList. */
   fun toValidatedNel(): ValidatedNel<E, A> =
-    fold(
-      { invalidNel(it) },
-      { Valid(it) }
-    )
+    fold({ invalidNel(it) }, ::Valid)
 
   /**
    * Convert to an Either, apply a function, convert back. This is handy
    * when you want to use the Monadic properties of the Either type.
    */
-  fun <EE, B> withEither(f: (Either<E, A>) -> Either<EE, B>): Validated<EE, B> = fromEither(f(toEither()))
+  inline fun <EE, B> withEither(f: (Either<E, A>) -> Either<EE, B>): Validated<EE, B> =
+    fromEither(f(toEither()))
 
   /**
    * From [arrow.typeclasses.Bifunctor], maps both types of this Validated.
    *
    * Apply a function to an Invalid or Valid value, returning a new Invalid or Valid value respectively.
    */
-  fun <EE, AA> bimap(fe: (E) -> EE, fa: (A) -> AA): Validated<EE, AA> = fold({ Invalid(fe(it)) }, { Valid(fa(it)) })
+  inline fun <EE, AA> bimap(fe: (E) -> EE, fa: (A) -> AA): Validated<EE, AA> =
+    fold({ Invalid(fe(it)) }, { Valid(fa(it)) })
 
   /**
    * Apply a function to a Valid value, returning a new Valid value
    */
-  fun <B> map(f: (A) -> B): Validated<E, B> = bimap(::identity) { f(it) }
+  inline fun <B> map(f: (A) -> B): Validated<E, B> =
+    bimap(::identity, f)
+
+  @Deprecated("Use mapLeft for consistency", ReplaceWith("mapLeft(f)"))
+  inline fun <EE> leftMap(f: (E) -> EE): Validated<EE, A> =
+    mapLeft(f)
 
   /**
    * Apply a function to an Invalid value, returning a new Invalid value.
    * Or, if the original valid was Valid, return it.
    */
-  fun <EE> leftMap(f: (E) -> EE): Validated<EE, A> = bimap({ f(it) }, ::identity)
+  inline fun <EE> mapLeft(f: (E) -> EE): Validated<EE, A> =
+    bimap(f, ::identity)
 
   /**
    * apply the given function to the value with the given B when
    * valid, otherwise return the given B
    */
-  fun <B> foldLeft(b: B, f: (B, A) -> B): B = fold({ b }, { f(b, it) })
+  inline fun <B> foldLeft(b: B, f: (B, A) -> B): B =
+    fold({ b }, { f(b, it) })
 
   fun <B> foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> =
     when (this) {
@@ -773,13 +788,14 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       is Invalid -> lb
     }
 
-  fun swap(): Validated<A, E> = fold({ Valid(it) }, { Invalid(it) })
+  fun swap(): Validated<A, E> =
+    fold(::Valid, ::Invalid)
 }
 
 /**
  * Return the Valid value, or the default if Invalid
  */
-fun <E, B> ValidatedOf<E, B>.getOrElse(default: () -> B): B =
+inline fun <E, B> ValidatedOf<E, B>.getOrElse(default: () -> B): B =
   fix().fold({ default() }, ::identity)
 
 /**
@@ -791,16 +807,15 @@ fun <E, B> ValidatedOf<E, B>.orNull(): B? =
 /**
  * Return the Valid value, or the result of f if Invalid
  */
-fun <E, B> ValidatedOf<E, B>.valueOr(f: (E) -> B): B =
+inline fun <E, B> ValidatedOf<E, B>.valueOr(f: (E) -> B): B =
   fix().fold({ f(it) }, ::identity)
 
 /**
  * If `this` is valid return `this`, otherwise if `that` is valid return `that`, otherwise combine the failures.
  * This is similar to [orElse] except that here failures are accumulated.
  */
-fun <E, A> ValidatedOf<E, A>.findValid(SE: Semigroup<E>, that: () -> Validated<E, A>): Validated<E, A> =
+inline fun <E, A> ValidatedOf<E, A>.findValid(SE: Semigroup<E>, that: () -> Validated<E, A>): Validated<E, A> =
   fix().fold(
-
     { e ->
       that().fold(
         { ee -> Invalid(SE.run { e.combine(ee) }) },
@@ -815,7 +830,7 @@ fun <E, A> ValidatedOf<E, A>.findValid(SE: Semigroup<E>, that: () -> Validated<E
  * The functionality is similar to that of [findValid] except for failure accumulation,
  * where here only the error on the right is preserved and the error on the left is ignored.
  */
-fun <E, A> ValidatedOf<E, A>.orElse(default: () -> Validated<E, A>): Validated<E, A> =
+inline fun <E, A> ValidatedOf<E, A>.orElse(default: () -> Validated<E, A>): Validated<E, A> =
   fix().fold(
     { default() },
     { Valid(it) }
@@ -825,7 +840,7 @@ fun <E, A> ValidatedOf<E, A>.orElse(default: () -> Validated<E, A>): Validated<E
  * From Apply:
  * if both the function and this value are Valid, apply the function
  */
-fun <E, A, B> ValidatedOf<E, A>.ap(SE: Semigroup<E>, f: Validated<E, (A) -> B>): Validated<E, B> =
+inline fun <E, A, B> ValidatedOf<E, A>.ap(SE: Semigroup<E>, f: Validated<E, (A) -> B>): Validated<E, B> =
   fix().fold(
     { e -> f.fold({ Invalid(SE.run { e.combine(it) }) }, { Invalid(e) }) },
     { a -> f.fold(::Invalid) { Valid(it(a)) } }
@@ -835,13 +850,13 @@ fun <E, A, B> ValidatedOf<E, A>.ap(SE: Semigroup<E>, f: Validated<E, (A) -> B>):
   "To keep API consistent with Either and Option please use `handleErrorWith` instead",
   ReplaceWith("handleErrorWith(f)")
 )
-fun <E, A> ValidatedOf<E, A>.handleLeftWith(f: (E) -> ValidatedOf<E, A>): Validated<E, A> =
+inline fun <E, A> ValidatedOf<E, A>.handleLeftWith(f: (E) -> ValidatedOf<E, A>): Validated<E, A> =
   handleErrorWith(f)
 
-fun <E, A> ValidatedOf<E, A>.handleErrorWith(f: (E) -> ValidatedOf<E, A>): Validated<E, A> =
+inline fun <E, A> ValidatedOf<E, A>.handleErrorWith(f: (E) -> ValidatedOf<E, A>): Validated<E, A> =
   fix().fold({ f(it).fix() }, ::Valid)
 
-fun <E, A> ValidatedOf<E, A>.handleError(f: (E) -> A): Validated<E, A> =
+inline fun <E, A> ValidatedOf<E, A>.handleError(f: (E) -> A): Validated<E, A> =
   fix().handleErrorWith { Valid(f(it)) }
 
 fun <G, E, A, B> ValidatedOf<E, A>.traverse(GA: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, Validated<E, B>> = GA.run {
@@ -883,47 +898,14 @@ fun <E, A> ValidatedOf<E, A>.combineK(SE: Semigroup<E>, y: ValidatedOf<E, A>): V
 fun <E, A> ValidatedOf<E, A>.toIor(): Ior<E, A> =
   fix().fold({ Ior.Left(it) }, { Ior.Right(it) })
 
-fun <A> A.valid(): Validated<Nothing, A> =
+inline fun <A> A.valid(): Validated<Nothing, A> =
   Valid(this)
 
-fun <E> E.invalid(): Validated<E, Nothing> =
+inline fun <E> E.invalid(): Validated<E, Nothing> =
   Invalid(this)
 
-fun <A> A.validNel(): ValidatedNel<Nothing, A> =
+inline fun <A> A.validNel(): ValidatedNel<Nothing, A> =
   Validated.validNel(this)
 
-fun <E> E.invalidNel(): ValidatedNel<E, Nothing> =
+inline fun <E> E.invalidNel(): ValidatedNel<E, Nothing> =
   Validated.invalidNel(this)
-
-fun <E, A> validated(c: suspend EagerBind<ValidatedPartialOf<E>>.() -> A): Validated<E, A> {
-  val continuation: ValidatedContinuation<E, A> = ValidatedContinuation()
-  return continuation.startCoroutineUninterceptedAndReturn {
-    Valid(c())
-  } as Validated<E, A>
-}
-
-suspend fun <E, A> validated(c: suspend BindSyntax<ValidatedPartialOf<E>>.() -> A): Validated<E, A> =
-  suspendCoroutineUninterceptedOrReturn { cont ->
-    val continuation = ValidatedSContinuation(cont as Continuation<ValidatedOf<E, A>>)
-    continuation.startCoroutineUninterceptedOrReturn {
-      Valid(c())
-    }
-  }
-
-internal class ValidatedSContinuation<E, A>(
-  parent: Continuation<ValidatedOf<E, A>>
-) : SuspendMonadContinuation<ValidatedPartialOf<E>, A>(parent) {
-  override suspend fun <A> Kind<ValidatedPartialOf<E>, A>.bind(): A =
-    fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
-
-  override fun ShortCircuit.recover(): Kind<ValidatedPartialOf<E>, A> =
-    Invalid(value as E)
-}
-
-internal class ValidatedContinuation<E, A> : MonadContinuation<ValidatedPartialOf<E>, A>() {
-  override suspend fun <A> Kind<ValidatedPartialOf<E>, A>.bind(): A =
-    fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
-
-  override fun ShortCircuit.recover(): Kind<ValidatedPartialOf<E>, A> =
-    Invalid(value as E)
-}

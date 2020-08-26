@@ -6,6 +6,7 @@ import arrow.core.ConstOf
 import arrow.core.ConstPartialOf
 import arrow.core.Eval
 import arrow.core.Option
+import arrow.core.Ordering
 import arrow.core.Tuple2
 import arrow.core.extensions.const.eq.eq
 import arrow.core.fix
@@ -23,6 +24,7 @@ import arrow.typeclasses.Functor
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Invariant
 import arrow.typeclasses.Monoid
+import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.Traverse
@@ -148,6 +150,13 @@ interface ConstEq<A, T> : Eq<Const<A, T>> {
 }
 
 @extension
+interface ConstOrder<A, T> : Order<Const<A, T>> {
+  fun ORD(): Order<A>
+  override fun Const<A, T>.compare(b: Const<A, T>): Ordering =
+    ORD().run { value().compare(b.value()) }
+}
+
+@extension
 interface ConstEqK<A> : EqK<ConstPartialOf<A>> {
 
   fun EQA(): Eq<A>
@@ -168,10 +177,8 @@ interface ConstShow<A, T> : Show<Const<A, T>> {
 }
 
 @extension
-interface ConstHash<A, T> : Hash<Const<A, T>>, ConstEq<A, T> {
+interface ConstHash<A, T> : Hash<Const<A, T>> {
   fun HA(): Hash<A>
 
-  override fun EQ(): Eq<A> = HA()
-
-  override fun Const<A, T>.hash(): Int = HA().run { value().hash() }
+  override fun Const<A, T>.hashWithSalt(salt: Int): Int = HA().run { value().hashWithSalt(salt) }
 }

@@ -76,7 +76,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
      * @return [None] if both [oa] and [ob] are [None]. Otherwise [Some] wrapping
      * an [Ior.Left], [Ior.Right], or [Ior.Both] if [oa], [ob], or both are defined (respectively).
      */
-
+    @Deprecated("Deprecated, use `fromNullables` instead", ReplaceWith("fromNullables(a, b)"))
     fun <A, B> fromOptions(oa: Option<A>, ob: Option<B>): Option<Ior<A, B>> = when (oa) {
       is Some -> when (ob) {
         is Some -> Some(Both(oa.t, ob.t))
@@ -86,6 +86,27 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
         is Some -> Some(Right(ob.t))
         is None -> None
       }
+    }
+
+    /**
+     * Create an [Ior] from two nullables if at least one of them is defined.
+     *
+     * @param a an element (nullable) for the left side of the [Ior]
+     * @param b an element (nullable) for the right side of the [Ior]
+     *
+     * @return [null] if both [a] and [b] are [null]. Otherwise
+     * an [Ior.Left], [Ior.Right], or [Ior.Both] if [a], [b], or both are defined (respectively).
+     */
+    fun <A, B> fromNullables(a: A?, b: B?): Ior<A, B>? =
+      when (a != null) {
+        true -> when (b != null) {
+          true -> Both(a, b)
+          false -> Left(a)
+        }
+        false -> when (b != null) {
+          true -> Right(b)
+          false -> null
+        }
     }
 
     private tailrec fun <L, A, B> Semigroup<L>.loop(v: Ior<L, Either<A, B>>, f: (A) -> IorOf<L, Either<A, B>>): Ior<L, B> = when (v) {
@@ -139,7 +160,8 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
     is Both -> fab(leftValue, rightValue)
   }
 
-  fun <C> foldLeft(c: C, f: (C, B) -> C): C = fold({ c }, { f(c, it) }, { _, b -> f(c, b) })
+  inline fun <C> foldLeft(c: C, f: (C, B) -> C): C =
+    fold({ c }, { f(c, it) }, { _, b -> f(c, b) })
 
   fun <C> foldRight(lc: Eval<C>, f: (B, Eval<C>) -> Eval<C>): Eval<C> =
     fold({ lc }, { Eval.defer { f(it, lc) } }, { _, b -> Eval.defer { f(b, lc) } })
@@ -148,9 +170,10 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
     fold({ just(Left(it)) }, { b -> f(b).map { Right(it) } }, { _, b -> f(b).map { Right(it) } })
   }
 
-  fun <C> bifoldLeft(c: C, f: (C, A) -> C, g: (C, B) -> C): C = fold({ f(c, it) }, { g(c, it) }, { a, b -> g(f(c, a), b) })
+  inline fun <C> bifoldLeft(c: C, f: (C, A) -> C, g: (C, B) -> C): C =
+    fold({ f(c, it) }, { g(c, it) }, { a, b -> g(f(c, a), b) })
 
-  fun <C> bifoldRight(c: Eval<C>, f: (A, Eval<C>) -> Eval<C>, g: (B, Eval<C>) -> Eval<C>): Eval<C> =
+  inline fun <C> bifoldRight(c: Eval<C>, f: (A, Eval<C>) -> Eval<C>, g: (B, Eval<C>) -> Eval<C>): Eval<C> =
     fold({ f(it, c) }, { g(it, c) }, { a, b -> f(a, g(b, c)) })
 
   /**
@@ -163,8 +186,8 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    * Ior.Both(12, "power").map { "flower $it" }  // Result: Both(12, "flower power")
    * ```
    */
-  fun <D> map(f: (B) -> D): Ior<A, D> = fold(
-    { Left(it) },
+  inline fun <D> map(f: (B) -> D): Ior<A, D> = fold(
+    ::Left,
     { Right(f(it)) },
     { a, b -> Both(a, f(b)) }
   )
@@ -180,7 +203,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    * Ior.Both(12, "power").bimap ({ a, b -> "flower $b" },{ a * 2})  // Result: Both("flower power", 24)
    * ```
    */
-  fun <C, D> bimap(fa: (A) -> C, fb: (B) -> D): Ior<C, D> = fold(
+  inline fun <C, D> bimap(fa: (A) -> C, fb: (B) -> D): Ior<C, D> = fold(
     { Left(fa(it)) },
     { Right(fb(it)) },
     { a, b -> Both(fa(a), fb(b)) }
@@ -196,9 +219,9 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    * Ior.Both(12, "power").map { "flower $it" }  // Result: Both("flower 12", "power")
    * ```
    */
-  fun <C> mapLeft(fa: (A) -> C): Ior<C, B> = fold(
+  inline fun <C> mapLeft(fa: (A) -> C): Ior<C, B> = fold(
     { Left(fa(it)) },
-    { Right((it)) },
+    ::Right,
     { a, b -> Both(fa(a), b) }
   )
 
@@ -233,15 +256,42 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    *
    * Example:
    * ```
-   * Right(12).pad() // Result: Pair(None, Some(12))
-   * Left(12).pad()  // Result: Pair(Some(12), None)
-   * Both("power", 12).pad()  // Result: Pair(Some("power"), Some(12))
+   * Ior.Right(12).pad()          // Result: Pair(None, Some(12))
+   * Ior.Left(12).pad()           // Result: Pair(Some(12), None)
+   * Ior.Both("power", 12).pad()  // Result: Pair(Some("power"), Some(12))
    * ```
    */
+  @Deprecated("Deprecated, use `padNull` instead", ReplaceWith("padNull()"))
   fun pad(): Pair<Option<A>, Option<B>> = fold(
     { Pair(Some(it), None) },
     { Pair(None, Some(it)) },
     { a, b -> Pair(Some(a), Some(b)) }
+  )
+
+  /**
+   * Return this [Ior] as [Pair] of nullables]
+   *
+   * Example:
+   * ```kotlin:ank:playground
+   * import arrow.core.Ior
+   *
+   * //sampleStart
+   * val right = Ior.Right(12).padNull()         // Result: Pair(null, 12)
+   * val left = Ior.Left(12).padNull()           // Result: Pair(12, null)
+   * val both = Ior.Both("power", 12).padNull()  // Result: Pair("power", 12)
+   * //sampleEnd
+   *
+   * fun main() {
+   *   println("right = $right")
+   *   println("left = $left")
+   *   println("both = $both")
+   * }
+   * ```
+   */
+  fun padNull(): Pair<A?, B?> = fold(
+    { Pair(it, null) },
+    { Pair(null, it) },
+    { a, b -> Pair(a, b) }
   )
 
   /**
@@ -255,7 +305,8 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    * Both("power", 12).toEither()  // Result: Either.Right(12)
    * ```
    */
-  fun toEither(): Either<A, B> = fold({ Either.Left(it) }, { Either.Right(it) }, { _, b -> Either.Right(b) })
+  fun toEither(): Either<A, B> =
+    fold({ Either.Left(it) }, { Either.Right(it) }, { _, b -> Either.Right(b) })
 
   /**
    * Returns a [Some] containing the [Right] value or `B` if this is [Right] or [Both]
@@ -268,7 +319,32 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    * Both(12, "power").toOption()  // Result: Some("power")
    * ```
    */
-  fun toOption(): Option<B> = fold({ None }, { Some(it) }, { _, b -> Some(b) })
+  @Deprecated("Deprecated, use `orNull` instead", ReplaceWith("orNull()"))
+  fun toOption(): Option<B> =
+    fold({ None }, { Some(it) }, { _, b -> Some(b) })
+
+  /**
+   * Returns the [Right] value or `B` if this is [Right] or [Both]
+   * and [null] if this is a [Left].
+   *
+   * Example:
+   * ```kotlin:ank:playground
+   * import arrow.core.Ior
+   *
+   * //sampleStart
+   * val right = Ior.Right(12).orNull()         // Result: 12
+   * val left = Ior.Left(12).orNull()           // Result: null
+   * val both = Ior.Both(12, "power").orNull()  // Result: "power"
+   * //sampleEnd
+   * fun main() {
+   *   println("right = $right")
+   *   println("left = $left")
+   *   println("both = $both")
+   * }
+   * ```
+   */
+  fun orNull(): B? =
+    fold({ null }, { it }, { _, b -> b })
 
   /**
    * Returns a [Some] containing the [Left] value or `A` if this is [Left] or [Both]
@@ -281,8 +357,33 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    * Both(12, "power").toLeftOption()  // Result: Some(12)
    * ```
    */
+  @Deprecated("Deprecated, use `leftOrNull` instead", ReplaceWith("leftOrNull()"))
   fun toLeftOption(): Option<A> =
     fold({ Option.just(it) }, { Option.empty() }, { a, _ -> Option.just(a) })
+
+  /**
+   * Returns the [Left] value or `A` if this is [Left] or [Both]
+   * and [null] if this is a [Right].
+   *
+   * Example:
+   * ```kotlin:ank:playground
+   * import arrow.core.Ior
+   *
+   * //sampleStart
+   * val right = Ior.Right(12).leftOrNull()         // Result: null
+   * val left = Ior.Left(12).leftOrNull()           // Result: 12
+   * val both = Ior.Both(12, "power").leftOrNull()  // Result: 12
+   * //sampleEnd
+   *
+   * fun main() {
+   *   println("right = $right")
+   *   println("left = $left")
+   *   println("both = $both")
+   * }
+   * ```
+   */
+  fun leftOrNull(): A? =
+    fold({ it }, { null }, { a, _ -> a })
 
   /**
    * Returns a [Validated.Valid] containing the [Right] value or `B` if this is [Right] or [Both]
@@ -295,7 +396,8 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    * Both(12, "power").toValidated()  // Result: Valid("power")
    * ```
    */
-  fun toValidated(): Validated<A, B> = fold({ Invalid(it) }, { Valid(it) }, { _, b -> Valid(b) })
+  fun toValidated(): Validated<A, B> =
+    fold({ Invalid(it) }, { Valid(it) }, { _, b -> Valid(b) })
 
   data class Left<out A>(val value: A) : Ior<A, Nothing>() {
     override val isRight: Boolean get() = false
@@ -343,7 +445,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
  *
  * @param f The function to bind across [Ior.Right].
  */
-fun <A, B, D> Ior<A, B>.flatMap(SG: Semigroup<A>, f: (B) -> Ior<A, D>): Ior<A, D> = fold(
+inline fun <A, B, D> Ior<A, B>.flatMap(SG: Semigroup<A>, f: (B) -> Ior<A, D>): Ior<A, D> = fold(
   { Ior.Left(it) },
   f,
   { l, r ->
@@ -362,7 +464,8 @@ fun <A, B, D> Ior<A, B>.flatMap(SG: Semigroup<A>, f: (B) -> Ior<A, D>): Ior<A, D
 fun <A, B, D> Ior<A, B>.ap(SG: Semigroup<A>, ff: IorOf<A, (B) -> D>): Ior<A, D> =
   flatMap(SG) { a -> ff.fix().map { f -> f(a) } }
 
-fun <A, B> Ior<A, B>.getOrElse(default: () -> B): B = fold({ default() }, ::identity, { _, b -> b })
+inline fun <A, B> Ior<A, B>.getOrElse(default: () -> B): B =
+  fold({ default() }, ::identity, { _, b -> b })
 
 fun <A, B, G> IorOf<A, Kind<G, B>>.sequence(GA: Applicative<G>): Kind<G, Ior<A, B>> =
   fix().traverse(GA, ::identity)

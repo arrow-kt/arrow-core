@@ -1,9 +1,9 @@
 package arrow.core
 
 import arrow.Kind
+import arrow.core.computations.either
 import arrow.core.extensions.combine
 import arrow.core.extensions.either.applicative.applicative
-import arrow.core.extensions.either.applicativeError.handleErrorWith
 import arrow.core.extensions.either.bicrosswalk.bicrosswalk
 import arrow.core.extensions.either.bifunctor.bifunctor
 import arrow.core.extensions.either.bitraverse.bitraverse
@@ -15,6 +15,7 @@ import arrow.core.extensions.either.hash.hash
 import arrow.core.extensions.either.monad.monad
 import arrow.core.extensions.either.monadError.monadError
 import arrow.core.extensions.either.monoid.monoid
+import arrow.core.extensions.either.order.order
 import arrow.core.extensions.either.semigroupK.semigroupK
 import arrow.core.extensions.either.show.show
 import arrow.core.extensions.either.traverse.traverse
@@ -22,6 +23,7 @@ import arrow.core.extensions.eq
 import arrow.core.extensions.hash
 import arrow.core.extensions.id.eq.eq
 import arrow.core.extensions.monoid
+import arrow.core.extensions.order
 import arrow.core.extensions.show
 import arrow.core.test.UnitSpec
 import arrow.core.test.generators.either
@@ -38,12 +40,14 @@ import arrow.core.test.laws.FxLaws
 import arrow.core.test.laws.HashLaws
 import arrow.core.test.laws.MonadErrorLaws
 import arrow.core.test.laws.MonoidLaws
+import arrow.core.test.laws.OrderLaws
 import arrow.core.test.laws.SemigroupKLaws
 import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
 import arrow.typeclasses.Eq
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
+import io.kotlintest.shouldBe
 
 class EitherTest : UnitSpec() {
 
@@ -69,9 +73,20 @@ class EitherTest : UnitSpec() {
       BitraverseLaws.laws(Either.bitraverse(), Either.genK2(), Either.eqK2()),
       SemigroupKLaws.laws(Either.semigroupK(), Either.genK(Gen.id(Gen.int())), Either.eqK(Id.eq(Int.eq()))),
       HashLaws.laws(Either.hash(String.hash(), Int.hash()), GEN, Either.eq(String.eq(), Int.eq())),
+      OrderLaws.laws(Either.order(String.order(), Int.order()), GEN),
       BicrosswalkLaws.laws(Either.bicrosswalk(), Either.genK2(), Either.eqK2()),
-      FxLaws.laws<EitherPartialOf<String>, Int>(Gen.int().map(::Right), GEN.map { it }, Either.eqK(String.eq()).liftEq(Int.eq()), ::either, ::either)
+      FxLaws.laws<EitherPartialOf<String>, Int>(Gen.int().map(::Right), GEN.map { it }, Either.eqK(String.eq()).liftEq(Int.eq()), either::eager, either::invoke)
     )
+
+    "fromNullable should lift value as a Right if it is not null" {
+      forAll { a: Int ->
+        Either.fromNullable(a) == Right(a)
+      }
+    }
+
+    "fromNullable should lift value as a Left(Unit) if it is null" {
+      Either.fromNullable(null) shouldBe Left(Unit)
+    }
 
     "empty should return a Right of the empty of the inner type" {
       forAll { _: String ->
@@ -176,6 +191,13 @@ class EitherTest : UnitSpec() {
       }
     }
 
+    "orNull should convert" {
+      forAll { a: Int ->
+        Right(a).orNull() == a &&
+          Left(a).orNull() == null
+      }
+    }
+
     "contains should check value" {
       forAll(Gen.intSmall(), Gen.intSmall()) { a: Int, b: Int ->
         Right(a).contains(a) &&
@@ -204,6 +226,17 @@ class EitherTest : UnitSpec() {
         Left(a).handleErrorWith { Right(b) } == Right(b) &&
           Right(a).handleErrorWith { Right(b) } == Right(a)
       }
+    }
+
+    "catch should return Right(result) when f does not throw" {
+      suspend fun loadFromNetwork(): Int = 1
+      Either.catch { loadFromNetwork() } shouldBe Right(1)
+    }
+
+    "catch should return Left(result) when f throws" {
+      val exception = Exception("Boom!")
+      suspend fun loadFromNetwork(): Int = throw exception
+      Either.catch { loadFromNetwork() } shouldBe Left(exception)
     }
   }
 }

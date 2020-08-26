@@ -5,7 +5,7 @@ import arrow.core.Const
 import arrow.core.Either
 import arrow.core.Endo
 import arrow.core.Eval
-import arrow.core.Failure
+import arrow.core.Hashed
 import arrow.core.Id
 import arrow.core.Ior
 import arrow.core.Left
@@ -17,8 +17,6 @@ import arrow.core.Right
 import arrow.core.SequenceK
 import arrow.core.SetK
 import arrow.core.SortedMapK
-import arrow.core.Success
-import arrow.core.Try
 import arrow.core.Tuple10
 import arrow.core.Tuple2
 import arrow.core.Tuple3
@@ -29,13 +27,14 @@ import arrow.core.Tuple7
 import arrow.core.Tuple8
 import arrow.core.Tuple9
 import arrow.core.Validated
-import arrow.core.extensions.sequence.functorFilter.filterMap
-import arrow.core.extensions.sequencek.apply.apply
-import arrow.core.extensions.sequencek.functorFilter.filterMap
+import arrow.core.extensions.listk.semialign.semialign
+import arrow.core.extensions.sequencek.semialign.semialign
+import arrow.core.fix
 import arrow.core.k
 import arrow.core.toOption
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.ApplicativeError
+import arrow.typeclasses.Hash
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.shrinking.DoubleShrinker
 import io.kotlintest.properties.shrinking.FloatShrinker
@@ -148,9 +147,6 @@ fun <E, A> Gen<E>.or(genA: Gen<A>): Gen<Either<E, A>> = Gen.either(this, genA)
 fun <E, A> Gen.Companion.validated(genE: Gen<E>, genA: Gen<A>): Gen<Validated<E, A>> =
   Gen.either(genE, genA).map { Validated.fromEither(it) }
 
-fun <A> Gen.Companion.`try`(genA: Gen<A>, genThrowable: Gen<Throwable> = throwable()): Gen<Try<A>> =
-  Gen.either(genThrowable, genA).map { it.fold({ Failure(it) }, { Success(it) }) }
-
 fun <A> Gen.Companion.nonEmptyList(gen: Gen<A>): Gen<NonEmptyList<A>> =
   gen.flatMap { head -> Gen.list(gen).map { NonEmptyList(head, it) } }
 
@@ -178,21 +174,7 @@ fun <T> Gen.Companion.id(gen: Gen<T>): Gen<Id<T>> = object : Gen<Id<T>> {
 }
 
 fun <A, B> Gen.Companion.ior(genA: Gen<A>, genB: Gen<B>): Gen<Ior<A, B>> =
-  object : Gen<Ior<A, B>> {
-    override fun constants(): Iterable<Ior<A, B>> =
-      (genA.orNull().constants().asSequence().k() to genB.orNull().constants().asSequence().k()).let { (ls, rs) ->
-        SequenceK.apply().run { ls.product(rs) }.filterMap {
-          Ior.fromOptions(Option.fromNullable(it.a), Option.fromNullable(it.b))
-        }.asIterable()
-      }
-
-    override fun random(): Sequence<Ior<A, B>> =
-      (Gen.option(genA).random() to Gen.option(genB).random()).let { (ls, rs) ->
-        ls.zip(rs).filterMap {
-          Ior.fromOptions(it.first, it.second)
-        }
-      }
-  }
+  genA.alignWith(genB) { it }
 
 fun <A, B> Gen.Companion.genConst(gen: Gen<A>): Gen<Const<A, B>> =
   gen.map {
@@ -204,3 +186,18 @@ fun <A> Gen<A>.eval(): Gen<Eval<A>> =
 
 fun Gen.Companion.char(): Gen<Char> =
   Gen.from(('A'..'Z') + ('a'..'z') + ('0'..'9') + "!@#$%%^&*()_-~`,<.?/:;}{][±§".toList())
+
+fun <A> Gen<A>.hashed(HA: Hash<A>): Gen<Hashed<A>> = map { v -> Hashed(HA.run { v.hash() }, v) }
+
+private fun <A, B, R> Gen<A>.alignWith(genB: Gen<B>, transform: (Ior<A, B>) -> R): Gen<R> =
+  object : Gen<R> {
+    override fun constants(): Iterable<R> =
+      ListK.semialign().run {
+        alignWith(this@alignWith.constants().toList().k(), genB.constants().toList().k(), transform)
+      }.fix()
+
+    override fun random(): Sequence<R> =
+      SequenceK.semialign().run {
+        alignWith(this@alignWith.random().k(), genB.random().k(), transform)
+      }.fix()
+  }

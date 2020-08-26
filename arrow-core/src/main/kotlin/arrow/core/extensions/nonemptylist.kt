@@ -9,8 +9,11 @@ import arrow.core.ListK
 import arrow.core.Nel
 import arrow.core.NonEmptyList
 import arrow.core.NonEmptyListOf
+import arrow.core.Ordering
 import arrow.core.Tuple2
 import arrow.core.extensions.listk.eq.eq
+import arrow.core.extensions.listk.hash.hash
+import arrow.core.extensions.listk.order.order
 import arrow.core.extensions.nonemptylist.monad.monad
 import arrow.core.fix
 import arrow.core.k
@@ -29,6 +32,7 @@ import arrow.typeclasses.Functor
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monad
 import arrow.typeclasses.MonadSyntax
+import arrow.typeclasses.Order
 import arrow.typeclasses.Reducible
 import arrow.typeclasses.Semialign
 import arrow.typeclasses.Semigroup
@@ -179,14 +183,18 @@ interface NonEmptyListSemigroupK : SemigroupK<ForNonEmptyList> {
 }
 
 @extension
-interface NonEmptyListHash<A> : Hash<NonEmptyList<A>>, NonEmptyListEq<A> {
+interface NonEmptyListHash<A> : Hash<NonEmptyList<A>> {
   fun HA(): Hash<A>
 
-  override fun EQ(): Eq<A> = HA()
+  override fun NonEmptyList<A>.hashWithSalt(salt: Int): Int =
+    HA().run { head.hashWithSalt(ListK.hash(HA()).run { tail.k().hashWithSalt(salt) }) }
+}
 
-  override fun NonEmptyList<A>.hash(): Int = foldLeft(1) { hash, a ->
-    31 * hash + HA().run { a.hash() }
-  }
+@extension
+interface NonEmptyListOrder<A> : Order<NonEmptyList<A>> {
+  fun OA(): Order<A>
+  override fun NonEmptyList<A>.compare(b: NonEmptyList<A>): Ordering =
+    ListK.order(OA()).run { all.k().compare(b.all.k()) }
 }
 
 fun <F, A> Reducible<F>.toNonEmptyList(fa: Kind<F, A>): NonEmptyList<A> =

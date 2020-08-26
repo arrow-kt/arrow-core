@@ -361,7 +361,12 @@ import arrow.typeclasses.Show
  * Contents partially adapted from [Scala Exercises Option Tutorial](https://www.scala-exercises.org/std_lib/options)
  * Originally based on the Scala Koans.
  */
-
+@Deprecated(
+  "Option will be deleted soon as it promotes the wrong message of using a slower and memory unfriendly " +
+    "abstraction when the lang provides a better one. Alternatively, if you can't support nulls, consider aliasing Either<Unit, A> " +
+    "as described here https://github.com/arrow-kt/arrow-core/issues/114#issuecomment-641211639",
+  ReplaceWith("A?")
+)
 @higherkind
 sealed class Option<out A> : OptionOf<A> {
 
@@ -385,9 +390,8 @@ sealed class Option<out A> : OptionOf<A> {
      */
     fun <A> just(a: A): Option<A> = Some(a)
 
-    tailrec fun <A, B> tailRecM(a: A, f: (A) -> OptionOf<Either<A, B>>): Option<B> {
-      val option = f(a).fix()
-      return when (option) {
+    tailrec fun <A, B> tailRecM(a: A, f: (A) -> OptionOf<Either<A, B>>): Option<B> =
+      when (val option = f(a).fix()) {
         is Some -> {
           when (option.t) {
             is Either.Left -> tailRecM(option.t.a, f)
@@ -396,7 +400,6 @@ sealed class Option<out A> : OptionOf<A> {
         }
         is None -> None
       }
-    }
 
     fun <A> fromNullable(a: A?): Option<A> = if (a != null) Some(a) else None
 

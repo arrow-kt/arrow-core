@@ -74,7 +74,7 @@ This feature is known with multiple names: async/await, coroutines, do notation,
 In Kotlin, coroutines (introduced in version 1.1 of the language) make the compiler capable of rewriting seemingly synchronous code into asynchronous sequences.
 Arrow uses this capability of the compiler to bring you coroutines-like notation to all instances of the [`Monad`]({{ '/arrow/typeclasses/monad' | relative_url }}) typeclass.
 
-This means that comprehensions are available for `Option`, `Try`, `List`, `Reader`, `Observable`, `Flux`, or `IO` all the same.
+This means that comprehensions are available for `Option`, `List`, `Reader`, `Observable`, `Flux`, or `IO` all the same.
 In the following examples, we'll use `IO`, as it's a simple concurrency primitive with straightforward behavior.
 
 Every instance of [`Monad`]({{ '/arrow/typeclasses/monad' | relative_url }}) contains a method `binding` that receives a suspended function as a parameter.
@@ -87,7 +87,7 @@ import arrow.fx.*
 import arrow.typeclasses.*
 import arrow.fx.extensions.fx
 
-IO.fx<Nothing, Unit> {
+IO.fx {
   1
 }.fix().unsafeRunSync()
 ```
@@ -109,14 +109,14 @@ This will block the current thread until the operation completes. What we want i
 For that, we have two versions of the function `bind()`, which is a function only available inside the function passed to `binding()`.
 
 ```kotlin:ank
-IO.fx<Nothing, Unit> {
+IO.fx {
   val (a) = IO.invoke { 1 }
   a + 1
 }.fix().unsafeRunSync()
 ```
 
 ```kotlin:ank
-IO.fx<Nothing, Unit> {
+IO.fx {
   val a = IO.invoke { 1 }.bind()
   a + 1
 }.fix().unsafeRunSync()

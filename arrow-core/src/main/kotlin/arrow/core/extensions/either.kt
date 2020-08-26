@@ -9,7 +9,10 @@ import arrow.core.EitherOf
 import arrow.core.EitherPartialOf
 import arrow.core.Eval
 import arrow.core.ForEither
+import arrow.core.GT
+import arrow.core.LT
 import arrow.core.Left
+import arrow.core.Ordering
 import arrow.core.Right
 import arrow.core.extensions.either.eq.eq
 import arrow.core.extensions.either.monad.monad
@@ -36,10 +39,12 @@ import arrow.typeclasses.MonadError
 import arrow.typeclasses.MonadFx
 import arrow.typeclasses.MonadSyntax
 import arrow.typeclasses.Monoid
+import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.SemigroupK
 import arrow.typeclasses.Show
 import arrow.typeclasses.Traverse
+import arrow.typeclasses.hashWithSalt
 import arrow.core.ap as eitherAp
 import arrow.core.combineK as eitherCombineK
 import arrow.core.extensions.traverse as eitherTraverse
@@ -237,24 +242,37 @@ interface EitherShow<L, R> : Show<Either<L, R>> {
 }
 
 @extension
-interface EitherHash<L, R> : Hash<Either<L, R>>, EitherEq<L, R> {
+interface EitherHash<L, R> : Hash<Either<L, R>> {
 
   fun HL(): Hash<L>
   fun HR(): Hash<R>
 
-  override fun EQL(): Eq<L> = HL()
+  override fun Either<L, R>.hash(): Int =
+    fold(
+      { HL().run { it.hashWithSalt(0) } },
+      { HR().run { it.hashWithSalt(1) } }
+    )
 
-  override fun EQR(): Eq<R> = HR()
+  override fun Either<L, R>.hashWithSalt(salt: Int): Int =
+    fold(
+      { l -> HL().run { l.hashWithSalt(salt.hashWithSalt(0)) } },
+      { r -> HR().run { r.hashWithSalt(salt.hashWithSalt(1)) } }
+    )
+}
 
-  override fun Either<L, R>.hash(): Int = fold({
-    HL().run { it.hash() }
-  }, {
-    HR().run { it.hash() }
+@extension
+interface EitherOrder<L, R> : Order<Either<L, R>> {
+  fun OL(): Order<L>
+  fun OR(): Order<R>
+  override fun Either<L, R>.compare(b: Either<L, R>): Ordering = fold({ l1 ->
+    b.fold({ l2 -> OL().run { l1.compare(l2) } }, { LT })
+  }, { r1 ->
+    b.fold({ GT }, { r2 -> OR().run { r1.compare(r2) } })
   })
 }
 
 @Deprecated("Fx blocks are now named based on each datatype, please use `either { }` instead",
-  replaceWith = ReplaceWith("either(c)"))
+  replaceWith = ReplaceWith("either.eager<L, R>(c)"))
 fun <L, R> Either.Companion.fx(c: suspend MonadSyntax<EitherPartialOf<L>>.() -> R): Either<L, R> =
   Either.monad<L>().fx.monad(c).fix()
 

@@ -5,9 +5,6 @@ import arrow.core.Either.Left
 import arrow.core.Either.Right
 import arrow.higherkind
 import arrow.typeclasses.Show
-import arrow.typeclasses.suspended.BindSyntax
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
 /**
  *
@@ -646,7 +643,7 @@ import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
  *
  * ```kotlin:ank:playground
  * import arrow.core.Either
- * import arrow.core.either
+ * import arrow.core.computations.either
  *
  * suspend fun main() {
  * val value =
@@ -673,7 +670,6 @@ import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
  * ```
  *
  */
-
 @higherkind
 sealed class Either<out A, out B> : EitherOf<A, B> {
 
@@ -722,7 +718,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
       }
     }
 
-  fun <C> foldRight(initial: Eval<C>, rightOperation: (B, Eval<C>) -> Eval<C>): Eval<C> =
+  inline fun <C> foldRight(initial: Eval<C>, crossinline rightOperation: (B, Eval<C>) -> Eval<C>): Eval<C> =
     fix().let { either ->
       when (either) {
         is Right -> Eval.defer { rightOperation(either.b, initial) }
@@ -730,7 +726,8 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
       }
     }
 
-  inline fun <C> bifoldLeft(c: C, f: (C, A) -> C, g: (C, B) -> C): C = fold({ f(c, it) }, { g(c, it) })
+  inline fun <C> bifoldLeft(c: C, f: (C, A) -> C, g: (C, B) -> C): C =
+    fold({ f(c, it) }, { g(c, it) })
 
   inline fun <C> bifoldRight(c: Eval<C>, f: (A, Eval<C>) -> Eval<C>, g: (B, Eval<C>) -> Eval<C>): Eval<C> =
     fold({ f(it, c) }, { g(it, c) })
@@ -744,7 +741,8 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
    * Right("right").swap() // Result: Left("right")
    * ```
    */
-  fun swap(): Either<B, A> = fold({ Right(it) }, { Left(it) })
+  fun swap(): Either<B, A> =
+    fold({ Right(it) }, { Left(it) })
 
   /**
    * The given function is applied if this is a `Right`.
@@ -803,8 +801,29 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
    * Left(12).toOption()  // Result: None
    * ```
    */
+  @Deprecated("Deprecated, use `orNull` instead", ReplaceWith("orNull()"))
   fun toOption(): Option<B> =
     fold({ None }, { Some(it) })
+
+  /**
+   * Returns the right value if it exists, otherwise null
+   *
+   * Example:
+   * ```kotlin:ank:playground
+   * import arrow.core.Right
+   * import arrow.core.Left
+   *
+   * //sampleStart
+   * val right = Right(12).orNull() // Result: 12
+   * val left = Left(12).orNull()   // Result: null
+   * //sampleEnd
+   * fun main() {
+   *   println("right = $right")
+   *   println("left = $left")
+   * }
+   * ```
+   */
+  fun orNull(): B? = fold({ null }, { it })
 
   /**
    * The left side of the disjoint union, as opposed to the [Right] side.
@@ -852,6 +871,8 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
 
     fun <R> right(right: R): Either<Nothing, R> = Right(right)
 
+    fun <A> fromNullable(a: A?): Either<Unit, A> = a?.right() ?: Unit.left()
+
     tailrec fun <L, A, B> tailRecM(a: A, f: (A) -> Kind<EitherPartialOf<L>, Either<A, B>>): Either<L, B> {
       val ev: Either<L, Either<A, B>> = f(a).fix()
       return when (ev) {
@@ -867,13 +888,14 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     }
 
     @Deprecated(
-      message = "use conditionally as parameter order is consistent with Either class",
+      message = "Use conditionally since the parameter order is consistent with Either class",
       replaceWith = ReplaceWith(
         "Either.conditionally(test, ifFalse, ifTrue)",
         "arrow.core.Either.conditionally"
       )
     )
-    fun <L, R> cond(test: Boolean, ifTrue: () -> R, ifFalse: () -> L): Either<L, R> = conditionally(test, ifFalse, ifTrue)
+    fun <L, R> cond(test: Boolean, ifTrue: () -> R, ifFalse: () -> L): Either<L, R> =
+      conditionally(test, ifFalse, ifTrue)
 
     /**
      * Will create an [Either] from the result of evaluating the first parameter using the functions
@@ -887,11 +909,17 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
      *
      * @return [Either.Right] if evaluation succeed, [Either.Left] otherwise
      */
-    inline fun <L, R> conditionally(test: Boolean, ifFalse: () -> L, ifTrue: () -> R): Either<L, R> = if (test) right(ifTrue()) else left(ifFalse())
+    inline fun <L, R> conditionally(test: Boolean, ifFalse: () -> L, ifTrue: () -> R): Either<L, R> =
+      if (test) right(ifTrue()) else left(ifFalse())
 
     suspend fun <R> catch(f: suspend () -> R): Either<Throwable, R> =
-      catch(::identity, f)
+      try {
+        f().right()
+      } catch (t: Throwable) {
+        t.nonFatalOrThrow().left()
+      }
 
+    @Deprecated("Use catch with mapLeft instead", ReplaceWith("catch(f).mapLeft(fe)"))
     suspend fun <L, R> catch(fe: (Throwable) -> L, f: suspend () -> R): Either<L, R> =
       try {
         f().right()
@@ -901,9 +929,9 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
   }
 }
 
-fun <L> Left(left: L): Either<L, Nothing> = Either.left(left)
+fun <L> Left(left: L): Either<L, Nothing> = Left(left)
 
-fun <R> Right(right: R): Either<Nothing, R> = Either.right(right)
+fun <R> Right(right: R): Either<Nothing, R> = Right(right)
 
 /**
  * Binds the given function across [Either.Right].
@@ -1008,8 +1036,8 @@ inline fun <A, B> EitherOf<A, B>.filterOrElse(predicate: (B) -> Boolean, default
  */
 inline fun <A, B> EitherOf<A, B>.filterOrOther(predicate: (B) -> Boolean, default: (B) -> A): Either<A, B> =
   flatMap {
-    if (predicate(it)) arrow.core.Either.Right(it)
-    else arrow.core.Either.Left(default(it))
+    if (predicate(it)) Right(it)
+    else Left(default(it))
   }
 
 /**
@@ -1028,7 +1056,7 @@ inline fun <A, B> EitherOf<A, B>.filterOrOther(predicate: (B) -> Boolean, defaul
  * Left(12).leftIfNull({ -1 })    // Result: Left(12)
  * ```
  */
-fun <A, B> EitherOf<A, B?>.leftIfNull(default: () -> A): Either<A, B> =
+inline fun <A, B> EitherOf<A, B?>.leftIfNull(default: () -> A): Either<A, B> =
   fix().flatMap { it.rightIfNotNull { default() } }
 
 /**
@@ -1079,12 +1107,10 @@ inline fun <A, B> B?.rightIfNotNull(default: () -> A): Either<A, B> = when (this
 /**
  * Returns [Either.Right] if the value of type Any? is null, otherwise the specified A value wrapped into an
  * [Either.Left].
- *
- * ```
  */
 inline fun <A> Any?.rightIfNull(default: () -> A): Either<A, Nothing?> = when (this) {
-  null -> Either.right(null)
-  else -> Either.left(default())
+  null -> Right(null)
+  else -> Left(default())
 }
 
 /**
@@ -1098,36 +1124,3 @@ inline fun <A, B> EitherOf<A, B>.handleErrorWith(f: (A) -> EitherOf<A, B>): Eith
       is Right -> it
     }
   }
-
-fun <E, A> either(c: suspend EagerBind<EitherPartialOf<E>>.() -> A): Either<E, A> {
-  val continuation: EitherContinuation<E, A> = EitherContinuation()
-  return continuation.startCoroutineUninterceptedAndReturn {
-    Right(c())
-  } as Either<E, A>
-}
-
-suspend fun <E, A> either(c: suspend BindSyntax<EitherPartialOf<E>>.() -> A): Either<E, A> =
-  suspendCoroutineUninterceptedOrReturn { cont ->
-    val continuation = EitherSContinuation(cont as Continuation<EitherOf<E, A>>)
-    continuation.startCoroutineUninterceptedOrReturn {
-      Right(c())
-    }
-  }
-
-internal class EitherSContinuation<E, A>(
-  parent: Continuation<EitherOf<E, A>>
-) : SuspendMonadContinuation<EitherPartialOf<E>, A>(parent) {
-  override fun ShortCircuit.recover(): Kind<EitherPartialOf<E>, A> =
-    Left(value as E)
-
-  override suspend fun <A> Kind<EitherPartialOf<E>, A>.bind(): A =
-    fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
-}
-
-internal class EitherContinuation<E, A> : MonadContinuation<EitherPartialOf<E>, A>() {
-  override fun ShortCircuit.recover(): Kind<EitherPartialOf<E>, A> =
-    Left(value as E)
-
-  override suspend fun <A> Kind<EitherPartialOf<E>, A>.bind(): A =
-    fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
-}
