@@ -13,7 +13,7 @@ dependencies {
     compile project(":arrow-annotations")
     compile project(":arrow-core")
     kapt project(":arrow-meta")
-    testRuntime "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
-    testCompile "io.kotlintest:kotlintest-runner-junit5:$KOTLIN_TEST_VERSION", excludeArrow
-    testCompile project(":arrow-core-test")
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
+    testCompileOnly "io.kotlintest:kotlintest-runner-junit5:$KOTLIN_TEST_VERSION", excludeArrow
+    testCompileOnly project(":arrow-core-test")
 }
