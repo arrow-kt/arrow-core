@@ -9,7 +9,7 @@ apply from: "$DOC_CREATION"
 
 dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
-    implementation project(":arrow-annotations")
+    compileOnly project(":arrow-annotations")
     api project(":arrow-core-data")
     kapt project(":arrow-meta")
     kaptTest project(":arrow-meta")
