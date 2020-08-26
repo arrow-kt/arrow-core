@@ -12,7 +12,7 @@ import kotlin.coroutines.suspendCoroutine
 /**
  * Implements delimited continuations with with no multi shot support (apart from shiftCPS which trivially supports it).
  */
-class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R): RunnableDelimitedScope<R> {
+class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R): DelimitedScope<R> {
 
   private val resultVar = atomic<R?>(null)
   private val nextShift = atomic<(suspend () -> R)?>(null)
@@ -35,8 +35,6 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R): RunnableDelim
     override suspend fun invoke(a: A): R = DelimContScope<R> { runFunc(a) }.invoke()
   }
 
-  // TODO I wrote this comment in the middle of the night, double check
-  // Note we don't wrap the function [func] in an explicit reset because that is already implicit in our scope
   override suspend fun <A> shift(func: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
     suspendCoroutine { continueMain ->
       val delCont = SingleShotCont(continueMain, shiftFnContinuations)
@@ -51,7 +49,7 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R): RunnableDelim
   override suspend fun <A> reset(f: suspend DelimitedScope<A>.() -> A): A =
     DelimContScope(f).invoke()
 
-  override fun invoke(): R {
+  fun invoke(): R {
     f.startCoroutineUninterceptedOrReturn(this, Continuation(EmptyCoroutineContext) { result ->
       resultVar.value = result.getOrThrow()
     }).let {

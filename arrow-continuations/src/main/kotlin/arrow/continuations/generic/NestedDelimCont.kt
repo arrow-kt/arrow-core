@@ -8,7 +8,11 @@ import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-open class NestedDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : RunnableDelimitedScope<R> {
+/**
+ * Delimited control version which allows `reset { ... reset { ... } }` to function correctly.
+ * [DelimContScope] fails at this if you call shift on the parent scope inside the inner reset.
+ */
+open class NestedDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedScope<R> {
 
   private val resultVar = atomic<R?>(null)
   internal fun getResult(): R? = resultVar.value
@@ -69,7 +73,7 @@ open class NestedDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : R
     }
   }
 
-  override fun invoke(): R {
+  open fun invoke(): R {
     f.startCoroutineUninterceptedOrReturn(this, Continuation(EmptyCoroutineContext) { result ->
       resultVar.value = result.getOrThrow()
     }).let {

@@ -9,7 +9,7 @@ import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : RunnableDelimitedScope<R> {
+open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedScope<R> {
 
   private val resultVar = atomic<R?>(null)
   private val nextShift = atomic<(suspend () -> R)?>(null)
@@ -63,7 +63,7 @@ open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) 
   override suspend fun <A> reset(f: suspend DelimitedScope<A>.() -> A): A =
     MultiShotDelimContScope(f).invoke()
 
-  override fun invoke(): R {
+  fun invoke(): R {
     f.startCoroutineUninterceptedOrReturn(this, Continuation(EmptyCoroutineContext) { result ->
       resultVar.value = result.getOrThrow()
     }).let {

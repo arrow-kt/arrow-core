@@ -1,6 +1,5 @@
 package generic
 
-import arrow.continuations.effectStack.reset
 import arrow.continuations.generic.DelimitedScope
 import arrow.continuations.generic.MultiShotDelimContScope
 import arrow.continuations.generic.DelimContScope
