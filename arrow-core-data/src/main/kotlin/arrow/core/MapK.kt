@@ -97,7 +97,6 @@ fun <K, A> Pair<K, A>?.asIterable(): Iterable<Pair<K, A>> =
     else -> listOf(this)
   }
 
-
 fun <K, A, B> Map<K, A>.foldRight(b: Map<K, B>, f: (Map.Entry<K, A>, Map<K, B>) -> Map<K, B>): Map<K, B> =
   this.entries.reversed().k().foldLeft(b) { x, y: Map.Entry<K, A> -> f(y, x) }
 

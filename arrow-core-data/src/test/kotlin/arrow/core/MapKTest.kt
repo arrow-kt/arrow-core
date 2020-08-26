@@ -22,8 +22,6 @@ import arrow.core.test.generators.genK
 import arrow.core.test.generators.intSmall
 import arrow.core.test.generators.longSmall
 import arrow.core.test.generators.mapK
-import arrow.core.test.generators.option
-import arrow.core.test.generators.tuple2
 import arrow.core.test.laws.AlignLaws
 import arrow.core.test.laws.EqLaws
 import arrow.core.test.laws.FoldableLaws
