@@ -9,7 +9,7 @@ apply from: "$DOC_CREATION"
 apply plugin: 'kotlinx-atomicfu'
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
     compile project(":arrow-annotations")
     compile project(":arrow-core")
     kapt project(":arrow-meta")
