@@ -20,7 +20,7 @@ import kotlin.coroutines.suspendCoroutine
  *  continuation is appended to a list waiting to be invoked with the final result of the block.
  * When running a function we jump back and forth between the main function and every function inside shift via their continuations.
  */
-class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R): DelimitedScope<R> {
+class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedScope<R> {
 
   /**
    * Variable used for polling the result after suspension happened.
@@ -56,7 +56,7 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R): DelimitedScop
    */
   data class CPSCont<A, R>(
     private val runFunc: suspend DelimitedScope<R>.(A) -> R
-  ): DelimitedContinuation<A, R> {
+  ) : DelimitedContinuation<A, R> {
     override suspend fun invoke(a: A): R = DelimContScope<R> { runFunc(a) }.invoke()
   }
 

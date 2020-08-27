@@ -12,7 +12,7 @@ import arrow.core.test.UnitSpec
 import arrow.core.toT
 import io.kotlintest.shouldBe
 
-abstract class ContTestSuite: UnitSpec() {
+abstract class ContTestSuite : UnitSpec() {
   abstract fun <A> runScope(func: (suspend DelimitedScope<A>.() -> A)): A
 
   abstract fun capabilities(): Set<ScopeCapabilities>

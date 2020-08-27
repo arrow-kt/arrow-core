@@ -137,9 +137,9 @@ class ChildDelimContScope<R>(
     while (true) {
       parent.getActiveParent()?.let { scope ->
         // No need to do anything in steps cb because we handle this case from down here
-        scope.step {  }
+        scope.step {}
         // parent short circuited
-        if (scope.getResult() != null) suspendCoroutine<Nothing> {  }
+        if (scope.getResult() != null) suspendCoroutine<Nothing> {}
       } ?: break
     }
   }
