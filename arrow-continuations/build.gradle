@@ -1,11 +1,7 @@
 plugins {
-    id "maven-publish"
-    id "base"
     id "org.jetbrains.kotlin.jvm"
     id "org.jetbrains.kotlin.kapt"
-    id "org.jetbrains.dokka"
     id "org.jlleitschuh.gradle.ktlint"
-    id "ru.vyarus.animalsniffer"
 }
 
 apply from: "$SUB_PROJECT"
@@ -13,11 +9,11 @@ apply from: "$DOC_CREATION"
 apply plugin: 'kotlinx-atomicfu'
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
     compile project(":arrow-annotations")
     compile project(":arrow-core")
     kapt project(":arrow-meta")
-    testRuntime "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
-    testCompile "io.kotlintest:kotlintest-runner-junit5:$KOTLIN_TEST_VERSION", excludeArrow
-    testCompile project(":arrow-core-test")
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
+    testCompileOnly "io.kotlintest:kotlintest-runner-junit5:$KOTLIN_TEST_VERSION", excludeArrow
+    testCompileOnly project(":arrow-core-test")
 }
