@@ -62,7 +62,7 @@ data class SequenceK<out A>(val sequence: Sequence<A>) : SequenceKOf<A>, Sequenc
    */
   fun <B> mapNotNull(f: (A) -> B?): SequenceK<B> =
     flatMap { a ->
-      when(val b = f(a)) {
+      when (val b = f(a)) {
         null -> empty<B>()
         else -> just(b)
       }
