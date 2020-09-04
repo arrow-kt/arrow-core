@@ -65,15 +65,12 @@ data class MapK<K, out A>(private val map: Map<K, A>) : MapKOf<K, A>, Map<K, A> 
 
 fun <K, A> Map<K, A>.k(): MapK<K, A> = MapK(this)
 
-@Deprecated("Deprecated, use nullable instead", ReplaceWith("Tuple2<k, A>?.k()"))
+@Deprecated("Deprecated, use nullable instead", ReplaceWith("Tuple2<K, A>>?.let { ... }"))
 fun <K, A> Option<Tuple2<K, A>>.k(): MapK<K, A> =
   when (this) {
     is Some -> mapOf(this.t).k()
     is None -> emptyMap<K, A>().k()
   }
-
-fun <K, A> Tuple2<K, A>?.k(): MapK<K, A> =
-  this?.let { mapOf(this).k() } ?: emptyMap<K, A>().k()
 
 fun <K, V, G> MapKOf<K, Kind<G, V>>.sequence(GA: Applicative<G>): Kind<G, MapK<K, V>> =
   fix().traverse(GA, ::identity)
@@ -91,7 +88,7 @@ fun <K, A, B> Map<K, A>.foldLeft(b: Map<K, B>, f: (Map<K, B>, Map.Entry<K, A>) -
   return result
 }
 
-fun <K, A> Pair<K, A>?.asIterable(): Iterable<Pair<K, A>> =
+internal fun <K, A> Pair<K, A>?.asIterable(): Iterable<Pair<K, A>> =
   when (this) {
     null -> emptyList()
     else -> listOf(this)
