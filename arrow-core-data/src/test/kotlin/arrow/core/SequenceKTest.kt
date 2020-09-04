@@ -159,8 +159,8 @@ class SequenceKTest : UnitSpec() {
 
     "filterMap" {
       forAll(Gen.sequenceK(Gen.int())) { a ->
-        val result = a.asSequence().k()
-          .filterMap {
+        val result =
+          a.filterMap {
             when (it % 2 == 0) {
               true -> Some(it.toString())
               else -> None
@@ -183,8 +183,8 @@ class SequenceKTest : UnitSpec() {
     }
 
     "mapNotNull" {
-      forAll(Gen.list(Gen.int())) { a ->
-        val result = a.asSequence().k().mapNotNull {
+      forAll(Gen.sequenceK(Gen.int())) { a ->
+        val result = a.mapNotNull {
           when (it % 2 == 0) {
             true -> it.toString()
             else -> null
