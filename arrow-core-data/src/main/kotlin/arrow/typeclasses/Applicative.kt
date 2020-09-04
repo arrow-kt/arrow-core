@@ -26,4 +26,9 @@ interface Applicative<F> : Apply<F> {
   fun <A> Kind<F, A>.replicate(n: Int, MA: Monoid<A>): Kind<F, A> =
     if (n <= 0) just(MA.empty())
     else mapN(this@replicate, replicate(n - 1, MA)) { (a, xs) -> MA.run { a + xs } }
+
+  fun <A> Monoid<A>.lift(): Monoid<Kind<F, A>> = object : Monoid<Kind<F, A>> {
+    override fun empty(): Kind<F, A> = just(this@lift.empty())
+    override fun Kind<F, A>.combine(b: Kind<F, A>): Kind<F, A> = map2(b) { it.a.combine(it.b) }
+  }
 }
