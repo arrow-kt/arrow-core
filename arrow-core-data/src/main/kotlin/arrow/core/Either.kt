@@ -926,6 +926,60 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
       } catch (t: Throwable) {
         fe(t.nonFatalOrThrow()).left()
       }
+
+    /**
+     * The resolve function can resolve any suspended function that yields an Either into one type of value.
+     *
+     * @param f the function that needs to be resolved.
+     * @param ifSuccess the function to apply if [f] yields a success of type [A].
+     * @param ifDomainError the function to apply if [f] yields a domain error of type [E].
+     * @param ifSystemFailure the function to apply if [f] throws a [Throwable].
+     * @param ifHandlingCaseThrows the function to apply if the [ifSuccess], [ifDomainError] or [ifSystemFailure] function throw a [Throwable].
+     * Throwing any [Throwable] in the [ifHandlingCaseThrows] function will render the [resolve] function nondeterministic.
+     * @param ifUnrecoverableState the function to apply if [resolve] is in an unrecoverable state.
+     * @return the result of applying the [resolve] function.
+     */
+    suspend fun <E, A, B> resolve(
+      f: suspend () -> Either<E, A>,
+      ifSuccess: suspend (a: A) -> Either<Throwable, B>,
+      ifDomainError: suspend (e: E) -> Either<Throwable, B>,
+      ifSystemFailure: suspend (throwable: Throwable) -> Either<Throwable, B>,
+      ifHandlingCaseThrows: suspend (throwable: Throwable) -> Either<Throwable, B> = ifSystemFailure,
+      ifUnrecoverableState: suspend (throwable: Throwable) -> Either<Throwable, Unit> = { Unit.right() }
+    ): B =
+      catch { f() }
+        .fold(
+          { throwable: Throwable ->
+            handleItSafely { ifSystemFailure(throwable) }
+          },
+          {
+            it.fold(
+              { e: E ->
+                handleItSafely { ifDomainError(e) }
+              },
+              { a: A ->
+                handleItSafely { ifSuccess(a) }
+              }
+            )
+          }
+        )
+        .fold(
+          { throwable: Throwable ->
+            ifHandlingCaseThrows(throwable)
+          },
+          { b: B ->
+            b.right()
+          }
+        )
+        .fold(
+          { throwable: Throwable ->
+            ifUnrecoverableState(throwable)
+            throw throwable
+          },
+          { b: B ->
+            b
+          }
+        )
   }
 }
 
@@ -1124,3 +1178,14 @@ inline fun <A, B> EitherOf<A, B>.handleErrorWith(f: (A) -> EitherOf<A, B>): Eith
       is Right -> it
     }
   }
+
+internal suspend fun <A> handleItSafely(f: suspend () -> Either<Throwable, A>): Either<Throwable, A> =
+  Either.catch { f() }
+    .fold(
+      {
+        it.left()
+      },
+      {
+        it
+      }
+    )

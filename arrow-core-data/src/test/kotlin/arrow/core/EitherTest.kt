@@ -26,11 +26,17 @@ import arrow.core.extensions.monoid
 import arrow.core.extensions.order
 import arrow.core.extensions.show
 import arrow.core.test.UnitSpec
+import arrow.core.test.generators.any
 import arrow.core.test.generators.either
 import arrow.core.test.generators.genK
 import arrow.core.test.generators.genK2
 import arrow.core.test.generators.id
 import arrow.core.test.generators.intSmall
+import arrow.core.test.generators.suspendFunThatReturnsAnyLeft
+import arrow.core.test.generators.suspendFunThatReturnsAnyRight
+import arrow.core.test.generators.suspendFunThatReturnsEitherAnyOrAnyOrThrows
+import arrow.core.test.generators.suspendFunThatThrows
+import arrow.core.test.generators.suspendFunThatThrowsFatalThrowable
 import arrow.core.test.generators.throwable
 import arrow.core.test.laws.BicrosswalkLaws
 import arrow.core.test.laws.BifunctorLaws
@@ -48,6 +54,8 @@ import arrow.typeclasses.Eq
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
+import io.kotlintest.shouldThrow
+import kotlinx.coroutines.runBlocking
 
 class EitherTest : UnitSpec() {
 
@@ -238,5 +246,159 @@ class EitherTest : UnitSpec() {
       suspend fun loadFromNetwork(): Int = throw exception
       Either.catch { loadFromNetwork() } shouldBe Left(exception)
     }
+
+    "resolve should yield a result when deterministic functions are used as handlers" {
+      forAll(
+        Gen.suspendFunThatReturnsEitherAnyOrAnyOrThrows(),
+        Gen.any()
+      ) { f: suspend () -> Either<Any, Any>,
+          returnObject: Any ->
+
+        runBlocking {
+          val result =
+            Either.resolve(
+              f = f,
+              ifSuccess = { a -> handleWithPureFunction(a, returnObject) },
+              ifDomainError = { e -> handleWithPureFunction(e, returnObject) },
+              ifSystemFailure = { throwable -> handleWithPureFunction(throwable, returnObject) },
+              ifHandlingCaseThrows = { throwable -> handleWithPureFunction(throwable, returnObject) },
+              ifUnrecoverableState = ::handleWithPureFunction
+            )
+
+          result shouldBe returnObject
+        }
+        true
+      }
+    }
+
+    "resolve should throw a Throwable when a fatal Throwable is thrown" {
+      forAll(
+        Gen.suspendFunThatThrowsFatalThrowable(),
+        Gen.any()
+      ) { f: suspend () -> Either<Any, Any>,
+          returnObject: Any ->
+
+        runBlocking {
+          shouldThrow<Throwable> {
+            Either.resolve(
+              f = f,
+              ifSuccess = { a -> handleWithPureFunction(a, returnObject) },
+              ifDomainError = { e -> handleWithPureFunction(e, returnObject) },
+              ifSystemFailure = { throwable -> handleWithPureFunction(throwable, returnObject) },
+              ifHandlingCaseThrows = { throwable -> handleWithPureFunction(throwable, returnObject) },
+              ifUnrecoverableState = ::handleWithPureFunction
+            )
+          }
+        }
+        true
+      }
+    }
+
+    "resolve should yield a result when an exception is thrown in the ifSuccess supplied function" {
+      forAll(
+        Gen.suspendFunThatReturnsAnyRight(),
+        Gen.any()
+      ) { f: suspend () -> Either<Any, Any>,
+          returnObject: Any ->
+
+        runBlocking {
+          val result =
+            Either.resolve(
+              f = f,
+              ifSuccess = ::throwException,
+              ifDomainError = { e -> handleWithPureFunction(e, returnObject) },
+              ifSystemFailure = { throwable -> handleWithPureFunction(throwable, returnObject) },
+              ifHandlingCaseThrows = { throwable -> handleWithPureFunction(throwable, returnObject) },
+              ifUnrecoverableState = ::handleWithPureFunction
+            )
+
+          result shouldBe returnObject
+        }
+        true
+      }
+    }
+
+    "resolve should yield a result when an exception is thrown in the ifDomainError supplied function" {
+      forAll(
+        Gen.suspendFunThatReturnsAnyLeft(),
+        Gen.any()
+      ) { f: suspend () -> Either<Any, Any>,
+          returnObject: Any ->
+
+        runBlocking {
+          val result =
+            Either.resolve(
+              f = f,
+              ifSuccess = { a -> handleWithPureFunction(a, returnObject) },
+              ifDomainError = ::throwException,
+              ifSystemFailure = { throwable -> handleWithPureFunction(throwable, returnObject) },
+              ifHandlingCaseThrows = { throwable -> handleWithPureFunction(throwable, returnObject) },
+              ifUnrecoverableState = ::handleWithPureFunction
+            )
+
+          result shouldBe returnObject
+        }
+        true
+      }
+    }
+
+    "resolve should yield a result when an exception is thrown in the ifSystemFailure supplied function" {
+      forAll(
+        Gen.suspendFunThatThrows(),
+        Gen.any()
+      ) { f: suspend () -> Either<Any, Any>,
+          returnObject: Any ->
+
+        runBlocking {
+          val result =
+            Either.resolve(
+              f = f,
+              ifSuccess = { a -> handleWithPureFunction(a, returnObject) },
+              ifDomainError = { e -> handleWithPureFunction(e, returnObject) },
+              ifSystemFailure = ::throwException,
+              ifHandlingCaseThrows = { throwable -> handleWithPureFunction(throwable, returnObject) },
+              ifUnrecoverableState = ::handleWithPureFunction
+            )
+
+          result shouldBe returnObject
+        }
+        true
+      }
+    }
+
+    "resolve should throw a Throwable when any exception is thrown in the ifHandlingCaseThrows supplied function" {
+      forAll(
+        Gen.suspendFunThatReturnsEitherAnyOrAnyOrThrows()
+      ) { f: suspend () -> Either<Any, Any> ->
+
+        runBlocking {
+          shouldThrow<Throwable> {
+            Either.resolve(
+              f = f,
+              ifSuccess = ::throwException,
+              ifDomainError = ::throwException,
+              ifSystemFailure = ::throwException,
+              ifHandlingCaseThrows = ::throwException,
+              ifUnrecoverableState = ::handleWithPureFunction
+            )
+          }
+        }
+        true
+      }
+    }
   }
 }
+
+@Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
+suspend fun handleWithPureFunction(a: Any, b: Any): Either<Throwable, Any> =
+  b.right()
+
+@Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
+suspend fun handleWithPureFunction(throwable: Throwable): Either<Throwable, Unit> =
+  Unit.right()
+
+@Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
+private suspend fun <A> throwException(
+  a: A
+): Either<Throwable, Any> =
+  throw RuntimeException("An Exception is thrown while handling the result of the domain logic.")
