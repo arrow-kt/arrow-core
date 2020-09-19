@@ -401,4 +401,4 @@ suspend fun handleWithPureFunction(throwable: Throwable): Either<Throwable, Unit
 private suspend fun <A> throwException(
   a: A
 ): Either<Throwable, Any> =
-  throw RuntimeException("An Exception is thrown while handling the result of the domain logic.")
+  throw RuntimeException("An Exception is thrown while handling the result of the supplied function.")
