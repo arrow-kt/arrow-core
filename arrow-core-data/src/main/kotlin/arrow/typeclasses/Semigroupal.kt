@@ -1,7 +1,6 @@
 package arrow.typeclasses
 
 import arrow.Kind
-import arrow.core.Option
 import arrow.core.Tuple2
 import arrow.documented
 
@@ -25,7 +24,7 @@ import arrow.documented
  * f(a.product(b.product(c))) == (a.product(b)).product(c)
  * ```
  *
- * Currently, [Semigroupal] instances are defined for [Option], [ListK], [SequenceK] and [SetK].
+ * Currently, [Semigroupal] instances are defined for [ListK], [SequenceK] and [SetK].
  *
  * ```kotlin:ank:playground:extension
  * _imports_
@@ -44,14 +43,15 @@ import arrow.documented
  * Here a some examples:
  *
  * ```kotlin:ank:playground
- * import arrow.core.Option
- * import arrow.core.extensions.option.semigroupal.semigroupal
+ * import arrow.core.ListK
+ * import arrow.core.extensions.listk.semigroupal.semigroupal
+ * import arrow.core.k
  *
  * fun main(args: Array<String>) {
  *   val result =
  *   //sampleStart
- *   Option.semigroupal().run {
- *       Option.just(1).product(Option.just(1))
+ *   ListK.semigroupal().run {
+ *       listOf(1).k().product(listOf(2).k())
  *   }
  *   //sampleEnd
  *   println(result)
@@ -59,22 +59,6 @@ import arrow.documented
  * ```
  *
  * [Semigroupal] also has support of the `*` syntax:
- *
- * ```kotlin:ank:playground
- * import arrow.core.Option
- * import arrow.core.extensions.option.semigroupal.semigroupal
- *
- * fun main(args: Array<String>) {
- *   val result =
- *   //sampleStart
- *   Option.semigroupal().run {
- *       Option.just(1) * Option.just(2)
- *   }
- *   //sampleEnd
- *   println(result)
- * }
- * ```
- * The same applies to [ListK], [SequenceK] and [SetK] instances:
  *
  * ```kotlin:ank:playground
  * import arrow.core.ListK
@@ -85,7 +69,24 @@ import arrow.documented
  *   val result =
  *   //sampleStart
  *   ListK.semigroupal().run {
- *       listOf(1,2,3).k() * listOf('a','b','c').k()
+ *       listOf(1).k() * listOf(2).k()
+ *   }
+ *   //sampleEnd
+ *   println(result)
+ * }
+ * ```
+ * The same applies to [SequenceK] and [SetK] instances:
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.SetK
+ * import arrow.core.extensions.setk.semigroupal.semigroupal
+ * import arrow.core.k
+ *
+ * fun main(args: Array<String>) {
+ *   val result =
+ *   //sampleStart
+ *   SetK.semigroupal().run {
+ *       setOf(1,2,3).k() * setOf('a','b','c').k()
  *   }
  *   //sampleEnd
  *   println(result)

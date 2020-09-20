@@ -42,6 +42,8 @@ interface Reducible<F> : Foldable<F> {
 
   override fun <A, B> Kind<F, A>.reduceLeftToOption(f: (A) -> B, g: (B, A) -> B): Option<B> = Some(reduceLeftTo(f, g))
 
+  override fun <A, B> Kind<F, A>.reduceLeftToNullable(f: (A) -> B, g: (B, A) -> B): B? = reduceLeftTo(f, g)
+
   /**
    * Apply f to the "initial element" of fa and lazily combine it with every other value using the
    * given function g.
@@ -50,6 +52,9 @@ interface Reducible<F> : Foldable<F> {
 
   override fun <A, B> Kind<F, A>.reduceRightToOption(f: (A) -> B, g: (A, Eval<B>) -> Eval<B>): Eval<Option<B>> =
     reduceRightTo(f, g).map { Some(it) }
+
+  override fun <A, B> Kind<F, A>.reduceRightToNullable(f: (A) -> B, g: (A, Eval<B>) -> Eval<B>): Eval<B?> =
+    reduceRightTo(f, g)
 
   override fun <A> Kind<F, A>.isEmpty(): Boolean = false
 

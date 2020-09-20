@@ -1,7 +1,6 @@
 package arrow.typeclasses
 
 import arrow.Kind
-import arrow.core.Option
 
 /**
  * ank_macro_hierarchy(arrow.typeclasses.Monoidal)
@@ -18,7 +17,7 @@ import arrow.core.Option
  *
  * In addition, the laws of the [Semigroupal] type class also apply.
  *
- * Currently, [Monoidal] instances are defined for [Option], [ListK], [SequenceK] and [SetK].
+ * Currently, [Monoidal] instances are defined for [ListK], [SequenceK] and [SetK].
  *
  * ### Examples
  *
@@ -35,21 +34,6 @@ import arrow.core.Option
  * ```
  *
  * The following examples show the identity elements for the already defined [Monoidal] instances:
- *
- * ```kotlin:ank:playground
- * import arrow.core.Option
- * import arrow.core.extensions.option.monoidal.monoidal
- *
- * fun main(args: Array<String>) {
- *   val result =
- *   //sampleStart
- *   Option.monoidal().run {
- *     identity<Any>()
- *   }
- *   //sampleEnd
- *   println(result)
- * }
- * ```
  *
  * ```kotlin:ank:playground
  * import arrow.core.ListK

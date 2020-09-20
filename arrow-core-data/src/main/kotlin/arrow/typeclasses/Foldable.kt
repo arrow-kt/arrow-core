@@ -11,6 +11,7 @@ import arrow.core.Right
 import arrow.core.Some
 import arrow.core.flatMap
 import arrow.core.identity
+import arrow.core.left
 import arrow.core.right
 
 /**
@@ -50,6 +51,7 @@ interface Foldable<F> {
     foldLeft(empty()) { acc, a -> acc.combine(a) }
   }
 
+  @Deprecated("Please use reduceLeftToNullable")
   fun <A, B> Kind<F, A>.reduceLeftToOption(f: (A) -> B, g: (B, A) -> B): Option<B> =
     foldLeft(Option.empty()) { option, a ->
       when (option) {
@@ -58,15 +60,37 @@ interface Foldable<F> {
       }
     }
 
+  fun <A, B> Kind<F, A>.reduceLeftToNullable(f: (A) -> B, g: (B, A) -> B): B? =
+    foldLeft(null) { acc: B?, a: A ->
+      when (acc) {
+        null -> f(a)
+        else -> g(acc, a)
+      }
+    }
+
+  @Deprecated("Please use reduceRightToNullable")
   fun <A, B> Kind<F, A>.reduceRightToOption(
     f: (A) -> B,
     g: (A, Eval<B>) -> Eval<B>
   ): Eval<Option<B>> =
-    foldRight(Eval.Now<Option<B>>(Option.empty())) { a: A, lb: Eval<Option<B>> ->
+    foldRight(Eval.Now(Option.empty())) { a: A, lb: Eval<Option<B>> ->
       lb.flatMap { option ->
         when (option) {
           is Some<B> -> g(a, Eval.Now(option.t)).map { Some(it) }
           is None -> Eval.Later { Some(f(a)) }
+        }
+      }
+    }
+
+  fun <A, B> Kind<F, A>.reduceRightToNullable(
+    f: (A) -> B,
+    g: (A, Eval<B>) -> Eval<B>
+  ): Eval<B?> =
+    foldRight(Eval.now(null)) { a: A, lb: Eval<B?> ->
+      lb.flatMap {
+        when (it) {
+          null -> Eval.later { f(a) }
+          else -> g(a, Eval.now(it))
         }
       }
     }
@@ -78,8 +102,12 @@ interface Foldable<F> {
    * @return None if the structure is empty, otherwise the result of combining the cumulative left-associative result
    * of the f operation over all of the elements.
    */
+  @Deprecated("Please use reduceLeftNullable")
   fun <A> Kind<F, A>.reduceLeftOption(f: (A, A) -> A): Option<A> =
     reduceLeftToOption({ a -> a }, f)
+
+  fun <A> Kind<F, A>.reduceLeftNullable(f: (A, A) -> A): A? =
+    reduceLeftToNullable({ a -> a }, f)
 
   /**
    * Reduce the elements of this structure down to a single value by applying the provided aggregation function in
@@ -88,8 +116,12 @@ interface Foldable<F> {
    * @return None if the structure is empty, otherwise the result of combining the cumulative right-associative
    * result of the f operation over the A elements.
    */
+  @Deprecated("Please use reduceRightNullable")
   fun <A> Kind<F, A>.reduceRightOption(f: (A, Eval<A>) -> Eval<A>): Eval<Option<A>> =
     reduceRightToOption({ a -> a }, f)
+
+  fun <A> Kind<F, A>.reduceRightNullable(f: (A, Eval<A>) -> Eval<A>): Eval<A?> =
+    reduceRightToNullable({ a -> a }, f)
 
   /**
    * Alias for fold.
@@ -129,9 +161,15 @@ interface Foldable<F> {
   /**
    * Find the first element matching the predicate, if one exists.
    */
+  @Deprecated("Please use findNullable")
   fun <A> Kind<F, A>.find(f: (A) -> Boolean): Option<A> =
     foldRight(Eval.now<Option<A>>(None)) { a, lb ->
       if (f(a)) Eval.now(Some(a)) else lb
+    }.value()
+
+  fun <A> Kind<F, A>.findNullable(f: (A) -> Boolean): A? =
+    foldRight(Eval.now(null)) { a: A, lb: Eval<A?> ->
+      if (f(a)) Eval.now(a) else lb
     }.value()
 
   /**
@@ -204,6 +242,7 @@ interface Foldable<F> {
   /**
    * Get the element at the index of the Foldable.
    */
+  @Deprecated("Use getOrNull")
   fun <A> Kind<F, A>.get(idx: Long): Option<A> =
     if (idx < 0L)
       None
@@ -215,31 +254,36 @@ interface Foldable<F> {
         }
       }.swap().toOption()
 
-  /**
-   * Get the first element of the foldable or none
-   */
-  @Deprecated("In favor of having a more Kotlin idiomatic API", ReplaceWith("firstOrNone()"))
-  fun <A> Kind<F, A>.firstOption(): Option<A> =
-    firstOrNone()
-
-  /**
-   * Get the first element matching the predicate or none
-   */
-  @Deprecated("In favor of having a more Kotlin idiomatic API", ReplaceWith("firstOrNone(predicate)"))
-  fun <A> Kind<F, A>.firstOption(predicate: (A) -> Boolean): Option<A> =
-    firstOrNone { predicate(it) }
+  fun <A> Kind<F, A>.getOrNull(idx: Long): A? =
+    if (idx < 0L)
+      null
+    else
+      foldLeft(0L.right()) { i: Either<A, Long>, a: A ->
+        i.flatMap {
+          if (it == idx) a.left()
+          else (it + 1L).right()
+        }
+      }.swap().orNull()
 
   /**
    * Get the first element of the foldable or none
    */
+  @Deprecated("Please use firstOrNull")
   fun <A> Kind<F, A>.firstOrNone(): Option<A> =
     find { true }
 
+  fun <A> Kind<F, A>.firstOrNull(): A? =
+    findNullable { true }
+
   /**
    * Get the first element matching the predicate or none
    */
+  @Deprecated("Please use firstOrNull")
   fun <A> Kind<F, A>.firstOrNone(predicate: (A) -> Boolean): Option<A> =
     find { predicate(it) }
+
+  fun <A> Kind<F, A>.firstOrNull(predicate: (A) -> Boolean): A? =
+    findNullable { predicate(it) }
 
   fun <A> Kind<F, A>.toList(): List<A> =
     foldRight(Eval.now(emptyList<A>())) { v, acc -> acc.map { listOf(v) + it } }.value()

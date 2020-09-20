@@ -8,15 +8,12 @@ import arrow.core.SortedMapK
 import arrow.core.SortedMapKOf
 import arrow.core.SortedMapKPartialOf
 import arrow.core.Tuple2
-import arrow.core.extensions.list.functorFilter.flattenOption
 import arrow.core.extensions.set.foldable.foldLeft
 import arrow.core.extensions.setk.eq.eq
 import arrow.core.extensions.setk.hash.hash
 import arrow.core.extensions.sortedmapk.eq.eq
 import arrow.core.fix
-import arrow.core.getOption
 import arrow.core.k
-import arrow.core.toOption
 import arrow.core.toT
 import arrow.core.updated
 import arrow.extension
@@ -139,9 +136,9 @@ interface SortedMapKSemialign<K : Comparable<K>> : Semialign<SortedMapKPartialOf
     val r = b.fix()
     val keys = l.keys + r.keys
 
-    return keys.map { key ->
-      Ior.fromOptions(l[key].toOption(), r[key].toOption()).map { key to it }
-    }.flattenOption().toMap().toSortedMap().k()
+    return keys.mapNotNull { key ->
+      Ior.fromNullables(l[key], r[key])?.let { key to it }
+    }.toMap().toSortedMap().k()
   }
 }
 
@@ -182,7 +179,7 @@ interface SortedMapKZip<K : Comparable<K>> : Zip<SortedMapKPartialOf<K>>, Sorted
     (this.fix() to other.fix()).let { (ls, rs) ->
       val keys = (ls.keys.intersect(rs.keys))
 
-      val values = keys.map { key -> ls.getOption(key).flatMap { l -> rs.getOption(key).map { key to (l toT it) } } }.flattenOption()
+      val values = keys.mapNotNull { key -> ls[key]?.let { l -> rs[key]?.let { key to (l toT it) } } }
 
       return values.toMap().toSortedMap().k()
     }

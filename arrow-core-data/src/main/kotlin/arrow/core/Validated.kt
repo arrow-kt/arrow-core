@@ -59,25 +59,22 @@ typealias Invalid<E> = Validated.Invalid<E>
  * for `String` and `Int` for brevity.
  *
  * ```kotlin:ank
- * import arrow.core.None
- * import arrow.core.Option
- *
  * //sampleStart
  * abstract class Read<A> {
  *
- * abstract fun read(s: String): Option<A>
+ * abstract fun read(s: String): A?
  *
  *  companion object {
  *
  *   val stringRead: Read<String> =
  *    object: Read<String>() {
- *     override fun read(s: String): Option<String> = Option(s)
+ *     override fun read(s: String): String? = s
  *    }
  *
  *   val intRead: Read<Int> =
  *    object: Read<Int>() {
- *     override fun read(s: String): Option<Int> =
- *      if (s.matches(Regex("-?[0-9]+"))) Option(s.toInt()) else None
+ *     override fun read(s: String): Int? =
+ *      if (s.matches(Regex("-?[0-9]+"))) s.toInt() else null
  *    }
  *  }
  * }
@@ -107,9 +104,6 @@ typealias Invalid<E> = Validated.Invalid<E>
  * Now we are ready to write our parser.
  *
  * ```kotlin:ank
- * import arrow.core.None
- * import arrow.core.Option
- * import arrow.core.Some
  * import arrow.core.Validated
  * import arrow.core.valid
  * import arrow.core.invalid
@@ -119,13 +113,11 @@ typealias Invalid<E> = Validated.Invalid<E>
  *  fun <A> parse(read: Read<A>, key: String): Validated<ConfigError, A> {
  *   val v = Option.fromNullable(map[key])
  *   return when (v) {
- *    is Some ->
- *     when (val s = read.read(v.t)) {
- *      is Some -> s.t.valid()
- *      is None -> ConfigError.ParseConfig(key).invalid()
- *     }
- *    is None -> Validated.Invalid(ConfigError.MissingConfig(key))
- *   }
+ *    null -> Validated.Invalid(ConfigError.MissingConfig(key))
+ *    else -> when (val s = read.read(v)) {
+ *      null -> ConfigError.ParseConfig(key).invalid()
+ *      else -> s.valid()
+ *    }
  *  }
  * }
  * //sampleEnd
@@ -135,9 +127,6 @@ typealias Invalid<E> = Validated.Invalid<E>
  * It's then straightforward to translate this to an Fx block:
  *
  * ```kotlin:ank
- * import arrow.core.None
- * import arrow.core.Option
- * import arrow.core.Some
  * import arrow.core.Validated
  * import arrow.core.computations.validated
  * import arrow.core.valid
@@ -149,7 +138,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
  *     }.bind()
- *     val readVal = Validated.fromOption(read.read(value)) {
+ *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
  *     }.bind()
  *     readVal
@@ -237,9 +226,6 @@ typealias Invalid<E> = Validated.Invalid<E>
  * Coming back to our example, when no errors are present in the configuration, we get a `ConnectionParams` wrapped in a `Valid` instance.
  *
  * ```kotlin:ank:playground
- * import arrow.core.None
- * import arrow.core.Option
- * import arrow.core.Some
  * import arrow.core.Validated
  * import arrow.core.computations.validated
  * import arrow.core.valid
@@ -251,19 +237,19 @@ typealias Invalid<E> = Validated.Invalid<E>
  * data class ConnectionParams(val url: String, val port: Int)
  *
  * abstract class Read<A> {
- *  abstract fun read(s: String): Option<A>
+ *  abstract fun read(s: String): A?
  *
  *  companion object {
  *
  *   val stringRead: Read<String> =
  *    object : Read<String>() {
- *     override fun read(s: String): Option<String> = Option(s)
+ *     override fun read(s: String): String? = s
  *    }
  *
  *   val intRead: Read<Int> =
  *    object : Read<Int>() {
- *     override fun read(s: String): Option<Int> =
- *      if (s.matches(Regex("-?[0-9]+"))) Option(s.toInt()) else None
+ *     override fun read(s: String): Int? =
+ *      if (s.matches(Regex("-?[0-9]+"))) s.toInt() else null
  *    }
  *  }
  * }
@@ -278,7 +264,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
  *     }.bind()
- *     val readVal = Validated.fromOption(read.read(value)) {
+ *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
  *     }.bind()
  *     readVal
@@ -304,9 +290,6 @@ typealias Invalid<E> = Validated.Invalid<E>
  * an `Invalid` instance.
  *
  * ```kotlin:ank:playground
- * import arrow.core.None
- * import arrow.core.Option
- * import arrow.core.Some
  * import arrow.core.Validated
  * import arrow.core.computations.validated
  * import arrow.core.valid
@@ -324,13 +307,13 @@ typealias Invalid<E> = Validated.Invalid<E>
  *
  *   val stringRead: Read<String> =
  *    object : Read<String>() {
- *     override fun read(s: String): Option<String> = Option(s)
+ *     override fun read(s: String): String? = s
  *    }
  *
  *   val intRead: Read<Int> =
  *    object : Read<Int>() {
- *     override fun read(s: String): Option<Int> =
- *      if (s.matches(Regex("-?[0-9]+"))) Option(s.toInt()) else None
+ *     override fun read(s: String): Int? =
+ *      if (s.matches(Regex("-?[0-9]+"))) s.toInt() else null
  *    }
  *  }
  * }
@@ -345,7 +328,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
  *     }.bind()
- *     val readVal = Validated.fromOption(read.read(value)) {
+ *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
  *     }.bind()
  *     readVal
@@ -377,29 +360,26 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Either
  * import arrow.core.flatMap
  * import arrow.core.left
- * import arrow.core.None
- * import arrow.core.Option
  * import arrow.core.right
- * import arrow.core.Some
  * import arrow.core.Validated
  * import arrow.core.computations.validated
  * import arrow.core.valid
  * import arrow.core.invalid
  *
  * abstract class Read<A> {
- *  abstract fun read(s: String): Option<A>
+ *  abstract fun read(s: String): A?
  *
  *  companion object {
  *
  *   val stringRead: Read<String> =
  *    object : Read<String>() {
- *     override fun read(s: String): Option<String> = Option(s)
+ *     override fun read(s: String): String? = s
  *    }
  *
  *   val intRead: Read<Int> =
  *    object : Read<Int>() {
- *     override fun read(s: String): Option<Int> =
- *      if (s.matches(Regex("-?[0-9]+"))) Option(s.toInt()) else None
+ *     override fun read(s: String): Int? =
+ *      if (s.matches(Regex("-?[0-9]+"))) s.toInt() else null
  *    }
  *  }
  * }
@@ -409,7 +389,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
  *     }.bind()
- *     val readVal = Validated.fromOption(read.read(value)) {
+ *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
  *     }.bind()
  *     readVal

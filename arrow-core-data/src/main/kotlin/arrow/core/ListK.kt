@@ -56,15 +56,15 @@ import arrow.typeclasses.Show
  * Traversing a list creates a new container [Kind<F, A>]({{'/patterns/glossary/#type-constructors' | relative_url }}) by combining the result of a function applied to each element:
  *
  * ```kotlin:ank:playground
- * import arrow.core.None
- * import arrow.core.Option
- * import arrow.core.Some
+ * import arrow.core.Left
+ * import arrow.core.Either
+ * import arrow.core.Right
  * import arrow.core.extensions.list.traverse.traverse
- * import arrow.core.extensions.option.applicative.applicative
+ * import arrow.core.extensions.either.applicative.applicative
  *
  * //sampleStart
  * val numbers = listOf(Math.random(), Math.random(), Math.random())
- * val traversedList = numbers.traverse(Option.applicative(), { if (it > 0.5) Some(it) else None })
+ * val traversedList = numbers.traverse(Either.applicative(), { if (it > 0.5) Right(it) else Left(Unit) })
  * //sampleEnd
  * fun main() {
  *   println("traversedList $traversedList")
@@ -74,14 +74,14 @@ import arrow.typeclasses.Show
  * and complements the convenient function `sequence()` that converts a list of `ListK<Kind<F, A>>` into a `Kind<F, ListK<A>>`:
  *
  * ```kotlin:ank:playground
- * import arrow.core.Option
- * import arrow.core.Some
+ * import arrow.core.Either
+ * import arrow.core.Right
  * import arrow.core.extensions.list.traverse.sequence
- * import arrow.core.extensions.option.applicative.applicative
+ * import arrow.core.extensions.either.applicative.applicative
  *
  * //sampleStart
- * val requests = listOf(Some(Math.random()), Some(Math.random()), Some(Math.random()))
- * val sequenceList = requests.sequence(Option.applicative())
+ * val requests = listOf(Right(Math.random()), Right(Math.random()), Right(Math.random()))
+ * val sequenceList = requests.sequence(Either.applicative())
  * //sampleEnd
  * fun main() {
  *   println("sequenceList = $sequenceList")

@@ -1,9 +1,7 @@
 package arrow.typeclasses
 
 import arrow.Kind
-import arrow.core.None
 import arrow.core.Option
-import arrow.core.Some
 import arrow.core.identity
 
 /**
@@ -16,19 +14,25 @@ interface FunctorFilter<F> : Functor<F> {
   /**
    * A combined map and filter. Filtering is handled via [Option] instead of [Boolean] such that the output type [B] can be different than the input type [A].
    */
+  @Deprecated("Please use mapNotNull")
   fun <A, B> Kind<F, A>.filterMap(f: (A) -> Option<B>): Kind<F, B>
+
+  fun <A, B> Kind<F, A>.mapNotNull(f: (A) -> B?): Kind<F, B>
 
   /**
    * "Flatten" out a structure by collapsing Options.
    */
+  @Deprecated("Deprecated because Option is deprecated")
   fun <A> Kind<F, Option<A>>.flattenOption(): Kind<F, A> = filterMap(::identity)
+
+  fun <A> Kind<F, A?>.flatten(): Kind<F, A> = mapNotNull(::identity)
 
   /**
    * Apply a filter to a structure such that the output structure contains all [A] elements in the input structure that satisfy the predicate [f] but none
    * that don't.
    */
   fun <A> Kind<F, A>.filter(f: (A) -> Boolean): Kind<F, A> =
-    filterMap { a -> if (f(a)) Some(a) else None }
+    mapNotNull { a -> if (f(a)) a else null }
 
   /**
    * Filter out instances of [B] type.
