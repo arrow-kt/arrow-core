@@ -338,10 +338,11 @@ import arrow.typeclasses.Show
  * }
  * ```
  *
- * ## Resolve
+ * ## Resolve Either into one type of value
  * In some cases you can not use Either as a value. For instance, when you need to respond to an HTTP request. To resolve Either into one type of value, you can use the resolve function.
- * In the case of an HTTP endpoint you most often need to return some (framework specific) response object which holds the result of the request. The result can be expected and positive, this is the happy or success flow.
- * Or the result can be expected but negative, this is the unhappy or error flow. Or the result can be unexpected and negative, in this case an unhandled exception was thrown.
+ * In the case of an HTTP endpoint you most often need to return some (framework specific) response object which holds the result of the request. The result can be expected and positive, this is the success flow.
+ * Or the result can be expected but negative, this is the error flow. Or the result can be unexpected and negative, in this case an unhandled exception was thrown.
+ * In all three cases, you want to use the same kind of response object. But probably you want to respond slightly different in each case. This can be achieved by providing specific functions for the success, error and throwable cases.
  *
  * Example:
  *
@@ -360,7 +361,7 @@ import arrow.typeclasses.Show
  *     },
  *     success = { a -> handleSuccess({ a: Any -> log(Level.INFO, "This is a: $a") }, a) },
  *     error = { e -> handleError({ e: Any -> log(Level.WARN, "This is e: $e") }, e) },
- *     throwable = { throwable -> handleSystemFailure({ throwable: Throwable -> log(Level.ERROR, "Log the throwable: $throwable.") }, throwable) }
+ *     throwable = { throwable -> handleThrowable({ throwable: Throwable -> log(Level.ERROR, "Log the throwable: $throwable.") }, throwable) }
  *   )
  * //sampleEnd
  * suspend fun main() {
@@ -380,7 +381,7 @@ import arrow.typeclasses.Show
  * suspend fun <E> handleError(log: suspend (e: E) -> Either<Throwable, Unit>, e: E): Either<Throwable, Response> =
  *   createErrorResponse(HttpStatus.NOT_FOUND, ErrorResponse("$ERROR_MESSAGE_PREFIX $e"))
  *
- * suspend fun handleSystemFailure(log: suspend (throwable: Throwable) -> Either<Throwable, Unit>, throwable: Throwable): Either<Throwable, Response> =
+ * suspend fun handleThrowable(log: suspend (throwable: Throwable) -> Either<Throwable, Unit>, throwable: Throwable): Either<Throwable, Response> =
  *   log(throwable)
  *     .flatMap { createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorResponse("$THROWABLE_MESSAGE_PREFIX $throwable")) }
  *
