@@ -111,12 +111,12 @@ typealias Invalid<E> = Validated.Invalid<E>
  * //sampleStart
  * data class Config(val map: Map<String, String>) {
  *  fun <A> parse(read: Read<A>, key: String): Validated<ConfigError, A> {
- *   val v = Option.fromNullable(map[key])
- *   return when (v) {
+ *   return when (val v = map[key]) {
  *    null -> Validated.Invalid(ConfigError.MissingConfig(key))
  *    else -> when (val s = read.read(v)) {
- *      null -> ConfigError.ParseConfig(key).invalid()
- *      else -> s.valid()
+ *        null -> ConfigError.ParseConfig(key).invalid()
+ *        else -> s.valid()
+ *      }
  *    }
  *  }
  * }
@@ -301,7 +301,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * data class ConnectionParams(val url: String, val port: Int)
  *
  * abstract class Read<A> {
- *  abstract fun read(s: String): Option<A>
+ *  abstract fun read(s: String): A?
  *
  *  companion object {
  *
