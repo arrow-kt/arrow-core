@@ -1026,7 +1026,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     inline fun <L, R> conditionally(test: Boolean, ifFalse: () -> L, ifTrue: () -> R): Either<L, R> =
       if (test) right(ifTrue()) else left(ifFalse())
 
-    suspend fun <R> catch(f: suspend () -> R): Either<Throwable, R> =
+    suspend inline fun <R> catch(f: suspend () -> R): Either<Throwable, R> =
       try {
         f().right()
       } catch (t: Throwable) {
@@ -1053,13 +1053,13 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
      * @param unrecoverableState the function to apply if [resolve] is in an unrecoverable state.
      * @return the result of applying the [resolve] function.
      */
-    suspend fun <E, A, B> resolve(
+    suspend inline fun <E, A, B> resolve(
       f: suspend () -> Either<E, A>,
       success: suspend (a: A) -> Either<Throwable, B>,
       error: suspend (e: E) -> Either<Throwable, B>,
-      throwable: suspend (throwable: Throwable) -> Either<Throwable, B>,
-      handlingCaseThrows: suspend (throwable: Throwable) -> Either<Throwable, B> = throwable,
-      unrecoverableState: suspend (throwable: Throwable) -> Either<Throwable, Unit> = { Unit.right() }
+      noinline throwable: suspend (throwable: Throwable) -> Either<Throwable, B>,
+      noinline handlingCaseThrows: suspend (throwable: Throwable) -> Either<Throwable, B> = throwable,
+      noinline unrecoverableState: suspend (throwable: Throwable) -> Either<Throwable, Unit> = { Unit.right() }
     ): B =
       catch { f() }
         .fold({ t: Throwable -> handleItSafely { throwable(t) } }, { it.fold({ e: E -> handleItSafely { error(e) } }, { a: A -> handleItSafely { success(a) } }) })
@@ -1264,5 +1264,6 @@ inline fun <A, B> EitherOf<A, B>.handleErrorWith(f: (A) -> EitherOf<A, B>): Eith
     }
   }
 
-private suspend fun <A> handleItSafely(f: suspend () -> Either<Throwable, A>): Either<Throwable, A> =
+@PublishedApi()
+internal suspend inline fun <A> handleItSafely(f: suspend () -> Either<Throwable, A>): Either<Throwable, A> =
   Either.catch { f() }.fold({ it.left() }, { it })
