@@ -17,14 +17,14 @@ import arrow.core.SequenceKOf
 import arrow.core.Tuple2
 import arrow.core.extensions.eval.applicative.applicative
 import arrow.core.extensions.listk.crosswalk.crosswalk
-import arrow.core.extensions.sequence.foldable.firstOption
+import arrow.core.extensions.sequence.foldable.firstOrNone
 import arrow.core.extensions.sequence.foldable.foldLeft
 import arrow.core.extensions.sequence.foldable.foldRight
 import arrow.core.extensions.sequence.foldable.isEmpty
 import arrow.core.extensions.sequence.monadFilter.filterMap
 import arrow.core.extensions.sequencek.align.align
 import arrow.core.extensions.sequencek.eq.eq
-import arrow.core.extensions.sequencek.foldable.firstOption
+import arrow.core.extensions.sequencek.foldable.firstOrNone
 import arrow.core.extensions.sequencek.monad.map
 import arrow.core.extensions.sequencek.monad.monad
 import arrow.core.fix
@@ -99,7 +99,7 @@ interface SequenceKEq<A> : Eq<SequenceK<A>> {
   override fun SequenceK<A>.eqv(b: SequenceK<A>): Boolean = object : SequenceKSemialign {}.run {
     alignWith(this@eqv, b) { ior ->
       ior.fold({ false }, { false }, { l, r -> EQ().run { l.eqv(r) } })
-    }.firstOption { it.not() }.isEmpty()
+    }.firstOrNone { it.not() }.isEmpty()
   }
 }
 
@@ -173,14 +173,14 @@ interface SequenceKFoldable : Foldable<ForSequenceK> {
 
   // overrides for laziness
   override fun <A, B> Kind<ForSequenceK, A>.reduceLeftToOption(f: (A) -> B, g: (B, A) -> B): Option<B> =
-    fix().firstOption().map { fix().drop(1).foldLeft(f(it), g) }
+    fix().firstOrNone().map { fix().drop(1).foldLeft(f(it), g) }
 
   override fun <A, B> Kind<ForSequenceK, A>.reduceRightToOption(f: (A) -> B, g: (A, Eval<B>) -> Eval<B>): Eval<Option<B>> =
-    fix().firstOption().traverse(Eval.applicative()) { fix().drop(1).foldRight(Eval.now(f(it)), g) }.fix()
+    fix().firstOrNone().traverse(Eval.applicative()) { fix().drop(1).foldRight(Eval.now(f(it)), g) }.fix()
 
   override fun <A> Kind<ForSequenceK, A>.get(idx: Long): Option<A> =
     if (idx < 0) None
-    else fix().drop(idx.toInt()).firstOption()
+    else fix().drop(idx.toInt()).firstOrNone()
 }
 
 @extension
@@ -430,5 +430,5 @@ interface SequenceKMonadPlus : MonadPlus<ForSequenceK>, SequenceKMonad, Sequence
 @extension
 interface SequenceKMonadLogic : MonadLogic<ForSequenceK>, SequenceKMonadPlus {
   override fun <A> Kind<ForSequenceK, A>.splitM(): Kind<ForSequenceK, Option<Tuple2<Kind<ForSequenceK, A>, A>>> =
-    SequenceK.just(firstOption().map { a -> fix().sequence.drop(1).k() toT a })
+    SequenceK.just(firstOrNone().map { a -> fix().sequence.drop(1).k() toT a })
 }
