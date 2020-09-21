@@ -17,7 +17,7 @@ interface FunctorFilter<F> : Functor<F> {
   @Deprecated("Please use mapNotNull")
   fun <A, B> Kind<F, A>.filterMap(f: (A) -> Option<B>): Kind<F, B>
 
-  fun <A, B> Kind<F, A>.mapNotNull(f: (A) -> B?): Kind<F, B>
+  fun <A, B> Kind<F, A>.mapNotNull(f: (A) -> B?): Kind<F, B> = filterMap { Option.fromNullable(f(it)) }
 
   /**
    * "Flatten" out a structure by collapsing Options.
@@ -25,7 +25,7 @@ interface FunctorFilter<F> : Functor<F> {
   @Deprecated("Deprecated because Option is deprecated")
   fun <A> Kind<F, Option<A>>.flattenOption(): Kind<F, A> = filterMap(::identity)
 
-  fun <A> Kind<F, A?>.flatten(): Kind<F, A> = mapNotNull(::identity)
+  fun <A> Kind<F, A?>.flattenNullable(): Kind<F, A> = mapNotNull(::identity)
 
   /**
    * Apply a filter to a structure such that the output structure contains all [A] elements in the input structure that satisfy the predicate [f] but none

@@ -31,7 +31,9 @@ interface TraverseFilter<F> : Traverse<F>, FunctorFilter<F> {
   @Deprecated("Please use traverseFilterNullable")
   fun <G, A, B> Kind<F, A>.traverseFilter(AP: Applicative<G>, f: (A) -> Kind<G, Option<B>>): Kind<G, Kind<F, B>>
 
-  fun <G, A, B> Kind<F, A>.traverseFilterNullable(AP: Applicative<G>, f: (A) -> Kind<G, B?>): Kind<G, Kind<F, B>>
+  fun <G, A, B> Kind<F, A>.traverseFilterNullable(AP: Applicative<G>, f: (A) -> Kind<G, B?>): Kind<G, Kind<F, B>> = AP.run {
+    traverseFilter(AP) { a -> f(a).map { Option.fromNullable(it) } }
+  }
 
   @Deprecated("Please use mapNotNull")
   override fun <A, B> Kind<F, A>.filterMap(f: (A) -> Option<B>): Kind<F, B> =
