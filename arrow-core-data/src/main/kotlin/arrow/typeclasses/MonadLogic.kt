@@ -31,7 +31,11 @@ interface MonadLogic<F> : MonadPlus<F> {
    *   println(result)
    * }
    */
+  @Deprecated("Please use splitMNullable")
   fun <A> Kind<F, A>.splitM(): Kind<F, Option<Tuple2<Kind<F, A>, A>>>
+
+  fun <A> Kind<F, A>.splitMNullable(): Kind<F, Tuple2<Kind<F, A>, A>?> =
+    splitM().map { it.orNull() }
 
   /**
    * interleave both computations in a fair way.
@@ -185,5 +189,9 @@ interface MonadLogic<F> : MonadPlus<F> {
  */
 // TODO: this should be direct part of the MonadLogic typeclass (https://github.com/arrow-kt/arrow/pull/2047#discussion_r378201777).
 //  Couldn't add it due to issues with the generated code. Should be reworked when arrow-meta is available.
+@Deprecated("Please use reflect with Nullable receiver")
 fun <F, A> Kind<ForOption, Tuple2<Kind<F, A>, A>>.reflect(ML: MonadLogic<F>): Kind<F, A> =
   fix().fold({ ML.zeroM() }, { ML.run { just(it.b).plusM(it.a) } })
+
+fun <F, A> Tuple2<Kind<F, A>, A>?.reflect(ML: MonadLogic<F>): Kind<F, A> =
+  this?.let { ML.run { just(it.b).plusM(it.a) } } ?: ML.zeroM()

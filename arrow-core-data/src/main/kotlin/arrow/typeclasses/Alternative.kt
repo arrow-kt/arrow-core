@@ -3,11 +3,10 @@ package arrow.typeclasses
 import arrow.Kind
 import arrow.core.Eval
 import arrow.core.ForListK
-import arrow.core.None
 import arrow.core.Option
 import arrow.core.SequenceK
-import arrow.core.Some
 import arrow.core.fix
+import arrow.core.identity
 import arrow.core.k
 
 /**
@@ -64,8 +63,12 @@ interface Alternative<F> : Applicative<F>, MonoidK<F> {
    * @receiver computation to execute
    * @return Option with either the result or none in case it failed
    */
+  @Deprecated("Please use nullable")
   fun <A> Kind<F, A>.optional(): Kind<F, Option<A>> =
-    map(::Some).orElse(just(None))
+    nullable().map { Option.fromNullable(it) }
+
+  fun <A> Kind<F, A>.nullable(): Kind<F, A?> =
+    map(::identity).orElse(empty())
 
   fun guard(b: Boolean): Kind<F, Unit> =
     if (b) just(Unit) else empty()

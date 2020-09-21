@@ -21,16 +21,16 @@ import arrow.typeclasses.internal.IdBimonad
  *
  * ```kotlin:ank:playground
  * import arrow.core.*
- * import arrow.core.extensions.option.applicative.applicative
+ * import arrow.core.extensions.either.applicative.applicative
  * import arrow.core.extensions.*
  * import arrow.core.extensions.tuple2.bitraverse.bitraverse
  * fun main() {
  * //sampleStart
- *  val f: (Int) -> Option<Int> = { Some(it + 1) }
- *  val g: (Int) -> Option<Int> = { Some(it * 3) }
+ *  val f: (Int) -> Either<Unit, Int> = { Right(it + 1) }
+ *  val g: (Int) -> Either<Unit, Int> = { Right(it * 3) }
  *
  *  val tuple = Tuple2(1, 2)
- *  val bitraverseResult = tuple.bitraverse(Option.applicative(), f, g)
+ *  val bitraverseResult = tuple.bitraverse(Either.applicative(), f, g)
  *  //sampleEnd
  *  println(bitraverseResult)
  * }
@@ -42,12 +42,12 @@ import arrow.typeclasses.internal.IdBimonad
  * ```kotlin:ank:playground
  * import arrow.core.*
  * import arrow.core.extensions.*
- * import arrow.core.extensions.option.applicative.applicative
+ * import arrow.core.extensions.either.applicative.applicative
  * import arrow.core.extensions.tuple2.bitraverse.bisequence
  * fun main() {
  *  //sampleStart
- *  val tuple = Tuple2(Some(1), Some(2))
- *  val sequenceResult = tuple.bisequence(Option.applicative())
+ *  val tuple = Tuple2(Right(1), Right(2))
+ *  val sequenceResult = tuple.bisequence(Either.applicative())
  * //sampleEnd
  *  println(sequenceResult)
  * }

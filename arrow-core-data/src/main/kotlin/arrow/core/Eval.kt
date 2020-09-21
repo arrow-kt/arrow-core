@@ -191,17 +191,14 @@ sealed class Eval<out A> : EvalOf<A> {
                   fs.add(0, cc::run)
                 }
                 is Memoize -> {
-                  cc.result.fold(
-                    {
-                      curr = cc.eval
-                      fs.add(0, currComp::run)
-                      fs.add(0, addToMemo(cc as Memoize<Any?>))
-                    },
-                    {
-                      curr = Now(it)
-                      fs.add(0, currComp::run)
-                    }
-                  )
+                  cc.result?.let {
+                    curr = Now(it)
+                    fs.add(0, currComp::run)
+                  } ?: run {
+                    curr = cc.eval
+                    fs.add(0, currComp::run)
+                    fs.add(0, addToMemo(cc as Memoize<Any?>))
+                  }
                 }
                 else -> {
                   curr = currComp.run(cc.value())
@@ -212,18 +209,15 @@ sealed class Eval<out A> : EvalOf<A> {
           is Memoize -> {
             val currComp = curr as Memoize<Any?>
             val eval = currComp.eval
-            currComp.result.fold(
-              {
-                curr = eval
-                fs.add(0, addToMemo(currComp))
-              },
-              {
-                if (fs.isNotEmpty()) {
-                  curr = fs[0](it)
-                  fs.removeAt(0)
-                }
+            currComp.result?.let {
+              if (fs.isNotEmpty()) {
+                curr = fs[0](it)
+                fs.removeAt(0)
               }
-            )
+            } ?: run {
+              curr = eval
+              fs.add(0, addToMemo(currComp))
+            }
           }
           else ->
             if (fs.isNotEmpty()) {
@@ -254,6 +248,7 @@ sealed class Eval<out A> : EvalOf<A> {
     when (this) {
       is FlatMap<A> -> object : FlatMap<B>() {
         override fun <S> start(): Eval<S> = (this@Eval).start()
+
         @IgnoreJRERequirement
         override fun <S> run(s: S): Eval<B> =
           object : FlatMap<B>() {
@@ -353,11 +348,9 @@ sealed class Eval<out A> : EvalOf<A> {
    * needed.
    */
   internal data class Memoize<A>(val eval: Eval<A>) : Eval<A>() {
-    var result: Option<A> = None
+    var result: A? = null
     override fun memoize() = this
-    override fun value(): A = result.getOrElse {
-      evaluate(eval).also { result = Some(it) }
-    }
+    override fun value(): A = result ?: evaluate(eval).also { result = it }
   }
 }
 

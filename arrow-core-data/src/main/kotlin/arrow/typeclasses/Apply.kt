@@ -20,17 +20,19 @@ interface Apply<F> : Functor<F> {
    * Given both the value and the function are within [F], **ap**ply the function to the value.
    *
    * ```kotlin:ank:playground
-   * import arrow.core.Option
-   * import arrow.core.Some
-   * import arrow.core.none
+   * import arrow.core.Either
+   * import arrow.core.Left
+   * import arrow.core.Right
+   * import arrow.core.ap
    *
    * fun main() {
    *   //sampleStart
-   *   val someF: Option<(Int) -> Long> = Some { i: Int -> i.toLong() + 1 }
+   *   val eitherF: Either<Unit, (Int) -> Long> = Right { it.toLong() + 1 }
    *
-   *   val a = Some(3).ap(someF)
-   *   val b = none<Int>().ap(someF)
-   *   val c = Some(3).ap(none<(Int) -> Long>())
+   *   val a = Right(3).ap(eitherF)
+   *   val b = Left(Unit).ap(eitherF)
+   *   val eitherUnit: Either<Unit, (Int) -> Long> = Left(Unit)
+   *   val c = Right(3).ap(eitherUnit)
    *   //sampleEnd
    *   println("a: $a, b: $b, c: $c")
    * }

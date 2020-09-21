@@ -9,7 +9,7 @@ import arrow.documented
  *
  * The [Functor] type class abstracts the ability to [map] over the computational context of a type constructor.
  * Examples of type constructors that can implement instances of the Functor type class include
- * [arrow.core.Option], [arrow.core.NonEmptyList], [List] and many other data types that include a [map] function with the shape
+ * [arrow.core.Either], [arrow.core.NonEmptyList], [List] and many other data types that include a [map] function with the shape
  * `fun <F, A, B> Kind<F, A>.map(f: (A) -> B): Kind<F, B>` where `F` refers to any type constructor whose contents can be transformed.
  *
  * ```kotlin:ank:playground:extension
@@ -30,13 +30,12 @@ import arrow.documented
  * [map] allows us to safely compute over values under the assumption that they'll be there returning the
  * transformation encapsulated in the same context.
  *
- * Consider [arrow.core.Option] and [arrow.core.Either]:
+ * Consider [arrow.core.Either] and [arrow.core.Ior]:
  *
- * `Option<A>` allows us to model absence and has two possible states, `Some(a: A)` if the value is not absent and `None` to represent an empty case.
- * In a similar fashion `Either<L, R>` may have two possible cases `Left(l: L)` and `Right(r: R)`. By convention, `Left` is used to model the exceptional
- * case and `Right` for the successful case.
+ * `Either<L, R>` may have two possible cases `Left(l: L)` and `Right(r: R)`. By convention, `Left` is used to model the exceptional
+ * case and `Right` for the successful case. `Ior<L, R>` represent a value that can be `Left<A>`, `Right<B>` or `Both<A, B>`.
  *
- * Both [arrow.core.Either] and [arrow.core.Option] are examples of data types that can be computed over transforming their inner results.
+ * Both [arrow.core.Either] and [arrow.core.Ior] are examples of data types that can be computed over transforming their inner results.
  *
  * ```kotlin:ank:playground
  * import arrow.*
@@ -54,11 +53,12 @@ import arrow.documented
  * ```kotlin:ank:playground
  * import arrow.*
  * import arrow.core.*
+ * import arrow.core.Ior.Both
  *
  * fun main(args: Array<String>) {
  *   val result =
  *   //sampleStart
- *   Option(1).map { it * 2 }
+ *   Both("left", 5).map { it * 2 }
  *   //sampleEnd
  *   println(result)
  * }
