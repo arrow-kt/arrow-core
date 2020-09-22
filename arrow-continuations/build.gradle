@@ -4,6 +4,8 @@ plugins {
     id "org.jlleitschuh.gradle.ktlint"
 }
 
+apply plugin: "io.arrow-kt.arrow"
+
 apply from: "$SUB_PROJECT"
 apply from: "$DOC_CREATION"
 apply plugin: 'kotlinx-atomicfu'
@@ -13,4 +15,16 @@ dependencies {
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
     testCompileOnly "io.kotlintest:kotlintest-runner-junit5:$KOTLIN_TEST_VERSION", excludeArrow
     testImplementation project(":arrow-core-test")
+}
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies"]
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies"]
+    }
 }

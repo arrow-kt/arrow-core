@@ -3,9 +3,13 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
+        maven {
+            url 'https://oss.jfrog.org/artifactory/oss-snapshot-local/'
+        }
     }
     dependencies {
         classpath "org.jetbrains.kotlinx:atomicfu-gradle-plugin:$ATOMICFU_VERSION"
+        classpath "io.arrow-kt:gradle-plugin:1.4.10-SNAPSHOT" // TODO: $ARROW_META_VERSION
     }
 }
 
