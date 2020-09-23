@@ -4,6 +4,7 @@ plugins {
     id "org.jlleitschuh.gradle.ktlint"
 }
 
+apply plugin: "io.arrow-kt.arrow"
 apply from: "$SUB_PROJECT"
 apply from: "$DOC_CREATION"
 
@@ -16,4 +17,16 @@ dependencies {
     testCompileOnly project(":arrow-meta")
     testCompileOnly project(":arrow-core-test")
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
+}
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies"]
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies"]
+    }
 }

@@ -13,3 +13,15 @@ dependencies {
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
     testImplementation project(":arrow-core-test")
 }
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies"]
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies"]
+    }
+}

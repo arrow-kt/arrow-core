@@ -15,3 +15,15 @@ dependencies {
     testImplementation "com.squareup.retrofit2:converter-gson:$RETROFIT_VERSION"
     testImplementation "com.squareup.okhttp3:mockwebserver:$MOCKWEBSERVER_VERSION"
 }
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies"]
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies"]
+    }
+}

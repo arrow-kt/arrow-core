@@ -9,3 +9,15 @@ apply from: "$DOC_CREATION"
 dependencies {
     api "io.kindedj:kindedj:$KINDEDJ_VERSION"
 }
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies"]
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies"]
+    }
+}
