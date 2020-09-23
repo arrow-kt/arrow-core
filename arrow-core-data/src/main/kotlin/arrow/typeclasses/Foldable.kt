@@ -184,9 +184,7 @@ interface Foldable<F> {
    * Applicative folding on F by mapping A values to G<B>, combining the B values using the given Monoid<B> instance.
    */
   fun <G, A, B, AP, MO> Kind<F, A>.foldMapA(ap: AP, mo: MO, f: (A) -> Kind<G, B>): Kind<G, B>
-    where AP : Applicative<G>, MO : Monoid<B> = ap.run {
-    foldMap(mo.lift(), f)
-  }
+    where AP : Applicative<G>, MO : Monoid<B> = foldMap(mo.lift(ap), f)
 
   /**
    * Monadic folding on F by mapping A values to G<B>, combining the B values using the given Monoid<B> instance.
