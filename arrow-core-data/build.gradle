@@ -22,6 +22,11 @@ dependencies {
     testImplementation "io.arrow-kt:arrow-mtl-data:$VERSION_NAME"
 }
 
+// Override ktlint version because prev version does not support fun-interfaces
+ktlint {
+    version = "0.39.0"
+}
+
 compileKotlin {
     kotlinOptions {
         freeCompilerArgs += ["-Xallow-jvm-ir-dependencies"]
