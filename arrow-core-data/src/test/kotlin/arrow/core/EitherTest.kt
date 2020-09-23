@@ -261,7 +261,6 @@ class EitherTest : UnitSpec() {
               success = { a -> handleWithPureFunction(a, returnObject) },
               error = { e -> handleWithPureFunction(e, returnObject) },
               throwable = { t -> handleWithPureFunction(t, returnObject) },
-              handlingCaseThrows = { throwable -> handleWithPureFunction(throwable, returnObject) },
               unrecoverableState = ::handleWithPureFunction
             )
 
@@ -285,7 +284,6 @@ class EitherTest : UnitSpec() {
               success = { a -> handleWithPureFunction(a, returnObject) },
               error = { e -> handleWithPureFunction(e, returnObject) },
               throwable = { t -> handleWithPureFunction(t, returnObject) },
-              handlingCaseThrows = { t -> handleWithPureFunction(t, returnObject) },
               unrecoverableState = ::handleWithPureFunction
             )
           }
@@ -308,7 +306,6 @@ class EitherTest : UnitSpec() {
               success = ::throwException,
               error = { e -> handleWithPureFunction(e, returnObject) },
               throwable = { t -> handleWithPureFunction(t, returnObject) },
-              handlingCaseThrows = { t -> handleWithPureFunction(t, returnObject) },
               unrecoverableState = ::handleWithPureFunction
             )
 
@@ -332,7 +329,6 @@ class EitherTest : UnitSpec() {
               success = { a -> handleWithPureFunction(a, returnObject) },
               error = ::throwException,
               throwable = { t -> handleWithPureFunction(t, returnObject) },
-              handlingCaseThrows = { t -> handleWithPureFunction(t, returnObject) },
               unrecoverableState = ::handleWithPureFunction
             )
 
@@ -342,33 +338,9 @@ class EitherTest : UnitSpec() {
       }
     }
 
-    "resolve should yield a result when an exception is thrown in the throwable supplied function" {
+    "resolve should throw a Throwable when any exception is thrown in the throwable supplied function" {
       forAll(
-        Gen.suspendFunThatThrows(),
-        Gen.any()
-      ) { f: suspend () -> Either<Any, Any>,
-          returnObject: Any ->
-
-        runBlocking {
-          val result =
-            Either.resolve(
-              f = f,
-              success = { a -> handleWithPureFunction(a, returnObject) },
-              error = { e -> handleWithPureFunction(e, returnObject) },
-              throwable = ::throwException,
-              handlingCaseThrows = { t -> handleWithPureFunction(t, returnObject) },
-              unrecoverableState = ::handleWithPureFunction
-            )
-
-          result shouldBe returnObject
-        }
-        true
-      }
-    }
-
-    "resolve should throw a Throwable when any exception is thrown in the handlingCaseThrows supplied function" {
-      forAll(
-        Gen.suspendFunThatReturnsEitherAnyOrAnyOrThrows()
+        Gen.suspendFunThatThrows()
       ) { f: suspend () -> Either<Any, Any> ->
 
         runBlocking {
@@ -378,7 +350,6 @@ class EitherTest : UnitSpec() {
               success = ::throwException,
               error = ::throwException,
               throwable = ::throwException,
-              handlingCaseThrows = ::throwException,
               unrecoverableState = ::handleWithPureFunction
             )
           }
