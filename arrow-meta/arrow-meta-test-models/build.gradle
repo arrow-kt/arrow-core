@@ -13,3 +13,17 @@ dependencies {
     compileOnly project(":arrow-annotations")
     compileOnly project(":arrow-core")
 }
+
+compileKotlin {
+    kotlinOptions {
+        useIR = true
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies"]
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        useIR = true
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies"]
+    }
+}

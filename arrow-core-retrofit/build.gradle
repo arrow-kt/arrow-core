@@ -18,12 +18,14 @@ dependencies {
 
 compileKotlin {
     kotlinOptions {
+        useIR = true
         freeCompilerArgs += ["-Xallow-jvm-ir-dependencies"]
     }
 }
 
 compileTestKotlin {
     kotlinOptions {
+        useIR = true
         freeCompilerArgs += ["-Xallow-jvm-ir-dependencies"]
     }
 }
