@@ -247,6 +247,17 @@ class EitherTest : UnitSpec() {
       Either.catch { loadFromNetwork() } shouldBe Left(exception)
     }
 
+    "catchAndFlatten should return Right(result) when f does not throw" {
+      suspend fun loadFromNetwork(): Either<Throwable, Int> = Right(1)
+      Either.catchAndFlatten { loadFromNetwork() } shouldBe Right(1)
+    }
+
+    "catchAndFlatten should return Left(result) when f throws" {
+      val exception = Exception("Boom!")
+      suspend fun loadFromNetwork(): Either<Throwable, Int> = throw exception
+      Either.catchAndFlatten { loadFromNetwork() } shouldBe Left(exception)
+    }
+
     "resolve should yield a result when deterministic functions are used as handlers" {
       forAll(
         Gen.suspendFunThatReturnsEitherAnyOrAnyOrThrows(),

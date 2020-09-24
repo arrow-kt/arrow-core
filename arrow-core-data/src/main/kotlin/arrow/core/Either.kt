@@ -1034,6 +1034,9 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
         t.nonFatalOrThrow().left()
       }
 
+    suspend inline fun <R> catchAndFlatten(f: suspend () -> Either<Throwable, R>): Either<Throwable, R> =
+      catch(f).fold({ it.left() }, { it })
+
     @Deprecated("Use catch with mapLeft instead", ReplaceWith("catch(f).mapLeft(fe)"))
     suspend fun <L, R> catch(fe: (Throwable) -> L, f: suspend () -> R): Either<L, R> =
       try {
@@ -1060,8 +1063,8 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
       throwable: suspend (throwable: Throwable) -> Either<Throwable, B>,
       unrecoverableState: suspend (throwable: Throwable) -> Either<Throwable, Unit>
     ): B =
-      catch { f() }
-        .fold({ t: Throwable -> throwable(t) }, { it.fold({ e: E -> handleItSafely { error(e) } }, { a: A -> handleItSafely { success(a) } }) })
+      catch(f)
+        .fold({ t: Throwable -> throwable(t) }, { it.fold({ e: E -> catchAndFlatten { error(e) } }, { a: A -> catchAndFlatten { success(a) } }) })
         .fold({ t: Throwable -> throwable(t) }, { b: B -> b.right() })
         .fold({ t: Throwable -> unrecoverableState(t); throw t }, { b: B -> b })
   }
@@ -1262,7 +1265,3 @@ inline fun <A, B> EitherOf<A, B>.handleErrorWith(f: (A) -> EitherOf<A, B>): Eith
       is Right -> it
     }
   }
-
-@PublishedApi
-internal suspend inline fun <A> handleItSafely(f: suspend () -> Either<Throwable, A>): Either<Throwable, A> =
-  Either.catch { f() }.fold({ it.left() }, { it })
