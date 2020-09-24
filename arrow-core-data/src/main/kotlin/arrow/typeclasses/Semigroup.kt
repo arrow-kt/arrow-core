@@ -5,7 +5,7 @@ import arrow.core.Option
 /**
  * ank_macro_hierarchy(arrow.typeclasses.Semigroup)
  */
-interface Semigroup<A> {
+fun interface Semigroup<A> {
   /**
    * Combine two [A] values.
    */

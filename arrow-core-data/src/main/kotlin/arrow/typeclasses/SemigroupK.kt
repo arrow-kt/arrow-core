@@ -15,8 +15,5 @@ interface SemigroupK<F> {
   /**
    * Given a type A, create a concrete Semigroup<F<A>>.
    */
-  fun <A> algebra(): Semigroup<Kind<F, A>> = object : Semigroup<Kind<F, A>> {
-    override fun Kind<F, A>.combine(b: Kind<F, A>): Kind<F, A> =
-      this.combineK(b)
-  }
+  fun <A> algebra(): Semigroup<Kind<F, A>> = Semigroup<Kind<F, A>> { this.combineK(it) }
 }
