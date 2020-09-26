@@ -25,7 +25,7 @@ interface ApplicativeError<F, E> : Applicative<F> {
   fun <A> OptionOf<A>.fromOption(f: () -> E): Kind<F, A> =
     fix().fold({ raiseError(f()) }, { just(it) })
 
-  fun <A> A.fromNullable(f: () -> E): Kind<F, A> =
+  fun <A> A?.fromNullable(f: () -> E): Kind<F, A> =
     this?.let { just(it) } ?: raiseError(f())
 
   fun <A, EE> Either<EE, A>.fromEither(f: (EE) -> E): Kind<F, A> =
