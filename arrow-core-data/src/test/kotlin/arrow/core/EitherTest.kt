@@ -274,10 +274,8 @@ class EitherTest : UnitSpec() {
               throwable = { t -> handleWithPureFunction(t, returnObject) },
               unrecoverableState = ::handleWithPureFunction
             )
-
-          result shouldBe returnObject
+          result == returnObject
         }
-        true
       }
     }
 
@@ -319,10 +317,8 @@ class EitherTest : UnitSpec() {
               throwable = { t -> handleWithPureFunction(t, returnObject) },
               unrecoverableState = ::handleWithPureFunction
             )
-
-          result shouldBe returnObject
+          result == returnObject
         }
-        true
       }
     }
 
@@ -342,10 +338,8 @@ class EitherTest : UnitSpec() {
               throwable = { t -> handleWithPureFunction(t, returnObject) },
               unrecoverableState = ::handleWithPureFunction
             )
-
-          result shouldBe returnObject
+          result == returnObject
         }
-        true
       }
     }
 
