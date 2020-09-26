@@ -25,7 +25,7 @@ interface FunctorFilter<F> : Functor<F> {
   /**
    * "Flatten" out a structure by collapsing Options.
    */
-  @Deprecated("Deprecated because Option is deprecated")
+  @Deprecated("Please use filterNotNull")
   fun <A> Kind<F, Option<A>>.flattenOption(): Kind<F, A> = filterMap(::identity)
 
   /**

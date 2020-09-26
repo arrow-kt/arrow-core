@@ -28,10 +28,14 @@ interface TraverseFilter<F> : Traverse<F>, FunctorFilter<F> {
    * Returns [F]<[B]> in [G] context by applying [AP] on a selector function [f], which returns [Option] of [B]
    * in [G] context.
    */
-  @Deprecated("Please use traverseFilterNullable")
+  @Deprecated("Please use traverseNotNull")
   fun <G, A, B> Kind<F, A>.traverseFilter(AP: Applicative<G>, f: (A) -> Kind<G, Option<B>>): Kind<G, Kind<F, B>>
 
-  fun <G, A, B> Kind<F, A>.traverseFilterNullable(AP: Applicative<G>, f: (A) -> Kind<G, B?>): Kind<G, Kind<F, B>> = AP.run {
+  /**
+   * Returns [F]<[B]> in [G] context by applying [AP] on a selector function [f], which returns nullable [B]
+   * in [G] context.
+   */
+  fun <G, A, B> Kind<F, A>.traverseNotNull(AP: Applicative<G>, f: (A) -> Kind<G, B?>): Kind<G, Kind<F, B>> = AP.run {
     traverseFilter(AP) { a -> f(a).map { Option.fromNullable(it) } }
   }
 
@@ -40,13 +44,13 @@ interface TraverseFilter<F> : Traverse<F>, FunctorFilter<F> {
     traverseFilter(IdApplicative) { Id(f(it)) }.value()
 
   override fun <A, B> Kind<F, A>.mapNotNull(f: (A) -> B?): Kind<F, B> =
-    traverseFilterNullable(IdApplicative) { Id(f(it)) }.value()
+    traverseNotNull(IdApplicative) { Id(f(it)) }.value()
 
   /**
    * Returns [F]<[A]> in [G] context by applying [GA] on a selector function [f] in [G] context.
    */
   fun <G, A> Kind<F, A>.filterA(f: (A) -> Kind<G, Boolean>, GA: Applicative<G>): Kind<G, Kind<F, A>> = GA.run {
-    traverseFilterNullable(this) { a -> f(a).map { b -> if (b) a else null } }
+    traverseNotNull(this) { a -> f(a).map { b -> if (b) a else null } }
   }
 
   override fun <A> Kind<F, A>.filter(f: (A) -> Boolean): Kind<F, A> =

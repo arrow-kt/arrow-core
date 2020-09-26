@@ -34,6 +34,25 @@ interface MonadLogic<F> : MonadPlus<F> {
   @Deprecated("Please use splitMNullable")
   fun <A> Kind<F, A>.splitM(): Kind<F, Option<Tuple2<Kind<F, A>, A>>>
 
+  /**
+   * attempt to split the computation, giving access to the first result.
+   *
+   *  {: data-executable='true'}
+   *
+   * ```kotlin:ank
+   * import arrow.core.extensions.*
+   * import arrow.core.extensions.listk.monadLogic.monadLogic
+   * import arrow.core.*
+   *
+   * fun main(args: Array<String>) {
+   *   //sampleStart
+   *   val result = ListK.monadLogic().run {
+   *    listOf("A", "B", "C").k().splitM()
+   *   }
+   *   //sampleEnd
+   *   println(result)
+   * }
+   */
   fun <A> Kind<F, A>.splitMNullable(): Kind<F, Tuple2<Kind<F, A>, A>?> =
     splitM().map { it.orNull() }
 
@@ -193,5 +212,29 @@ interface MonadLogic<F> : MonadPlus<F> {
 fun <F, A> Kind<ForOption, Tuple2<Kind<F, A>, A>>.reflect(ML: MonadLogic<F>): Kind<F, A> =
   fix().fold({ ML.zeroM() }, { ML.run { just(it.b).plusM(it.a) } })
 
+/**
+ * The inverse of splitM.
+ *
+ * {: data-executable='true'}
+ *
+ * ```kotlin:ank
+ * import arrow.core.extensions.*
+ * import arrow.core.extensions.listk.monadLogic.monadLogic
+ * import arrow.core.*
+ * import arrow.typeclasses.reflect
+ *
+ * fun main(args: Array<String>) {
+ *  //sampleStart
+ *  val result = ListK.monadLogic().run {
+ *    listOf(1, 2, 3).k().splitM().flatMap {
+ *      it.reflect(this)
+ *    }
+ *  }
+ *  //sampleEnd
+ *  println(result)
+ * }
+ */
+// TODO: this should be direct part of the MonadLogic typeclass (https://github.com/arrow-kt/arrow/pull/2047#discussion_r378201777).
+//  Couldn't add it due to issues with the generated code. Should be reworked when arrow-meta is available.
 fun <F, A> Tuple2<Kind<F, A>, A>?.reflect(ML: MonadLogic<F>): Kind<F, A> =
   this?.let { ML.run { just(it.b).plusM(it.a) } } ?: ML.zeroM()
