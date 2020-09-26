@@ -67,6 +67,11 @@ interface Alternative<F> : Applicative<F>, MonoidK<F> {
   fun <A> Kind<F, A>.optional(): Kind<F, Option<A>> =
     nullable().map { Option.fromNullable(it) }
 
+  /**
+   * Returns the result as nullable type. This never fails.
+   * @receiver computation to execute
+   * @return The result or null in case it failed
+   */
   fun <A> Kind<F, A>.nullable(): Kind<F, A?> =
     map(::identity).orElse(empty())
 
@@ -102,5 +107,9 @@ fun <F, A> List<A>.altFromList(AF: Alternative<F>): Kind<F, A> =
       fix().foldRight(lb, f)
   })
 
+@Deprecated("Please use altFromNullable")
 fun <F, A> Option<A>.altFromOption(AF: Alternative<F>): Kind<F, A> =
   fold({ AF.empty() }, { AF.just(it) })
+
+fun <F, A> A?.altFromNullable(AF: Alternative<F>): Kind<F, A> =
+  this?.let { AF.just(it) } ?: AF.empty()
