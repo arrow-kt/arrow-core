@@ -106,6 +106,13 @@ interface Foldable<F> {
   fun <A> Kind<F, A>.reduceLeftOption(f: (A, A) -> A): Option<A> =
     reduceLeftToOption({ a -> a }, f)
 
+  /**
+   * Reduce the elements of this structure down to a single value by applying the provided aggregation function in
+   * a left-associative manner.
+   *
+   * @return null if the structure is empty, otherwise the result of combining the cumulative left-associative result
+   * of the f operation over all of the elements.
+   */
   fun <A> Kind<F, A>.reduceLeftNullable(f: (A, A) -> A): A? =
     reduceLeftToNullable({ a -> a }, f)
 
@@ -120,6 +127,13 @@ interface Foldable<F> {
   fun <A> Kind<F, A>.reduceRightOption(f: (A, Eval<A>) -> Eval<A>): Eval<Option<A>> =
     reduceRightToOption({ a -> a }, f)
 
+  /**
+   * Reduce the elements of this structure down to a single value by applying the provided aggregation function in
+   * a right-associative manner.
+   *
+   * @return null if the structure is empty, otherwise the result of combining the cumulative right-associative
+   * result of the f operation over the A elements.
+   */
   fun <A> Kind<F, A>.reduceRightNullable(f: (A, Eval<A>) -> Eval<A>): Eval<A?> =
     reduceRightToNullable({ a -> a }, f)
 
@@ -167,6 +181,11 @@ interface Foldable<F> {
       if (f(a)) Eval.now(Some(a)) else lb
     }.value()
 
+  /**
+   * Find the first element matching the predicate, if one exists.
+   *
+   * @return the element, if one exists, null otherwise
+   */
   fun <A> Kind<F, A>.findNullable(f: (A) -> Boolean): A? =
     foldRight(Eval.now(null)) { a: A, lb: Eval<A?> ->
       if (f(a)) Eval.now(a) else lb
@@ -254,6 +273,11 @@ interface Foldable<F> {
         }
       }.swap().toOption()
 
+  /**
+   * Get the element at the index of the Foldable
+   *
+   * @return the element or null if the index is out of bounds
+   */
   fun <A> Kind<F, A>.getOrNull(idx: Long): A? =
     if (idx < 0L)
       null
@@ -272,6 +296,9 @@ interface Foldable<F> {
   fun <A> Kind<F, A>.firstOrNone(): Option<A> =
     find { true }
 
+  /**
+   * Get the first element of the foldable, or null
+   */
   fun <A> Kind<F, A>.firstOrNull(): A? =
     findNullable { true }
 
@@ -282,6 +309,9 @@ interface Foldable<F> {
   fun <A> Kind<F, A>.firstOrNone(predicate: (A) -> Boolean): Option<A> =
     find { predicate(it) }
 
+  /**
+   * Get the first element matching the predicate or null
+   */
   fun <A> Kind<F, A>.firstOrNull(predicate: (A) -> Boolean): A? =
     findNullable { predicate(it) }
 
