@@ -85,10 +85,7 @@ interface Foldable<F> {
   ): Eval<B?> =
     foldRight(Eval.now(null)) { a: A, lb: Eval<B?> ->
       lb.flatMap {
-        when (it) {
-          null -> Eval.later { f(a) }
-          else -> g(a, Eval.now(it))
-        }
+        it?.let { g(a, Eval.now(it)) } ?: Eval.later { f(a) }
       }
     }
 
