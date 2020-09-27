@@ -108,7 +108,7 @@ interface Foldable<F> {
    * of the f operation over all of the elements.
    */
   fun <A> Kind<F, A>.reduceLeftNullable(f: (A, A) -> A): A? =
-    reduceLeftToNullable({ a -> a }, f)
+    reduceLeftToNullable(::identity, f)
 
   /**
    * Reduce the elements of this structure down to a single value by applying the provided aggregation function in
@@ -129,7 +129,7 @@ interface Foldable<F> {
    * result of the f operation over the A elements.
    */
   fun <A> Kind<F, A>.reduceRightNullable(f: (A, Eval<A>) -> Eval<A>): Eval<A?> =
-    reduceRightToNullable({ a -> a }, f)
+    reduceRightToNullable(::identity, f)
 
   /**
    * Alias for fold.

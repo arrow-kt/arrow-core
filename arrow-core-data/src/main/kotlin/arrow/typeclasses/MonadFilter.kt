@@ -17,10 +17,10 @@ interface MonadFilter<F> : Monad<F>, FunctorFilter<F> {
   fun <A> empty(): Kind<F, A>
 
   override fun <A, B> Kind<F, A>.filterMap(f: (A) -> Option<B>): Kind<F, B> =
-    this.flatMap { a -> f(a).fold({ empty() }, { just(it) }) }
+    flatMap { a -> f(a).fold({ empty() }, { just(it) }) }
 
   override fun <A, B> Kind<F, A>.mapNotNull(f: (A) -> B?): Kind<F, B> =
-    this.flatMap { a -> f(a)?.let { just(it) } ?: empty<B>() }
+    flatMap { a -> f(a)?.let { just(it) } ?: empty<B>() }
 
   @Deprecated(
     "`bindingFilter` is getting renamed to `fx` for consistency with the Arrow Fx system. Use the Fx extensions for comprehensions",
