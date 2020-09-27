@@ -62,10 +62,7 @@ interface Foldable<F> {
 
   fun <A, B> Kind<F, A>.reduceLeftToNullable(f: (A) -> B, g: (B, A) -> B): B? =
     foldLeft(null) { acc: B?, a: A ->
-      when (acc) {
-        null -> f(a)
-        else -> g(acc, a)
-      }
+      acc?.let { g(it, a) } ?: f(a)
     }
 
   @Deprecated("Please use reduceRightToNullable")
