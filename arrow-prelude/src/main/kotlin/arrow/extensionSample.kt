@@ -18,11 +18,6 @@ object UserRepository : Repository<User> {
   override fun load(id: Id): User = User(id, "Curry")
 }
 
-@arrow.Extension
+@arrow.Coercion
 fun User.Companion.repository(): Repository<User> =
   UserRepository
-
-fun main() {
-  User.load(Id("Curry")) // load is proofed by `repository`
-  // User(Id("Curry"), "Curry")
-}
