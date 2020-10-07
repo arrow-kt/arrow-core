@@ -1,0 +1,38 @@
+buildscript {
+    repositories {
+        maven {
+            url 'https://oss.jfrog.org/artifactory/oss-snapshot-local/'
+        }
+    }
+    dependencies {
+        classpath "io.arrow-kt:gradle-plugin:$ARROW_META_VERSION"
+    }
+}
+
+plugins {
+    id "org.jetbrains.kotlin.jvm"
+}
+
+apply plugin: "io.arrow-kt.arrow"
+
+apply from: "$SUB_PROJECT"
+apply from: "$DOC_CREATION"
+
+dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter:$JUNIT_VERSION"
+    testImplementation "org.assertj:assertj-core:$ASSERTJ_VERSION"
+}
+
+compileKotlin {
+    kotlinOptions {
+        useIR = true
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies", "-Xinline-classes"]
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        useIR = true
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies", "-Xinline-classes"]
+    }
+}
