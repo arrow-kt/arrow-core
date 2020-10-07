@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlinx:atomicfu-gradle-plugin:$ATOMICFU_VERSION"
-        classpath "io.arrow-kt:gradle-plugin:1.4.10-SNAPSHOT" // TODO: $ARROW_META_VERSION
+        classpath "io.arrow-kt:gradle-plugin:$ARROW_META_VERSION"
     }
 }
 

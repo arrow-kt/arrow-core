@@ -19,8 +19,9 @@ apply from: "$SUB_PROJECT"
 apply from: "$DOC_CREATION"
 
 dependencies {
-    testImplementation "org.junit.jupiter:junit-jupiter:$JUNIT_VERSION"
-    testImplementation "org.assertj:assertj-core:$ASSERTJ_VERSION"
+    testImplementation "io.arrow-kt:meta-test:$ARROW_META_VERSION"
+    testImplementation "org.junit.jupiter:junit-jupiter:$CUSTOM_JUNIT_VERSION"
+    testRuntimeOnly project(":arrow-prelude")
 }
 
 compileKotlin {
@@ -35,4 +36,8 @@ compileTestKotlin {
         useIR = true
         freeCompilerArgs += ["-Xallow-jvm-ir-dependencies", "-Xinline-classes"]
     }
+}
+
+test {
+    systemProperty "ARROW_META_VERSION", "$ARROW_META_VERSION"
 }
