@@ -12,6 +12,8 @@ dependencies {
     testImplementation "io.arrow-kt:meta-test:$ARROW_META_VERSION"
     testImplementation "org.junit.jupiter:junit-jupiter:$CUSTOM_JUNIT_VERSION"
     testRuntimeOnly "io.arrow-kt:compiler-plugin:$ARROW_META_VERSION"
+    testRuntimeOnly "org.jetbrains.kotlin:kotlin-script-util:$KOTLIN_VERSION"
+    testRuntimeOnly "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:$KOTLIN_VERSION"
     testRuntimeOnly project(":arrow-prelude")
 }
 
