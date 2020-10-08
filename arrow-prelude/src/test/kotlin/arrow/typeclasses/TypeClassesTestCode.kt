@@ -1,6 +1,6 @@
-package arrow
+package arrow.typeclasses
 
-object ProofsTestCode {
+object TypeClassesTestCode {
 
   val semigroupExtensionCode =
     """
