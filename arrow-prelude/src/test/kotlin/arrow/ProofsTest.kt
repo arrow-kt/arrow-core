@@ -20,12 +20,7 @@ class ProofsTest {
         addCompilerPlugins(arrowMetaCompilerPlugin) + CompilerTest.addDependencies(prelude)
       },
       code = {
-        """
-        |  import arrow.*
-        |  import arrowx.*       
-        |  
-        | val result = "one-".combine("two")
-        """.source
+        ProofsTestCode.semigroupExtensionCode.source
       },
       assert = {
         allOf("result".source.evalsTo("one-two"))
@@ -44,11 +39,9 @@ class ProofsTest {
         addCompilerPlugins(arrowMetaCompilerPlugin) + addDependencies(prelude) + addArguments("-Xallow-jvm-ir-dependencies")
       },
       code = {
-          // ProofsTestCode.userRepositoryCode.source
-          ProofsTestCode.userRepositoryCode2.source
+        ProofsTestCode.userRepositoryCode.source
       },
       assert = {
-        // "result".source.evalsTo("Curry")
         compiles
       }
     ))
