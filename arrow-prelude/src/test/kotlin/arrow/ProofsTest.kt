@@ -8,16 +8,13 @@ import org.junit.jupiter.api.Test
 
 class ProofsTest {
 
+  private val dependencies = CompilerTest.metaDependencies + CompilerTest.addArguments("-Xallow-jvm-ir-dependencies")
+
   @Test
   fun `extension function`() {
-    val arrowMetaVersion = System.getProperty("ARROW_META_VERSION")
-    val arrowMetaCompilerPlugin = CompilerPlugin("Arrow Meta", listOf(Dependency("compiler-plugin:$arrowMetaVersion")))
-    val prelude = Dependency("arrow-prelude")
-
-
     assertThis(CompilerTest(
       config = {
-        addCompilerPlugins(arrowMetaCompilerPlugin) + CompilerTest.addDependencies(prelude)
+        dependencies
       },
       code = {
         ProofsTestCode.semigroupExtensionCode.source
@@ -30,13 +27,9 @@ class ProofsTest {
 
   @Test
   fun `coercion function`() {
-    val arrowMetaVersion = System.getProperty("ARROW_META_VERSION")
-    val arrowMetaCompilerPlugin = CompilerPlugin("Arrow Meta", listOf(Dependency("compiler-plugin:$arrowMetaVersion")))
-    val prelude = Dependency("arrow-prelude")
-
     assertThis(CompilerTest(
       config = {
-        addCompilerPlugins(arrowMetaCompilerPlugin) + addDependencies(prelude) + addArguments("-Xallow-jvm-ir-dependencies")
+        dependencies
       },
       code = {
         ProofsTestCode.userRepositoryCode.source

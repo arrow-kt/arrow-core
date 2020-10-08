@@ -5,6 +5,9 @@ plugins {
 apply from: "$SUB_PROJECT"
 apply from: "$DOC_CREATION"
 
+// TODO move to arrow repository.
+version = ARROW_META_VERSION
+
 dependencies {
     testImplementation "io.arrow-kt:meta-test:$ARROW_META_VERSION"
     testImplementation "org.junit.jupiter:junit-jupiter:$CUSTOM_JUNIT_VERSION"
@@ -27,5 +30,10 @@ compileTestKotlin {
 }
 
 test {
-    systemProperty "ARROW_META_VERSION", "$ARROW_META_VERSION"
+    // This property is added so the metaDependencies can use the arrow meta version
+    systemProperty "CURRENT_VERSION", "$ARROW_META_VERSION"
+    // TODO: once we integrate prelude from meta into core, version needs to be changed to
+    // ARROW_META_VERSION and ARROW_VERSION like following..
+    // systemProperty "ARROW_META_VERSION", "$ARROW_META_VERSION"
+    // systemProperty "ARROW_VERSION", "$ARROW_VERSION"
 }
