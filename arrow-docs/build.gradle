@@ -27,3 +27,10 @@ dependencies {
     implementation project(":arrow-meta")
     kapt project(":arrow-meta")
 }
+
+compileKotlin {
+    kotlinOptions {
+        useIR = true
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies", "-Xinline-classes"]
+    }
+}
