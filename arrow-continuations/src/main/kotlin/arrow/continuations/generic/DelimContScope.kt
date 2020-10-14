@@ -9,6 +9,10 @@ import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+sealed class Shift<out T>
+object Empty : Shift<Nothing>()
+data class Result<T>(val result: T) : Shift<T>()
+
 /**
  * Implements delimited continuations with with no multi shot support (apart from shiftCPS which trivially supports it).
  *
@@ -25,12 +29,12 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
   /**
    * Variable used for polling the result after suspension happened.
    */
-  private val resultVar = atomic<R?>(null)
+  private val resultVar = atomic<Shift<R>>(Empty)
 
   /**
    * Variable for the next shift block to (partially) run, if it is empty that usually means we are done.
    */
-  private val nextShift = atomic<(suspend () -> R)?>(null)
+  private val nextShift = atomic<Shift<(suspend () -> R)>>(Empty)
 
   /**
    * "Callbacks"/partially evaluated shift blocks which now wait for the final result
@@ -66,7 +70,7 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
   override suspend fun <A> shift(func: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
     suspendCoroutine { continueMain ->
       val delCont = SingleShotCont(continueMain, shiftFnContinuations)
-      assert(nextShift.compareAndSet(null, suspend { this.func(delCont) }))
+      assert(nextShift.compareAndSet(Empty, Result(suspend { this.func(delCont) })))
     }
 
   /**
@@ -74,7 +78,7 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
    */
   override suspend fun <A, B> shiftCPS(func: suspend (DelimitedContinuation<A, B>) -> R, c: suspend DelimitedScope<B>.(A) -> B): Nothing =
     suspendCoroutine {
-      assert(nextShift.compareAndSet(null, suspend { func(CPSCont(c)) }))
+      assert(nextShift.compareAndSet(Empty, Result(suspend { func(CPSCont(c)) })))
     }
 
   /**
@@ -85,34 +89,46 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
 
   fun invoke(): R {
     f.startCoroutineUninterceptedOrReturn(this, Continuation(EmptyCoroutineContext) { result ->
-      resultVar.value = result.getOrThrow()
-    }).let {
-      if (it == COROUTINE_SUSPENDED) {
+      resultVar.value = Result(result.getOrThrow())
+    }).let { resultVar ->
+      if (resultVar == COROUTINE_SUSPENDED) {
         // we have a call to shift so we must start execution the blocks there
-        resultVar.loop { mRes ->
-          if (mRes == null) {
-            val nextShiftFn = nextShift.getAndSet(null)
-              ?: throw IllegalStateException("No further work to do but also no result!")
-            nextShiftFn.startCoroutineUninterceptedOrReturn(Continuation(EmptyCoroutineContext) { result ->
-              resultVar.value = result.getOrThrow()
-            }).let {
-              // If we suspended here we can just continue to loop because we should now have a new function to run
-              // If we did not suspend we short-circuited and are thus done with looping
-              if (it != COROUTINE_SUSPENDED) resultVar.value = it as R
-            }
+        this.resultVar.loop { mRes ->
+          if (mRes is Empty) {
+
+            // If we suspended here we can just continue to loop because we should now have a new function to run
+            // If we did not suspend we short-circuited and are thus done with looping
             // Break out of the infinite loop if we have a result
+            when (val nextShiftFn = nextShift.getAndSet(Empty)) {
+              Empty -> throw IllegalStateException("No further work to do but also no result!")
+              is Result -> nextShiftFn.result.startCoroutineUninterceptedOrReturn(Continuation(EmptyCoroutineContext) { result ->
+                this.resultVar.value = Result(result.getOrThrow())
+              }).let {
+                // If we suspended here we can just continue to loop because we should now have a new function to run
+                // If we did not suspend we short-circuited and are thus done with looping
+                if (it != COROUTINE_SUSPENDED) this.resultVar.value = Result(it as R)
+              }
+            }
           } else return@let
         }
       }
       // we can return directly if we never suspended/called shift
-      else return@invoke it as R
+      else return@invoke resultVar as R
     }
-    assert(resultVar.value != null)
     // We need to finish the partially evaluated shift blocks by passing them our result.
     // This will update the result via the continuations that now finish up
-    for (c in shiftFnContinuations.asReversed()) c.resume(resultVar.value!!)
+    for (c in shiftFnContinuations.asReversed()) {
+      when (val it = resultVar.value) {
+        Empty -> throw IllegalStateException("No further work to do but also no result!")
+        is Result -> c.resume(it.result)
+      }
+    }
+
     // Return the final result
-    return resultVar.value!!
+    return when (val it = resultVar.value) {
+      Empty -> throw IllegalStateException("No further work to do but also no result!")
+      is Result -> it.result
+    }
   }
 
   companion object {
