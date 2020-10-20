@@ -61,20 +61,20 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
   }
 
   /**
-   * Captures the continuation and set [func] with the continuation to be executed next by the runloop.
+   * Captures the continuation and set [f] with the continuation to be executed next by the runloop.
    */
-  override suspend fun <A> shift(func: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
+  override suspend fun <A> shift(f: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
     suspendCoroutine { continueMain ->
       val delCont = SingleShotCont(continueMain, shiftFnContinuations)
-      assert(nextShift.compareAndSet(null, suspend { this.func(delCont) }))
+      assert(nextShift.compareAndSet(null, suspend { this.f(delCont) }))
     }
 
   /**
    * Same as [shift] except we never resume execution because we only continue in [c].
    */
-  override suspend fun <A, B> shiftCPS(func: suspend (DelimitedContinuation<A, B>) -> R, c: suspend DelimitedScope<B>.(A) -> B): Nothing =
+  override suspend fun <A, B> shiftCPS(f: suspend (DelimitedContinuation<A, B>) -> R, c: suspend DelimitedScope<B>.(A) -> B): Nothing =
     suspendCoroutine {
-      assert(nextShift.compareAndSet(null, suspend { func(CPSCont(c)) }))
+      assert(nextShift.compareAndSet(null, suspend { f(CPSCont(c)) }))
     }
 
   /**
@@ -83,6 +83,7 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
   override suspend fun <A> reset(f: suspend DelimitedScope<A>.() -> A): A =
     DelimContScope(f).invoke()
 
+  @Suppress("UNCHECKED_CAST")
   fun invoke(): R {
     f.startCoroutineUninterceptedOrReturn(this, Continuation(EmptyCoroutineContext) { result ->
       resultVar.value = result.getOrThrow()
@@ -95,10 +96,10 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
               ?: throw IllegalStateException("No further work to do but also no result!")
             nextShiftFn.startCoroutineUninterceptedOrReturn(Continuation(EmptyCoroutineContext) { result ->
               resultVar.value = result.getOrThrow()
-            }).let {
+            }).let { nextRes ->
               // If we suspended here we can just continue to loop because we should now have a new function to run
               // If we did not suspend we short-circuited and are thus done with looping
-              if (it != COROUTINE_SUSPENDED) resultVar.value = it as R
+              if (nextRes != COROUTINE_SUSPENDED) resultVar.value = nextRes as R
             }
             // Break out of the infinite loop if we have a result
           } else return@let
