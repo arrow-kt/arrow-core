@@ -2,11 +2,9 @@ package arrow.core.computations.suspended
 
 import arrow.continuations.generic.DelimitedScope
 
-data class NullableBindSyntax<R>(
-  private val scope: DelimitedScope<R?>,
-) : BindSyntax {
+class NullableBindSyntax<R>(
+  scope: DelimitedScope<R?>
+) : BindSyntax, DelimitedScope<R?> by scope {
   override suspend fun <A> A?.invoke(): A =
-    scope.shift { cont ->
-      this@invoke?.let { cont(it) }
-    }
+    this ?: shift { null }
 }
