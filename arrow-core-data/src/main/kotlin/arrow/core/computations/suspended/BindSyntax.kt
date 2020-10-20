@@ -11,6 +11,7 @@ package arrow.core.computations.suspended
  * }
  * ```
  */
+//TODO: this will become interface fun when they support suspend in the next release
 interface BindSyntax {
   suspend operator fun <A> A?.invoke(): A
 }
