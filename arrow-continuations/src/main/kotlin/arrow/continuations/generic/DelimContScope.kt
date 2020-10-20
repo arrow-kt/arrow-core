@@ -30,7 +30,7 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
   /**
    * Variable for the next shift block to (partially) run, if it is empty that usually means we are done.
    */
-  private val nextShift = atomic<Any?>(EMPTY_VALUE)
+  private val nextShift = atomic<(suspend () -> R)?>(null)
 
   /**
    * "Callbacks"/partially evaluated shift blocks which now wait for the final result
@@ -66,7 +66,7 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
   override suspend fun <A> shift(func: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
     suspendCoroutine { continueMain ->
       val delCont = SingleShotCont(continueMain, shiftFnContinuations)
-      assert(nextShift.compareAndSet(EMPTY_VALUE, suspend { this.func(delCont) }))
+      assert(nextShift.compareAndSet(null, suspend { this.func(delCont) }))
     }
 
   /**
@@ -74,7 +74,7 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
    */
   override suspend fun <A, B> shiftCPS(func: suspend (DelimitedContinuation<A, B>) -> R, c: suspend DelimitedScope<B>.(A) -> B): Nothing =
     suspendCoroutine {
-      assert(nextShift.compareAndSet(EMPTY_VALUE, suspend { func(CPSCont(c)) }))
+      assert(nextShift.compareAndSet(null, suspend { func(CPSCont(c)) }))
     }
 
   /**
@@ -91,16 +91,14 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
         // we have a call to shift so we must start execution the blocks there
         resultVar.loop { mRes ->
           if (mRes === EMPTY_VALUE) {
-            val nextShiftFn = nextShift.getAndSet(EMPTY_VALUE)
-            if (nextShiftFn === EMPTY_VALUE)
-              throw IllegalStateException("No further work to do but also no result!")
-
-            (nextShiftFn as (suspend () -> R)).startCoroutineUninterceptedOrReturn(Continuation(EmptyCoroutineContext) { result ->
+            val nextShiftFn = nextShift.getAndSet(null)
+              ?: throw IllegalStateException("No further work to do but also no result!")
+            nextShiftFn.startCoroutineUninterceptedOrReturn(Continuation(EmptyCoroutineContext) { result ->
               resultVar.value = result.getOrThrow()
             }).let {
               // If we suspended here we can just continue to loop because we should now have a new function to run
               // If we did not suspend we short-circuited and are thus done with looping
-              if (it != COROUTINE_SUSPENDED) resultVar.value = it
+              if (it != COROUTINE_SUSPENDED) resultVar.value = it as R
             }
             // Break out of the infinite loop if we have a result
           } else return@let
