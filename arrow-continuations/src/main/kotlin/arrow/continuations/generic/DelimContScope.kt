@@ -43,7 +43,7 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
    */
   data class SingleShotCont<A, R>(
     private val continuation: Continuation<A>,
-    private val shiftFnContinuations: MutableList<Continuation<R>>,
+    private val shiftFnContinuations: MutableList<Continuation<R>>
   ) : DelimitedContinuation<A, R> {
     override suspend fun invoke(a: A): R = suspendCoroutine { resumeShift ->
       shiftFnContinuations.add(resumeShift)
@@ -55,7 +55,7 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
    * Wrapper that handles invoking manually cps transformed continuations
    */
   data class CPSCont<A, R>(
-    private val runFunc: suspend DelimitedScope<R>.(A) -> R,
+    private val runFunc: suspend DelimitedScope<R>.(A) -> R
   ) : DelimitedContinuation<A, R> {
     override suspend fun invoke(a: A): R = DelimContScope<R> { runFunc(a) }.invoke()
   }
