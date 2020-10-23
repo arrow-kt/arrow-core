@@ -2,6 +2,7 @@ package arrow.core
 
 import arrow.Kind
 import arrow.typeclasses.suspended.BindSyntax
+import arrow.typeclasses.suspended.BindSyntaxNew
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -10,6 +11,9 @@ import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
 
 @RestrictsSuspension
 interface EagerBind<F> : BindSyntax<F>
+
+@RestrictsSuspension
+interface EagerBindNew<F> : BindSyntaxNew<F>
 
 class ShortCircuit(val value: Any?) : RuntimeException(null, null) {
   override fun fillInStackTrace(): Throwable = this

@@ -30,6 +30,7 @@ open class MonadContinuation<F, A>(
 
   open fun returnedMonad(): Kind<F, A> = returnedMonad
 
+  // TODO: Deprecate
   override suspend fun <B> Kind<F, B>.bind(): B =
     suspendCoroutineUninterceptedOrReturn { c ->
       val labelHere = c.stateStack // save the whole coroutine stack labels
@@ -40,4 +41,10 @@ open class MonadContinuation<F, A>(
       }
       COROUTINE_SUSPENDED
     }
+
+//  suspend fun <B> Kind<F, B>.invoke(): B = shift { cb ->
+//    this@invoke.flatMap { x: B ->
+//      cb(x)
+//    }
+//  }
 }
