@@ -28,6 +28,7 @@ interface BindSyntax<F> {
     bind()
 }
 
+// TODO: make it fun interface when suspend fun is allowed inside
 interface Invoke<F> {
   suspend operator fun <A> Kind<F, A>.invoke(): A
 }
