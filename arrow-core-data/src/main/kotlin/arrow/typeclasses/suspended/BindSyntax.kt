@@ -13,6 +13,7 @@ import arrow.Kind
  * }
  * ```
  */
+// TODO: Deprecate
 interface BindSyntax<F> {
 
   // TODO: Deprecate
@@ -27,6 +28,6 @@ interface BindSyntax<F> {
     bind()
 }
 
-interface BindSyntaxNew<F> {
+interface Invoke<F> {
   suspend operator fun <A> Kind<F, A>.invoke(): A
 }
