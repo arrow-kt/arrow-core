@@ -10,6 +10,7 @@ import arrow.core.fix
 import arrow.typeclasses.suspended.Invoke
 
 object eitherContinuation {
+
   fun <E, A> eager(c: suspend EagerInvoke<EitherPartialOf<E>>.() -> A): Either<E, A> =
     DelimContScope.reset {
       Right(
