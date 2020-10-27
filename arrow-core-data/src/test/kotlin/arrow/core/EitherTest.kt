@@ -2,7 +2,6 @@ package arrow.core
 
 import arrow.Kind
 import arrow.core.computations.either
-import arrow.core.computations.eitherContinuation
 import arrow.core.extensions.combine
 import arrow.core.extensions.either.applicative.applicative
 import arrow.core.extensions.either.bicrosswalk.bicrosswalk
@@ -84,8 +83,7 @@ class EitherTest : UnitSpec() {
       HashLaws.laws(Either.hash(String.hash(), Int.hash()), GEN, Either.eq(String.eq(), Int.eq())),
       OrderLaws.laws(Either.order(String.order(), Int.order()), GEN),
       BicrosswalkLaws.laws(Either.bicrosswalk(), Either.genK2(), Either.eqK2()),
-//      FxLaws.laws(Gen.int().map(::Right), GEN.map { it }, Either.eqK(String.eq()).liftEq(Int.eq()), either::eager, either::invoke),
-      FxLaws.lawsContinuation(Gen.int().map(::Right), GEN.map { it }, Either.eqK(String.eq()).liftEq(Int.eq()), eitherContinuation::eager, eitherContinuation::invoke)
+      FxLaws.laws(Gen.int().map(::Right), GEN.map { it }, Either.eqK(String.eq()).liftEq(Int.eq()), either::eager, either::invoke)
     )
 
     "fromNullable should lift value as a Right if it is not null" {
