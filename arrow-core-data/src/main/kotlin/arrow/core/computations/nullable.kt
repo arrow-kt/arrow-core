@@ -10,10 +10,9 @@ object nullable {
     DelimContScope.reset { NullableBindSyntax(this).func() }
 
   private class NullableBindSyntax<R>(
-    scope: DelimitedScope<R?>,
+    scope: DelimitedScope<R?>
   ) : BindSyntax, DelimitedScope<R?> by scope {
     override suspend fun <A> A?.invoke(): A =
       this ?: shift { null }
   }
-
 }
