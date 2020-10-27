@@ -19,7 +19,8 @@ interface BindSyntax<F> {
   // TODO: Deprecate
   suspend fun <A> Kind<F, A>.bind(): A
 
-  @Deprecated("This operator can have problems when you do not capture the value, please use ! or bind() instead", ReplaceWith("bind()"))
+  // TODO remove it completely
+  @Deprecated("This operator can have problems when you do not capture the value, please use ! or bind() instead", ReplaceWith("invoke()"))
   suspend operator fun <A> Kind<F, A>.component1(): A =
     bind()
 
