@@ -134,7 +134,6 @@ object FxLaws {
       }
   }
 
-
   private suspend fun <F, A> nonSuspendedCanBindImmediateValuesInvoke(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: EagerFxBlockInvoke<F, A>) {
     forAll(G) { f: Kind<F, A> ->
       fxBlock {
