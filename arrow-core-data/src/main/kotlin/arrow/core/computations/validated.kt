@@ -2,11 +2,11 @@ package arrow.core.computations
 
 import arrow.Kind
 import arrow.continuations.generic.DelimContScope
+import arrow.core.EagerBind
 import arrow.core.Valid
 import arrow.core.Validated
 import arrow.core.ValidatedPartialOf
 import arrow.core.fix
-import arrow.typeclasses.EagerBind
 import arrow.typeclasses.suspended.BindSyntax
 
 object validated {

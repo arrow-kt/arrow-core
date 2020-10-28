@@ -7,9 +7,10 @@ import arrow.Kind
  *
  * ```
  * fx {
- *   val one = just(1).bind() // using bind
- *   val (two) = just(one + 1) // using destructuring
- *   val three = !just(two + 1) // yelling at it
+ *   val one = just(1).bind() // using bind (deprecated)
+ *   val (two) = just(one + 1) // using destructuring (deprecated)
+ *   val three = !just(two + 1) // yelling at it (deprecated)
+ *   val four = just(three + 1)() // using invoke
  * }
  * ```
  */
@@ -24,7 +25,7 @@ interface BindSyntax<F> : Invoke<F> {
     invoke()
 
   // TODO remove it completely
-  @Deprecated("This operator can have problems when you do not capture the value, please use ! or bind() instead", ReplaceWith("invoke()"))
+  @Deprecated("This operator can have problems when you do not capture the value, please use () or invoke() instead", ReplaceWith("invoke()"))
   suspend operator fun <A> Kind<F, A>.component1(): A =
     invoke()
 }
