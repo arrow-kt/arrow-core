@@ -2,10 +2,10 @@ package arrow.core.computations
 
 import arrow.Kind
 import arrow.continuations.generic.DelimContScope
-import arrow.core.EagerBind
 import arrow.core.Either
 import arrow.core.EitherPartialOf
 import arrow.core.fix
+import arrow.typeclasses.EagerBind
 import arrow.typeclasses.suspended.BindSyntax
 
 object either {

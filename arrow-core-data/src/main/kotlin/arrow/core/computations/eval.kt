@@ -2,10 +2,10 @@ package arrow.core.computations
 
 import arrow.Kind
 import arrow.continuations.generic.DelimContScope
-import arrow.core.EagerBind
 import arrow.core.Eval
 import arrow.core.ForEval
 import arrow.core.fix
+import arrow.typeclasses.EagerBind
 import arrow.typeclasses.suspended.BindSyntax
 
 object eval {

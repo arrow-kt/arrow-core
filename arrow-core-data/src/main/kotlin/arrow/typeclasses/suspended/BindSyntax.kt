@@ -15,11 +15,11 @@ import arrow.Kind
  */
 interface BindSyntax<F> : Invoke<F> {
 
-  // TODO: Deprecate
+  @Deprecated("This operator can have problems when you do not capture the value, please use () or invoke() instead", ReplaceWith("invoke()"))
   suspend fun <A> Kind<F, A>.bind(): A =
     invoke()
 
-  // TODO: Deprecate
+  @Deprecated("This operator can have problems when you do not capture the value, please use () or invoke() instead", ReplaceWith("invoke()"))
   suspend operator fun <A> Kind<F, A>.not(): A =
     invoke()
 

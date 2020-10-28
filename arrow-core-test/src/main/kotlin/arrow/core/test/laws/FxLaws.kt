@@ -1,7 +1,7 @@
 package arrow.core.test.laws
 
 import arrow.Kind
-import arrow.core.EagerBind
+import arrow.typeclasses.EagerBind
 import arrow.core.test.generators.throwable
 import arrow.typeclasses.Eq
 import arrow.typeclasses.suspended.BindSyntax

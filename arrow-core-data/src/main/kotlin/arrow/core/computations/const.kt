@@ -4,9 +4,9 @@ import arrow.Kind
 import arrow.continuations.generic.DelimContScope
 import arrow.core.Const
 import arrow.core.ConstPartialOf
-import arrow.core.EagerBind
 import arrow.core.const
 import arrow.core.fix
+import arrow.typeclasses.EagerBind
 import arrow.typeclasses.suspended.BindSyntax
 
 object const {
