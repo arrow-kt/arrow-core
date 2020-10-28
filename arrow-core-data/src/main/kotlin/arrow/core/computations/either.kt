@@ -19,9 +19,6 @@ object either {
               is Either.Right -> v.b
               is Either.Left -> shift { v }
             }
-
-          override suspend fun <A> Kind<EitherPartialOf<E>, A>.bind(): A =
-            invoke()
         })
       )
     }
