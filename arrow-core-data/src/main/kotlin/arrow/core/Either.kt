@@ -904,7 +904,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
    * ```
    */
   inline fun exists(predicate: (B) -> Boolean): Boolean =
-    fold({ false }, { predicate(it) })
+    fold({ false }, predicate)
 
   /**
    * Returns a [Some] containing the [Right] value
@@ -1209,16 +1209,16 @@ inline fun <A, B> EitherOf<A, B?>.leftIfNull(default: () -> A): Either<A, B> =
  *
  * Example:
  * ```
- * Right("something").contains { "something" } // Result: true
- * Right("something").contains { "anything" }  // Result: false
- * Left("something").contains { "something" }  // Result: false
+ * Right("something").contains("something") // Result: true
+ * Right("something").contains("anything")  // Result: false
+ * Left("something").contains("something")  // Result: false
  *  ```
  *
  * @param elem the element to test.
  * @return `true` if the option has an element that is equal (as determined by `==`) to `elem`, `false` otherwise.
  */
 fun <A, B> EitherOf<A, B>.contains(elem: B): Boolean =
-  fix().fold({ false }, { it == elem })
+  fix().exists { it == elem }
 
 fun <A, B, C> EitherOf<A, B>.ap(ff: EitherOf<A, (B) -> C>): Either<A, C> =
   flatMap { a -> ff.fix().map { f -> f(a) } }
