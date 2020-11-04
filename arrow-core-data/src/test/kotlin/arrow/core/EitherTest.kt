@@ -229,6 +229,12 @@ class EitherTest : UnitSpec() {
       }
     }
 
+    "handleErrorWith should be able to change error type" {
+      forAll { a: Int, b: String ->
+        Left(a).handleErrorWith { Left(b) } == Left(b)
+      }
+    }
+
     "handleErrorWith should handle left instance otherwise return Right" {
       forAll { a: Int, b: Int ->
         Left(a).handleErrorWith { Right(b) } == Right(b) &&
