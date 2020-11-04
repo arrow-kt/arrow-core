@@ -1261,7 +1261,7 @@ inline fun <A> Any?.rightIfNull(default: () -> A): Either<A, Nothing?> = when (t
  * Applies the given function `f` if this is a [Left], otherwise returns this if this is a [Right].
  * This is like `flatMap` for the exception.
  */
-inline fun <A, B> EitherOf<A, B>.handleErrorWith(f: (A) -> EitherOf<A, B>): Either<A, B> =
+inline fun <A, B, C> EitherOf<A, B>.handleErrorWith(f: (A) -> EitherOf<C, B>): Either<C, B> =
   fix().let {
     when (it) {
       is Left -> f(it.a).fix()
