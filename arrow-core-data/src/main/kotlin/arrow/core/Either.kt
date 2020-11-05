@@ -996,8 +996,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
       return when (ev) {
         is Left -> Left(ev.a)
         is Right -> {
-          val b: Either<A, B> = ev.b
-          when (b) {
+          when (val b = ev.b) {
             is Left -> tailRecM(b.a, f)
             is Right -> Right(b.b)
           }
@@ -1262,9 +1261,7 @@ inline fun <A> Any?.rightIfNull(default: () -> A): Either<A, Nothing?> = when (t
  * This is like `flatMap` for the exception.
  */
 inline fun <A, B, C> EitherOf<A, B>.handleErrorWith(f: (A) -> EitherOf<C, B>): Either<C, B> =
-  fix().let {
-    when (it) {
-      is Left -> f(it.a).fix()
-      is Right -> it
-    }
+  when (val either = fix()) {
+    is Left -> f(either.a).fix()
+    is Right -> either
   }
