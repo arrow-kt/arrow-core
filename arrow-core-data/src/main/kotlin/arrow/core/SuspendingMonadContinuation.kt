@@ -15,6 +15,7 @@ internal const val UNDECIDED = 0
 internal const val SUSPENDED = 1
 
 @Suppress("UNCHECKED_CAST")
+@Deprecated("SuspendMonadContinuation is replaced by delimited continuations, please use DelimContScope instead")
 internal abstract class SuspendMonadContinuation<F, A>(
   private val parent: Continuation<Kind<F, A>>
 ) : Continuation<Kind<F, A>>, BindSyntax<F> {
@@ -54,10 +55,13 @@ internal abstract class SuspendMonadContinuation<F, A>(
           }
         }
         else -> { // If not `UNDECIDED` then we need to pass result to `parent`
-          val res: Result<Kind<F, A>> = result.fold({ Result.success(it) }, { t ->
-            if (t is ShortCircuit) Result.success(t.recover())
-            else Result.failure(t)
-          })
+          val res: Result<Kind<F, A>> = result.fold(
+            { Result.success(it) },
+            { t ->
+              if (t is ShortCircuit) Result.success(t.recover())
+              else Result.failure(t)
+            }
+          )
           parent.resumeWith(res)
           return
         }
