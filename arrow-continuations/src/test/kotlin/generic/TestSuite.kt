@@ -13,7 +13,7 @@ import arrow.core.toT
 import io.kotlintest.shouldBe
 
 abstract class ContTestSuite : UnitSpec() {
-  abstract fun <A> runScope(func: (suspend DelimitedScope<A>.() -> A)): A
+  abstract suspend fun <A> runScope(func: (suspend DelimitedScope<A>.() -> A)): A
 
   abstract fun capabilities(): Set<ScopeCapabilities>
 
@@ -194,21 +194,21 @@ sealed class ScopeCapabilities {
 }
 
 class SingleShotContTestSuite : ContTestSuite() {
-  override fun <A> runScope(func: (suspend DelimitedScope<A>.() -> A)): A =
+  override suspend fun <A> runScope(func: (suspend DelimitedScope<A>.() -> A)): A =
     DelimContScope.reset(func)
 
   override fun capabilities(): Set<ScopeCapabilities> = emptySet()
 }
 
 class MultiShotContTestSuite : ContTestSuite() {
-  override fun <A> runScope(func: (suspend DelimitedScope<A>.() -> A)): A =
+  override suspend fun <A> runScope(func: (suspend DelimitedScope<A>.() -> A)): A =
     MultiShotDelimContScope.reset(func)
 
   override fun capabilities(): Set<ScopeCapabilities> = setOf(ScopeCapabilities.MultiShot)
 }
 
 class NestedContTestSuite : ContTestSuite() {
-  override fun <A> runScope(func: suspend DelimitedScope<A>.() -> A): A =
+  override suspend fun <A> runScope(func: suspend DelimitedScope<A>.() -> A): A =
     NestedDelimContScope.reset(func)
 
   override fun capabilities(): Set<ScopeCapabilities> = setOf(ScopeCapabilities.NestedScopes)

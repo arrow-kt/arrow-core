@@ -10,18 +10,18 @@ import arrow.typeclasses.suspended.BindSyntax
 
 object either {
 
-  fun <E, A> eager(c: suspend EagerBind<EitherPartialOf<E>>.() -> A): Either<E, A> =
-    DelimContScope.reset {
-      Either.Right(
-        c(object : EagerBind<EitherPartialOf<E>> {
-          override suspend fun <A> Kind<EitherPartialOf<E>, A>.invoke(): A =
-            when (val v = fix()) {
-              is Either.Right -> v.b
-              is Either.Left -> shift { v }
-            }
-        })
-      )
-    }
+  fun <E, A> eager(c: suspend EagerBind<EitherPartialOf<E>>.() -> A): Either<E, A> = TODO()
+//    DelimContScope.reset {
+//      Either.Right(
+//        c(object : EagerBind<EitherPartialOf<E>> {
+//          override suspend fun <A> Kind<EitherPartialOf<E>, A>.invoke(): A =
+//            when (val v = fix()) {
+//              is Either.Right -> v.b
+//              is Either.Left -> shift { v }
+//            }
+//        })
+//      )
+//    }
 
   suspend operator fun <E, A> invoke(c: suspend BindSyntax<EitherPartialOf<E>>.() -> A): Either<E, A> =
     DelimContScope.reset {
