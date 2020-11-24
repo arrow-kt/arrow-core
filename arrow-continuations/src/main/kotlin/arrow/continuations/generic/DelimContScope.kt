@@ -127,7 +127,7 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
 }
 
 // Uncancellable, let's assume for now computation blocks are uncancellable
-private class ResettablePromise<A> {
+internal class ResettablePromise<A> {
 
   /**
    * Can have following states:
