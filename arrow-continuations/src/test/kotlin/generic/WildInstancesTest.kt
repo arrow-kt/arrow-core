@@ -2,6 +2,9 @@ package generic
 
 import arrow.continuations.Effect
 import arrow.continuations.Reset
+import arrow.fx.coroutines.stream.Stream
+import arrow.fx.coroutines.stream.flatten
+import arrow.fx.coroutines.stream.toList
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 import kotlinx.coroutines.FlowPreview
@@ -10,6 +13,16 @@ import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 
+fun <O, B> Stream<O>.flatEffectMap(f: suspend (O) -> Stream<B>): Stream<B> =
+  flatMap { o -> Stream.effect { f(o) }.flatten() }
+
+fun interface StreamEffect<A> : Effect<Stream<A>> {
+  suspend operator fun <B> Stream<B>.invoke(): B =
+    control().shift { cb -> flatEffectMap { cb(it) } }
+}
+
+suspend fun <A> stream(block: suspend StreamEffect<*>.() -> A): Stream<A> =
+  Reset.single { Stream.just(block(StreamEffect { this })) }
 
 @FlowPreview
 fun interface FlowEffect<A> : Effect<Flow<A>> {
@@ -52,6 +65,14 @@ class WildInstancesTest : StringSpec({
     flowing {
       val a = flowOf(1, 2, 3)()
       val b = flowOf("a", "b", "c")()
+      "$a$b"
+    }.toList() shouldBe listOf("1a", "1b", "1c", "2a", "2b", "2c", "3a", "3b", "3c")
+  }
+
+  "Stream multi-shot" {
+    stream {
+      val a = Stream(1, 2, 3)()
+      val b = Stream("a", "b", "c")()
       "$a$b"
     }.toList() shouldBe listOf("1a", "1b", "1c", "2a", "2b", "2c", "3a", "3b", "3c")
   }
