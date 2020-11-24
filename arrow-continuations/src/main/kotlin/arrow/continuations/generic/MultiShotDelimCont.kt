@@ -1,9 +1,7 @@
 package arrow.continuations.generic
 
 import kotlinx.atomicfu.atomic
-import kotlinx.atomicfu.loop
 import kotlin.coroutines.Continuation
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
 import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
