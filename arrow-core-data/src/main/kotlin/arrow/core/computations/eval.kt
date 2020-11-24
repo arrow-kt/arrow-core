@@ -10,15 +10,16 @@ import arrow.typeclasses.suspended.BindSyntax
 
 object eval {
 
-  fun <A> eager(c: suspend EagerBind<ForEval>.() -> A): Eval<A> = TODO()
-//    DelimContScope.reset {
-//      Eval.just(
-//        c(object : EagerBind<ForEval> {
-//          override suspend fun <A> Kind<ForEval, A>.invoke(): A =
-//            fix().value()
-//        })
-//      )
-//    }
+  fun <A> eager(c: suspend EagerBind<ForEval>.() -> A): Eval<A> = runRestrictedSuspension {
+    DelimContScope.reset {
+      Eval.just(
+        c(object : EagerBind<ForEval> {
+          override suspend fun <A> Kind<ForEval, A>.invoke(): A =
+            fix().value()
+        })
+      )
+    }
+  }
 
   suspend operator fun <A> invoke(c: suspend BindSyntax<ForEval>.() -> A): Eval<A> =
     DelimContScope.reset {
