@@ -10,6 +10,8 @@ import arrow.core.Tuple2
 import arrow.core.Tuple3
 import arrow.core.test.UnitSpec
 import arrow.core.toT
+import arrow.fx.coroutines.milliseconds
+import arrow.fx.coroutines.sleep
 import io.kotlintest.shouldBe
 
 abstract class ContTestSuite : UnitSpec() {
@@ -44,6 +46,33 @@ abstract class ContTestSuite : UnitSpec() {
         }
       } shouldBe 1
     }
+    "Supports suspension before shift" {
+      runScope<Int> {
+        reset {
+          sleep(10.milliseconds)
+          shift { it(1) }
+        }
+      } shouldBe 1
+    }
+    "Supports suspension in shift" {
+      runScope<Int> {
+        reset {
+          shift {
+            sleep(10.milliseconds)
+            it(1)
+          }
+        }
+      } shouldBe 1
+    }
+    "Supports suspension before reset" {
+      runScope<Int> {
+        sleep(10.milliseconds)
+        reset {
+          shift { it(1) }
+        }
+      } shouldBe 1
+    }
+
     if (capabilities().contains(ScopeCapabilities.MultiShot)) {
       // This comes from http://homes.sice.indiana.edu/ccshan/recur/recur.pdf and shows how reset/shift should behave
       "multishot reset/shift" {
@@ -97,10 +126,12 @@ abstract class ContTestSuite : UnitSpec() {
           listOf(Tuple3(i, j, k))
         } shouldBe
           listOf(10, 20, 30, 40, 50)
-            .flatMap { i -> listOf(15, 25, 35, 45, 55)
-              .flatMap { j -> listOf(17, 27, 37, 47, 57)
-                .map { k -> Tuple3(i, j, k) }
-              }
+            .flatMap { i ->
+              listOf(15, 25, 35, 45, 55)
+                .flatMap { j ->
+                  listOf(17, 27, 37, 47, 57)
+                    .map { k -> Tuple3(i, j, k) }
+                }
             }
       }
       "multishot is stacksafe regardless of stack size" {
