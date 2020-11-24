@@ -23,13 +23,9 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
 
   /**
    * Variable for the next shift block to (partially) run.
-   */
-  private val promise: ResettablePromise<R> = ResettablePromise()
-
-  /**
    * Variable used for polling the result after suspension happened.
    */
-  private val resultVar = atomic<Any?>(EMPTY_VALUE)
+  private val promise: ResettablePromise<R> = ResettablePromise()
 
   /**
    * "Callbacks"/partially evaluated shift blocks which now wait for the final result
@@ -96,18 +92,18 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
         val nextShiftOrResult = promise.await()
         when (val shiftOrNull = nextShiftOrResult as? (suspend () -> R)) {
           null -> { // `null` means reset returned with a suspended result
-            resultVar.value = nextShiftOrResult as R
+            promise.setResult(nextShiftOrResult as R)
             break // Break out of the infinite loop if we have a result
           }
           else -> {
             val r = shiftOrNull.startCoroutineUninterceptedOrReturn(Continuation(coroutineContext) { result ->
               // Store intermediate result from shift
-              resultVar.value = result.getOrThrow()
+              promise.setResult(result.getOrThrow())
             })
             // If we suspended here we can just continue to loop because we should now have a new function to run
             // If we did not suspend we short-circuited and are thus done with looping
             if (r != COROUTINE_SUSPENDED) {
-              resultVar.value = r as R
+              promise.setResult(r as R)
               break // Break out of the infinite loop if we have a result
             }
           }
@@ -115,12 +111,11 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
       }
     } else return result as R
 
-    assert(resultVar.value !== EMPTY_VALUE)
     // We need to finish the partially evaluated shift blocks by passing them our result.
     // This will update the result via the continuations that now finish up
-    for (c in shiftFnContinuations.asReversed()) c.resume(resultVar.value as R)
+    for (c in shiftFnContinuations.asReversed()) c.resume(promise.await() as R)
     // Return the final result
-    return resultVar.value as R
+    return promise.await() as R
   }
 
   companion object {
