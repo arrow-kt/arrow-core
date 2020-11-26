@@ -74,7 +74,7 @@ This feature is known with multiple names: async/await, coroutines, do notation,
 In Kotlin, coroutines (introduced in version 1.1 of the language) make the compiler capable of rewriting seemingly synchronous code into asynchronous sequences.
 Arrow uses this capability of the compiler to bring you coroutines-like notation to all instances of the [`Monad`]({{ '/arrow/typeclasses/monad' | relative_url }}) typeclass.
 
-This means that comprehensions are available for `Option`, `Try`, `List`, `Reader`, `Observable`, `Flux`, or `IO` all the same.
+This means that comprehensions are available for `Option`, `List`, `Reader`, `Observable`, `Flux`, or `IO` all the same.
 In the following examples, we'll use `IO`, as it's a simple concurrency primitive with straightforward behavior.
 
 Every instance of [`Monad`]({{ '/arrow/typeclasses/monad' | relative_url }}) contains a method `binding` that receives a suspended function as a parameter.
@@ -117,7 +117,7 @@ IO.fx {
 
 ```kotlin:ank
 IO.fx {
-  val a = IO.invoke { 1 }.bind()
+  val a = IO.invoke { 1 }()
   a + 1
 }.fix().unsafeRunSync()
 ```
@@ -153,7 +153,7 @@ fun getNLines(path: FilePath, count: Int): IO<List<String>> =
     val (file) = getFile(path)
     val (lines) = file.readLines()
     if (lines.length < count) {
-      IO.raiseError(RuntimeException("File has fewer lines than expected")).bind()
+      IO.raiseError(RuntimeException("File has fewer lines than expected"))()
     } else {
       lines.take(count)
     }

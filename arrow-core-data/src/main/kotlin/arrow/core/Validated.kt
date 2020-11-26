@@ -5,9 +5,6 @@ import arrow.higherkind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
-import arrow.typeclasses.suspended.BindSyntax
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
 typealias ValidatedNel<E, A> = Validated<Nel<E>, A>
 typealias Valid<A> = Validated.Valid<A>
@@ -142,7 +139,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Option
  * import arrow.core.Some
  * import arrow.core.Validated
- * import arrow.core.validated
+ * import arrow.core.computations.validated
  * import arrow.core.valid
  * import arrow.core.invalid
  *
@@ -151,10 +148,10 @@ typealias Invalid<E> = Validated.Invalid<E>
  *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
- *     }.bind()
+ *     }()
  *     val readVal = Validated.fromOption(read.read(value)) {
  *       ConfigError.ParseConfig(key)
- *     }.bind()
+ *     }()
  *     readVal
  *   }
  * }
@@ -244,7 +241,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Option
  * import arrow.core.Some
  * import arrow.core.Validated
- * import arrow.core.validated
+ * import arrow.core.computations.validated
  * import arrow.core.valid
  * import arrow.core.invalid
  * import arrow.core.NonEmptyList
@@ -280,10 +277,10 @@ typealias Invalid<E> = Validated.Invalid<E>
  *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
- *     }.bind()
+ *     }()
  *     val readVal = Validated.fromOption(read.read(value)) {
  *       ConfigError.ParseConfig(key)
- *     }.bind()
+ *     }()
  *     readVal
  *   }.toValidatedNel()
  * }
@@ -311,7 +308,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Option
  * import arrow.core.Some
  * import arrow.core.Validated
- * import arrow.core.validated
+ * import arrow.core.computations.validated
  * import arrow.core.valid
  * import arrow.core.invalid
  * import arrow.core.NonEmptyList
@@ -347,10 +344,10 @@ typealias Invalid<E> = Validated.Invalid<E>
  *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
- *     }.bind()
+ *     }()
  *     val readVal = Validated.fromOption(read.read(value)) {
  *       ConfigError.ParseConfig(key)
- *     }.bind()
+ *     }()
  *     readVal
  *   }.toValidatedNel()
  * }
@@ -385,7 +382,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.right
  * import arrow.core.Some
  * import arrow.core.Validated
- * import arrow.core.validated
+ * import arrow.core.computations.validated
  * import arrow.core.valid
  * import arrow.core.invalid
  *
@@ -411,10 +408,10 @@ typealias Invalid<E> = Validated.Invalid<E>
  *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
- *     }.bind()
+ *     }()
  *     val readVal = Validated.fromOption(read.read(value)) {
  *       ConfigError.ParseConfig(key)
- *     }.bind()
+ *     }()
  *     readVal
  *   }
  * }
@@ -655,12 +652,6 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
 
     fun <E, A> validNel(a: A): ValidatedNel<E, A> = Valid(a)
 
-    @Deprecated(
-      "Try will be deleted soon as it promotes eager execution of effects, so it’s better if you work with Either’s suspend constructors or an effect handler like IO",
-      ReplaceWith("fromEither(t)")
-    )
-    fun <A> fromTry(t: Try<A>): Validated<Throwable, A> = t.fold({ Invalid(it) }, { Valid(it) })
-
     /**
      * Converts an `Either<E, A>` to a `Validated<E, A>`.
      */
@@ -670,7 +661,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
      * Converts an `Option<A>` to a `Validated<E, A>`, where the provided `ifNone` output value is returned as [Invalid]
      * when the specified `Option` is `None`.
      */
-    fun <E, A> fromOption(o: Option<A>, ifNone: () -> E): Validated<E, A> =
+    inline fun <E, A> fromOption(o: Option<A>, ifNone: () -> E): Validated<E, A> =
       o.fold(
         { Invalid(ifNone()) },
         { Valid(it) }
@@ -680,7 +671,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
      * Converts a nullable `A?` to a `Validated<E, A>`, where the provided `ifNull` output value is returned as [Invalid]
      * when the specified value is null.
      */
-    fun <E, A> fromNullable(value: A?, ifNull: () -> E): Validated<E, A> =
+    inline fun <E, A> fromNullable(value: A?, ifNull: () -> E): Validated<E, A> =
       value?.let(::Valid) ?: Invalid(ifNull())
 
     suspend fun <A> catch(f: suspend () -> A): Validated<Throwable, A> =
@@ -698,11 +689,14 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       }
   }
 
-  fun show(SE: Show<E>, SA: Show<A>): String = fold({
-    "Invalid(${SE.run { it.show() }})"
-  }, {
-    "Valid(${SA.run { it.show() }})"
-  })
+  fun show(SE: Show<E>, SA: Show<A>): String = fold(
+    {
+      "Invalid(${SE.run { it.show() }})"
+    },
+    {
+      "Valid(${SA.run { it.show() }})"
+    }
+  )
 
   data class Valid<out A>(val a: A) : Validated<Nothing, A>() {
     override fun toString(): String = show(Show.any(), Show.any())
@@ -773,11 +767,15 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
   inline fun <B> map(f: (A) -> B): Validated<E, B> =
     bimap(::identity, f)
 
+  @Deprecated("Use mapLeft for consistency", ReplaceWith("mapLeft(f)"))
+  inline fun <EE> leftMap(f: (E) -> EE): Validated<EE, A> =
+    mapLeft(f)
+
   /**
    * Apply a function to an Invalid value, returning a new Invalid value.
    * Or, if the original valid was Valid, return it.
    */
-  inline fun <EE> leftMap(f: (E) -> EE): Validated<EE, A> =
+  inline fun <EE> mapLeft(f: (E) -> EE): Validated<EE, A> =
     bimap(f, ::identity)
 
   /**
@@ -914,36 +912,3 @@ inline fun <A> A.validNel(): ValidatedNel<Nothing, A> =
 
 inline fun <E> E.invalidNel(): ValidatedNel<E, Nothing> =
   Validated.invalidNel(this)
-
-fun <E, A> validated(c: suspend EagerBind<ValidatedPartialOf<E>>.() -> A): Validated<E, A> {
-  val continuation: ValidatedContinuation<E, A> = ValidatedContinuation()
-  return continuation.startCoroutineUninterceptedAndReturn {
-    Valid(c())
-  } as Validated<E, A>
-}
-
-suspend fun <E, A> validated(c: suspend BindSyntax<ValidatedPartialOf<E>>.() -> A): Validated<E, A> =
-  suspendCoroutineUninterceptedOrReturn { cont ->
-    val continuation = ValidatedSContinuation(cont as Continuation<ValidatedOf<E, A>>)
-    continuation.startCoroutineUninterceptedOrReturn {
-      Valid(c())
-    }
-  }
-
-internal class ValidatedSContinuation<E, A>(
-  parent: Continuation<ValidatedOf<E, A>>
-) : SuspendMonadContinuation<ValidatedPartialOf<E>, A>(parent) {
-  override suspend fun <A> Kind<ValidatedPartialOf<E>, A>.bind(): A =
-    fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
-
-  override fun ShortCircuit.recover(): Kind<ValidatedPartialOf<E>, A> =
-    Invalid(value as E)
-}
-
-internal class ValidatedContinuation<E, A> : MonadContinuation<ValidatedPartialOf<E>, A>() {
-  override suspend fun <A> Kind<ValidatedPartialOf<E>, A>.bind(): A =
-    fix().fold({ e -> throw ShortCircuit(e) }, ::identity)
-
-  override fun ShortCircuit.recover(): Kind<ValidatedPartialOf<E>, A> =
-    Invalid(value as E)
-}

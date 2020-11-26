@@ -13,6 +13,7 @@ import arrow.core.extensions.id.functor.functor
 import arrow.core.extensions.id.hash.hash
 import arrow.core.extensions.id.monad.monad
 import arrow.core.extensions.id.monoid.monoid
+import arrow.core.extensions.id.order.order
 import arrow.core.extensions.id.repeat.repeat
 import arrow.core.extensions.id.selective.selective
 import arrow.core.extensions.id.semialign.semialign
@@ -21,6 +22,7 @@ import arrow.core.extensions.id.show.show
 import arrow.core.extensions.id.traverse.traverse
 import arrow.core.extensions.id.unzip.unzip
 import arrow.core.extensions.monoid
+import arrow.core.extensions.order
 import arrow.core.extensions.semigroup
 import arrow.core.extensions.show
 import arrow.core.test.UnitSpec
@@ -31,6 +33,7 @@ import arrow.core.test.laws.CrosswalkLaws
 import arrow.core.test.laws.EqKLaws
 import arrow.core.test.laws.HashLaws
 import arrow.core.test.laws.MonoidLaws
+import arrow.core.test.laws.OrderLaws
 import arrow.core.test.laws.RepeatLaws
 import arrow.core.test.laws.SemialignLaws
 import arrow.core.test.laws.ShowLaws
@@ -58,28 +61,34 @@ class IdTest : UnitSpec() {
         Id.eqK()
       ),
       HashLaws.laws(Id.hash(Int.hash()), Gen.id(Gen.int()), Id.eq(Int.eq())),
+      OrderLaws.laws(Id.order(Int.order()), Gen.id(Gen.int())),
       EqKLaws.laws(
         Id.eqK(),
         Id.genK()
       ),
-      SemialignLaws.laws(Id.semialign(),
+      SemialignLaws.laws(
+        Id.semialign(),
         Id.genK(),
         Id.eqK(),
         Id.foldable()
       ),
-      RepeatLaws.laws(Id.repeat(),
+      RepeatLaws.laws(
+        Id.repeat(),
         Id.genK(),
         Id.eqK(),
         Id.foldable()
       ),
-      UnzipLaws.laws(Id.unzip(),
+      UnzipLaws.laws(
+        Id.unzip(),
         Id.genK(),
         Id.eqK(),
         Id.foldable()
       ),
-      CrosswalkLaws.laws(Id.crosswalk(),
+      CrosswalkLaws.laws(
+        Id.crosswalk(),
         Id.genK(),
-        Id.eqK())
+        Id.eqK()
+      )
     )
 
     "Semigroup of Id<A> is Id<Semigroup<A>>" {

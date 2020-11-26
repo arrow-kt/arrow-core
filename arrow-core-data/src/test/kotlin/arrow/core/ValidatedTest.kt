@@ -1,7 +1,10 @@
 package arrow.core
 
+import arrow.core.computations.validated
 import arrow.core.extensions.eq
+import arrow.core.extensions.hash
 import arrow.core.extensions.monoid
+import arrow.core.extensions.order
 import arrow.core.extensions.semigroup
 import arrow.core.extensions.show
 import arrow.core.extensions.validated.applicative.applicative
@@ -11,6 +14,8 @@ import arrow.core.extensions.validated.eq.eq
 import arrow.core.extensions.validated.eqK.eqK
 import arrow.core.extensions.validated.eqK2.eqK2
 import arrow.core.extensions.validated.functor.functor
+import arrow.core.extensions.validated.hash.hash
+import arrow.core.extensions.validated.order.order
 import arrow.core.extensions.validated.selective.selective
 import arrow.core.extensions.validated.semigroupK.semigroupK
 import arrow.core.extensions.validated.show.show
@@ -24,6 +29,8 @@ import arrow.core.test.laws.BitraverseLaws
 import arrow.core.test.laws.EqK2Laws
 import arrow.core.test.laws.EqLaws
 import arrow.core.test.laws.FxLaws
+import arrow.core.test.laws.HashLaws
+import arrow.core.test.laws.OrderLaws
 import arrow.core.test.laws.SelectiveLaws
 import arrow.core.test.laws.SemigroupKLaws
 import arrow.core.test.laws.ShowLaws
@@ -49,18 +56,21 @@ class ValidatedTest : UnitSpec() {
       BifunctorLaws.laws(Validated.bifunctor(), Validated.genK2(), Validated.eqK2()),
       EqLaws.laws(EQ, Gen.validated(Gen.string(), Gen.int())),
       ShowLaws.laws(Validated.show(String.show(), Int.show()), EQ, Gen.validated(Gen.string(), Gen.int())),
+      HashLaws.laws(Validated.hash(String.hash(), Int.hash()), Gen.validated(Gen.string(), Gen.int()), EQ),
+      OrderLaws.laws(Validated.order(String.order(), Int.order()), Gen.validated(Gen.string(), Gen.int())),
       SelectiveLaws.laws(Validated.selective(String.semigroup()), Validated.functor(), Validated.genK(Gen.string()), Validated.eqK(String.eq())),
       TraverseLaws.laws(Validated.traverse(), Validated.applicative(String.semigroup()), Validated.genK(Gen.string()), Validated.eqK(String.eq())),
       SemigroupKLaws.laws(
         Validated.semigroupK(String.semigroup()),
         Validated.genK(Gen.string()),
-        Validated.eqK(String.eq())),
+        Validated.eqK(String.eq())
+      ),
       BitraverseLaws.laws(
         Validated.bitraverse(),
         Validated.genK2(),
         Validated.eqK2()
       ),
-      FxLaws.laws<ValidatedPartialOf<String>, Int>(Gen.int().map(::Valid), Gen.validated(Gen.string(), Gen.int()).map { it }, Validated.eqK(String.eq()).liftEq(Int.eq()), ::validated, ::validated)
+      FxLaws.laws<ValidatedPartialOf<String>, Int>(Gen.int().map(::Valid), Gen.validated(Gen.string(), Gen.int()).map { it }, Validated.eqK(String.eq()).liftEq(Int.eq()), validated::eager, validated::invoke)
     )
 
     "fold should call function on Invalid" {
@@ -82,8 +92,8 @@ class ValidatedTest : UnitSpec() {
     }
 
     "leftMap should modify error" {
-      Valid(10).leftMap { fail("None should not be called") } shouldBe Valid(10)
-      Invalid(13).leftMap { i -> i.toString() + " is Coming soon!" } shouldBe Invalid("13 is Coming soon!")
+      Valid(10).mapLeft { fail("None should not be called") } shouldBe Valid(10)
+      Invalid(13).mapLeft { i -> "$i is Coming soon!" } shouldBe Invalid("13 is Coming soon!")
     }
 
     "exist should return false if is Invalid" {
@@ -175,11 +185,6 @@ class ValidatedTest : UnitSpec() {
 
     data class MyException(val msg: String) : Exception()
 
-    "fromTry should return Valid if is Success or Failure otherwise" {
-      Validated.fromTry(Success(10)) shouldBe Valid(10)
-      Validated.fromTry<Int>(Failure(MyException(""))) shouldBe Invalid(MyException(""))
-    }
-
     "fromEither should return Valid if is Either.Right or Failure otherwise" {
       Validated.fromEither(Right(10)) shouldBe Valid(10)
       Validated.fromEither(Left(10)) shouldBe Invalid(10)
@@ -211,28 +216,24 @@ class ValidatedTest : UnitSpec() {
 
     "catch should return Valid(result) when f does not throw" {
       suspend fun loadFromNetwork(): Int = 1
-      val validated = Validated.catch { loadFromNetwork() }
-      validated shouldBe Valid(1)
+      Validated.catch { loadFromNetwork() } shouldBe Valid(1)
     }
 
     "catch should return Invalid(result) when f throws" {
       val exception = MyException("Boom!")
       suspend fun loadFromNetwork(): Int = throw exception
-      val validated = Validated.catch { loadFromNetwork() }
-      validated shouldBe Invalid(exception)
+      Validated.catch { loadFromNetwork() } shouldBe Invalid(exception)
     }
 
     "catchNel should return Valid(result) when f does not throw" {
       suspend fun loadFromNetwork(): Int = 1
-      val validated = Validated.catchNel { loadFromNetwork() }
-      validated shouldBe Valid(1)
+      Validated.catchNel { loadFromNetwork() } shouldBe Valid(1)
     }
 
     "catchNel should return Invalid(Nel(result)) when f throws" {
       val exception = MyException("Boom!")
       suspend fun loadFromNetwork(): Int = throw exception
-      val validated = Validated.catchNel { loadFromNetwork() }
-      validated shouldBe Invalid(NonEmptyList(exception))
+      Validated.catchNel { loadFromNetwork() } shouldBe Invalid(NonEmptyList(exception))
     }
 
     with(VAL_AP) {

@@ -4,15 +4,20 @@ import arrow.Kind
 import arrow.core.Either
 import arrow.core.Eval
 import arrow.core.ForListK
+import arrow.core.GT
 import arrow.core.Ior
+import arrow.core.LT
 import arrow.core.ListK
 import arrow.core.ListKOf
 import arrow.core.Option
+import arrow.core.Ordering
 import arrow.core.Tuple2
-import arrow.core.extensions.list.monad.flatten
+import arrow.core.extensions.list.foldable.fold
 import arrow.core.extensions.listk.eq.eq
+import arrow.core.extensions.listk.foldable.foldLeft
 import arrow.core.extensions.listk.monad.monad
 import arrow.core.extensions.listk.semigroup.plus
+import arrow.core.extensions.ordering.monoid.monoid
 import arrow.core.fix
 import arrow.core.identity
 import arrow.core.k
@@ -38,6 +43,7 @@ import arrow.typeclasses.MonadSyntax
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.MonoidK
 import arrow.typeclasses.Monoidal
+import arrow.typeclasses.Order
 import arrow.typeclasses.Semialign
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.SemigroupK
@@ -47,6 +53,7 @@ import arrow.typeclasses.Traverse
 import arrow.typeclasses.Unalign
 import arrow.typeclasses.Unzip
 import arrow.typeclasses.Zip
+import arrow.typeclasses.hashWithSalt
 import arrow.core.combineK as listCombineK
 import kotlin.collections.plus as listPlus
 import kotlin.collections.zip as listZip
@@ -200,15 +207,20 @@ interface ListKMonoidK : MonoidK<ForListK> {
 }
 
 @extension
-interface ListKHash<A> : Hash<ListKOf<A>>, ListKEq<A> {
+interface ListKHash<A> : Hash<ListKOf<A>> {
 
   fun HA(): Hash<A>
 
-  override fun EQ(): Eq<A> = HA()
+  override fun ListKOf<A>.hashWithSalt(salt: Int): Int =
+    HA().run { foldLeft(salt) { hash, x -> x.hashWithSalt(hash) } }.hashWithSalt(fix().size)
+}
 
-  override fun ListKOf<A>.hash(): Int = fix().foldLeft(1) { hash, a ->
-    31 * hash + HA().run { a.hash() }
-  }
+@extension
+interface ListKOrder<A> : Order<ListKOf<A>> {
+  fun OA(): Order<A>
+  override fun ListKOf<A>.compare(b: ListKOf<A>): Ordering =
+    ListK.alignWith(fix(), b.fix()) { ior -> ior.fold({ GT }, { LT }, { a1, a2 -> OA().run { a1.compare(a2) } }) }
+      .fold(Ordering.monoid())
 }
 
 @extension

@@ -18,7 +18,8 @@ In this doc, we'll describe all the modules that form the core, alongside a list
 * [arrow-core]({{ '/quickstart/libraries/#arrow-core' | relative_url }})
 * [arrow-core-data]({{ '/quickstart/libraries/#arrow-core-data' | relative_url }})
 * [arrow-optics]({{ '/quickstart/libraries/#arrow-optics' | relative_url }})
-* [arrow-fx]({{ '/quickstart/libraries/#arrow-fx' | relative_url }})
+* [arrow-fx-coroutines]({{ '/quickstart/libraries/#arrow-fx-coroutines' | relative_url }})
+* [arrow-fx-stm]({{ '/quickstart/libraries/#arrow-fx-stm' | relative_url }})
 * [arrow-syntax]({{ '/quickstart/libraries/#arrow-syntax' | relative_url }})
 * [arrow-fx-rx2 & arrow-fx-reactor]({{ '/quickstart/libraries/#arrow-fx-rx2&arrow-fx-reactor' | relative_url }})
 * [arrow-mtl]({{ '/quickstart/libraries/#arrow-mtl' | relative_url }})
@@ -72,17 +73,32 @@ For all the new typeclasses, it also includes the extensions available for basic
 
 Dependency: `arrow-core`
 
-### arrow-fx
+### arrow-fx-coroutines
 
 ```groovy
 dependencies {
-    implementation "io.arrow-kt:arrow-fx:$arrow_version"
+    implementation "io.arrow-kt:arrow-fx-coroutines:$arrow_version"
 }
 ```
 
-The [fx library]({{ '/fx/' | relative_url }}) offers a powerful concurrency DSL with an emphasis on easy concurrency and parallelism with guarantees about concurrent and parallel resource safety. It can be used with Arrow Fx's IO or a set of typeclasses to abstract over concurrency frameworks like `RxJava`, `Reactor`, `Arrow's IO`, etc.
+The [fx library]({{ '/fx/' | relative_url }}) is a Kotlin idiomatic functional effects system that offers a powerful set concurrency combinators and primitives with an emphasis on easy concurrency and parallelism with guarantees about concurrent and parallel resource safety and composition.
+If offers a set of integrations for `KotlinX Coroutines`, `RxJava`, `Reactor`, etc. Check the [Arrow Fx documentation](({{ '/fx/' | relative_url }})) for more details.
 
 Dependency: `arrow-core`
+
+### arrow-fx-stm
+
+```groovy
+dependencies {
+    implementation "io.arrow-kt:arrow-fx-stm:$arrow_version"
+}
+```
+
+The *STM* module provides powerful combinators to build safe stateful transactions in a concurrent settings. Transactions are guaranteed to not cause deadlocks or race conditions. This guarantee also carries over on composition which enables users to build everything from single transactions to fully concurrent datastructures.
+
+The module also provides several common datastructures such as Queues, Semaphores, Maps and more.
+
+Dependency: `arrow-fx-coroutines`
 
 ## Extension libraries
 

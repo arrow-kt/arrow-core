@@ -1,9 +1,9 @@
 package arrow.core
 
 import arrow.Kind
+import arrow.core.computations.either
 import arrow.core.extensions.combine
 import arrow.core.extensions.either.applicative.applicative
-import arrow.core.extensions.either.applicativeError.handleErrorWith
 import arrow.core.extensions.either.bicrosswalk.bicrosswalk
 import arrow.core.extensions.either.bifunctor.bifunctor
 import arrow.core.extensions.either.bitraverse.bitraverse
@@ -15,6 +15,7 @@ import arrow.core.extensions.either.hash.hash
 import arrow.core.extensions.either.monad.monad
 import arrow.core.extensions.either.monadError.monadError
 import arrow.core.extensions.either.monoid.monoid
+import arrow.core.extensions.either.order.order
 import arrow.core.extensions.either.semigroupK.semigroupK
 import arrow.core.extensions.either.show.show
 import arrow.core.extensions.either.traverse.traverse
@@ -22,13 +23,20 @@ import arrow.core.extensions.eq
 import arrow.core.extensions.hash
 import arrow.core.extensions.id.eq.eq
 import arrow.core.extensions.monoid
+import arrow.core.extensions.order
 import arrow.core.extensions.show
 import arrow.core.test.UnitSpec
+import arrow.core.test.generators.any
 import arrow.core.test.generators.either
 import arrow.core.test.generators.genK
 import arrow.core.test.generators.genK2
 import arrow.core.test.generators.id
 import arrow.core.test.generators.intSmall
+import arrow.core.test.generators.suspendFunThatReturnsAnyLeft
+import arrow.core.test.generators.suspendFunThatReturnsAnyRight
+import arrow.core.test.generators.suspendFunThatReturnsEitherAnyOrAnyOrThrows
+import arrow.core.test.generators.suspendFunThatThrows
+import arrow.core.test.generators.suspendFunThatThrowsFatalThrowable
 import arrow.core.test.generators.throwable
 import arrow.core.test.laws.BicrosswalkLaws
 import arrow.core.test.laws.BifunctorLaws
@@ -38,6 +46,7 @@ import arrow.core.test.laws.FxLaws
 import arrow.core.test.laws.HashLaws
 import arrow.core.test.laws.MonadErrorLaws
 import arrow.core.test.laws.MonoidLaws
+import arrow.core.test.laws.OrderLaws
 import arrow.core.test.laws.SemigroupKLaws
 import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
@@ -45,6 +54,8 @@ import arrow.typeclasses.Eq
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
+import io.kotlintest.shouldThrow
+import kotlinx.coroutines.runBlocking
 
 class EitherTest : UnitSpec() {
 
@@ -70,8 +81,9 @@ class EitherTest : UnitSpec() {
       BitraverseLaws.laws(Either.bitraverse(), Either.genK2(), Either.eqK2()),
       SemigroupKLaws.laws(Either.semigroupK(), Either.genK(Gen.id(Gen.int())), Either.eqK(Id.eq(Int.eq()))),
       HashLaws.laws(Either.hash(String.hash(), Int.hash()), GEN, Either.eq(String.eq(), Int.eq())),
+      OrderLaws.laws(Either.order(String.order(), Int.order()), GEN),
       BicrosswalkLaws.laws(Either.bicrosswalk(), Either.genK2(), Either.eqK2()),
-      FxLaws.laws<EitherPartialOf<String>, Int>(Gen.int().map(::Right), GEN.map { it }, Either.eqK(String.eq()).liftEq(Int.eq()), ::either, ::either)
+      FxLaws.laws(Gen.int().map(::Right), GEN.map { it }, Either.eqK(String.eq()).liftEq(Int.eq()), either::eager, either::invoke)
     )
 
     "fromNullable should lift value as a Right if it is not null" {
@@ -187,6 +199,13 @@ class EitherTest : UnitSpec() {
       }
     }
 
+    "orNull should convert" {
+      forAll { a: Int ->
+        Right(a).orNull() == a &&
+          Left(a).orNull() == null
+      }
+    }
+
     "contains should check value" {
       forAll(Gen.intSmall(), Gen.intSmall()) { a: Int, b: Int ->
         Right(a).contains(a) &&
@@ -211,10 +230,148 @@ class EitherTest : UnitSpec() {
     }
 
     "handleErrorWith should handle left instance otherwise return Right" {
-      forAll { a: Int, b: Int ->
+      forAll { a: Int, b: String ->
         Left(a).handleErrorWith { Right(b) } == Right(b) &&
-          Right(a).handleErrorWith { Right(b) } == Right(a)
+          Right(a).handleErrorWith { Right(b) } == Right(a) &&
+          Left(a).handleErrorWith { Left(b) } == Left(b)
+      }
+    }
+
+    "catch should return Right(result) when f does not throw" {
+      suspend fun loadFromNetwork(): Int = 1
+      Either.catch { loadFromNetwork() } shouldBe Right(1)
+    }
+
+    "catch should return Left(result) when f throws" {
+      val exception = Exception("Boom!")
+      suspend fun loadFromNetwork(): Int = throw exception
+      Either.catch { loadFromNetwork() } shouldBe Left(exception)
+    }
+
+    "catchAndFlatten should return Right(result) when f does not throw" {
+      suspend fun loadFromNetwork(): Either<Throwable, Int> = Right(1)
+      Either.catchAndFlatten { loadFromNetwork() } shouldBe Right(1)
+    }
+
+    "catchAndFlatten should return Left(result) when f throws" {
+      val exception = Exception("Boom!")
+      suspend fun loadFromNetwork(): Either<Throwable, Int> = throw exception
+      Either.catchAndFlatten { loadFromNetwork() } shouldBe Left(exception)
+    }
+
+    "resolve should yield a result when deterministic functions are used as handlers" {
+      forAll(
+        Gen.suspendFunThatReturnsEitherAnyOrAnyOrThrows(),
+        Gen.any()
+      ) { f: suspend () -> Either<Any, Any>, returnObject: Any ->
+
+        runBlocking {
+          val result =
+            Either.resolve(
+              f = f,
+              success = { a -> handleWithPureFunction(a, returnObject) },
+              error = { e -> handleWithPureFunction(e, returnObject) },
+              throwable = { t -> handleWithPureFunction(t, returnObject) },
+              unrecoverableState = ::handleWithPureFunction
+            )
+          result == returnObject
+        }
+      }
+    }
+
+    "resolve should throw a Throwable when a fatal Throwable is thrown" {
+      forAll(
+        Gen.suspendFunThatThrowsFatalThrowable(),
+        Gen.any()
+      ) { f: suspend () -> Either<Any, Any>, returnObject: Any ->
+
+        runBlocking {
+          shouldThrow<Throwable> {
+            Either.resolve(
+              f = f,
+              success = { a -> handleWithPureFunction(a, returnObject) },
+              error = { e -> handleWithPureFunction(e, returnObject) },
+              throwable = { t -> handleWithPureFunction(t, returnObject) },
+              unrecoverableState = ::handleWithPureFunction
+            )
+          }
+        }
+        true
+      }
+    }
+
+    "resolve should yield a result when an exception is thrown in the success supplied function" {
+      forAll(
+        Gen.suspendFunThatReturnsAnyRight(),
+        Gen.any()
+      ) { f: suspend () -> Either<Any, Any>, returnObject: Any ->
+
+        runBlocking {
+          val result =
+            Either.resolve(
+              f = f,
+              success = ::throwException,
+              error = { e -> handleWithPureFunction(e, returnObject) },
+              throwable = { t -> handleWithPureFunction(t, returnObject) },
+              unrecoverableState = ::handleWithPureFunction
+            )
+          result == returnObject
+        }
+      }
+    }
+
+    "resolve should yield a result when an exception is thrown in the error supplied function" {
+      forAll(
+        Gen.suspendFunThatReturnsAnyLeft(),
+        Gen.any()
+      ) { f: suspend () -> Either<Any, Any>, returnObject: Any ->
+
+        runBlocking {
+          val result =
+            Either.resolve(
+              f = f,
+              success = { a -> handleWithPureFunction(a, returnObject) },
+              error = ::throwException,
+              throwable = { t -> handleWithPureFunction(t, returnObject) },
+              unrecoverableState = ::handleWithPureFunction
+            )
+          result == returnObject
+        }
+      }
+    }
+
+    "resolve should throw a Throwable when any exception is thrown in the throwable supplied function" {
+      forAll(
+        Gen.suspendFunThatThrows()
+      ) { f: suspend () -> Either<Any, Any> ->
+
+        runBlocking {
+          shouldThrow<Throwable> {
+            Either.resolve(
+              f = f,
+              success = ::throwException,
+              error = ::throwException,
+              throwable = ::throwException,
+              unrecoverableState = ::handleWithPureFunction
+            )
+          }
+        }
+        true
       }
     }
   }
 }
+
+@Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
+suspend fun handleWithPureFunction(a: Any, b: Any): Either<Throwable, Any> =
+  b.right()
+
+@Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
+suspend fun handleWithPureFunction(throwable: Throwable): Either<Throwable, Unit> =
+  Unit.right()
+
+@Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
+private suspend fun <A> throwException(
+  a: A
+): Either<Throwable, Any> =
+  throw RuntimeException("An Exception is thrown while handling the result of the supplied function.")

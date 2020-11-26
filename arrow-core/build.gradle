@@ -1,26 +1,19 @@
 plugins {
-    id "maven-publish"
-    id "base"
     id "org.jetbrains.kotlin.jvm"
     id "org.jetbrains.kotlin.kapt"
-    id "org.jetbrains.dokka"
     id "org.jlleitschuh.gradle.ktlint"
-    id "ru.vyarus.animalsniffer"
 }
 
-apply from: "$SUBPROJECT_CONF"
-apply from: "$DOC_CONF"
-apply from: "$PUBLISH_CONF"
+apply from: "$SUB_PROJECT"
+apply from: "$DOC_CREATION"
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
-    compile project(":arrow-annotations")
-    compile project(":arrow-core-data")
+    compileOnly project(":arrow-annotations")
+    api project(":arrow-core-data")
     kapt project(":arrow-meta")
     kaptTest project(":arrow-meta")
     compileOnly project(":arrow-meta")
     testCompileOnly project(":arrow-meta")
-    testRuntime "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
-    testCompile "io.kotlintest:kotlintest-runner-junit5:$KOTLIN_TEST_VERSION", excludeArrow
-    testCompile project(":arrow-core-test")
+    testCompileOnly project(":arrow-core-test")
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
 }

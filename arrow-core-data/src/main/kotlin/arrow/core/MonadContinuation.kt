@@ -11,13 +11,14 @@ import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
 @RestrictsSuspension
 interface EagerBind<F> : BindSyntax<F>
 
-@PublishedApi
-internal class ShortCircuit(val value: Any?) : RuntimeException(null, null) {
+class ShortCircuit(val value: Any?) : RuntimeException(null, null) {
   override fun fillInStackTrace(): Throwable = this
   override fun toString(): String = "ShortCircuit($value)"
+  inline fun <E> resolve(): E = value as E
 }
 
 @Suppress("UNCHECKED_CAST")
+@Deprecated("MonadContinuation is replaced by delimited continuations, please use DelimContScope instead")
 internal abstract class MonadContinuation<F, A> : Continuation<Kind<F, A>>, EagerBind<F> {
 
   abstract fun ShortCircuit.recover(): Kind<F, A>
@@ -29,11 +30,14 @@ internal abstract class MonadContinuation<F, A> : Continuation<Kind<F, A>>, Eage
   fun returnedMonad(): Kind<F, A> = returnedMonad
 
   override fun resumeWith(result: Result<Kind<F, A>>) {
-    result.fold({ returnedMonad = it }, { e ->
-      if (e is ShortCircuit) {
-        returnedMonad = e.recover()
-      } else throw e
-    })
+    result.fold(
+      { returnedMonad = it },
+      { e ->
+        if (e is ShortCircuit) {
+          returnedMonad = e.recover()
+        } else throw e
+      }
+    )
   }
 
   fun startCoroutineUninterceptedAndReturn(f: suspend EagerBind<F>.() -> Kind<F, A>): Any? =

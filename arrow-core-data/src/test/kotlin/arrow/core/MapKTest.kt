@@ -54,16 +54,20 @@ class MapKTest : UnitSpec() {
       EqLaws.laws(MapK.eq(Long.eq(), Int.eq()), Gen.mapK(Gen.long(), Gen.int())),
       FunctorFilterLaws.laws(MapK.functorFilter(), MapK.genK(Gen.long()), MapK.eqK(Long.eq())),
       HashLaws.laws(MapK.hash(Long.hash(), Int.hash()), Gen.mapK(Gen.long(), Gen.int()), EQ_TC),
-      AlignLaws.laws(MapK.align(),
+      AlignLaws.laws(
+        MapK.align(),
         MapK.genK(Gen.long()),
         MapK.eqK(Long.eq()),
         MapK.foldable()
       ),
-      UnalignLaws.laws(MapK.unalign(),
+      UnalignLaws.laws(
+        MapK.unalign(),
         MapK.genK(Gen.long()),
         MapK.eqK(Long.eq()),
-        MapK.foldable()),
-      UnzipLaws.laws(MapK.unzip(),
+        MapK.foldable()
+      ),
+      UnzipLaws.laws(
+        MapK.unzip(),
         MapK.genK(Gen.long()),
         MapK.eqK(Long.eq()),
         MapK.foldable()
@@ -108,6 +112,48 @@ class MapKTest : UnitSpec() {
             aligned[key]?.let { it.isRight } ?: false
           }
         }
+      }
+    }
+
+    "map2" {
+      forAll(
+        Gen.mapK(Gen.intSmall(), Gen.intSmall()),
+        Gen.mapK(Gen.intSmall(), Gen.intSmall())
+      ) { a, b ->
+        val result = a.map2(b) { left, right -> left + right }
+        val expected: MapK<Int, Int> = a.filter { (k, v) -> b.containsKey(k) }
+          .map { (k, v) -> Tuple2(k, v + b[k]!!) }
+          .let { mapOf(*it.toTypedArray()) }
+        result == expected
+      }
+    }
+
+    "ap2" {
+      forAll(
+        Gen.mapK(Gen.intSmall(), Gen.intSmall()),
+        Gen.mapK(Gen.intSmall(), Gen.intSmall())
+      ) { a, b ->
+        val result = a.ap2(
+          a.map { {x: Int, y: Int -> x + y } },
+          b
+        )
+        val expected: MapK<Int, Int> = a.filter { (k, v) -> b.containsKey(k) }
+          .map { (k, v) -> Tuple2(k, v + b[k]!!) }
+          .let { mapOf(*it.toTypedArray()) }
+        result == expected
+      }
+    }
+
+    "flatMap" {
+      forAll(
+        Gen.mapK(Gen.string(), Gen.intSmall()),
+        Gen.mapK(Gen.string(), Gen.string())
+      ) { a, b ->
+        val result: MapK<String, String> = a.flatMap { b }
+        val expected: MapK<String, String> = a.filter { (k, _) -> b.containsKey(k) }
+          .map { (k, v) -> Tuple2(k, b[k]!!) }
+          .let { mapOf(*it.toTypedArray()) }
+        result == expected
       }
     }
   }
