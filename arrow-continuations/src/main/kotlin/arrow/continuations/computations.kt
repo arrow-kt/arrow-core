@@ -1,4 +1,4 @@
-package arrow.continuations
+package arrow.continuations // ktlint-disable
 
 import arrow.continuations.generic.DelimitedScope
 
