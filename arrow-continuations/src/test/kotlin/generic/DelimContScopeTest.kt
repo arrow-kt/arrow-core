@@ -57,18 +57,4 @@ class DelimContScopeTest : StringSpec({
     } shouldBe (0..10_000).toList()
   }
 
-  "shiftCPS supports multishot regardless of scope" {
-    DelimContScope.reset<Int> {
-      shiftCPS<Int, Int>({ it(1) + it(2) }) { i -> i + 1 }
-      throw IllegalStateException("This is unreachable")
-    } shouldBe 5
-  }
-
-  "nested reset" {
-    DelimContScope.reset<Int> {
-      reset {
-        shift { it(1) }
-      }
-    } shouldBe 1
-  }
 })

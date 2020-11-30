@@ -10,11 +10,6 @@ import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 import kotlin.coroutines.resumeWithException
 
-
-interface SuspendingComputation<R> {
-  suspend fun <A> shift(a: R): A
-}
-
 internal const val UNDECIDED = 0
 internal const val SUSPENDED = 1
 
@@ -26,7 +21,7 @@ internal class Token {
 }
 
 @Suppress("UNCHECKED_CAST")
-internal class SuspendMonadContinuation<R>(private val parent: Continuation<R>) : Continuation<R>, SuspendingComputation<R> {
+internal class SuspendMonadContinuation<R>(private val parent: Continuation<R>) : Continuation<R>, DelimitedScope<R> {
 
   /**
    * State is either
@@ -83,6 +78,12 @@ internal class SuspendMonadContinuation<R>(private val parent: Continuation<R>) 
     }
 
   override suspend fun <A> shift(a: R): A = throw ShortCircuit(token, a)
+
+  /**
+   * Captures the continuation and set [f] with the continuation to be executed next by the runloop.
+   */
+  override suspend fun <A> shift(f: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
+    TODO()
 
   fun startCoroutineUninterceptedOrReturn(f: suspend SuspendMonadContinuation<R>.() -> R): Any? =
     try {

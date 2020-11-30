@@ -48,15 +48,6 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
   }
 
   /**
-   * Wrapper that handles invoking manually cps transformed continuations
-   */
-  data class CPSCont<A, R>(
-    private val runFunc: suspend DelimitedScope<R>.(A) -> R
-  ) : DelimitedContinuation<A, R> {
-    override suspend fun invoke(a: A): R = DelimContScope<R> { runFunc(a) }.invoke()
-  }
-
-  /**
    * Captures the continuation and set [f] with the continuation to be executed next by the runloop.
    */
   override suspend fun <A> shift(f: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
@@ -66,20 +57,8 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
       COROUTINE_SUSPENDED
     }
 
-  /**
-   * Same as [shift] except we never resume execution because we only continue in [c].
-   */
-  override suspend fun <A, B> shiftCPS(f: suspend (DelimitedContinuation<A, B>) -> R, c: suspend DelimitedScope<B>.(A) -> B): Nothing =
-    suspendCoroutineUninterceptedOrReturn {
-      assert(promise.setShift { f(CPSCont(c)) })
-      COROUTINE_SUSPENDED
-    }
-
-  /**
-   * Unsafe if [f] calls [shift] on this scope! Use [NestedDelimContScope] instead if this is a problem.
-   */
-  override suspend fun <A> reset(f: suspend DelimitedScope<A>.() -> A): A =
-    DelimContScope(f).invoke()
+  override suspend fun <A> shift(a: R): A =
+    shift { a }
 
   @Suppress("UNCHECKED_CAST")
   suspend fun invoke(): R {

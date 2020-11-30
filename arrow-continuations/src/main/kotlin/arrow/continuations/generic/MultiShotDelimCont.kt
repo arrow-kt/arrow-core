@@ -22,9 +22,9 @@ import kotlin.coroutines.suspendCoroutine
  *
  * As per usual understanding of [DelimContScope] is required as I will only be commenting differences for now.
  */
-open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedScope<R> {
+internal open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedScope<R> {
 
-//  private val resultVar = atomic<R?>(null)
+  //  private val resultVar = atomic<R?>(null)
 //  private val nextShift = atomic<(suspend () -> R)?>(null)
 
   private val promise: ResettablePromise<R> = ResettablePromise()
@@ -67,11 +67,7 @@ open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) 
       }
   }
 
-  data class CPSCont<A, R>(
-    private val runFunc: suspend DelimitedScope<R>.(A) -> R
-  ) : DelimitedContinuation<A, R> {
-    override suspend fun invoke(a: A): R = DelimContScope<R> { runFunc(a) }.invoke()
-  }
+  override suspend fun <A> shift(a: R): A = shift { a }
 
   override suspend fun <A> shift(func: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
     suspendCoroutineUninterceptedOrReturn { continueMain ->
@@ -79,16 +75,6 @@ open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) 
       assert(promise.setShift { this.func(c) })
       COROUTINE_SUSPENDED
     }
-
-  override suspend fun <A, B> shiftCPS(func: suspend (DelimitedContinuation<A, B>) -> R, c: suspend DelimitedScope<B>.(A) -> B): Nothing =
-    suspendCoroutineUninterceptedOrReturn {
-      assert(promise.setShift { func(CPSCont(c)) })
-      COROUTINE_SUSPENDED
-    }
-
-  // This assumes RestrictSuspension or at least assumes the user to never reference the parent scope in f.
-  override suspend fun <A> reset(f: suspend DelimitedScope<A>.() -> A): A =
-    MultiShotDelimContScope(f).invoke()
 
   @Suppress("UNCHECKED_CAST")
   suspend fun invoke(): R {
@@ -133,7 +119,7 @@ open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) 
   }
 }
 
-class PrefilledDelimContScope<R>(
+private class PrefilledDelimContScope<R>(
   override val stack: MutableList<Any?>,
   f: suspend DelimitedScope<R>.() -> R
 ) : MultiShotDelimContScope<R>(f) {

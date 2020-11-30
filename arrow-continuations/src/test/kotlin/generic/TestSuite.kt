@@ -1,17 +1,14 @@
 package generic
 
+import arrow.continuations.generic.DelimContScope
 import arrow.continuations.generic.DelimitedScope
 import arrow.continuations.generic.MultiShotDelimContScope
-import arrow.continuations.generic.DelimContScope
-import arrow.continuations.generic.NestedDelimContScope
 import arrow.core.Either
 import arrow.core.Left
 import arrow.core.Tuple2
 import arrow.core.Tuple3
 import arrow.core.test.UnitSpec
 import arrow.core.toT
-import arrow.fx.coroutines.milliseconds
-import arrow.fx.coroutines.sleep
 import io.kotlintest.shouldBe
 
 abstract class ContTestSuite : UnitSpec() {
@@ -33,76 +30,9 @@ abstract class ContTestSuite : UnitSpec() {
         throw IllegalStateException("This should not be executed")
       } shouldBe Left("No thank you")
     }
-    "shiftCPS supports multishot regardless of scope" {
-      runScope<Int> {
-        shiftCPS<Int, Int>({ it(1) + it(2) }) { i -> i + 1 }
-        throw IllegalStateException("This is unreachable")
-      } shouldBe 5
-    }
-    "reset" {
-      runScope<Int> {
-        reset {
-          shift { it(1) }
-        }
-      } shouldBe 1
-    }
-    "Supports suspension before shift" {
-      runScope<Int> {
-        reset {
-          sleep(10.milliseconds)
-          shift { it(1) }
-        }
-      } shouldBe 1
-    }
-    "Supports suspension in shift" {
-      runScope<Int> {
-        reset {
-          shift {
-            sleep(10.milliseconds)
-            it(1)
-          }
-        }
-      } shouldBe 1
-    }
-    "Supports suspension before reset" {
-      runScope<Int> {
-        sleep(10.milliseconds)
-        reset {
-          shift { it(1) }
-        }
-      } shouldBe 1
-    }
 
+    // some examples from http://homes.sice.indiana.edu/ccshan/recur/recur.pdf
     if (capabilities().contains(ScopeCapabilities.MultiShot)) {
-      // This comes from http://homes.sice.indiana.edu/ccshan/recur/recur.pdf and shows how reset/shift should behave
-      "multishot reset/shift" {
-        runScope<List<Char>> {
-          listOf('a') + reset<List<Char>> {
-            listOf('b') + shift<List<Char>> { f -> listOf('1') + f(f(listOf('c'))) }
-          }
-        } shouldBe listOf('a', '1', 'b', 'b', 'c')
-        runScope<List<Char>> {
-          listOf('a') + reset<List<Char>> {
-            shiftCPS<List<Char>, List<Char>>({ f -> listOf('1') + f(f(listOf('c'))) }) { xs: List<Char> ->
-              listOf('b') + xs
-            }
-          }
-        } shouldBe listOf('a', '1', 'b', 'b', 'c')
-      }
-      // This also comes from http://homes.sice.indiana.edu/ccshan/recur/recur.pdf and shows that shift surrounds the
-      //  captured continuation and the function receiving it with reset. This is done implicitly in our implementation
-      "shift and control distinction" {
-        runScope<String> {
-          reset {
-            suspend fun y() = shift<String> { f -> "a" + f("") }
-            shift<String> { y() }
-          }
-        } shouldBe "a"
-        // TODO this is not very accurate, probably not correct either
-        runScope<String> {
-          shiftCPS<String, String>({ it("") }, { s: String -> shift { f -> "a" + f("") } })
-        } shouldBe "a"
-      }
       "multshot nondet" {
         runScope<List<Tuple2<Int, Int>>> {
           val i: Int = shift { k -> k(10) + k(20) }
@@ -152,76 +82,11 @@ abstract class ContTestSuite : UnitSpec() {
         }
       }
     }
-    if (capabilities().contains(ScopeCapabilities.NestedScopes)) {
-      "nested reset calling between scopes" {
-        runScope {
-          val a: Int = shift { it(5) }
-          a + reset<Int> fst@{
-            val i: Int = shift { it(10) }
-            reset<Int> snd@{
-              val j: Int = shift { it(20) }
-              val k: Int = this@fst.shift { it(30) }
-              i + j + k
-            }
-          } shouldBe 65
-        }
-      }
-      "nested reset calling between a lot of scopes" {
-        runScope fst@{
-          val a: Int = shift { it(5) }
-          a + reset<Int> snd@{
-            val i: Int = shift { it(10) }
-            reset<Int> third@{
-              val j: Int = shift { it(20) }
-              val k: Int = this@fst.shift<Int> { it(30) } + this@snd.shift<Int> { it(40) }
-              reset fourth@{
-                val p: Int = shift { it(20) }
-                val k2: Int = this@fst.shift<Int> { it(30) } + this@snd.shift<Int> { it(40) }
-                val t: Int = this@third.shift { it(5) }
-                i + j + k + p + k2 + t
-              }
-            }
-          } shouldBe 200
-        }
-      }
-      "nested reset calling between scopes with short circuit" {
-        runScope {
-          val a: Int = shift { it(5) }
-          a + reset<Int> fst@{
-            val i: Int = shift { it(10) }
-            reset<Int> snd@{
-              val j: Int = shift { it(20) }
-              val k: Int = this@fst.shift { 5 }
-              i + j + k
-            }
-          } shouldBe 10
-        }
-      }
-      "nested reset calling between a lot of scopes and short circuit" {
-        runScope fst@{
-          val a: Int = shift { it(5) }
-          a + reset<Int> snd@{
-            val i: Int = shift { it(10) }
-            reset<Int> third@{
-              val j: Int = shift { it(20) }
-              val k: Int = this@fst.shift<Int> { it(30) } + this@snd.shift<Int> { it(40) }
-              reset fourth@{
-                val p: Int = shift { it(20) }
-                val k2: Int = this@fst.shift<Int> { it(30) } + this@snd.shift<Int> { it(40) }
-                val t: Int = this@third.shift { 5 }
-                i + j + k + p + k2 + t
-              }
-            }
-          } shouldBe 10
-        }
-      }
-    }
   }
 }
 
 sealed class ScopeCapabilities {
   object MultiShot : ScopeCapabilities()
-  object NestedScopes : ScopeCapabilities()
 }
 
 class SingleShotContTestSuite : ContTestSuite() {
@@ -238,9 +103,3 @@ class MultiShotContTestSuite : ContTestSuite() {
   override fun capabilities(): Set<ScopeCapabilities> = setOf(ScopeCapabilities.MultiShot)
 }
 
-class NestedContTestSuite : ContTestSuite() {
-  override suspend fun <A> runScope(func: suspend DelimitedScope<A>.() -> A): A =
-    NestedDelimContScope.reset(func)
-
-  override fun capabilities(): Set<ScopeCapabilities> = setOf(ScopeCapabilities.NestedScopes)
-}
