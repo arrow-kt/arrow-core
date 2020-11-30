@@ -10,27 +10,6 @@ import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 import kotlin.coroutines.resumeWithException
 
-sealed class Either<out E, out A>
-data class Left<E>(val e: E) : Either<E, Nothing>()
-data class Right<A>(val a: A) : Either<Nothing, A>()
-
-interface EitherBind<E> {
-  suspend fun <A> Either<E, A>.invoke(): A
-}
-
-suspend fun <E, A> either(f: suspend EitherBind<E>.() -> A): Either<E, A> =
-  suspendCoroutineUninterceptedOrReturn { cont ->
-    SuspendMonadContinuation(cont).startCoroutineUninterceptedOrReturn {
-      f.invoke(object : EitherBind<E> {
-        override suspend fun <B> Either<E, B>.invoke(): B =
-          when(val ea = this) {
-            is Right -> ea.a
-            is Left -> shift(ea)
-          }
-      }).let(::Right)
-    }
-  }
-
 
 interface SuspendingComputation<R> {
   suspend fun <A> shift(a: R): A
@@ -39,7 +18,12 @@ interface SuspendingComputation<R> {
 internal const val UNDECIDED = 0
 internal const val SUSPENDED = 1
 
-class ShortCircuit(val raiseValue: Any?) : ControlThrowable()
+class ShortCircuit internal constructor(internal val token: Token, val raiseValue: Any?) : ControlThrowable()
+
+/** Represents a unique identifier using object equality. */
+internal class Token {
+  override fun toString(): String = "Token(${Integer.toHexString(hashCode())})"
+}
 
 @Suppress("UNCHECKED_CAST")
 internal class SuspendMonadContinuation<R>(private val parent: Continuation<R>) : Continuation<R>, SuspendingComputation<R> {
@@ -51,6 +35,7 @@ internal class SuspendMonadContinuation<R>(private val parent: Continuation<R>) 
    *  Any? (3) `resumeWith` always stores it upon UNDECIDED, and `getResult` can atomically get it.
    */
   private val _decision = atomic<Any>(UNDECIDED)
+  private val token: Token = Token()
 
   override val context: CoroutineContext = EmptyCoroutineContext
 
@@ -61,7 +46,7 @@ internal class SuspendMonadContinuation<R>(private val parent: Continuation<R>) 
           val r: R? = when {
             result.isFailure -> {
               val e = result.exceptionOrNull()
-              if (e is ShortCircuit) e.raiseValue as R else null
+              if (e is ShortCircuit && e.token === token) e.raiseValue as R else null
             }
             result.isSuccess -> result.getOrNull()
             else -> throw RuntimeException("Internal Arrow Exception")
@@ -78,7 +63,7 @@ internal class SuspendMonadContinuation<R>(private val parent: Continuation<R>) 
         }
         else -> { // If not `UNDECIDED` then we need to pass result to `parent`
           val res: Result<R> = result.fold({ Result.success(it) }, { t ->
-            if (t is ShortCircuit) Result.success(t.raiseValue as R)
+            if (t is ShortCircuit && t.token === token) Result.success(t.raiseValue as R)
             else Result.failure(t)
           })
           parent.resumeWith(res)
@@ -97,7 +82,7 @@ internal class SuspendMonadContinuation<R>(private val parent: Continuation<R>) 
       }
     }
 
-  override suspend fun <A> shift(a: R): A = throw ShortCircuit(a)
+  override suspend fun <A> shift(a: R): A = throw ShortCircuit(token, a)
 
   fun startCoroutineUninterceptedOrReturn(f: suspend SuspendMonadContinuation<R>.() -> R): Any? =
     try {
@@ -106,7 +91,7 @@ internal class SuspendMonadContinuation<R>(private val parent: Continuation<R>) 
         else it
       }
     } catch (e: Throwable) {
-      if (e is ShortCircuit) e.raiseValue as R
+      if (e is ShortCircuit && e.token === token) e.raiseValue as R
       else throw e
     }
 }
