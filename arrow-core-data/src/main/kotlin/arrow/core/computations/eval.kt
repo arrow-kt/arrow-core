@@ -10,7 +10,7 @@ import arrow.typeclasses.suspended.BindSyntax
 
 object eval {
 
-  fun <A> eager(c: suspend EagerBind<ForEval>.() -> A): Eval<A> =
+  fun <A> eager(c: suspend EagerBind<ForEval>.() -> A): Eval<A> = runRestrictedSuspension {
     DelimContScope.reset {
       Eval.just(
         c(object : EagerBind<ForEval> {
@@ -19,6 +19,7 @@ object eval {
         })
       )
     }
+  }
 
   suspend operator fun <A> invoke(c: suspend BindSyntax<ForEval>.() -> A): Eval<A> =
     DelimContScope.reset {

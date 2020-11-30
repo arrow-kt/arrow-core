@@ -11,13 +11,14 @@ import arrow.typeclasses.suspended.BindSyntax
 
 object const {
 
-  fun <A, T> eager(c: suspend EagerBind<ConstPartialOf<A>>.() -> A): Const<A, T> =
+  fun <A, T> eager(c: suspend EagerBind<ConstPartialOf<A>>.() -> A): Const<A, T> = runRestrictedSuspension {
     DelimContScope.reset {
       c(object : EagerBind<ConstPartialOf<A>> {
         override suspend fun <T> Kind<ConstPartialOf<A>, T>.invoke(): T =
           fix().value() as T
       }).const()
     }
+  }
 
   suspend operator fun <A, T> invoke(c: suspend BindSyntax<ConstPartialOf<A>>.() -> A): Const<A, T> =
     DelimContScope.reset {

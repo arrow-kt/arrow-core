@@ -10,8 +10,8 @@ import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
+import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.Continuation
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
 import kotlin.coroutines.intrinsics.intercepted
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
@@ -118,7 +118,7 @@ object FxLaws {
 // TODO expose for tests
 internal suspend fun Throwable.suspend(): Nothing =
   suspendCoroutineUninterceptedOrReturn { cont ->
-    suspend { throw this }.startCoroutine(Continuation(EmptyCoroutineContext) {
+    suspend { throw this }.startCoroutine(Continuation(Dispatchers.Default) {
       cont.intercepted().resumeWith(it)
     })
 
@@ -127,7 +127,7 @@ internal suspend fun Throwable.suspend(): Nothing =
 
 internal suspend fun <A> A.suspend(): A =
   suspendCoroutineUninterceptedOrReturn { cont ->
-    suspend { this }.startCoroutine(Continuation(EmptyCoroutineContext) {
+    suspend { this }.startCoroutine(Continuation(Dispatchers.Default) {
       cont.intercepted().resumeWith(it)
     })
 

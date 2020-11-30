@@ -10,7 +10,7 @@ import arrow.typeclasses.suspended.BindSyntax
 
 object either {
 
-  fun <E, A> eager(c: suspend EagerBind<EitherPartialOf<E>>.() -> A): Either<E, A> =
+  fun <E, A> eager(c: suspend EagerBind<EitherPartialOf<E>>.() -> A): Either<E, A> = runRestrictedSuspension {
     DelimContScope.reset {
       Either.Right(
         c(object : EagerBind<EitherPartialOf<E>> {
@@ -22,6 +22,7 @@ object either {
         })
       )
     }
+  }
 
   suspend operator fun <E, A> invoke(c: suspend BindSyntax<EitherPartialOf<E>>.() -> A): Either<E, A> =
     DelimContScope.reset {

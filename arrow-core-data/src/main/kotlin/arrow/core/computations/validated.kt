@@ -11,7 +11,7 @@ import arrow.typeclasses.suspended.BindSyntax
 
 object validated {
 
-  fun <E, A> eager(c: suspend EagerBind<ValidatedPartialOf<E>>.() -> A): Validated<E, A> =
+  fun <E, A> eager(c: suspend EagerBind<ValidatedPartialOf<E>>.() -> A): Validated<E, A> = runRestrictedSuspension {
     DelimContScope.reset {
       Valid(
         c(object : EagerBind<ValidatedPartialOf<E>> {
@@ -23,6 +23,7 @@ object validated {
         })
       )
     }
+  }
 
   suspend operator fun <E, A> invoke(c: suspend BindSyntax<ValidatedPartialOf<E>>.() -> A): Validated<E, A> =
     DelimContScope.reset {
