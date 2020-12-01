@@ -18,7 +18,7 @@ import kotlin.coroutines.resume
  *  continuation is appended to a list waiting to be invoked with the final result of the block.
  * When running a function we jump back and forth between the main function and every function inside shift via their continuations.
  */
-internal open class DelimContScope<R>(private val f: suspend DelimitedScope<R>.() -> R) : RestrictedScope<R> {
+internal open class DelimContScope<R>(private val f: suspend RestrictedScope<R>.() -> R) : RestrictedScope<R> {
 
   /**
    * Variable used for polling the result after suspension happened.
@@ -62,7 +62,7 @@ internal open class DelimContScope<R>(private val f: suspend DelimitedScope<R>.(
   /**
    * Captures the continuation and set [f] with the continuation to be executed next by the runloop.
    */
-  override suspend fun <A> shift(f: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
+  override suspend fun <A> shift(f: suspend RestrictedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
     suspendCoroutineUninterceptedOrReturn { continueMain ->
       val delCont = SingleShotCont(continueMain, shiftFnContinuations)
       assert(nextShift == null)
@@ -120,8 +120,6 @@ internal open class DelimContScope<R>(private val f: suspend DelimitedScope<R>.(
   }
 
   companion object {
-    fun <R> reset(f: suspend DelimitedScope<R>.() -> R): R = DelimContScope(f).invoke()
-
     @Suppress("ClassName")
     private object EMPTY_VALUE
   }

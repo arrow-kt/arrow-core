@@ -23,11 +23,11 @@ import kotlin.coroutines.suspendCoroutine
  *
  * As per usual understanding of [DelimContScope] is required as I will only be commenting differences for now.
  */
-internal open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : RestrictedScope<R> {
+internal open class MultiShotDelimContScope<R>(val f: suspend RestrictedScope<R>.() -> R) : RestrictedScope<R> {
 
   // TODO Since runs blocking these don't need to be atomic
   private val resultVar = atomic<R?>(null)
-  private val nextShift = atomic<(suspend DelimitedScope<R>.() -> R)?>(null)
+  private val nextShift = atomic<(suspend RestrictedScope<R>.() -> R)?>(null)
 
   // TODO This can be append only and needs fast reversed access
   private val shiftFnContinuations = mutableListOf<Continuation<R>>()
@@ -45,7 +45,7 @@ internal open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.
    */
   class MultiShotCont<A, R>(
     liveContinuation: Continuation<A>,
-    private val f: suspend DelimitedScope<R>.() -> R,
+    private val f: suspend RestrictedScope<R>.() -> R,
     private val stack: MutableList<Any?>,
     private val shiftFnContinuations: MutableList<Continuation<R>>
   ) : DelimitedContinuation<A, R> {
@@ -73,10 +73,10 @@ internal open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.
     override suspend fun invoke(a: A): R = DelimContScope<R> { runFunc(a) }.invoke()
   }
 
-  override suspend fun <A> shift(func: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
+  override suspend fun <A> shift(func: suspend RestrictedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
     suspendCoroutineUninterceptedOrReturn { continueMain ->
       val c = MultiShotCont(continueMain, f, stack, shiftFnContinuations)
-      val s : suspend DelimitedScope<R>.() -> R = { this.func(c) }
+      val s : suspend RestrictedScope<R>.() -> R = { this.func(c) }
       assert(nextShift.compareAndSet(null, s))
       COROUTINE_SUSPENDED
     }
@@ -115,19 +115,19 @@ internal open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.
   }
 
   companion object {
-    fun <R> reset(f: suspend DelimitedScope<R>.() -> R): R = MultiShotDelimContScope(f).invoke()
+    internal fun <R> reset(f: suspend RestrictedScope<R>.() -> R): R = MultiShotDelimContScope(f).invoke()
   }
 }
 
 private class PrefilledDelimContScope<R>(
   override val stack: MutableList<Any?>,
-  f: suspend DelimitedScope<R>.() -> R
+  f: suspend RestrictedScope<R>.() -> R
 ) : MultiShotDelimContScope<R>(f) {
   var depth = 0
 
   // Here we first check if we still have values in our local stack and if so we use those first
   //  if not we delegate to the normal delimited control implementation
-  override suspend fun <A> shift(func: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
+  override suspend fun <A> shift(func: suspend RestrictedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
     if (stack.size > depth) stack[depth++] as A
     else
       @Suppress("ILLEGAL_RESTRICTED_SUSPENDING_FUNCTION_CALL")

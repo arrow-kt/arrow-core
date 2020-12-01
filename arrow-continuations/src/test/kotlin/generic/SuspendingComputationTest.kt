@@ -1,8 +1,9 @@
 package generic
 
 import arrow.continuations.generic.ShortCircuit
-import arrow.continuations.generic.SuspendMonadContinuation
-import arrow.continuations.generic.SuspendingComputation
+import arrow.core.Left
+import arrow.core.Right
+import arrow.core.computations.either
 import arrow.fx.coroutines.ComputationPool
 import arrow.fx.coroutines.ExitCase
 import arrow.fx.coroutines.Promise
@@ -19,7 +20,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.suspendCancellableCoroutine
-import java.lang.RuntimeException
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
 import kotlin.coroutines.intrinsics.intercepted
@@ -76,7 +76,7 @@ class SuspendingComputationTest : StringSpec({
 
   "Can short-circuit immediately from nested blocks" {
     either<String, Int> {
-      val x = maybe {
+      val x = maybeEff {
         Left("test").invoke()
         5L
       }
@@ -88,7 +88,7 @@ class SuspendingComputationTest : StringSpec({
 
   "Can short-circuit suspended from nested blocks" {
     either<String, Int> {
-      val x = maybe {
+      val x = maybeEff {
         Left("test").suspend().invoke()
         5L
       }
@@ -100,7 +100,7 @@ class SuspendingComputationTest : StringSpec({
 
   "Can short-circuit immediately after suspending from nested blocks" {
     either<String, Int> {
-      val x = maybe {
+      val x = maybeEff {
         Just(1L).suspend().invoke()
         Left("test").suspend().invoke()
         5L
@@ -113,7 +113,7 @@ class SuspendingComputationTest : StringSpec({
 
   "Can short-circuit suspended after suspending from nested blocks" {
     either<String, Int> {
-      val x = maybe {
+      val x = maybeEff {
         Just(1L).suspend().invoke()
         Left("test").suspend().invoke()
         5L
@@ -166,6 +166,7 @@ class SuspendingComputationTest : StringSpec({
 
     cancelled.await()
   }
+
 })
 
 suspend fun completeOnCancellation(latch: CompletableDeferred<Unit>, cancelled: CompletableDeferred<Unit>): Unit =
@@ -177,54 +178,6 @@ suspend fun completeOnCancellation(latch: CompletableDeferred<Unit>, cancelled: 
 
     if (!latch.complete(Unit)) fail("latch was completed twice")
     else Unit
-  }
-
-sealed class Either<out E, out A>
-data class Left<E>(val e: E) : Either<E, Nothing>()
-data class Right<A>(val a: A) : Either<Nothing, A>()
-
-sealed class Maybe<out A>
-data class Just<A>(val a: A) : Maybe<A>()
-object None : Maybe<Nothing>()
-
-interface EitherBind<E> {
-  suspend fun <A> Either<E, A>.invoke(): A
-}
-
-interface MaybeBind {
-  suspend fun <A> Maybe<A>.invoke(): A
-}
-
-suspend fun <E, A> either(f: suspend EitherBind<E>.() -> A): Either<E, A> =
-  suspendCoroutineUninterceptedOrReturn { cont ->
-    SuspendMonadContinuation(cont) {
-      f.invoke(eitherBind()).let(::Right)
-    }.startCoroutineUninterceptedOrReturn()
-  }
-
-fun <E, A> SuspendingComputation<Either<E, A>>.eitherBind(): EitherBind<E> =
-  object : EitherBind<E> {
-    override suspend fun <B> Either<E, B>.invoke(): B =
-      when (val ea = this) {
-        is Right -> ea.a
-        is Left -> shift(ea)
-      }
-  }
-
-suspend fun <A> maybe(f: suspend MaybeBind.() -> A): Maybe<A> =
-  suspendCoroutineUninterceptedOrReturn { cont ->
-    SuspendMonadContinuation(cont) {
-      f.invoke(maybeBind()).let(::Just)
-    }.startCoroutineUninterceptedOrReturn()
-  }
-
-fun <A> SuspendingComputation<Maybe<A>>.maybeBind(): MaybeBind =
-  object : MaybeBind {
-    override suspend fun <B> Maybe<B>.invoke(): B =
-      when (val m = this) {
-        is Just -> m.a
-        None -> shift(None)
-      }
   }
 
 internal suspend fun Throwable.suspend(): Nothing =

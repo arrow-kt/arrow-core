@@ -4,6 +4,7 @@ import arrow.continuations.generic.ShortCircuit
 import arrow.continuations.generic.ControlThrowable
 import arrow.continuations.generic.DelimContScope
 import arrow.continuations.generic.DelimitedScope
+import arrow.continuations.generic.RestrictedScope
 import arrow.continuations.generic.SuspendMonadContinuation
 import arrow.continuations.generic.SuspendedScope
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
@@ -20,7 +21,7 @@ object Reset {
    * use `Either.catch`, `Validated.catch` etc or `e.nonFatalOrThrow()`
    * to ensure you're not catching `ShortCircuit`.
    */
-  suspend fun <A> single(block: suspend SuspendedScope<A>.() -> A): A =
+  suspend fun <A> suspended(block: suspend SuspendedScope<A>.() -> A): A =
     suspendCoroutineUninterceptedOrReturn { cont ->
       SuspendMonadContinuation(cont, block)
         .startCoroutineUninterceptedOrReturn()
@@ -32,6 +33,6 @@ object Reset {
    * This doesn't allow nesting of computation blocks, or foreign suspension.
    */
   // TODO This should be @RestrictSuspension but that breaks because a superclass is not considered to be correct scope
-  fun <A> eager(block: suspend DelimitedScope<A>.() -> A): A =
+  fun <A> restricted(block: suspend RestrictedScope<A>.() -> A): A =
     DelimContScope(block).invoke()
 }

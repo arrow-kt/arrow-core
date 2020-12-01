@@ -74,7 +74,7 @@ internal open class SuspendMonadContinuation<R>(
       }
     }
 
-  override suspend fun shift(r: R): Nothing =
+  override suspend fun <A> shift(r: R): A =
     throw ShortCircuit(token, r)
 
   fun startCoroutineUninterceptedOrReturn(): Any? =

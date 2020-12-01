@@ -1,30 +1,17 @@
 package arrow.core.computations
 
+import arrow.continuations.Effect
 import arrow.continuations.Reset
-import arrow.continuations.generic.DelimitedScope
-import arrow.continuations.generic.SuspendingComputation
-import arrow.core.computations.suspended.BindSyntax
-import arrow.core.computations.suspended.EagerBindSyntax
+
+fun interface NullableEffect<A> : Effect<A?> {
+  suspend operator fun <B> B?.invoke(): B = this ?: control().shift(null)
+}
 
 @Suppress("ClassName")
-object nullable {
-  fun <A> eager(func: suspend EagerBindSyntax.() -> A?): A? =
-    Reset.eager { func(NullableEagerBindSyntax(this)) }
+object nullable
 
-  suspend operator fun <A> invoke(func: suspend BindSyntax.() -> A?): A? =
-    Reset.single { func(NullableBindSyntax(this)) }
+fun <A> nullable.eager(func: suspend NullableEffect<A>.() -> A?): A? =
+  Reset.restricted { func(NullableEffect { this }) }
 
-  private class NullableEagerBindSyntax<R>(
-    scope: DelimitedScope<R?>
-  ) : EagerBindSyntax, DelimitedScope<R?> by scope {
-    override suspend fun <A> A?.invoke(): A =
-      this ?: shift(null)
-  }
-
-  private class NullableBindSyntax<R>(
-    scope: SuspendingComputation<R?>
-  ) : BindSyntax, SuspendingComputation<R?> by scope {
-    override suspend fun <A> A?.invoke(): A =
-      this ?: shift(null)
-  }
-}
+suspend operator fun <A> nullable.invoke(func: suspend NullableEffect<*>.() -> A?): A? =
+  Reset.suspended { func(NullableEffect {this }) }

@@ -12,7 +12,7 @@ import arrow.typeclasses.suspended.BindSyntax
 object validated {
 
   fun <E, A> eager(c: suspend EagerBind<ValidatedPartialOf<E>>.() -> A): Validated<E, A> =
-    Reset.eager {
+    Reset.restricted {
       Valid(
         c(object : EagerBind<ValidatedPartialOf<E>> {
           override suspend fun <A> Kind<ValidatedPartialOf<E>, A>.invoke(): A =
@@ -25,7 +25,7 @@ object validated {
     }
 
   suspend operator fun <E, A> invoke(c: suspend BindSyntax<ValidatedPartialOf<E>>.() -> A): Validated<E, A> =
-    Reset.single {
+    Reset.suspended {
       Valid(
         c(object : BindSyntax<ValidatedPartialOf<E>> {
           override suspend fun <A> Kind<ValidatedPartialOf<E>, A>.invoke(): A =

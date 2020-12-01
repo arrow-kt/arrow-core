@@ -1,8 +1,8 @@
 package generic
 
-import arrow.continuations.generic.DelimContScope
-import arrow.continuations.generic.DelimitedScope
+import arrow.continuations.Reset
 import arrow.continuations.generic.MultiShotDelimContScope
+import arrow.continuations.generic.RestrictedScope
 import arrow.core.Either
 import arrow.core.Left
 import arrow.core.Tuple2
@@ -12,14 +12,14 @@ import arrow.core.toT
 import io.kotlintest.shouldBe
 
 abstract class ContTestSuite : UnitSpec() {
-  abstract suspend fun <A> runScope(func: (suspend DelimitedScope<A>.() -> A)): A
+  abstract suspend fun <A> runScope(func: (suspend RestrictedScope<A>.() -> A)): A
 
   abstract fun capabilities(): Set<ScopeCapabilities>
 
   init {
     "yield a list (also verifies stacksafety)" {
       runScope<List<Int>> {
-        suspend fun <A> DelimitedScope<List<A>>.yield(a: A): Unit = shift { k -> listOf(a) + k(Unit) }
+        suspend fun <A> RestrictedScope<List<A>>.yield(a: A): Unit = shift { k -> listOf(a) + k(Unit) }
         for (i in 0..10_000) yield(i)
         emptyList()
       } shouldBe (0..10_000).toList()
@@ -90,15 +90,15 @@ sealed class ScopeCapabilities {
 }
 
 class SingleShotContTestSuite : ContTestSuite() {
-  override suspend fun <A> runScope(func: (suspend DelimitedScope<A>.() -> A)): A =
-    DelimContScope.reset(func)
+  override suspend fun <A> runScope(func: (suspend RestrictedScope<A>.() -> A)): A =
+    Reset.restricted { func(this) }
 
   override fun capabilities(): Set<ScopeCapabilities> = emptySet()
 }
 
 class MultiShotContTestSuite : ContTestSuite() {
-  override suspend fun <A> runScope(func: (suspend DelimitedScope<A>.() -> A)): A =
-    MultiShotDelimContScope.reset(func)
+  override suspend fun <A> runScope(func: (suspend RestrictedScope<A>.() -> A)): A =
+    MultiShotDelimContScope.reset { func(this) }
 
   override fun capabilities(): Set<ScopeCapabilities> = setOf(ScopeCapabilities.MultiShot)
 }

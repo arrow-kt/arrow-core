@@ -17,7 +17,7 @@ interface DelimitedScope<R> {
   /**
    * Exit the [DelimitedScope] with [R]
    */
-  suspend fun shift(r: R): Nothing
+  suspend fun <A> shift(r: R): A
 }
 
 
@@ -25,9 +25,9 @@ interface RestrictedScope<R> : DelimitedScope<R> {
   /**
    * Capture the continuation and pass it to [f].
    */
-  suspend fun <A> shift(f: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A
+  suspend fun <A> shift(f: suspend RestrictedScope<R>.(DelimitedContinuation<A, R>) -> R): A
 
-  override suspend fun shift(r: R): Nothing = shift { r }
+  override suspend fun <A> shift(r: R): A = shift { r }
 
 }
 

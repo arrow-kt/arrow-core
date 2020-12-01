@@ -82,8 +82,7 @@ class EitherTest : UnitSpec() {
       SemigroupKLaws.laws(Either.semigroupK(), Either.genK(Gen.id(Gen.int())), Either.eqK(Id.eq(Int.eq()))),
       HashLaws.laws(Either.hash(String.hash(), Int.hash()), GEN, Either.eq(String.eq(), Int.eq())),
       OrderLaws.laws(Either.order(String.order(), Int.order()), GEN),
-      BicrosswalkLaws.laws(Either.bicrosswalk(), Either.genK2(), Either.eqK2()),
-      FxLaws.laws(Gen.int().map(::Right), GEN.map { it }, Either.eqK(String.eq()).liftEq(Int.eq()), either::eager, either::invoke)
+      BicrosswalkLaws.laws(Either.bicrosswalk(), Either.genK2(), Either.eqK2())
     )
 
     "fromNullable should lift value as a Right if it is not null" {
