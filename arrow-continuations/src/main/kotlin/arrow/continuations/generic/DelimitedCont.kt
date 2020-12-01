@@ -19,8 +19,7 @@ interface DelimitedScope<R> {
   suspend fun <A> shift(f: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A
 
   /**
-   * [ControlThrowable] based shifting
+   * Exit the [DelimitedScope] with [R]
    */
-  suspend fun <A> shift(a: R): A
-
+  suspend fun <A> shift(r: R): A = shift { r }
 }

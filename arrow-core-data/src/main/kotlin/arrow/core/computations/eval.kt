@@ -2,7 +2,6 @@ package arrow.core.computations
 
 import arrow.Kind
 import arrow.continuations.Reset
-import arrow.continuations.generic.DelimContScope
 import arrow.core.EagerBind
 import arrow.core.Eval
 import arrow.core.ForEval
@@ -11,8 +10,8 @@ import arrow.typeclasses.suspended.BindSyntax
 
 object eval {
 
-  fun <A> eager(c: suspend EagerBind<ForEval>.() -> A): Eval<A> = runRestrictedSuspension {
-    Reset.single {
+  fun <A> eager(c: suspend EagerBind<ForEval>.() -> A): Eval<A> =
+    Reset.eager {
       Eval.just(
         c(object : EagerBind<ForEval> {
           override suspend fun <A> Kind<ForEval, A>.invoke(): A =
@@ -20,7 +19,6 @@ object eval {
         })
       )
     }
-  }
 
   suspend operator fun <A> invoke(c: suspend BindSyntax<ForEval>.() -> A): Eval<A> =
     Reset.single {

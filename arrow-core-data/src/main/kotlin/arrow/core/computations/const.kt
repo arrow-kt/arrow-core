@@ -2,7 +2,6 @@ package arrow.core.computations
 
 import arrow.Kind
 import arrow.continuations.Reset
-import arrow.continuations.generic.DelimContScope
 import arrow.core.Const
 import arrow.core.ConstPartialOf
 import arrow.core.EagerBind
@@ -12,14 +11,13 @@ import arrow.typeclasses.suspended.BindSyntax
 
 object const {
 
-  fun <A, T> eager(c: suspend EagerBind<ConstPartialOf<A>>.() -> A): Const<A, T> = runRestrictedSuspension {
-    Reset.single {
+  fun <A, T> eager(c: suspend EagerBind<ConstPartialOf<A>>.() -> A): Const<A, T> =
+    Reset.eager {
       c(object : EagerBind<ConstPartialOf<A>> {
         override suspend fun <T> Kind<ConstPartialOf<A>, T>.invoke(): T =
           fix().value() as T
       }).const()
     }
-  }
 
   suspend operator fun <A, T> invoke(c: suspend BindSyntax<ConstPartialOf<A>>.() -> A): Const<A, T> =
     Reset.single {

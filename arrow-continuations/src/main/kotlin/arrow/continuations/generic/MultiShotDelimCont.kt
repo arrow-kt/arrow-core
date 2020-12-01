@@ -1,8 +1,9 @@
 package arrow.continuations.generic
 
 import kotlinx.atomicfu.atomic
+import kotlinx.atomicfu.loop
 import kotlin.coroutines.Continuation
-import kotlin.coroutines.coroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
 import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
@@ -22,12 +23,12 @@ import kotlin.coroutines.suspendCoroutine
  *
  * As per usual understanding of [DelimContScope] is required as I will only be commenting differences for now.
  */
+// @RestrictSuspension
 internal open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedScope<R> {
 
-  //  private val resultVar = atomic<R?>(null)
-//  private val nextShift = atomic<(suspend () -> R)?>(null)
-
-  private val promise: ResettablePromise<R> = ResettablePromise()
+  // TODO Since runs blocking these don't need to be atomic
+  private val resultVar = atomic<R?>(null)
+  private val nextShift = atomic<(suspend () -> R)?>(null)
 
   // TODO This can be append only and needs fast reversed access
   private val shiftFnContinuations = mutableListOf<Continuation<R>>()
@@ -67,55 +68,53 @@ internal open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.
       }
   }
 
-  override suspend fun <A> shift(a: R): A = shift { a }
+  data class CPSCont<A, R>(
+    private val runFunc: suspend DelimitedScope<R>.(A) -> R
+  ) : DelimitedContinuation<A, R> {
+    override suspend fun invoke(a: A): R = DelimContScope<R> { runFunc(a) }.invoke()
+  }
 
   override suspend fun <A> shift(func: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
     suspendCoroutineUninterceptedOrReturn { continueMain ->
       val c = MultiShotCont(continueMain, f, stack, shiftFnContinuations)
-      assert(promise.setShift { this.func(c) })
+      assert(nextShift.compareAndSet(null, suspend { this.func(c) }))
       COROUTINE_SUSPENDED
     }
 
-  @Suppress("UNCHECKED_CAST")
-  suspend fun invoke(): R {
-    val result = f.startCoroutineUninterceptedOrReturn(this, Continuation(coroutineContext) { result ->
-      promise.setResult(result.getOrThrow())
-    })
-    // We suspended, we might receive a result or encounter shiftFn
-    if (result == COROUTINE_SUSPENDED) {
-      while (true) { // Loop as long as we encounter `shift` functions, stop looping when we find an `R`
-        val nextShiftOrResult = promise.await()
-        when (val shiftOrNull = nextShiftOrResult as? (suspend () -> R)) {
-          null -> { // `null` means reset returned with a suspended result
-            promise.setResult(nextShiftOrResult as R)
-            break // Break out of the infinite loop if we have a result
-          }
-          else -> {
-            val r = shiftOrNull.startCoroutineUninterceptedOrReturn(Continuation(coroutineContext) { result ->
-              // Store intermediate result from shift
-              promise.setResult(result.getOrThrow())
-            })
-            // If we suspended here we can just continue to loop because we should now have a new function to run
-            // If we did not suspend we short-circuited and are thus done with looping
-            if (r != COROUTINE_SUSPENDED) {
-              promise.setResult(r as R)
-              break // Break out of the infinite loop if we have a result
-            }
-          }
-        }
-      }
-    } else return result as R
+  suspend fun <A, B> shiftCPS(func: suspend (DelimitedContinuation<A, B>) -> R, c: suspend DelimitedScope<B>.(A) -> B): Nothing =
+    suspendCoroutine {
+      assert(nextShift.compareAndSet(null, suspend { func(CPSCont(c)) }))
+    }
 
-    // We need to finish the partially evaluated shift blocks by passing them our result.
-    // This will update the result via the continuations that now finish up
-    for (c in shiftFnContinuations.asReversed()) c.resume(promise.await() as R)
-    // Return the final result
-    return promise.await() as R
+  // This assumes RestrictSuspension or at least assumes the user to never reference the parent scope in f.
+  suspend fun <A> reset(f: suspend DelimitedScope<A>.() -> A): A =
+    MultiShotDelimContScope(f).invoke()
+
+  fun invoke(): R {
+    f.startCoroutineUninterceptedOrReturn(this, Continuation(EmptyCoroutineContext) { result ->
+      resultVar.value = result.getOrThrow()
+    }).let {
+      if (it == COROUTINE_SUSPENDED) {
+        resultVar.loop { mRes ->
+          if (mRes == null) {
+            val nextShiftFn = nextShift.getAndSet(null)
+              ?: throw IllegalStateException("No further work to do but also no result!")
+            nextShiftFn.startCoroutineUninterceptedOrReturn(Continuation(EmptyCoroutineContext) { result ->
+              resultVar.value = result.getOrThrow()
+            }).let {
+              if (it != COROUTINE_SUSPENDED) resultVar.value = it as R
+            }
+          } else return@let
+        }
+      } else return@invoke it as R
+    }
+    assert(resultVar.value != null)
+    for (c in shiftFnContinuations.asReversed()) c.resume(resultVar.value!!)
+    return resultVar.value!!
   }
 
   companion object {
-    suspend fun <R> reset(f: suspend DelimitedScope<R>.() -> R): R =
-      MultiShotDelimContScope(f).invoke()
+    fun <R> reset(f: suspend DelimitedScope<R>.() -> R): R = MultiShotDelimContScope(f).invoke()
   }
 }
 

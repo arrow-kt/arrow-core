@@ -2,6 +2,7 @@ package generic
 
 import arrow.continuations.generic.ShortCircuit
 import arrow.continuations.generic.SuspendMonadContinuation
+import arrow.continuations.generic.SuspendingComputation
 import arrow.fx.coroutines.ComputationPool
 import arrow.fx.coroutines.ExitCase
 import arrow.fx.coroutines.Promise
@@ -165,7 +166,6 @@ class SuspendingComputationTest : StringSpec({
 
     cancelled.await()
   }
-
 })
 
 suspend fun completeOnCancellation(latch: CompletableDeferred<Unit>, cancelled: CompletableDeferred<Unit>): Unit =
@@ -198,29 +198,34 @@ interface MaybeBind {
 suspend fun <E, A> either(f: suspend EitherBind<E>.() -> A): Either<E, A> =
   suspendCoroutineUninterceptedOrReturn { cont ->
     SuspendMonadContinuation(cont) {
-      f.invoke(object : EitherBind<E> {
-        override suspend fun <B> Either<E, B>.invoke(): B =
-          when (val ea = this) {
-            is Right -> ea.a
-            is Left -> shift(ea)
-          }
-      }).let(::Right)
-    }()
+      f.invoke(eitherBind()).let(::Right)
+    }.startCoroutineUninterceptedOrReturn()
+  }
+
+fun <E, A> SuspendingComputation<Either<E, A>>.eitherBind(): EitherBind<E> =
+  object : EitherBind<E> {
+    override suspend fun <B> Either<E, B>.invoke(): B =
+      when (val ea = this) {
+        is Right -> ea.a
+        is Left -> shift(ea)
+      }
   }
 
 suspend fun <A> maybe(f: suspend MaybeBind.() -> A): Maybe<A> =
   suspendCoroutineUninterceptedOrReturn { cont ->
     SuspendMonadContinuation(cont) {
-      f.invoke(object : MaybeBind {
-        override suspend fun <B> Maybe<B>.invoke(): B =
-          when (val m = this) {
-            is Just -> m.a
-            None -> shift(m as Maybe<A>)
-          }
-      }).let(::Just)
-    }()
+      f.invoke(maybeBind()).let(::Just)
+    }.startCoroutineUninterceptedOrReturn()
   }
 
+fun <A> SuspendingComputation<Maybe<A>>.maybeBind(): MaybeBind =
+  object : MaybeBind {
+    override suspend fun <B> Maybe<B>.invoke(): B =
+      when (val m = this) {
+        is Just -> m.a
+        None -> shift(None)
+      }
+  }
 
 internal suspend fun Throwable.suspend(): Nothing =
   suspendCoroutineUninterceptedOrReturn { cont ->

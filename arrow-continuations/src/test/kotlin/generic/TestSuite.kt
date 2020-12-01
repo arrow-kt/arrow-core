@@ -1,6 +1,5 @@
 package generic
 
-import arrow.continuations.Reset
 import arrow.continuations.generic.DelimContScope
 import arrow.continuations.generic.DelimitedScope
 import arrow.continuations.generic.MultiShotDelimContScope
@@ -92,7 +91,7 @@ sealed class ScopeCapabilities {
 
 class SingleShotContTestSuite : ContTestSuite() {
   override suspend fun <A> runScope(func: (suspend DelimitedScope<A>.() -> A)): A =
-    Reset.single(func)
+    DelimContScope.reset(func)
 
   override fun capabilities(): Set<ScopeCapabilities> = emptySet()
 }
@@ -103,4 +102,3 @@ class MultiShotContTestSuite : ContTestSuite() {
 
   override fun capabilities(): Set<ScopeCapabilities> = setOf(ScopeCapabilities.MultiShot)
 }
-

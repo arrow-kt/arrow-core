@@ -1,9 +1,7 @@
 package arrow.continuations.generic
 
-import arrow.continuations.Reset
-import kotlinx.atomicfu.atomic
 import kotlin.coroutines.Continuation
-import kotlin.coroutines.coroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
 import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
@@ -20,13 +18,17 @@ import kotlin.coroutines.resume
  *  continuation is appended to a list waiting to be invoked with the final result of the block.
  * When running a function we jump back and forth between the main function and every function inside shift via their continuations.
  */
-abstract class DelimContScope<R>(open val f: suspend DelimitedScope<R>.() -> R) : DelimitedScope<R> {
+internal open class DelimContScope<R>(private val f: suspend DelimitedScope<R>.() -> R) : DelimitedScope<R> {
 
   /**
-   * Variable for the next shift block to (partially) run.
    * Variable used for polling the result after suspension happened.
    */
-  internal val promise: ResettablePromise<R> = ResettablePromise()
+  private var resultVar: Any? = EMPTY_VALUE
+
+  /**
+   * Variable for the next shift block to (partially) run, if it is empty that usually means we are done.
+   */
+  private var nextShift: (suspend () -> R)? = null
 
   /**
    * "Callbacks"/partially evaluated shift blocks which now wait for the final result
@@ -49,117 +51,78 @@ abstract class DelimContScope<R>(open val f: suspend DelimitedScope<R>.() -> R) 
   }
 
   /**
+   * Wrapper that handles invoking manually cps transformed continuations
+   */
+  data class CPSCont<A, R>(
+    private val runFunc: suspend DelimitedScope<R>.(A) -> R
+  ) : DelimitedContinuation<A, R> {
+    override suspend fun invoke(a: A): R = DelimContScope<R> { runFunc(a) }.invoke()
+  }
+
+  /**
    * Captures the continuation and set [f] with the continuation to be executed next by the runloop.
    */
   override suspend fun <A> shift(f: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
     suspendCoroutineUninterceptedOrReturn { continueMain ->
       val delCont = SingleShotCont(continueMain, shiftFnContinuations)
-      assert(promise.setShift { this.f(delCont) })
+      assert(nextShift == null)
+      nextShift = suspend { this.f(delCont) }
       COROUTINE_SUSPENDED
     }
 
+  /**
+   * Same as [shift] except we never resume execution because we only continue in [c].
+   */
+  suspend fun <A, B> shiftCPS(f: suspend (DelimitedContinuation<A, B>) -> R, c: suspend DelimitedScope<B>.(A) -> B): Nothing =
+    suspendCoroutineUninterceptedOrReturn {
+      assert(nextShift == null)
+      nextShift = suspend { f(CPSCont(c)) }
+      COROUTINE_SUSPENDED
+    }
+
+  /**
+   * Unsafe if [f] calls [shift] on this scope! Use [NestedDelimContScope] instead if this is a problem.
+   */
+  fun <A> reset(f: suspend DelimitedScope<A>.() -> A): A =
+    DelimContScope(f).invoke()
+
   @Suppress("UNCHECKED_CAST")
-  suspend fun invoke(): R {
-    val result = f.startCoroutineUninterceptedOrReturn(this, Continuation(coroutineContext) { result ->
-      promise.setResult(result.getOrThrow())
-    })
-    // We suspended, we might receive a result or encounter shiftFn
-    if (result == COROUTINE_SUSPENDED) {
-      while (true) { // Loop as long as we encounter `shift` functions, stop looping when we find an `R`
-        val nextShiftOrResult = promise.await()
-        when (val shiftOrNull = nextShiftOrResult as? (suspend () -> R)) {
-          null -> { // `null` means reset returned with a suspended result
-            promise.setResult(nextShiftOrResult as R)
-            break // Break out of the infinite loop if we have a result
-          }
-          else -> {
-            val r = shiftOrNull.startCoroutineUninterceptedOrReturn(Continuation(coroutineContext) { result ->
-              // Store intermediate result from shift
-              promise.setResult(result.getOrThrow())
-            })
-            // If we suspended here we can just continue to loop because we should now have a new function to run
-            // If we did not suspend we short-circuited and are thus done with looping
-            if (r != COROUTINE_SUSPENDED) {
-              promise.setResult(r as R)
-              break // Break out of the infinite loop if we have a result
+  fun invoke(): R {
+    f.startCoroutineUninterceptedOrReturn(this, Continuation(EmptyCoroutineContext) { result ->
+      resultVar = result.getOrThrow()
+    }).let {
+      if (it == COROUTINE_SUSPENDED) {
+        // we have a call to shift so we must start execution the blocks there
+        while (true) {
+          if (resultVar === EMPTY_VALUE) {
+            val nextShiftFn = requireNotNull(nextShift) { "No further work to do but also no result!" }
+            nextShift = null
+            nextShiftFn.startCoroutineUninterceptedOrReturn(Continuation(EmptyCoroutineContext) { result ->
+              resultVar = result.getOrThrow()
+            }).let { nextRes ->
+              // If we suspended here we can just continue to loop because we should now have a new function to run
+              // If we did not suspend we short-circuited and are thus done with looping
+              if (nextRes != COROUTINE_SUSPENDED) resultVar = nextRes as R
             }
-          }
+            // Break out of the infinite loop if we have a result
+          } else return@let
         }
       }
-    } else return result as R
-
+      // we can return directly if we never suspended/called shift
+      else return@invoke it as R
+    }
+    assert(resultVar !== EMPTY_VALUE)
     // We need to finish the partially evaluated shift blocks by passing them our result.
     // This will update the result via the continuations that now finish up
-    for (c in shiftFnContinuations.asReversed()) c.resume(promise.await() as R)
+    for (c in shiftFnContinuations.asReversed()) c.resume(resultVar as R)
     // Return the final result
-    return promise.await() as R
+    return resultVar as R
   }
 
-}
-
-// Uncancellable, let's assume for now computation blocks are uncancellable
-internal class ResettablePromise<A> {
-
-  /**
-   * Can have following states:
-   * - EMPTY
-   * - Continuation that is listening to this value.
-   *    => This is decoupled in a marker, and a mutable var since
-   * - Shift function
-   * - Result value from reset
-   */
-  private val state = atomic<Any?>(EMPTY_VALUE)
-  private var cont: Continuation<Any?>? = null
-
-  fun setResult(a: A): Boolean =
-    when (val value = state.value) {
-      is EMPTY_VALUE -> state.compareAndSet(EMPTY_VALUE, a)
-      is CONT ->
-        state.compareAndSet(value, EMPTY_VALUE)
-          .also {
-            val cont2 = requireNotNull(this.cont)
-            this.cont = null
-            cont2.resume(a)
-          }
-      else -> throw IllegalStateException("Value already set")
-    }
-
-  fun setShift(shiftFn: suspend () -> A): Boolean =
-    when (val value = state.value) {
-      is EMPTY_VALUE -> state.compareAndSet(EMPTY_VALUE, shiftFn)
-      is CONT ->
-        state.compareAndSet(value, EMPTY_VALUE)
-          .also {
-            val cont2 = requireNotNull(this.cont)
-            this.cont = null
-            cont2.resume(shiftFn)
-          }
-      else -> throw IllegalStateException("Value already set")
-    }
-
-  /**
-   * Awaits either a value `R` or a shift function `suspend () -> R`
-   */
-  suspend fun await(): Any? =
-    suspendCoroutineUninterceptedOrReturn { cont: Continuation<Any?> ->
-      when (val value = state.value) {
-        is EMPTY_VALUE -> {
-          if (state.compareAndSet(EMPTY_VALUE, CONT)) {
-            this.cont = cont
-          } else throw IllegalArgumentException("Something went wrong while setting result.")
-          COROUTINE_SUSPENDED
-        }
-        is CONT -> throw IllegalStateException("Cannot be awaited twice")
-        else -> {
-          if (state.compareAndSet(value, EMPTY_VALUE)) value
-          else throw IllegalArgumentException("Something went wrong while setting result.")
-        }
-      }
-    }
-
   companion object {
+    fun <R> reset(f: suspend DelimitedScope<R>.() -> R): R = DelimContScope(f).invoke()
+
     @Suppress("ClassName")
     private object EMPTY_VALUE
-    private object CONT
   }
 }
