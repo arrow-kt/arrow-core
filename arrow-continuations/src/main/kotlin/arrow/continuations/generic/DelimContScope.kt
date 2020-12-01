@@ -1,5 +1,6 @@
 package arrow.continuations.generic
 
+import arrow.continuations.Reset
 import kotlinx.atomicfu.atomic
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.coroutineContext
@@ -19,13 +20,13 @@ import kotlin.coroutines.resume
  *  continuation is appended to a list waiting to be invoked with the final result of the block.
  * When running a function we jump back and forth between the main function and every function inside shift via their continuations.
  */
-class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedScope<R> {
+abstract class DelimContScope<R>(open val f: suspend DelimitedScope<R>.() -> R) : DelimitedScope<R> {
 
   /**
    * Variable for the next shift block to (partially) run.
    * Variable used for polling the result after suspension happened.
    */
-  private val promise: ResettablePromise<R> = ResettablePromise()
+  internal val promise: ResettablePromise<R> = ResettablePromise()
 
   /**
    * "Callbacks"/partially evaluated shift blocks which now wait for the final result
@@ -56,9 +57,6 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
       assert(promise.setShift { this.f(delCont) })
       COROUTINE_SUSPENDED
     }
-
-  override suspend fun <A> shift(a: R): A =
-    shift { a }
 
   @Suppress("UNCHECKED_CAST")
   suspend fun invoke(): R {
@@ -97,12 +95,6 @@ class DelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedSco
     return promise.await() as R
   }
 
-  companion object {
-    suspend fun <R> reset(f: suspend DelimitedScope<R>.() -> R): R = DelimContScope(f).invoke()
-
-    @Suppress("ClassName")
-    private object EMPTY_VALUE
-  }
 }
 
 // Uncancellable, let's assume for now computation blocks are uncancellable

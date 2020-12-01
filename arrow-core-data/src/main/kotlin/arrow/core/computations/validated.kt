@@ -1,6 +1,7 @@
 package arrow.core.computations
 
 import arrow.Kind
+import arrow.continuations.Reset
 import arrow.continuations.generic.DelimContScope
 import arrow.core.EagerBind
 import arrow.core.Valid
@@ -12,7 +13,7 @@ import arrow.typeclasses.suspended.BindSyntax
 object validated {
 
   fun <E, A> eager(c: suspend EagerBind<ValidatedPartialOf<E>>.() -> A): Validated<E, A> = runRestrictedSuspension {
-    DelimContScope.reset {
+    Reset.single {
       Valid(
         c(object : EagerBind<ValidatedPartialOf<E>> {
           override suspend fun <A> Kind<ValidatedPartialOf<E>, A>.invoke(): A =
@@ -26,7 +27,7 @@ object validated {
   }
 
   suspend operator fun <E, A> invoke(c: suspend BindSyntax<ValidatedPartialOf<E>>.() -> A): Validated<E, A> =
-    DelimContScope.reset {
+    Reset.single {
       Valid(
         c(object : BindSyntax<ValidatedPartialOf<E>> {
           override suspend fun <A> Kind<ValidatedPartialOf<E>, A>.invoke(): A =

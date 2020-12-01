@@ -1,5 +1,6 @@
 package arrow.core.computations
 
+import arrow.continuations.Reset
 import arrow.continuations.generic.DelimContScope
 import arrow.continuations.generic.DelimitedScope
 import arrow.core.computations.suspended.BindSyntax
@@ -8,11 +9,11 @@ import arrow.core.computations.suspended.EagerBindSyntax
 @Suppress("ClassName")
 object nullable {
   fun <A> eager(func: suspend EagerBindSyntax.() -> A?): A? = runRestrictedSuspension {
-    DelimContScope.reset { func(NullableEagerBindSyntax(this)) }
+    Reset.single { func(NullableEagerBindSyntax(this)) }
   }
 
   suspend operator fun <A> invoke(func: suspend BindSyntax.() -> A?): A? =
-    DelimContScope.reset { func(NullableBindSyntax(this)) }
+    Reset.single { func(NullableBindSyntax(this)) }
 
   private class NullableEagerBindSyntax<R>(
     scope: DelimitedScope<R?>

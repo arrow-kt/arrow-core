@@ -1,6 +1,7 @@
 package arrow.core.computations
 
 import arrow.Kind
+import arrow.continuations.Reset
 import arrow.continuations.generic.DelimContScope
 import arrow.core.EagerBind
 import arrow.core.Either
@@ -11,7 +12,7 @@ import arrow.typeclasses.suspended.BindSyntax
 object either {
 
   fun <E, A> eager(c: suspend EagerBind<EitherPartialOf<E>>.() -> A): Either<E, A> = runRestrictedSuspension {
-    DelimContScope.reset {
+    Reset.single {
       Either.Right(
         c(object : EagerBind<EitherPartialOf<E>> {
           override suspend fun <A> Kind<EitherPartialOf<E>, A>.invoke(): A =
@@ -25,7 +26,7 @@ object either {
   }
 
   suspend operator fun <E, A> invoke(c: suspend BindSyntax<EitherPartialOf<E>>.() -> A): Either<E, A> =
-    DelimContScope.reset {
+    Reset.single {
       Either.Right(
         c(object : BindSyntax<EitherPartialOf<E>> {
           override suspend fun <A> Kind<EitherPartialOf<E>, A>.invoke(): A =

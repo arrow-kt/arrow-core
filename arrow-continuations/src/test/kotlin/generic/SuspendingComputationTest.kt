@@ -197,7 +197,7 @@ interface MaybeBind {
 
 suspend fun <E, A> either(f: suspend EitherBind<E>.() -> A): Either<E, A> =
   suspendCoroutineUninterceptedOrReturn { cont ->
-    SuspendMonadContinuation(cont).startCoroutineUninterceptedOrReturn {
+    SuspendMonadContinuation(cont) {
       f.invoke(object : EitherBind<E> {
         override suspend fun <B> Either<E, B>.invoke(): B =
           when (val ea = this) {
@@ -205,12 +205,12 @@ suspend fun <E, A> either(f: suspend EitherBind<E>.() -> A): Either<E, A> =
             is Left -> shift(ea)
           }
       }).let(::Right)
-    }
+    }()
   }
 
 suspend fun <A> maybe(f: suspend MaybeBind.() -> A): Maybe<A> =
   suspendCoroutineUninterceptedOrReturn { cont ->
-    SuspendMonadContinuation(cont).startCoroutineUninterceptedOrReturn {
+    SuspendMonadContinuation(cont) {
       f.invoke(object : MaybeBind {
         override suspend fun <B> Maybe<B>.invoke(): B =
           when (val m = this) {
@@ -218,7 +218,7 @@ suspend fun <A> maybe(f: suspend MaybeBind.() -> A): Maybe<A> =
             None -> shift(m as Maybe<A>)
           }
       }).let(::Just)
-    }
+    }()
   }
 
 
