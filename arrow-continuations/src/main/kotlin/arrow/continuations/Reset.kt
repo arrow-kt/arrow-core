@@ -5,7 +5,7 @@ import arrow.continuations.generic.ControlThrowable
 import arrow.continuations.generic.DelimContScope
 import arrow.continuations.generic.DelimitedScope
 import arrow.continuations.generic.SuspendMonadContinuation
-import arrow.continuations.generic.SuspendingComputation
+import arrow.continuations.generic.SuspendedScope
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
 object Reset {
@@ -20,7 +20,7 @@ object Reset {
    * use `Either.catch`, `Validated.catch` etc or `e.nonFatalOrThrow()`
    * to ensure you're not catching `ShortCircuit`.
    */
-  suspend fun <A> single(block: suspend SuspendingComputation<A>.() -> A): A =
+  suspend fun <A> single(block: suspend SuspendedScope<A>.() -> A): A =
     suspendCoroutineUninterceptedOrReturn { cont ->
       SuspendMonadContinuation(cont, block)
         .startCoroutineUninterceptedOrReturn()

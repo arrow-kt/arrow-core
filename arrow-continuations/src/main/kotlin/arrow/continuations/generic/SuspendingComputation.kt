@@ -12,15 +12,11 @@ import kotlin.coroutines.resumeWithException
 internal const val UNDECIDED = 0
 internal const val SUSPENDED = 1
 
-fun interface SuspendingComputation<R> {
-  fun shift(r: R): Nothing
-}
-
 @Suppress("UNCHECKED_CAST")
 internal open class SuspendMonadContinuation<R>(
   private val parent: Continuation<R>,
-  val f: suspend SuspendingComputation<R>.() -> R
-) : Continuation<R>, SuspendingComputation<R> {
+  val f: suspend SuspendedScope<R>.() -> R
+) : Continuation<R>, SuspendedScope<R> {
 
   /**
    * State is either
@@ -78,7 +74,7 @@ internal open class SuspendMonadContinuation<R>(
       }
     }
 
-  override fun shift(r: R): Nothing =
+  override suspend fun shift(r: R): Nothing =
     throw ShortCircuit(token, r)
 
   fun startCoroutineUninterceptedOrReturn(): Any? =

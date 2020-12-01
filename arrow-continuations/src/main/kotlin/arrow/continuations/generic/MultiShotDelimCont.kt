@@ -23,12 +23,11 @@ import kotlin.coroutines.suspendCoroutine
  *
  * As per usual understanding of [DelimContScope] is required as I will only be commenting differences for now.
  */
-// @RestrictSuspension
-internal open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : DelimitedScope<R> {
+internal open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.() -> R) : RestrictedScope<R> {
 
   // TODO Since runs blocking these don't need to be atomic
   private val resultVar = atomic<R?>(null)
-  private val nextShift = atomic<(suspend () -> R)?>(null)
+  private val nextShift = atomic<(suspend DelimitedScope<R>.() -> R)?>(null)
 
   // TODO This can be append only and needs fast reversed access
   private val shiftFnContinuations = mutableListOf<Continuation<R>>()
@@ -77,13 +76,15 @@ internal open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.
   override suspend fun <A> shift(func: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
     suspendCoroutineUninterceptedOrReturn { continueMain ->
       val c = MultiShotCont(continueMain, f, stack, shiftFnContinuations)
-      assert(nextShift.compareAndSet(null, suspend { this.func(c) }))
+      val s : suspend DelimitedScope<R>.() -> R = { this.func(c) }
+      assert(nextShift.compareAndSet(null, s))
       COROUTINE_SUSPENDED
     }
 
-  suspend fun <A, B> shiftCPS(func: suspend (DelimitedContinuation<A, B>) -> R, c: suspend DelimitedScope<B>.(A) -> B): Nothing =
+  suspend fun <A, B> shiftCPS(func: suspend DelimitedScope<R>.(DelimitedContinuation<A, B>) -> R, c: suspend DelimitedScope<B>.(A) -> B): Nothing =
     suspendCoroutine {
-      assert(nextShift.compareAndSet(null, suspend { func(CPSCont(c)) }))
+      val s: suspend DelimitedScope<R>.() -> R = { func(CPSCont(c)) }
+      assert(nextShift.compareAndSet(null, s))
     }
 
   // This assumes RestrictSuspension or at least assumes the user to never reference the parent scope in f.
@@ -99,7 +100,7 @@ internal open class MultiShotDelimContScope<R>(val f: suspend DelimitedScope<R>.
           if (mRes == null) {
             val nextShiftFn = nextShift.getAndSet(null)
               ?: throw IllegalStateException("No further work to do but also no result!")
-            nextShiftFn.startCoroutineUninterceptedOrReturn(Continuation(EmptyCoroutineContext) { result ->
+            nextShiftFn.startCoroutineUninterceptedOrReturn(this, Continuation(EmptyCoroutineContext) { result ->
               resultVar.value = result.getOrThrow()
             }).let {
               if (it != COROUTINE_SUSPENDED) resultVar.value = it as R
@@ -128,5 +129,7 @@ private class PrefilledDelimContScope<R>(
   //  if not we delegate to the normal delimited control implementation
   override suspend fun <A> shift(func: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
     if (stack.size > depth) stack[depth++] as A
-    else super.shift(func).also { depth++ }
+    else
+      @Suppress("ILLEGAL_RESTRICTED_SUSPENDING_FUNCTION_CALL")
+      super.shift(func).also { depth++ }
 }

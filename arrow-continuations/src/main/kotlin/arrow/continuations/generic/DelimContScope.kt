@@ -18,7 +18,7 @@ import kotlin.coroutines.resume
  *  continuation is appended to a list waiting to be invoked with the final result of the block.
  * When running a function we jump back and forth between the main function and every function inside shift via their continuations.
  */
-internal open class DelimContScope<R>(private val f: suspend DelimitedScope<R>.() -> R) : DelimitedScope<R> {
+internal open class DelimContScope<R>(private val f: suspend DelimitedScope<R>.() -> R) : RestrictedScope<R> {
 
   /**
    * Variable used for polling the result after suspension happened.

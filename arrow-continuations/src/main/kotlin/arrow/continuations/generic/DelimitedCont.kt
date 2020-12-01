@@ -1,5 +1,7 @@
 package arrow.continuations.generic
 
+import kotlin.coroutines.RestrictsSuspension
+
 /**
  * Base interface for a continuation
  */
@@ -10,16 +12,24 @@ interface DelimitedContinuation<A, R> {
 /**
  * Base interface for our scope.
  */
-// TODO This should be @RestrictSuspension but that breaks because a superclass is not considered to be correct scope
-// @RestrictsSuspension
 interface DelimitedScope<R> {
+
+  /**
+   * Exit the [DelimitedScope] with [R]
+   */
+  suspend fun shift(r: R): Nothing
+}
+
+
+interface RestrictedScope<R> : DelimitedScope<R> {
   /**
    * Capture the continuation and pass it to [f].
    */
   suspend fun <A> shift(f: suspend DelimitedScope<R>.(DelimitedContinuation<A, R>) -> R): A
 
-  /**
-   * Exit the [DelimitedScope] with [R]
-   */
-  suspend fun <A> shift(r: R): A = shift { r }
+  override suspend fun shift(r: R): Nothing = shift { r }
+
 }
+
+interface SuspendedScope<R> : DelimitedScope<R>
+
