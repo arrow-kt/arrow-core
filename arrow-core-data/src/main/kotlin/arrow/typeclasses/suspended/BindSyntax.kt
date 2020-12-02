@@ -1,7 +1,6 @@
 package arrow.typeclasses.suspended
 
 import arrow.Kind
-import arrow.continuations.generic.DelimitedScope
 
 /**
  * All possible approaches to running [Kind] in the context of [Fx]
