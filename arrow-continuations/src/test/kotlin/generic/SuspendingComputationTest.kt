@@ -166,7 +166,6 @@ class SuspendingComputationTest : StringSpec({
 
     cancelled.await()
   }
-
 })
 
 suspend fun completeOnCancellation(latch: CompletableDeferred<Unit>, cancelled: CompletableDeferred<Unit>): Unit =
