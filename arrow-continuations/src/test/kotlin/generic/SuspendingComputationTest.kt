@@ -165,7 +165,6 @@ class SuspendingComputationTest : StringSpec({
 
     cancelled.await()
   }
-
 })
 
 suspend fun completeOnCancellation(latch: CompletableDeferred<Unit>, cancelled: CompletableDeferred<Unit>): Unit =
@@ -220,7 +219,6 @@ suspend fun <A> maybe(f: suspend MaybeBind.() -> A): Maybe<A> =
       }).let(::Just)
     }
   }
-
 
 internal suspend fun Throwable.suspend(): Nothing =
   suspendCoroutineUninterceptedOrReturn { cont ->
