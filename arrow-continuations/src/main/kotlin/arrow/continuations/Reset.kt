@@ -3,7 +3,6 @@ package arrow.continuations
 import arrow.continuations.generic.ShortCircuit
 import arrow.continuations.generic.ControlThrowable
 import arrow.continuations.generic.DelimContScope
-import arrow.continuations.generic.DelimitedScope
 import arrow.continuations.generic.RestrictedScope
 import arrow.continuations.generic.SuspendMonadContinuation
 import arrow.continuations.generic.SuspendedScope

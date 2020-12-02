@@ -76,7 +76,7 @@ internal open class MultiShotDelimContScope<R>(val f: suspend RestrictedScope<R>
   override suspend fun <A> shift(func: suspend RestrictedScope<R>.(DelimitedContinuation<A, R>) -> R): A =
     suspendCoroutineUninterceptedOrReturn { continueMain ->
       val c = MultiShotCont(continueMain, f, stack, shiftFnContinuations)
-      val s : suspend RestrictedScope<R>.() -> R = { this.func(c) }
+      val s: suspend RestrictedScope<R>.() -> R = { this.func(c) }
       assert(nextShift.compareAndSet(null, s))
       COROUTINE_SUSPENDED
     }

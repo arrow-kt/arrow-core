@@ -1,7 +1,5 @@
 package arrow.continuations.generic
 
-import kotlin.coroutines.RestrictsSuspension
-
 /**
  * Base interface for a continuation
  */
@@ -20,7 +18,6 @@ interface DelimitedScope<R> {
   suspend fun <A> shift(r: R): A
 }
 
-
 interface RestrictedScope<R> : DelimitedScope<R> {
   /**
    * Capture the continuation and pass it to [f].
@@ -28,8 +25,6 @@ interface RestrictedScope<R> : DelimitedScope<R> {
   suspend fun <A> shift(f: suspend RestrictedScope<R>.(DelimitedContinuation<A, R>) -> R): A
 
   override suspend fun <A> shift(r: R): A = shift { r }
-
 }
 
 interface SuspendedScope<R> : DelimitedScope<R>
-
