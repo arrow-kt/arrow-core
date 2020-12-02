@@ -7,9 +7,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
 import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
-import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 import kotlin.coroutines.resumeWithException
-
 
 interface SuspendingComputation<R> {
   suspend fun <A> shift(a: R): A
