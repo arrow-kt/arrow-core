@@ -14,7 +14,7 @@ fun interface ValidatedEffect<E, A> : Effect<Validated<E, A>> {
 }
 
 @RestrictsSuspension
-fun interface RestrictedValidatedEffect<E, A>: ValidatedEffect<E, A>
+fun interface RestrictedValidatedEffect<E, A> : ValidatedEffect<E, A>
 
 @Suppress("ClassName")
 object validated {

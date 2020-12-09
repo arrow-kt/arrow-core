@@ -1,8 +1,6 @@
 package arrow.core
 
-import arrow.core.computations.EvalEffect
 import arrow.core.computations.ValidatedEffect
-import arrow.core.computations.eval
 import arrow.core.computations.validated
 import arrow.core.extensions.eq
 import arrow.core.extensions.hash

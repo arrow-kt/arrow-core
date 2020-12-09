@@ -39,7 +39,6 @@ import arrow.core.test.generators.suspendFunThatReturnsEitherAnyOrAnyOrThrows
 import arrow.core.test.generators.suspendFunThatThrows
 import arrow.core.test.generators.suspendFunThatThrowsFatalThrowable
 import arrow.core.test.generators.throwable
-import arrow.core.test.generators.validated
 import arrow.core.test.laws.BicrosswalkLaws
 import arrow.core.test.laws.BifunctorLaws
 import arrow.core.test.laws.BitraverseLaws

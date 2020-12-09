@@ -14,7 +14,7 @@ fun interface EitherEffect<E, A> : Effect<Either<E, A>> {
 }
 
 @RestrictsSuspension
-fun interface RestrictedEitherEffect<E, A>: EitherEffect<E, A>
+fun interface RestrictedEitherEffect<E, A> : EitherEffect<E, A>
 
 @Suppress("ClassName")
 object either {
