@@ -1,10 +1,8 @@
 package arrow.core.test.laws
 
-import arrow.Kind
-import arrow.core.EagerBind
+import arrow.continuations.Effect
 import arrow.core.test.generators.throwable
 import arrow.typeclasses.Eq
-import arrow.typeclasses.suspended.BindSyntax
 import io.kotlintest.fail
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
@@ -17,40 +15,50 @@ import kotlin.coroutines.intrinsics.intercepted
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 import kotlin.coroutines.startCoroutine
 
-private typealias EagerFxBlock<F, A> = (suspend EagerBind<F>.() -> A) -> Kind<F, A>
-private typealias SuspendFxBlock<F, A> = suspend (suspend BindSyntax<F>.() -> A) -> Kind<F, A>
+private typealias EagerFxBlock<Eff, F, A> = (suspend Eff.() -> A) -> F
+private typealias SuspendFxBlock<Eff, F, A> = suspend (suspend Eff.() -> A) -> F
 
 object FxLaws {
 
-  fun <F, A> laws(
-    pureGen: Gen<Kind<F, A>>, // TODO cannot specify or filter a pure generator, so we need to require an additional one
-    G: Gen<Kind<F, A>>,
-    EQ: Eq<Kind<F, A>>,
-    fxEager: EagerFxBlock<F, A>,
-    fxSuspend: SuspendFxBlock<F, A>
+  fun <Eff : Effect<*>, F, A> laws(
+    pureGen: Gen<F>, // TODO cannot specify or filter a pure generator, so we need to require an additional one
+    G: Gen<F>,
+    EQ: Eq<F>,
+    fxEager: EagerFxBlock<Eff, F, A>,
+    fxSuspend: SuspendFxBlock<Eff, F, A>,
+    invoke: suspend Eff.(F) -> A
   ): List<Law> = listOf(
-    Law("non-suspended fx can bind immediate values") { nonSuspendedCanBindImmediateValues(G, EQ, fxEager) },
-    Law("non-suspended fx can bind immediate exceptions") { nonSuspendedCanBindImmediateException(pureGen, fxEager) },
-    Law("suspended fx can bind immediate values") { suspendedCanBindImmediateValues(G, EQ, fxSuspend) },
-    Law("suspended fx can bind suspended values") { suspendedCanBindSuspendedValues(G, EQ, fxSuspend) },
-    Law("suspended fx can bind immediate exceptions") { suspendedCanBindImmediateExceptions(pureGen, fxSuspend) },
-    Law("suspended fx can bind suspended exceptions") { suspendedCanBindSuspendedExceptions(pureGen, fxSuspend) }
+    Law("non-suspended fx can bind immediate values") { nonSuspendedCanBindImmediateValues(G, EQ, fxEager, invoke) },
+    Law("non-suspended fx can bind immediate exceptions") { nonSuspendedCanBindImmediateException(pureGen, fxEager, invoke) },
+    Law("suspended fx can bind immediate values") { suspendedCanBindImmediateValues(G, EQ, fxSuspend, invoke) },
+    Law("suspended fx can bind suspended values") { suspendedCanBindSuspendedValues(G, EQ, fxSuspend, invoke) },
+    Law("suspended fx can bind immediate exceptions") { suspendedCanBindImmediateExceptions(pureGen, fxSuspend, invoke) },
+    Law("suspended fx can bind suspended exceptions") { suspendedCanBindSuspendedExceptions(pureGen, fxSuspend, invoke) }
   )
 
-  private suspend fun <F, A> nonSuspendedCanBindImmediateValues(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
-    forAll(G) { f: Kind<F, A> ->
+  private suspend fun <Eff : Effect<*>, F, A> nonSuspendedCanBindImmediateValues(
+    G: Gen<F>,
+    EQ: Eq<F>,
+    fxBlock: EagerFxBlock<Eff, F, A>,
+    invoke: suspend Eff.(F) -> A
+  ) {
+    forAll(G) { f: F ->
       fxBlock {
-        val res = f()
+        val res = invoke(f)
         res
       }.equalUnderTheLaw(f, EQ)
     }
   }
 
-  private fun <F, A> nonSuspendedCanBindImmediateException(G: Gen<Kind<F, A>>, fxBlock: EagerFxBlock<F, A>) {
+  private fun <Eff : Effect<*>, F, A> nonSuspendedCanBindImmediateException(
+    G: Gen<F>,
+    fxBlock: EagerFxBlock<Eff, F, A>,
+    invoke: suspend Eff.(F) -> A
+  ) {
     forAll(G, Gen.throwable()) { f, exception ->
       shouldThrow<Throwable> {
         fxBlock {
-          val res = f()
+          val res = invoke(f)
           throw exception
           res
         }
@@ -60,36 +68,50 @@ object FxLaws {
     }
   }
 
-  private suspend fun <F, A> suspendedCanBindImmediateValues(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
+  private suspend fun <Eff : Effect<*>, F, A> suspendedCanBindImmediateValues(
+    G: Gen<F>,
+    EQ: Eq<F>,
+    fxBlock: SuspendFxBlock<Eff, F, A>,
+    invoke: suspend Eff.(F) -> A
+  ) {
     G.random()
       .take(1001)
       .forEach { f ->
         fxBlock {
-          val res = f()
+          val res = invoke(f)
           res
         }.equalUnderTheLaw(f, EQ)
       }
   }
 
-  private suspend fun <F, A> suspendedCanBindSuspendedValues(G: Gen<Kind<F, A>>, EQ: Eq<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
+  private suspend fun <Eff : Effect<*>, F, A> suspendedCanBindSuspendedValues(
+    G: Gen<F>,
+    EQ: Eq<F>,
+    fxBlock: SuspendFxBlock<Eff, F, A>,
+    invoke: suspend Eff.(F) -> A
+  ) {
     G.random()
       .take(10)
       .forEach { f ->
         fxBlock {
-          val res = f.suspend()()
+          val res = invoke(f.suspend())
           res
         }.equalUnderTheLaw(f, EQ)
       }
   }
 
-  private suspend fun <F, A> suspendedCanBindImmediateExceptions(G: Gen<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
+  private suspend fun <Eff : Effect<*>, F, A> suspendedCanBindImmediateExceptions(
+    G: Gen<F>,
+    fxBlock: SuspendFxBlock<Eff, F, A>,
+    invoke: suspend Eff.(F) -> A
+  ) {
     Gen.bind(G, Gen.throwable(), ::Pair)
       .random()
       .take(1001)
       .forEach { (f, exception) ->
         shouldThrow<Throwable> {
           fxBlock {
-            val res = f()
+            val res = invoke(f)
             throw exception
             res
           }
@@ -98,14 +120,18 @@ object FxLaws {
       }
   }
 
-  private suspend fun <F, A> suspendedCanBindSuspendedExceptions(G: Gen<Kind<F, A>>, fxBlock: SuspendFxBlock<F, A>) {
+  private suspend fun <Eff : Effect<*>, F, A> suspendedCanBindSuspendedExceptions(
+    G: Gen<F>,
+    fxBlock: SuspendFxBlock<Eff, F, A>,
+    invoke: suspend Eff.(F) -> A
+  ) {
     Gen.bind(G, Gen.throwable(), ::Pair)
       .random()
       .take(10)
       .forEach { (f, exception) ->
         shouldThrow<Throwable> {
           fxBlock {
-            val res = f()
+            val res = invoke(f)
             exception.suspend()
             res
           }

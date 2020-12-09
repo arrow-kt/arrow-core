@@ -8,7 +8,8 @@ import arrow.continuations.generic.SuspendMonadContinuation
 import arrow.continuations.generic.SuspendedScope
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
-object Reset {
+@PublishedApi
+internal object Reset {
   /**
    * Allows for building suspending single-shot computation blocks.
    * For short-circuiting, or shifting, a [ShortCircuit] [ControlThrowable] is used.

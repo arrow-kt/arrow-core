@@ -1,5 +1,8 @@
 package arrow.core
 
+import arrow.core.computations.EvalEffect
+import arrow.core.computations.ValidatedEffect
+import arrow.core.computations.eval
 import arrow.core.computations.validated
 import arrow.core.extensions.eq
 import arrow.core.extensions.hash
@@ -51,6 +54,8 @@ class ValidatedTest : UnitSpec() {
 
     val VAL_SGK = Validated.semigroupK(String.semigroup())
 
+    val validatedGen = Gen.validated(Gen.string(), Gen.int())
+
     testLaws(
       EqK2Laws.laws(Validated.eqK2(), Validated.genK2()),
       BifunctorLaws.laws(Validated.bifunctor(), Validated.genK2(), Validated.eqK2()),
@@ -70,7 +75,9 @@ class ValidatedTest : UnitSpec() {
         Validated.genK2(),
         Validated.eqK2()
       ),
-      FxLaws.laws<ValidatedPartialOf<String>, Int>(Gen.int().map(::Valid), Gen.validated(Gen.string(), Gen.int()).map { it }, Validated.eqK(String.eq()).liftEq(Int.eq()), validated::eager, validated::invoke)
+      FxLaws.laws<ValidatedEffect<String, *>, Validated<String, Int>, Int>(validatedGen, validatedGen, EQ, validated::eager, validated::invoke) {
+        it()
+      }
     )
 
     "fold should call function on Invalid" {

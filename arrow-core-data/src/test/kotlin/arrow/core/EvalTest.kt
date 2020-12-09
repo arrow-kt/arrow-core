@@ -1,6 +1,7 @@
 package arrow.core
 
 import arrow.Kind
+import arrow.core.computations.EvalEffect
 import arrow.core.computations.eval
 import arrow.core.extensions.eq
 import arrow.core.extensions.eval.applicative.applicative
@@ -33,13 +34,18 @@ class EvalTest : UnitSpec() {
       EQ.run { this@eqK.fix().value().eqv(other.fix().value()) }
   }
 
-  val G: Gen<Kind<ForEval, Int>> = GENK.genK(Gen.int())
+  private val nowGen = Gen.int().map { Eval.now(it) }
+  private val laterGen = Gen.int().map { Eval.later { it } }
+  private val alwaysGen = Gen.int().map { Eval.always { it } }
+  private val evalGen = Gen.oneOf(nowGen, laterGen, alwaysGen)
 
   init {
 
     testLaws(
       BimonadLaws.laws(Eval.bimonad(), Eval.monad(), Eval.comonad(), Eval.functor(), Eval.applicative(), Eval.monad(), GENK, EQK),
-      FxLaws.laws<ForEval, Int>(G, G, EQK.liftEq(Int.eq()), eval::eager, eval::invoke)
+      FxLaws.laws<EvalEffect<*>, Eval<Int>, Int>(evalGen, evalGen, EQK.liftEq(Int.eq()), eval::eager, eval::invoke) {
+        it()
+      }
     )
 
     "should map wrapped value" {
