@@ -764,9 +764,9 @@ import arrow.typeclasses.Show
  * val value =
  * //sampleStart
  *  either<Int, Int> {
- *   val (a) = Either.Right(1)
- *   val (b) = Either.Right(1 + a)
- *   val (c) = Either.Right(1 + b)
+ *   val a = Either.Right(1)()
+ *   val b = Either.Right(1 + a)()
+ *   val c = Either.Right(1 + b)()
  *   a + b + c
  *  }
  * //sampleEnd
