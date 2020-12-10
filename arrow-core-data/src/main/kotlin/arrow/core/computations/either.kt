@@ -14,7 +14,13 @@ fun interface EitherEffect<E, A> : Effect<Either<E, A>> {
 }
 
 @RestrictsSuspension
-fun interface RestrictedEitherEffect<E, A> : EitherEffect<E, A>
+fun interface RestrictedEitherEffect<E, A> : Effect<Either<E, A>> {
+  suspend operator fun <B> Either<E, B>.invoke(): B =
+    when (this) {
+      is Either.Right -> b
+      is Either.Left -> control().shift(this@invoke)
+    }
+}
 
 @Suppress("ClassName")
 object either {

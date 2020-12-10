@@ -2,8 +2,8 @@ package arrow.core
 
 import arrow.Kind
 import arrow.core.computations.EvalEffect
+import arrow.core.computations.RestrictedEvalEffect
 import arrow.core.computations.eval
-import arrow.core.extensions.eq
 import arrow.core.extensions.eval.applicative.applicative
 import arrow.core.extensions.eval.bimonad.bimonad
 import arrow.core.extensions.eval.comonad.comonad
@@ -43,7 +43,10 @@ class EvalTest : UnitSpec() {
 
     testLaws(
       BimonadLaws.laws(Eval.bimonad(), Eval.monad(), Eval.comonad(), Eval.functor(), Eval.applicative(), Eval.monad(), GENK, EQK),
-      FxLaws.laws<EvalEffect<*>, Eval<Int>, Int>(evalGen, evalGen, EQK.liftEq(Int.eq()), eval::eager, eval::invoke) {
+      FxLaws.suspended<EvalEffect<*>, Eval<Int>, Int>(Gen.int().map(Eval.Companion::now), Gen.int().map(Eval.Companion::now), Eq.any(), eval::invoke) {
+        it()
+      },
+      FxLaws.eager<RestrictedEvalEffect<*>, Eval<Int>, Int>(Gen.int().map(Eval.Companion::now), Gen.int().map(Eval.Companion::now), Eq.any(), eval::eager) {
         it()
       }
     )

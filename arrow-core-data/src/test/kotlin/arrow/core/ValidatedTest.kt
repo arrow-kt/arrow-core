@@ -1,5 +1,6 @@
 package arrow.core
 
+import arrow.core.computations.RestrictedValidatedEffect
 import arrow.core.computations.ValidatedEffect
 import arrow.core.computations.validated
 import arrow.core.extensions.eq
@@ -36,6 +37,7 @@ import arrow.core.test.laws.SelectiveLaws
 import arrow.core.test.laws.SemigroupKLaws
 import arrow.core.test.laws.ShowLaws
 import arrow.core.test.laws.TraverseLaws
+import arrow.typeclasses.Eq
 import arrow.typeclasses.Semigroup
 import io.kotlintest.fail
 import io.kotlintest.properties.Gen
@@ -73,7 +75,10 @@ class ValidatedTest : UnitSpec() {
         Validated.genK2(),
         Validated.eqK2()
       ),
-      FxLaws.laws<ValidatedEffect<String, *>, Validated<String, Int>, Int>(validatedGen, validatedGen, EQ, validated::eager, validated::invoke) {
+      FxLaws.suspended<ValidatedEffect<String, *>, Validated<String, Int>, Int>(Gen.int().map(::Valid), Gen.int().map(::Valid), Eq.any(), validated::invoke) {
+        it()
+      },
+      FxLaws.eager<RestrictedValidatedEffect<String, *>, Validated<String, Int>, Int>(Gen.int().map(::Valid), Gen.int().map(::Valid), Eq.any(), validated::eager) {
         it()
       }
     )
