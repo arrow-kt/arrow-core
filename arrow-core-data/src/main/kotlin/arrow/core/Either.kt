@@ -988,7 +988,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     fold({ Validated.invalidNel(it) }, ::Valid)
 
   fun toValidated(): Validated<A, B> =
-    fold({ it.invalid() }, { it.valid() } )
+    fold({ it.invalid() }, { it.valid() })
 
   companion object {
 
