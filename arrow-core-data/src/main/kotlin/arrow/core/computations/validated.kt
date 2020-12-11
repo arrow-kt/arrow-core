@@ -17,6 +17,8 @@ fun interface ValidatedEffect<E, A> : Effect<Validated<E, A>> {
 fun interface RestrictedValidatedEffect<E, A> : ValidatedEffect<E, A>
 
 @Suppress("ClassName")
+@Deprecated("The `either` computation block supports validated with the right short-circuiting semantics",
+ReplaceWith("either", "arrow.core.computations.either"))
 object validated {
   inline fun <E, A> eager(crossinline c: suspend RestrictedValidatedEffect<E, *>.() -> A): Validated<E, A> =
     Effect.restricted(eff = { RestrictedValidatedEffect { it } }, f = c, just = { it.valid() })

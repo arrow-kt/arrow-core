@@ -139,13 +139,13 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Option
  * import arrow.core.Some
  * import arrow.core.Validated
- * import arrow.core.computations.validated
+ * import arrow.core.computations.either
  * import arrow.core.valid
  * import arrow.core.invalid
  *
  * //sampleStart
  * data class Config(val map: Map<String, String>) {
- *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
+ *   suspend fun <A> parse(read: Read<A>, key: String) = either<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
  *     }()
@@ -241,7 +241,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Option
  * import arrow.core.Some
  * import arrow.core.Validated
- * import arrow.core.computations.validated
+ * import arrow.core.computations.either
  * import arrow.core.valid
  * import arrow.core.invalid
  * import arrow.core.NonEmptyList
@@ -274,7 +274,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * }
  *
  * data class Config(val map: Map<String, String>) {
- *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
+ *   suspend fun <A> parse(read: Read<A>, key: String) = either<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
  *     }()
@@ -308,7 +308,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.Option
  * import arrow.core.Some
  * import arrow.core.Validated
- * import arrow.core.computations.validated
+ * import arrow.core.computations.either
  * import arrow.core.valid
  * import arrow.core.invalid
  * import arrow.core.NonEmptyList
@@ -341,7 +341,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * }
  *
  * data class Config(val map: Map<String, String>) {
- *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
+ *   suspend fun <A> parse(read: Read<A>, key: String) = either<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
  *     }()
@@ -382,7 +382,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * import arrow.core.right
  * import arrow.core.Some
  * import arrow.core.Validated
- * import arrow.core.computations.validated
+ * import arrow.core.computations.either
  * import arrow.core.valid
  * import arrow.core.invalid
  *
@@ -405,7 +405,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  * }
  *
  * data class Config(val map: Map<String, String>) {
- *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
+ *   suspend fun <A> parse(read: Read<A>, key: String) = either<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
  *     }()
