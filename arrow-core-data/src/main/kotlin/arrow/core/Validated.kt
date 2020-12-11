@@ -414,7 +414,7 @@ typealias Invalid<E> = Validated.Invalid<E>
  *       ConfigError.ParseConfig(key)
  *     }()
  *     readVal
- *   }
+ *   }.toValidatedNel()
  * }
  *
  * sealed class ConfigError {
