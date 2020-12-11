@@ -137,10 +137,10 @@ typealias Invalid<E> = Validated.Invalid<E>
  *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
- *     }.bind()
+ *     }()
  *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
- *     }.bind()
+ *     }()
  *     readVal
  *   }
  * }
@@ -263,10 +263,10 @@ typealias Invalid<E> = Validated.Invalid<E>
  *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
- *     }.bind()
+ *     }()
  *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
- *     }.bind()
+ *     }()
  *     readVal
  *   }.toValidatedNel()
  * }
@@ -327,10 +327,10 @@ typealias Invalid<E> = Validated.Invalid<E>
  *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
- *     }.bind()
+ *     }()
  *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
- *     }.bind()
+ *     }()
  *     readVal
  *   }.toValidatedNel()
  * }
@@ -388,10 +388,10 @@ typealias Invalid<E> = Validated.Invalid<E>
  *   suspend fun <A> parse(read: Read<A>, key: String) = validated<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
- *     }.bind()
+ *     }()
  *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
- *     }.bind()
+ *     }()
  *     readVal
  *   }
  * }
@@ -669,11 +669,14 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       }
   }
 
-  fun show(SE: Show<E>, SA: Show<A>): String = fold({
-    "Invalid(${SE.run { it.show() }})"
-  }, {
-    "Valid(${SA.run { it.show() }})"
-  })
+  fun show(SE: Show<E>, SA: Show<A>): String = fold(
+    {
+      "Invalid(${SE.run { it.show() }})"
+    },
+    {
+      "Valid(${SA.run { it.show() }})"
+    }
+  )
 
   data class Valid<out A>(val a: A) : Validated<Nothing, A>() {
     override fun toString(): String = show(Show.any(), Show.any())
