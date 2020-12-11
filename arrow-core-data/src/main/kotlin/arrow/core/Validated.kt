@@ -132,7 +132,8 @@ typealias Invalid<E> = Validated.Invalid<E>
  * ```
  *
  * And, as you can see, the parser runs sequentially: it first tries to get the map value and then tries to read it.
- * It's then straightforward to translate this to an Fx block:
+ * It's then straightforward to translate this to an effect block. We use here the `either` block which includes syntax
+ * to obtain `A` from values of `Validated<*, A>` through the [arrow.core.computations.EitherEffect.invoke]
  *
  * ```kotlin:ank
  * import arrow.core.None

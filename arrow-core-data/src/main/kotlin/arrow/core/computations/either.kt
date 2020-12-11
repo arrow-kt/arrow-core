@@ -2,6 +2,8 @@ package arrow.core.computations
 
 import arrow.continuations.Effect
 import arrow.core.Either
+import arrow.core.Left
+import arrow.core.Validated
 import arrow.core.right
 import kotlin.coroutines.RestrictsSuspension
 
@@ -10,6 +12,12 @@ fun interface EitherEffect<E, A> : Effect<Either<E, A>> {
     when (this) {
       is Either.Right -> b
       is Either.Left -> control().shift(this@invoke)
+    }
+
+  suspend operator fun <B> Validated<E, B>.invoke(): B =
+    when (this) {
+      is Validated.Valid -> a
+      is Validated.Invalid -> control().shift(Left(e))
     }
 }
 
