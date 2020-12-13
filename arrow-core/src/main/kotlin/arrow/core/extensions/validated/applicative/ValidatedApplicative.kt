@@ -48,9 +48,7 @@ fun <E> unit(SE: Semigroup<E>): Validated<E, Unit> =
 )
 @Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("map(arg1)"))
 fun <E, A, B> Kind<Kind<ForValidated, E>, A>.map(SE: Semigroup<E>, arg1: Function1<A, B>):
-    Validated<E, B> = arrow.core.Validated.applicative<E>(SE).run {
-  this@map.map<A, B>(arg1) as arrow.core.Validated<E, B>
-}
+    Validated<E, B> = fix().map(arg1)
 
 @JvmName("replicate")
 @Suppress(

@@ -5,6 +5,7 @@ import arrow.core.Eval
 import arrow.core.ForValidated
 import arrow.core.Validated.Companion
 import arrow.core.extensions.ValidatedBifoldable
+import arrow.core.fix
 import arrow.typeclasses.Monoid
 import kotlin.Function1
 import kotlin.Function2
@@ -26,14 +27,13 @@ internal val bifoldable_singleton: ValidatedBifoldable = object :
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+
 @Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("bifoldLeft(arg1, arg2, arg3)"))
 fun <A, B, C> Kind<Kind<ForValidated, A>, B>.bifoldLeft(
   arg1: C,
   arg2: Function2<C, A, C>,
   arg3: Function2<C, B, C>
-): C = arrow.core.Validated.bifoldable().run {
-  this@bifoldLeft.bifoldLeft<A, B, C>(arg1, arg2, arg3) as C
-}
+): C = fix().bifoldLeft(arg1, arg2, arg3)
 
 @JvmName("bifoldRight")
 @Suppress(
@@ -47,9 +47,7 @@ fun <A, B, C> Kind<Kind<ForValidated, A>, B>.bifoldRight(
   arg1: Eval<C>,
   arg2: Function2<A, Eval<C>, Eval<C>>,
   arg3: Function2<B, Eval<C>, Eval<C>>
-): Eval<C> = arrow.core.Validated.bifoldable().run {
-  this@bifoldRight.bifoldRight<A, B, C>(arg1, arg2, arg3) as arrow.core.Eval<C>
-}
+): Eval<C> = fix().bifoldRight(arg1, arg2, arg3)
 
 @JvmName("bifoldMap")
 @Suppress(
@@ -63,9 +61,7 @@ fun <A, B, C> Kind<Kind<ForValidated, A>, B>.bifoldMap(
   arg1: Monoid<C>,
   arg2: Function1<A, C>,
   arg3: Function1<B, C>
-): C = arrow.core.Validated.bifoldable().run {
-  this@bifoldMap.bifoldMap<A, B, C>(arg1, arg2, arg3) as C
-}
+): C = fix().bifoldMap(arg1, arg2, arg3)
 
 @Suppress(
   "UNCHECKED_CAST",

@@ -1088,27 +1088,28 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
 
   inline fun <C> bifoldLeft(
     c: C,
-    fa: (C, A) -> C,
-    fe: (C, E) -> C
-  ): C = fold({ fe(c, it) }, { fa(c, it) })
+    fe: (C, E) -> C,
+    fa: (C, A) -> C
+  ): C =
+    fold({ fe(c, it) }, { fa(c, it) })
 
   inline fun <C> bifoldRight(
     c: Eval<C>,
-    fa: (A, Eval<C>) -> Eval<C>,
-    fe: (E, Eval<C>) -> Eval<C>
+    fe: (E, Eval<C>) -> Eval<C>,
+    fa: (A, Eval<C>) -> Eval<C>
   ): Eval<C> =
     fold({ fe(it, c) }, { fa(it, c) })
 
-  inline fun <C> bifoldMap(MN: Monoid<C>, f: (A) -> C, g: (E) -> C) = MN.run {
-    bifoldLeft(MN.empty(), { c, a -> c.combine(f(a)) }, { c, b -> c.combine(g(b)) })
+  inline fun <C> bifoldMap(MN: Monoid<C>, g: (E) -> C, f: (A) -> C) = MN.run {
+    bifoldLeft(MN.empty(), { c, b -> c.combine(g(b)) }) { c, a -> c.combine(f(a)) }
   }
 
-  fun <C, D> bitraverse(fa: (A) -> Iterable<D>, fe: (E) -> Iterable<C>): List<Validated<C, D>> =
+  fun <C, D> bitraverse(fe: (E) -> Iterable<C>, fa: (A) -> Iterable<D>): List<Validated<C, D>> =
     fold({ fe(it).map { Invalid(it) } }, { fa(it).map { Valid(it) } })
 
   fun <C, D, EE> bitraverseEither(
-    fa: (A) -> Either<EE, C>,
-    fe: (E) -> Either<EE, D>
+    fe: (E) -> Either<EE, D>,
+    fa: (A) -> Either<EE, C>
   ): Either<EE, Validated<D, C>> =
     fold({ fe(it).map { Invalid(it) } }, { fa(it).map { Valid(it) } })
 

@@ -3,6 +3,8 @@ package arrow.core.extensions.validated.eq
 import arrow.core.Validated
 import arrow.core.Validated.Companion
 import arrow.core.extensions.ValidatedEq
+import arrow.core.fix
+import arrow.core.neqv
 import arrow.typeclasses.Eq
 import kotlin.Boolean
 import kotlin.Suppress
@@ -20,9 +22,8 @@ fun <L, R> Validated<L, R>.neqv(
   EQL: Eq<L>,
   EQR: Eq<R>,
   arg1: Validated<L, R>
-): Boolean = arrow.core.Validated.eq<L, R>(EQL, EQR).run {
-  this@neqv.neqv(arg1) as kotlin.Boolean
-}
+): Boolean =
+  fix().neqv(EQL, EQR, arg1)
 
 @Suppress(
   "UNCHECKED_CAST",

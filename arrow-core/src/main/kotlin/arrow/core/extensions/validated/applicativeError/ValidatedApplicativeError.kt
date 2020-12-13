@@ -141,14 +141,12 @@ fun <E, A> ApplicativeError<Kind<ForValidated, E>, Throwable>.catch(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Validated.catch(arg0, arg1)", "arrow.core.catch"))
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Validated.catch(arg0) { arg1() } ", "arrow.core.catch"))
 suspend fun <E, A> effectCatch(
   SE: Semigroup<E>,
   arg0: Function1<Throwable, E>,
   arg1: suspend () -> A
-): Validated<E, A> = arrow.core.Validated
-  .applicativeError<E>(SE)
-  .effectCatch<A>(arg0, arg1) as arrow.core.Validated<E, A>
+): Validated<E, A> = Validated.catch(arg0) { arg1() }
 
 @JvmName("effectCatch")
 @Suppress(
