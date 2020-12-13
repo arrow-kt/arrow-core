@@ -720,6 +720,9 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
     fun <L, R> show(SL: Show<L>, SR: Show<R>): Show<Validated<L, R>> =
       ValidatedShow(SL, SR)
 
+    fun <L, R> order(OL: Order<L>, OR: Order<R>): Order<Validated<L, R>> =
+      ValidatedOrder(OL, OR)
+
     /**
      * Lifts a function `A -> B` to the [Validated] structure.
      *
