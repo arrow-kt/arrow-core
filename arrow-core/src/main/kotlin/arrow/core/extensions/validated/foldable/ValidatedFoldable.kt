@@ -3,7 +3,9 @@ package arrow.core.extensions.validated.foldable
 import arrow.Kind
 import arrow.core.Eval
 import arrow.core.ForValidated
+import arrow.core.None
 import arrow.core.Option
+import arrow.core.Some
 import arrow.core.fold as _fold
 import arrow.core.combineAll as _combineAll
 import arrow.core.Validated
@@ -124,7 +126,7 @@ fun <E, A> Kind<Kind<ForValidated, E>, A>.reduceRightOption(arg1: Function2<A, E
 )
 @Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("combineAll(arg1)", "arrow.core.combineAll"))
 fun <E, A> Kind<Kind<ForValidated, E>, A>.combineAll(arg1: Monoid<A>): A =
-   fix()._combineAll(arg1)
+  fix()._combineAll(arg1)
 
 @JvmName("foldMap")
 @Suppress(
@@ -267,7 +269,7 @@ fun <E, A> Kind<Kind<ForValidated, E>, A>.size(arg1: Monoid<Long>): Long =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-// TODO
+@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Validated")
 fun <E, G, A, B, AP : Applicative<G>, MO : Monoid<B>> Kind<Kind<ForValidated, E>, A>.foldMapA(
   arg1: AP,
   arg2: MO,
@@ -283,7 +285,7 @@ fun <E, G, A, B, AP : Applicative<G>, MO : Monoid<B>> Kind<Kind<ForValidated, E>
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-// TODO
+@Deprecated("Monad typeclasses is deprecated. Use concrete methods on Validated")
 fun <E, G, A, B, MA : Monad<G>, MO : Monoid<B>> Kind<Kind<ForValidated, E>, A>.foldMapM(
   arg1: MA,
   arg2: MO,
@@ -299,7 +301,7 @@ fun <E, G, A, B, MA : Monad<G>, MO : Monoid<B>> Kind<Kind<ForValidated, E>, A>.f
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-// TODO
+@Deprecated("Monad typeclasses is deprecated. Use concrete methods on Validated")
 fun <E, G, A, B> Kind<Kind<ForValidated, E>, A>.foldM(
   arg1: Monad<G>,
   arg2: B,
@@ -315,11 +317,12 @@ fun <E, G, A, B> Kind<Kind<ForValidated, E>, A>.foldM(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-// TODO
+@Deprecated(
+  "@extension kinded projected functions are deprecated.",
+  ReplaceWith("if (arg1 < 0L) None else fix().fold({ None }, { if(arg1 == 0L) Some(it) else None })", "arrow.core.None", "arrow.core.Some")
+)
 fun <E, A> Kind<Kind<ForValidated, E>, A>.get(arg1: Long): Option<A> =
-  arrow.core.Validated.foldable<E>().run {
-    this@get.get<A>(arg1) as arrow.core.Option<A>
-  }
+  if (arg1 < 0L) None else fix().fold({ None }, { if (arg1 == 0L) Some(it) else None })
 
 @JvmName("firstOption")
 @Suppress(

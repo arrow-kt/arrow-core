@@ -124,9 +124,9 @@ fun <E, A> catch(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-// TODO check signature. Should return Validated<Throwable, A>
-// The `ApplicativeError<Kind<ForValidated, E>, Throwable>` instance doens't exist for Validated, only `ApplicativeError<Kind<ForValidated, Throwable>, Throwable>`
-// @Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Validated.catch(arg0, arg1)", "arrow.core.catch"))
+
+
+@Deprecated("This methods is invalid for Validated. ApplicativeError<F, Throwable> is inconsistent in `F`")
 fun <E, A> ApplicativeError<Kind<ForValidated, E>, Throwable>.catch(
   SE: Semigroup<E>,
   arg1: Function0<A>
@@ -157,8 +157,7 @@ suspend fun <E, A> effectCatch(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-// TODO check signature. Should return Validated<Throwable, A>
-// The `ApplicativeError<Kind<ForValidated, E>, Throwable>` instance doens't exist for Validated, only `ApplicativeError<Kind<ForValidated, Throwable>, Throwable>`
+@Deprecated("This methods is invalid for Validated. ApplicativeError<F, Throwable> is inconsistent in `F`")
 suspend fun <E, F, A> ApplicativeError<F, Throwable>.effectCatch(
   SE: Semigroup<E>,
   arg1: suspend () -> A
