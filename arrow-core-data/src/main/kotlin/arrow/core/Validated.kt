@@ -717,6 +717,9 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
     fun <L, R> hash(HL: Hash<L>, HR: Hash<R>): Hash<Validated<L, R>> =
       ValidatedHash(HL, HR)
 
+    fun <L, R> show(SL: Show<L>, SR: Show<R>): Show<Validated<L, R>> =
+      ValidatedShow(SL, SR)
+
     /**
      * Lifts a function `A -> B` to the [Validated] structure.
      *
