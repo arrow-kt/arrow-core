@@ -1427,11 +1427,14 @@ fun <L, R> Validated<L, R>.sort(OL: Order<L>, OR: Order<R>, b: Validated<L, R>):
 fun <E, A, B> Validated<E, Either<A, B>>.select(f: Validated<E, (A) -> B>): Validated<E, B> =
   fold({ Invalid(it) }, { it.fold({ l -> f.map { ff -> ff(l) } }, { r -> r.valid() }) })
 
-fun <E, A, B, C> Validated<E, Either<A, B>>.branch(fl: Validated<E, (A) -> C>, fr: Validated<E, (B) -> C>): Validated<E, C> {
-  val nested: Validated<E, Either<A, Either<B, Nothing>>> = map { it.map(::Left) }
-  val ffl: Validated<E, (A) -> Either<Nothing, C>> = fl.map { it.andThen(::Right) }
-  return nested.select(ffl).select(fr)
-}
+fun <E, A, B, C> Validated<E, Either<A, B>>.branch(fl: Validated<E, (A) -> C>, fr: Validated<E, (B) -> C>): Validated<E, C> =
+  when (this) {
+    is Validated.Valid -> when (val either = this.a) {
+      is Either.Left -> fl.map { f -> f(either.a) }
+      is Either.Right -> fr.map { f -> f(either.b) }
+    }
+    is Validated.Invalid -> this
+  }
 
 private fun <E> Validated<E, Boolean>.selector(): Validated<E, Either<Unit, Unit>> =
   map { bool -> if (bool) Either.leftUnit else Either.unit }
