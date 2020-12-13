@@ -133,7 +133,6 @@ interface ValidatedSemigroupK<E> : SemigroupK<ValidatedPartialOf<E>> {
     fix().combineK(SE(), y)
 }
 
-@extension
 interface ValidatedEq<L, R> : Eq<Validated<L, R>> {
 
   fun EQL(): Eq<L>

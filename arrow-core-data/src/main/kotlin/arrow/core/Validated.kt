@@ -2,6 +2,7 @@ package arrow.core
 
 import arrow.Kind
 import arrow.typeclasses.Applicative
+import arrow.typeclasses.Eq
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 
@@ -700,6 +701,10 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       } catch (e: Throwable) {
         e.nonFatalOrThrow().invalidNel()
       }
+
+    /** Construct an [Eq] instance which use [EQL] and [EQR] to compare the [Invalid] and [Valid] cases **/
+    fun <L, R> eq(EQL: Eq<L>, EQR: Eq<R>): Eq<Validated<L, R>> =
+      ValidatedEq(EQL, EQR)
   }
 
   fun show(SE: Show<E>, SA: Show<A>): String = fold(
@@ -806,6 +811,36 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
 
   fun swap(): Validated<A, E> =
     fold(::Valid, ::Invalid)
+}
+
+/**
+ * Compares two instances of [Validated] and returns true if they're considered not equal for this instance.
+ *
+ * @receiver object to compare with [arg1]
+ * @param arg1 object to compare with [this@neqv]
+ * @returns false if [this@neqv] and [arg1] are equivalent, true otherwise.
+ */
+fun <E, B> Validated<E, B>.neqv(
+  EQL: Eq<E>,
+  EQR: Eq<B>,
+  arg1: Validated<E, B>
+): Boolean = Validated.eq(EQL, EQR).run {
+  this@neqv.neqv(arg1)
+}
+
+/**
+ * Compares two instances of [Validated] and returns true if they're considered not equal for this instance.
+ *
+ * @receiver object to compare with [arg1]
+ * @param arg1 object to compare with [this@neqv]
+ * @returns false if [this@neqv] and [arg1] are equivalent, true otherwise.
+ */
+fun <E, B> Validated<E, B>.eqv(
+  EQL: Eq<E>,
+  EQR: Eq<B>,
+  arg1: Validated<E, B>
+): Boolean = Validated.eq(EQL, EQR).run {
+  this@eqv.neqv(arg1)
 }
 
 /**
@@ -925,3 +960,20 @@ inline fun <A> A.validNel(): ValidatedNel<Nothing, A> =
 
 inline fun <E> E.invalidNel(): ValidatedNel<E, Nothing> =
   Validated.invalidNel(this)
+
+private class ValidatedEq<L, R>(
+  private val EQL: Eq<L>,
+  private val EQR: Eq<R>
+) : Eq<Validated<L, R>> {
+
+  override fun Validated<L, R>.eqv(b: Validated<L, R>): Boolean = when (this) {
+    is Valid -> when (b) {
+      is Invalid -> false
+      is Valid -> EQR.run { a.eqv(b.a) }
+    }
+    is Invalid -> when (b) {
+      is Invalid -> EQL.run { e.eqv(b.e) }
+      is Valid -> false
+    }
+  }
+}
