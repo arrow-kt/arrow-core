@@ -1314,87 +1314,59 @@ fun <E, A, B> Validated<E, A>.product(SE: Semigroup<E>, fb: Validated<E, B>): Va
 fun <E, A, B, Z> Validated<E, A>.map2(SE: Semigroup<E>, fb: Validated<E, B>, f: (Tuple2<A, B>) -> Z): Validated<E, Z> =
   product(SE, fb).map(f)
 
+@JvmName("product3")
 fun <EE, A, B, Z> Validated<EE, Tuple2<A, B>>.product(
   SE: Semigroup<EE>,
   other: Validated<EE, Z>,
-  dummyImplicit: Unit = Unit
 ): Validated<EE, Tuple3<A, B, Z>> =
   map2(SE, other) { (ab, c) -> Tuple3(ab.a, ab.b, c) }
 
+@JvmName("product4")
 fun <EE, A, B, C, Z> Validated<EE, Tuple3<A, B, C>>.product(
   SE: Semigroup<EE>,
   other: Validated<EE, Z>,
-  dummyImplicit: Unit = Unit,
-  dummyImplicit2: Unit = Unit
 ): Validated<EE, Tuple4<A, B, C, Z>> =
   map2(SE, other) { (abc, d) -> Tuple4(abc.a, abc.b, abc.c, d) }
 
+@JvmName("product5")
 fun <EE, A, B, C, D, Z> Validated<EE, Tuple4<A, B, C, D>>.product(
   SE: Semigroup<EE>,
   other: Validated<EE, Z>,
-  dummyImplicit: Unit = Unit,
-  dummyImplicit2: Unit = Unit,
-  dummyImplicit3: Unit = Unit
 ): Validated<EE, Tuple5<A, B, C, D, Z>> =
   map2(SE, other) { (abcd, e) -> Tuple5(abcd.a, abcd.b, abcd.c, abcd.d, e) }
 
+@JvmName("product6")
 fun <EE, A, B, C, D, E, Z> Validated<EE, Tuple5<A, B, C, D, E>>.product(
   SE: Semigroup<EE>,
   other: Validated<EE, Z>,
-  dummyImplicit: Unit = Unit,
-  dummyImplicit2: Unit = Unit,
-  dummyImplicit3: Unit = Unit,
-  dummyImplicit4: Unit = Unit
 ): Validated<EE, Tuple6<A, B, C, D, E, Z>> =
   map2(SE, other) { (abcde, f) -> Tuple6(abcde.a, abcde.b, abcde.c, abcde.d, abcde.e, f) }
 
+@JvmName("product7")
 fun <EE, A, B, C, D, E, FF, Z> Validated<EE, Tuple6<A, B, C, D, E, FF>>.product(
   SE: Semigroup<EE>,
   other: Validated<EE, Z>,
-  dummyImplicit: Unit = Unit,
-  dummyImplicit2: Unit = Unit,
-  dummyImplicit3: Unit = Unit,
-  dummyImplicit4: Unit = Unit,
-  dummyImplicit5: Unit = Unit
 ): Validated<EE, Tuple7<A, B, C, D, E, FF, Z>> =
   map2(SE, other) { (abcdef, g) -> Tuple7(abcdef.a, abcdef.b, abcdef.c, abcdef.d, abcdef.e, abcdef.f, g) }
 
+@JvmName("product8")
 fun <EE, A, B, C, D, E, FF, G, Z> Validated<EE, Tuple7<A, B, C, D, E, FF, G>>.product(
   SE: Semigroup<EE>,
   other: Validated<EE, Z>,
-  dummyImplicit: Unit = Unit,
-  dummyImplicit2: Unit = Unit,
-  dummyImplicit3: Unit = Unit,
-  dummyImplicit4: Unit = Unit,
-  dummyImplicit5: Unit = Unit,
-  dummyImplicit6: Unit = Unit
 ): Validated<EE, Tuple8<A, B, C, D, E, FF, G, Z>> =
   map2(SE, other) { (abcdefg, h) -> Tuple8(abcdefg.a, abcdefg.b, abcdefg.c, abcdefg.d, abcdefg.e, abcdefg.f, abcdefg.g, h) }
 
+@JvmName("product9")
 fun <EE, A, B, C, D, E, FF, G, H, Z> Validated<EE, Tuple8<A, B, C, D, E, FF, G, H>>.product(
   SE: Semigroup<EE>,
   other: Validated<EE, Z>,
-  dummyImplicit: Unit = Unit,
-  dummyImplicit2: Unit = Unit,
-  dummyImplicit3: Unit = Unit,
-  dummyImplicit4: Unit = Unit,
-  dummyImplicit5: Unit = Unit,
-  dummyImplicit6: Unit = Unit,
-  dummyImplicit7: Unit = Unit
 ): Validated<EE, Tuple9<A, B, C, D, E, FF, G, H, Z>> =
   map2(SE, other) { (abcdefgh, i) -> Tuple9(abcdefgh.a, abcdefgh.b, abcdefgh.c, abcdefgh.d, abcdefgh.e, abcdefgh.f, abcdefgh.g, abcdefgh.h, i) }
 
+@JvmName("product10")
 fun <EE, A, B, C, D, E, FF, G, H, I, Z> Validated<EE, Tuple9<A, B, C, D, E, FF, G, H, I>>.product(
   SE: Semigroup<EE>,
   other: Validated<EE, Z>,
-  dummyImplicit: Unit = Unit,
-  dummyImplicit2: Unit = Unit,
-  dummyImplicit3: Unit = Unit,
-  dummyImplicit4: Unit = Unit,
-  dummyImplicit5: Unit = Unit,
-  dummyImplicit6: Unit = Unit,
-  dummyImplicit7: Unit = Unit,
-  dummyImplicit9: Unit = Unit
 ): Validated<EE, Tuple10<A, B, C, D, E, FF, G, H, I, Z>> =
   map2(SE, other) { (abcdefghi, j) -> Tuple10(abcdefghi.a, abcdefghi.b, abcdefghi.c, abcdefghi.d, abcdefghi.e, abcdefghi.f, abcdefghi.g, abcdefghi.h, abcdefghi.i, j) }
 
