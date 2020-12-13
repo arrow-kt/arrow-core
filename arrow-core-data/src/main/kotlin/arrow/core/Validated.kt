@@ -3,8 +3,13 @@ package arrow.core
 import arrow.Kind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Eq
+import arrow.typeclasses.Hash
+import arrow.typeclasses.Monoid
+import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
+import arrow.typeclasses.defaultSalt
+import arrow.typeclasses.hashWithSalt
 
 typealias ValidatedNel<E, A> = Validated<Nel<E>, A>
 typealias Valid<A> = Validated.Valid<A>
@@ -688,14 +693,17 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
     inline fun <E, A> fromNullable(value: A?, ifNull: () -> E): Validated<E, A> =
       value?.let(::Valid) ?: Invalid(ifNull())
 
-    suspend fun <A> catch(f: suspend () -> A): Validated<Throwable, A> =
+    inline fun <A> catch(f: () -> A): Validated<Throwable, A> =
       try {
         f().valid()
       } catch (e: Throwable) {
         e.nonFatalOrThrow().invalid()
       }
 
-    suspend fun <A> catchNel(f: suspend () -> A): ValidatedNel<Throwable, A> =
+    inline fun <E, A> catch(recover: (Throwable) -> E, f: () -> A): Validated<E, A> =
+      catch(f).mapLeft(recover)
+
+    inline fun <A> catchNel(f: () -> A): ValidatedNel<Throwable, A> =
       try {
         f().validNel()
       } catch (e: Throwable) {
@@ -705,7 +713,401 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
     /** Construct an [Eq] instance which use [EQL] and [EQR] to compare the [Invalid] and [Valid] cases **/
     fun <L, R> eq(EQL: Eq<L>, EQR: Eq<R>): Eq<Validated<L, R>> =
       ValidatedEq(EQL, EQR)
+
+    fun <L, R> hash(HL: Hash<L>, HR: Hash<R>): Hash<Validated<L, R>> =
+      ValidatedHash(HL, HR)
+
+    /**
+     * Lifts a function `A -> B` to the [Validated] structure.
+     *
+     * `A -> B -> Validated<E, A> -> Validated<E, B>`
+     *
+     * ```kotlin:ank:playground:extension
+     * import arrow.core.*
+     *
+     * fun main(args: Array<String>) {
+     *   val result =
+     *   //sampleStart
+     *   Validated.lift { s: CharSequence -> "$s World" }("Hello".valid())
+     *   //sampleEnd
+     *   println(result)
+     * }
+     * ```
+     */
+    fun <E, A, B> lift(f: (A) -> B): (Validated<E, A>) -> Validated<E, B> =
+      { fa -> fa.map(f) }
+
+    /**
+     * Lifts two functions to the Bifunctor type.
+     *
+     * ```kotlin:ank
+     * import arrow.core.*
+     *
+     * fun main(args: Array<String>) {
+     *   //sampleStart
+     *   val f = Validated.lift(String::toUpperCase, Int::inc)
+     *   val res1 = f("test".invalid())
+     *   val res2 = f(1.valid())
+     *   //sampleEnd
+     *   println("res1: $res1")
+     *   println("res2: $res2")
+     * }
+     * ```
+     */
+    fun <A, B, C, D> lift(fl: (A) -> C, fr: (B) -> D): (Validated<A, B>) -> Validated<C, D> =
+      { fa -> fa.bimap(fl, fr) }
+
+    val s = 1.inc()
+
+    val unit: Validated<Nothing, Unit> = Unit.valid()
+
+    fun <E> unit(): Validated<E, Unit> = unit
+
+    fun <EE, A, B, Z> mapN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      lbd: (Tuple2<A, B>) -> Z
+    ): Validated<EE, Z> =
+      tupledN(SE, a, b).map(lbd)
+
+    fun <EE, A, B, C, Z> mapN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      c: Validated<EE, C>,
+      lbd: (Tuple3<A, B, C>) -> Z
+    ): Validated<EE, Z> =
+      tupledN(SE, a, b, c).map(lbd)
+
+    fun <EE, A, B, C, D, Z> mapN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      c: Validated<EE, C>,
+      d: Validated<EE, D>,
+      lbd: (Tuple4<A, B, C, D>) -> Z
+    ): Validated<EE, Z> =
+      tupledN(SE, a, b, c, d).map(lbd)
+
+    fun <EE, A, B, C, D, E, Z> mapN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      c: Validated<EE, C>,
+      d: Validated<EE, D>,
+      e: Validated<EE, E>,
+      lbd: (Tuple5<A, B, C, D, E>) -> Z
+    ): Validated<EE, Z> =
+      tupledN(SE, a, b, c, d, e).map(lbd)
+
+    fun <EE, A, B, C, D, E, FF, Z> mapN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      c: Validated<EE, C>,
+      d: Validated<EE, D>,
+      e: Validated<EE, E>,
+      f: Validated<EE, FF>,
+      lbd: (Tuple6<A, B, C, D, E, FF>) -> Z
+    ): Validated<EE, Z> =
+      tupledN(SE, a, b, c, d, e, f).map(lbd)
+
+    fun <EE, A, B, C, D, E, FF, G, Z> mapN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      c: Validated<EE, C>,
+      d: Validated<EE, D>,
+      e: Validated<EE, E>,
+      f: Validated<EE, FF>,
+      g: Validated<EE, G>,
+      lbd: (Tuple7<A, B, C, D, E, FF, G>) -> Z
+    ): Validated<EE, Z> =
+      tupledN(SE, a, b, c, d, e, f, g).map(lbd)
+
+    fun <EE, A, B, C, D, E, FF, G, H, Z> mapN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      c: Validated<EE, C>,
+      d: Validated<EE, D>,
+      e: Validated<EE, E>,
+      f: Validated<EE, FF>,
+      g: Validated<EE, G>,
+      h: Validated<EE, H>,
+      lbd: (Tuple8<A, B, C, D, E, FF, G, H>) -> Z
+    ): Validated<EE, Z> =
+      tupledN(SE, a, b, c, d, e, f, g, h).map(lbd)
+
+    fun <EE, A, B, C, D, E, FF, G, H, I, Z> mapN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      c: Validated<EE, C>,
+      d: Validated<EE, D>,
+      e: Validated<EE, E>,
+      f: Validated<EE, FF>,
+      g: Validated<EE, G>,
+      h: Validated<EE, H>,
+      i: Validated<EE, I>,
+      lbd: (Tuple9<A, B, C, D, E, FF, G, H, I>) -> Z
+    ): Validated<EE, Z> =
+      tupledN(SE, a, b, c, d, e, f, g, h, i).map(lbd)
+
+    fun <EE, A, B, C, D, E, FF, G, H, I, J, Z> mapN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      c: Validated<EE, C>,
+      d: Validated<EE, D>,
+      e: Validated<EE, E>,
+      f: Validated<EE, FF>,
+      g: Validated<EE, G>,
+      h: Validated<EE, H>,
+      i: Validated<EE, I>,
+      j: Validated<EE, J>,
+      lbd: (Tuple10<A, B, C, D, E, FF, G, H, I, J>) -> Z
+    ): Validated<EE, Z> =
+      tupledN(SE, a, b, c, d, e, f, g, h, i, j).map(lbd)
+
+    fun <EE, A, B> tupledN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>
+    ): Validated<EE, Tuple2<A, B>> =
+      a.product(SE, b)
+
+    fun <EE, A, B, C> tupledN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      c: Validated<EE, C>
+    ): Validated<EE, Tuple3<A, B, C>> =
+      a.product(SE, b).product(SE, c)
+
+    fun <EE, A, B, C, D> tupledN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      c: Validated<EE, C>,
+      d: Validated<EE, D>
+    ): Validated<EE, Tuple4<A, B, C, D>> =
+      a.product(SE, b).product(SE, c).product(SE, d)
+
+    fun <EE, A, B, C, D, E> tupledN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      c: Validated<EE, C>,
+      d: Validated<EE, D>,
+      e: Validated<EE, E>
+    ): Validated<EE, Tuple5<A, B, C, D, E>> =
+      a.product(SE, b).product(SE, c).product(SE, d).product(SE, e)
+
+    fun <EE, A, B, C, D, E, FF> tupledN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      c: Validated<EE, C>,
+      d: Validated<EE, D>,
+      e: Validated<EE, E>,
+      f: Validated<EE, FF>
+    ): Validated<EE, Tuple6<A, B, C, D, E, FF>> =
+      a.product(SE, b).product(SE, c).product(SE, d).product(SE, e).product(SE, f)
+
+    fun <EE, A, B, C, D, E, FF, G> tupledN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      c: Validated<EE, C>,
+      d: Validated<EE, D>,
+      e: Validated<EE, E>,
+      f: Validated<EE, FF>,
+      g: Validated<EE, G>
+    ): Validated<EE, Tuple7<A, B, C, D, E, FF, G>> =
+      a.product(SE, b).product(SE, c).product(SE, d).product(SE, e).product(SE, f).product(SE, g)
+
+    fun <EE, A, B, C, D, E, FF, G, H> tupledN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      c: Validated<EE, C>,
+      d: Validated<EE, D>,
+      e: Validated<EE, E>,
+      f: Validated<EE, FF>,
+      g: Validated<EE, G>,
+      h: Validated<EE, H>
+    ): Validated<EE, Tuple8<A, B, C, D, E, FF, G, H>> =
+      a.product(SE, b).product(SE, c).product(SE, d).product(SE, e).product(SE, f).product(SE, g).product(SE, h)
+
+    fun <EE, A, B, C, D, E, FF, G, H, I> tupledN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      c: Validated<EE, C>,
+      d: Validated<EE, D>,
+      e: Validated<EE, E>,
+      f: Validated<EE, FF>,
+      g: Validated<EE, G>,
+      h: Validated<EE, H>,
+      i: Validated<EE, I>
+    ): Validated<EE, Tuple9<A, B, C, D, E, FF, G, H, I>> =
+      a.product(SE, b).product(SE, c).product(SE, d).product(SE, e).product(SE, f).product(SE, g).product(SE, h).product(SE, i)
+
+    fun <EE, A, B, C, D, E, FF, G, H, I, J> tupledN(
+      SE: Semigroup<EE>,
+      a: Validated<EE, A>,
+      b: Validated<EE, B>,
+      c: Validated<EE, C>,
+      d: Validated<EE, D>,
+      e: Validated<EE, E>,
+      f: Validated<EE, FF>,
+      g: Validated<EE, G>,
+      h: Validated<EE, H>,
+      i: Validated<EE, I>,
+      j: Validated<EE, J>
+    ): Validated<EE, Tuple10<A, B, C, D, E, FF, G, H, I, J>> =
+      a.product(SE, b).product(SE, c).product(SE, d).product(SE, e).product(SE, f).product(SE, g)
+        .product(SE, h).product(SE, i).product(SE, j)
   }
+
+  /**
+   * Discards the [A] value inside [Validated] signaling this container may be pointing to a noop
+   * or an effect whose return value is deliberately ignored. The singleton value [Unit] serves as signal.
+   *
+   * ```kotlin:ank:playground
+   * import arrow.core.*
+   *
+   * fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   "Hello World".valid().void()
+   *   //sampleEnd
+   *   println(result)
+   * }
+   * ```
+   */
+  fun void(): Validated<E, Unit> =
+    map { Unit }
+
+  /**
+   * Applies [f] to an [A] inside [Validated] and returns the [Validated] structure with a tuple of the [A] value and the
+   * computed [B] value as result of applying [f]
+   *
+   *
+   * ```kotlin:ank
+   * import arrow.core.*
+   *
+   * fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   "Hello".valid().fproduct { "$it World" }
+   *   //sampleEnd
+   *   println(result)
+   * }
+   * ```
+   */
+  fun <B> fproduct(f: (A) -> B): Validated<E, Tuple2<A, B>> =
+    map { a -> Tuple2(a, f(a)) }
+
+  /**
+   * Replaces [A] inside [Validated] with [B] resulting in a Kind<F, B>
+   *
+   * ```kotlin:ank
+   * import arrow.core.*
+   *
+   * fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   "Hello World".valid().mapConst("...")
+   *   //sampleEnd
+   *   println(result)
+   * }
+   * ```
+   */
+  fun <B> mapConst(b: B): Validated<E, B> =
+    map { b }
+
+  /**
+   * Pairs [B] with [A] returning a Validated<E, Tuple2<B, A>>
+   *
+   * ```kotlin:ank
+   * import arrow.core.*
+   *
+   * fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   "Hello".valid().tupleLeft("World")
+   *   //sampleEnd
+   *   println(result)
+   * }
+   * ```
+   */
+  fun <B> tupleLeft(b: B): Validated<E, Tuple2<B, A>> =
+    map { a -> Tuple2(b, a) }
+
+  /**
+   * Pairs [A] with [B] returning a Validated<E, Tuple2<A, B>>
+   *
+   * ```kotlin:ank:playground:extension
+   * import arrow.core.*
+   *
+   * fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   "Hello".valid().tupleRight("World")
+   *   //sampleEnd
+   *   println(result)
+   * }
+   * ```
+   */
+  fun <B> tupleRight(b: B): Validated<E, Tuple2<A, B>> =
+    map { a -> Tuple2(a, b) }
+
+  inline fun <D> traverse(fa: (A) -> Iterable<D>): List<Validated<E, D>> =
+    fold({ emptyList() }, { fa(it).map { Valid(it) } })
+
+  inline fun <D> traverse_(fa: (A) -> Iterable<D>): List<Unit> =
+    fold({ emptyList() }, { fa(it).void() })
+
+  inline fun <EE, D> traverseEither(fa: (A) -> Either<EE, D>): Either<EE, Validated<E, D>> =
+    when (this) {
+      is Valid -> fa(this.a).map { Valid(it) }
+      is Invalid -> this.right()
+    }
+
+  inline fun <EE, D> traverseEither_(fa: (A) -> Either<EE, D>): Either<EE, Unit> =
+    fold({ Either.right(Unit) }, { fa(it).void() })
+
+  inline fun <C> bifoldLeft(
+    c: C,
+    fa: (C, A) -> C,
+    fe: (C, E) -> C
+  ): C = fold({ fe(c, it) }, { fa(c, it) })
+
+  inline fun <C> bifoldRight(
+    c: Eval<C>,
+    fa: (A, Eval<C>) -> Eval<C>,
+    fe: (E, Eval<C>) -> Eval<C>
+  ): Eval<C> =
+    fold({ fe(it, c) }, { fa(it, c) })
+
+  inline fun <C> bifoldMap(MN: Monoid<C>, f: (A) -> C, g: (E) -> C) = MN.run {
+    bifoldLeft(MN.empty(), { c, a -> c.combine(f(a)) }, { c, b -> c.combine(g(b)) })
+  }
+
+  fun <C, D> bitraverse(fa: (A) -> Iterable<D>, fe: (E) -> Iterable<C>): List<Validated<C, D>> =
+    fold({ fe(it).map { Invalid(it) } }, { fa(it).map { Valid(it) } })
+
+  fun <C, D, EE> bitraverseEither(
+    fa: (A) -> Either<EE, C>,
+    fe: (E) -> Either<EE, D>
+  ): Either<EE, Validated<D, C>> =
+    fold({ fe(it).map { Invalid(it) } }, { fa(it).map { Valid(it) } })
+
+  fun <B> foldMap(MB: Monoid<B>, f: (A) -> B): B =
+    fold({ MB.empty() }, f)
 
   fun show(SE: Show<E>, SA: Show<A>): String = fold(
     {
@@ -714,6 +1116,14 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
     {
       "Valid(${SA.run { it.show() }})"
     }
+  )
+
+  fun hash(HL: Hash<E>, HR: Hash<A>): Int =
+    hashWithSalt(HL, HR, defaultSalt)
+
+  fun hashWithSalt(HL: Hash<E>, HR: Hash<A>, salt: Int): Int = fold(
+    { e -> HL.run { e.hashWithSalt(salt.hashWithSalt(0)) } },
+    { a -> HR.run { a.hashWithSalt(salt.hashWithSalt(1)) } }
   )
 
   data class Valid<out A>(val a: A) : Validated<Nothing, A>() {
@@ -740,6 +1150,19 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
    */
   inline fun exist(predicate: (A) -> Boolean): Boolean =
     fold({ false }, predicate)
+
+  inline fun findOrNull(predicate: (A) -> Boolean): A? =
+    when (this) {
+      is Valid -> if (predicate(this.a)) this.a else null
+      is Invalid -> null
+    }
+
+  inline fun all(predicate: (A) -> Boolean): Boolean =
+    fold({ true }, predicate)
+
+  fun isEmpty(): Boolean = isInvalid
+
+  fun isNotEmpty(): Boolean = isValid
 
   /**
    * Converts the value to an Either<E, A>
@@ -816,32 +1239,236 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
 /**
  * Compares two instances of [Validated] and returns true if they're considered not equal for this instance.
  *
- * @receiver object to compare with [arg1]
- * @param arg1 object to compare with [this@neqv]
- * @returns false if [this@neqv] and [arg1] are equivalent, true otherwise.
+ * @receiver object to compare with [other]
+ * @param other object to compare with [this@neqv]
+ * @returns false if [this@neqv] and [other] are equivalent, true otherwise.
  */
 fun <E, B> Validated<E, B>.neqv(
   EQL: Eq<E>,
   EQR: Eq<B>,
-  arg1: Validated<E, B>
+  other: Validated<E, B>
 ): Boolean = Validated.eq(EQL, EQR).run {
-  this@neqv.neqv(arg1)
+  this@neqv.neqv(other)
 }
 
 /**
  * Compares two instances of [Validated] and returns true if they're considered not equal for this instance.
  *
- * @receiver object to compare with [arg1]
- * @param arg1 object to compare with [this@neqv]
- * @returns false if [this@neqv] and [arg1] are equivalent, true otherwise.
+ * @receiver object to compare with [other]
+ * @param other object to compare with [this@neqv]
+ * @returns false if [this@neqv] and [other] are equivalent, true otherwise.
  */
 fun <E, B> Validated<E, B>.eqv(
   EQL: Eq<E>,
   EQR: Eq<B>,
-  arg1: Validated<E, B>
+  other: Validated<E, B>
 ): Boolean = Validated.eq(EQL, EQR).run {
-  this@eqv.neqv(arg1)
+  this@eqv.neqv(other)
 }
+
+/**
+ * Replaces the [B] value inside [F] with [A] resulting in a Kind<F, A>
+ */
+fun <E, A, B> A.mapConst(fb: Validated<E, B>): Validated<E, A> =
+  fb.mapConst(this)
+
+/**
+ * Given [A] is a sub type of [B], re-type this value from Validated<E, A> to Validated<E, B>
+ *
+ * ```kotlin:ank:playground:extension
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val string: Validated<Int, String> = "Hello".invalid()
+ *   val chars: Validated<Int, CharSequence> =
+ *     string.widen<Int, CharSequence, String>()
+ *   //sampleEnd
+ *   println(chars)
+ * }
+ * ```
+ */
+fun <E, B, A : B> Validated<E, A>.widen(): Validated<E, B> =
+  this
+
+fun <EE, E : EE, A> Validated<E, A>.leftWiden(): Validated<EE, A> =
+  this
+
+fun <E, A> Validated<E, A>.replicate(SE: Semigroup<E>, n: Int): Validated<E, List<A>> =
+  if (n <= 0) emptyList<A>().valid()
+  else Validated.mapN(SE, this, replicate(SE, n - 1)) { (a, xs) -> listOf(a) + xs }
+
+fun <E, A> Validated<E, A>.replicate(SE: Semigroup<E>, n: Int, MA: Monoid<A>): Validated<E, A> =
+  if (n <= 0) MA.empty().valid()
+  else Validated.mapN(SE, this@replicate, replicate(SE, n - 1, MA)) { (a, xs) -> MA.run { a + xs } }
+
+fun <E, A, B> Validated<E, A>.product(SE: Semigroup<E>, fb: Validated<E, B>): Validated<E, Tuple2<A, B>> =
+  ap(SE, fb.map { b: B -> { a: A -> Tuple2(a, b) } })
+
+fun <E, A, B, Z> Validated<E, A>.map2(SE: Semigroup<E>, fb: Validated<E, B>, f: (Tuple2<A, B>) -> Z): Validated<E, Z> =
+  product(SE, fb).map(f)
+
+fun <EE, A, B, Z> Validated<EE, Tuple2<A, B>>.product(
+  SE: Semigroup<EE>,
+  other: Validated<EE, Z>,
+  dummyImplicit: Unit = Unit
+): Validated<EE, Tuple3<A, B, Z>> =
+  map2(SE, other) { (ab, c) -> Tuple3(ab.a, ab.b, c) }
+
+fun <EE, A, B, C, Z> Validated<EE, Tuple3<A, B, C>>.product(
+  SE: Semigroup<EE>,
+  other: Validated<EE, Z>,
+  dummyImplicit: Unit = Unit,
+  dummyImplicit2: Unit = Unit
+): Validated<EE, Tuple4<A, B, C, Z>> =
+  map2(SE, other) { (abc, d) -> Tuple4(abc.a, abc.b, abc.c, d) }
+
+fun <EE, A, B, C, D, Z> Validated<EE, Tuple4<A, B, C, D>>.product(
+  SE: Semigroup<EE>,
+  other: Validated<EE, Z>,
+  dummyImplicit: Unit = Unit,
+  dummyImplicit2: Unit = Unit,
+  dummyImplicit3: Unit = Unit
+): Validated<EE, Tuple5<A, B, C, D, Z>> =
+  map2(SE, other) { (abcd, e) -> Tuple5(abcd.a, abcd.b, abcd.c, abcd.d, e) }
+
+fun <EE, A, B, C, D, E, Z> Validated<EE, Tuple5<A, B, C, D, E>>.product(
+  SE: Semigroup<EE>,
+  other: Validated<EE, Z>,
+  dummyImplicit: Unit = Unit,
+  dummyImplicit2: Unit = Unit,
+  dummyImplicit3: Unit = Unit,
+  dummyImplicit4: Unit = Unit
+): Validated<EE, Tuple6<A, B, C, D, E, Z>> =
+  map2(SE, other) { (abcde, f) -> Tuple6(abcde.a, abcde.b, abcde.c, abcde.d, abcde.e, f) }
+
+fun <EE, A, B, C, D, E, FF, Z> Validated<EE, Tuple6<A, B, C, D, E, FF>>.product(
+  SE: Semigroup<EE>,
+  other: Validated<EE, Z>,
+  dummyImplicit: Unit = Unit,
+  dummyImplicit2: Unit = Unit,
+  dummyImplicit3: Unit = Unit,
+  dummyImplicit4: Unit = Unit,
+  dummyImplicit5: Unit = Unit
+): Validated<EE, Tuple7<A, B, C, D, E, FF, Z>> =
+  map2(SE, other) { (abcdef, g) -> Tuple7(abcdef.a, abcdef.b, abcdef.c, abcdef.d, abcdef.e, abcdef.f, g) }
+
+fun <EE, A, B, C, D, E, FF, G, Z> Validated<EE, Tuple7<A, B, C, D, E, FF, G>>.product(
+  SE: Semigroup<EE>,
+  other: Validated<EE, Z>,
+  dummyImplicit: Unit = Unit,
+  dummyImplicit2: Unit = Unit,
+  dummyImplicit3: Unit = Unit,
+  dummyImplicit4: Unit = Unit,
+  dummyImplicit5: Unit = Unit,
+  dummyImplicit6: Unit = Unit
+): Validated<EE, Tuple8<A, B, C, D, E, FF, G, Z>> =
+  map2(SE, other) { (abcdefg, h) -> Tuple8(abcdefg.a, abcdefg.b, abcdefg.c, abcdefg.d, abcdefg.e, abcdefg.f, abcdefg.g, h) }
+
+fun <EE, A, B, C, D, E, FF, G, H, Z> Validated<EE, Tuple8<A, B, C, D, E, FF, G, H>>.product(
+  SE: Semigroup<EE>,
+  other: Validated<EE, Z>,
+  dummyImplicit: Unit = Unit,
+  dummyImplicit2: Unit = Unit,
+  dummyImplicit3: Unit = Unit,
+  dummyImplicit4: Unit = Unit,
+  dummyImplicit5: Unit = Unit,
+  dummyImplicit6: Unit = Unit,
+  dummyImplicit7: Unit = Unit
+): Validated<EE, Tuple9<A, B, C, D, E, FF, G, H, Z>> =
+  map2(SE, other) { (abcdefgh, i) -> Tuple9(abcdefgh.a, abcdefgh.b, abcdefgh.c, abcdefgh.d, abcdefgh.e, abcdefgh.f, abcdefgh.g, abcdefgh.h, i) }
+
+fun <EE, A, B, C, D, E, FF, G, H, I, Z> Validated<EE, Tuple9<A, B, C, D, E, FF, G, H, I>>.product(
+  SE: Semigroup<EE>,
+  other: Validated<EE, Z>,
+  dummyImplicit: Unit = Unit,
+  dummyImplicit2: Unit = Unit,
+  dummyImplicit3: Unit = Unit,
+  dummyImplicit4: Unit = Unit,
+  dummyImplicit5: Unit = Unit,
+  dummyImplicit6: Unit = Unit,
+  dummyImplicit7: Unit = Unit,
+  dummyImplicit9: Unit = Unit
+): Validated<EE, Tuple10<A, B, C, D, E, FF, G, H, I, Z>> =
+  map2(SE, other) { (abcdefghi, j) -> Tuple10(abcdefghi.a, abcdefghi.b, abcdefghi.c, abcdefghi.d, abcdefghi.e, abcdefghi.f, abcdefghi.g, abcdefghi.h, abcdefghi.i, j) }
+
+fun <A, B> Validated<Iterable<A>, Iterable<B>>.bisequence(): List<Validated<A, B>> =
+  bitraverse(::identity, ::identity)
+
+fun <A, B, E> Validated<Either<E, A>, Either<E, B>>.bisequenceEither(): Either<E, Validated<A, B>> =
+  bitraverseEither(::identity, ::identity)
+
+fun <E, A> Validated<E, A>.fold(MA: Monoid<A>): A = MA.run {
+  foldLeft(empty()) { acc, a -> acc.combine(a) }
+}
+
+fun <E, A> Validated<E, A>.combineAll(MA: Monoid<A>): A =
+  fold(MA)
+
+fun <A, B> Validated<A, Iterable<B>>.sequence(): List<Validated<A, B>> =
+  traverse(::identity)
+
+fun <A, B> Validated<A, Iterable<B>>.sequence_(): List<Unit> =
+  traverse_(::identity)
+
+fun <E, A, B> Validated<A, Either<E, B>>.sequenceEither(): Either<E, Validated<A, B>> =
+  traverseEither(::identity)
+
+fun <E, A, B> Validated<A, Either<E, B>>.traverseEither_(): Either<E, Unit> =
+  traverseEither_(::identity)
+
+fun <L, R> Validated<L, R>.compare(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Ordering = fold(
+  { l1 -> b.fold({ l2 -> OL.run { l1.compare(l2) } }, { LT }) },
+  { r1 -> b.fold({ GT }, { r2 -> OR.run { r1.compare(r2) } }) }
+)
+
+fun <L, R> Validated<L, R>.compareTo(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Int =
+  compare(OL, OR, b).toInt()
+
+fun <L, R> Validated<L, R>.lt(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Boolean =
+  compare(OL, OR, b) == LT
+
+fun <L, R> Validated<L, R>.lte(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Boolean =
+  compare(OL, OR, b) != GT
+
+fun <L, R> Validated<L, R>.gt(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Boolean =
+  compare(OL, OR, b) == GT
+
+fun <L, R> Validated<L, R>.gte(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Boolean =
+  compare(OL, OR, b) != LT
+
+fun <L, R> Validated<L, R>.max(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Validated<L, R> =
+  if (gt(OL, OR, b)) this else b
+
+fun <L, R> Validated<L, R>.min(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Validated<L, R> =
+  if (lt(OL, OR, b)) this else b
+
+fun <L, R> Validated<L, R>.sort(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Tuple2<Validated<L, R>, Validated<L, R>> =
+  if (gte(OL, OR, b)) Tuple2(this, b) else Tuple2(b, this)
+
+fun <E, A, B> Validated<E, Either<A, B>>.select(f: Validated<E, (A) -> B>): Validated<E, B> =
+  fold({ Invalid(it) }, { it.fold({ l -> f.map { ff -> ff(l) } }, { r -> r.valid() }) })
+
+fun <E, A, B, C> Validated<E, Either<A, B>>.branch(fl: Validated<E, (A) -> C>, fr: Validated<E, (B) -> C>): Validated<E, C> {
+  val nested: Validated<E, Either<A, Either<B, Nothing>>> = map { it.map(::Left) }
+  val ffl: Validated<E, (A) -> Either<Nothing, C>> = fl.map { it.andThen(::Right) }
+  return nested.select(ffl).select(fr)
+}
+
+private fun <E> Validated<E, Boolean>.selector(): Validated<E, Either<Unit, Unit>> =
+  map { bool -> if (bool) Either.leftUnit else Either.unit }
+
+fun <E> Validated<E, Boolean>.whenS(x: Validated<E, () -> Unit>): Validated<E, Unit> =
+  selector().select(x.map { f -> { f() } })
+
+fun <E, A> Validated<E, Boolean>.ifS(fl: Validated<E, A>, fr: Validated<E, A>): Validated<E, A> =
+  selector().branch(fl.map { { _: Unit -> it } }, fr.map { { _: Unit -> it } })
+
+fun <E> Validated<E, Boolean>.orS(f: Validated<E, Boolean>): Validated<E, Boolean> =
+  ifS(Valid(true), f)
+
+fun <E> Validated<E, Boolean>.andS(f: Validated<E, Boolean>): Validated<E, Boolean> =
+  ifS(f, Valid(false))
 
 /**
  * Return the Valid value, or the default if Invalid
@@ -892,10 +1519,16 @@ inline fun <E, A> ValidatedOf<E, A>.orElse(default: () -> Validated<E, A>): Vali
  * if both the function and this value are Valid, apply the function
  */
 inline fun <E, A, B> ValidatedOf<E, A>.ap(SE: Semigroup<E>, f: Validated<E, (A) -> B>): Validated<E, B> =
-  fix().fold(
-    { e -> f.fold({ Invalid(SE.run { e.combine(it) }) }, { Invalid(e) }) },
-    { a -> f.fold(::Invalid) { Valid(it(a)) } }
-  )
+  when (val value = fix()) {
+    is Validated.Valid -> when (f) {
+      is Validated.Valid -> Valid(f.a(value.a))
+      is Validated.Invalid -> f
+    }
+    is Validated.Invalid -> when (f) {
+      is Validated.Valid -> value
+      is Validated.Invalid -> Invalid(SE.run { value.e.combine(f.e) })
+    }
+  }
 
 @Deprecated(
   "To keep API consistent with Either and Option please use `handleErrorWith` instead",
@@ -905,10 +1538,25 @@ inline fun <E, A> ValidatedOf<E, A>.handleLeftWith(f: (E) -> ValidatedOf<E, A>):
   handleErrorWith(f)
 
 inline fun <E, A> ValidatedOf<E, A>.handleErrorWith(f: (E) -> ValidatedOf<E, A>): Validated<E, A> =
-  fix().fold({ f(it).fix() }, ::Valid)
+  when (val value = fix()) {
+    is Validated.Valid -> value
+    is Validated.Invalid -> f(value.e).fix()
+  }
 
-inline fun <E, A> ValidatedOf<E, A>.handleError(f: (E) -> A): Validated<E, A> =
-  fix().handleErrorWith { Valid(f(it)) }
+inline fun <E, A> ValidatedOf<E, A>.handleError(f: (E) -> A): Validated<Nothing, A> =
+  when (val value = fix()) {
+    is Validated.Valid -> value
+    is Validated.Invalid -> Valid(f(value.e))
+  }
+
+inline fun <E, A, B> Validated<E, A>.redeem(fe: (E) -> B, fa: (A) -> B): Validated<E, B> =
+  when (this) {
+    is Validated.Valid -> map(fa)
+    is Validated.Invalid -> Valid(fe(this.e))
+  }
+
+fun <E, A> Validated<E, A>.attempt(): Validated<Nothing, Either<E, A>> =
+  map { Right(it) }.handleError { Left(it) }
 
 fun <G, E, A, B> ValidatedOf<E, A>.traverse(GA: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, Validated<E, B>> = GA.run {
   fix().fold({ e -> just(Invalid(e)) }, { a -> f(a).map(::Valid) })
@@ -976,4 +1624,28 @@ private class ValidatedEq<L, R>(
       is Valid -> false
     }
   }
+}
+
+private class ValidatedShow<L, R>(
+  private val SL: Show<L>,
+  private val SR: Show<R>,
+) : Show<Validated<L, R>> {
+  override fun Validated<L, R>.show(): String =
+    show(SL, SR)
+}
+
+private class ValidatedHash<L, R>(
+  private val HL: Hash<L>,
+  private val HR: Hash<R>
+) : Hash<Validated<L, R>> {
+  override fun Validated<L, R>.hashWithSalt(salt: Int): Int =
+    hashWithSalt(HL, HR, salt)
+}
+
+private class ValidatedOrder<L, R>(
+  private val OL: Order<L>,
+  private val OR: Order<R>
+) : Order<Validated<L, R>> {
+  override fun Validated<L, R>.compare(b: Validated<L, R>): Ordering =
+    compare(OL, OR, b)
 }
