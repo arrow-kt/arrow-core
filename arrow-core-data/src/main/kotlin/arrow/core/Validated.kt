@@ -233,7 +233,7 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  * //sampleStart
  * val parallelValidate = Validated
  *   .mapN(NonEmptyList.semigroup<ConfigError>(), 1.validNel(), 2.validNel())
- *     { (a, b) -> /* combine the result */ }
+ *     { a, b -> /* combine the result */ }
  * //sampleEnd
  * ```
  *
@@ -298,7 +298,7 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  *    NonEmptyList.semigroup<ConfigError>(),
  *    config.parse(Read.stringRead, "url"),
  *    config.parse(Read.intRead, "port")
- *  ) { (url, port) -> ConnectionParams(url, port) }
+ *  ) { url, port -> ConnectionParams(url, port) }
  * //sampleEnd
  *  println("valid = $valid")
  * }
@@ -360,7 +360,7 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  *  NonEmptyList.semigroup<ConfigError>(),
  *  config.parse(Read.stringRead, "url"),
  *  config.parse(Read.intRead, "port")
- *  ) { (url, port) -> ConnectionParams(url, port) }
+ *  ) { url, port -> ConnectionParams(url, port) }
  * //sampleEnd
  *  println("valid = $valid")
  * }
