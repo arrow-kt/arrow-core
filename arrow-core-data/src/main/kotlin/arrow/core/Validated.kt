@@ -78,25 +78,22 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  * for `String` and `Int` for brevity.
  *
  * ```kotlin:ank
- * import arrow.core.None
- * import arrow.core.Option
- *
  * //sampleStart
  * abstract class Read<A> {
  *
- * abstract fun read(s: String): Option<A>
+ * abstract fun read(s: String): A?
  *
  *  companion object {
  *
  *   val stringRead: Read<String> =
  *    object: Read<String>() {
- *     override fun read(s: String): Option<String> = Option(s)
+ *     override fun read(s: String): String? = s
  *    }
  *
  *   val intRead: Read<Int> =
  *    object: Read<Int>() {
- *     override fun read(s: String): Option<Int> =
- *      if (s.matches(Regex("-?[0-9]+"))) Option(s.toInt()) else None
+ *     override fun read(s: String): Int? =
+ *      if (s.matches(Regex("-?[0-9]+"))) s.toInt() else null
  *    }
  *  }
  * }
@@ -117,7 +114,7 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  * It would look like the following, which Arrow provides in `arrow.Validated`:
  *
  * ```kotlin
- * @higherkind sealed class Validated<out E, out A> : ValidatedOf<E, A> {
+ * sealed class Validated<out E, out A> {
  *  data class Valid<out A>(val a: A) : Validated<Nothing, A>()
  *  data class Invalid<out E>(val e: E) : Validated<E, Nothing>()
  * }
@@ -136,14 +133,14 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  * //sampleStart
  * data class Config(val map: Map<String, String>) {
  *  fun <A> parse(read: Read<A>, key: String): Validated<ConfigError, A> {
- *   val v = Option.fromNullable(map[key])
+ *   val v = map[key]
  *   return when (v) {
- *    is Some ->
- *     when (val s = read.read(v.t)) {
- *      is Some -> s.t.valid()
- *      is None -> ConfigError.ParseConfig(key).invalid()
+ *    null -> Validated.Invalid(ConfigError.MissingConfig(key))
+ *    else ->
+ *     when (val s = read.read(v)) {
+ *      null -> ConfigError.ParseConfig(key).invalid()
+ *      else -> s.valid()
  *     }
- *    is None -> Validated.Invalid(ConfigError.MissingConfig(key))
  *   }
  *  }
  * }
@@ -155,9 +152,6 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  * to obtain `A` from values of `Validated<*, A>` through the [arrow.core.computations.EitherEffect.invoke]
  *
  * ```kotlin:ank
- * import arrow.core.None
- * import arrow.core.Option
- * import arrow.core.Some
  * import arrow.core.Validated
  * import arrow.core.computations.either
  * import arrow.core.valid
@@ -169,7 +163,7 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
  *     }()
- *     val readVal = Validated.fromOption(read.read(value)) {
+ *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
  *     }()
  *     readVal
@@ -227,25 +221,19 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  * ### Improving the validation
  *
  * Kotlin says that our match is not exhaustive and we have to add `else`. To solve this, we would need to nest our when,
- * but that would complicate the code. To achieve this, Arrow provides an [arrow.typeclasses.Applicative] through the
- * `applicativeNel` function in arrow-core to unlock `tupledN`.
+ * but that would complicate the code. To achieve this, Arrow provides [mapN] & [tupledN].
  * This function combines [Validated]s by accumulating errors in a tuple, which we can then map.
  * The above function can be rewritten as follows:
  *
  * ```kotlin:ank:silent
- * import arrow.core.Validated
- * import arrow.core.fix
- * import arrow.reflect.applicativeNel
- *
- * // added manually due to deps
- *
- * val v1: Validated<ConfigError, Int> = Validated.Valid(1)
- * val v2: Validated<ConfigError, Int> = Validated.Valid(2)
+ * import arrow.core.Validate
+ * import arrow.core.validNel
+ * import arrow.core.extensions.nonemptylist.semigroup.semigroup
  *
  * //sampleStart
- * val parallelValidate = Validated.applicativeNel<ConfigError>()
- *     .tupledN(v1.toValidatedNel(), v2.toValidatedNel()).fix()
- *     .map { (a, b) -> /* combine the result */ }
+ * val parallelValidate = Validated
+ *   .mapN(NonEmptyList.semigroup<ConfigError>(), 1.validNel(), 2.validNel())
+ *     { (a, b) -> /* combine the result */ }
  * //sampleEnd
  * ```
  *
@@ -257,33 +245,29 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  * Coming back to our example, when no errors are present in the configuration, we get a `ConnectionParams` wrapped in a `Valid` instance.
  *
  * ```kotlin:ank:playground
- * import arrow.core.None
- * import arrow.core.Option
- * import arrow.core.Some
  * import arrow.core.Validated
  * import arrow.core.computations.either
  * import arrow.core.valid
  * import arrow.core.invalid
  * import arrow.core.NonEmptyList
- * import arrow.core.fix
- * import arrow.reflect.applicativeNel
+ * import arrow.core.extensions.nonemptylist.semigroup.semigroup
  *
  * data class ConnectionParams(val url: String, val port: Int)
  *
  * abstract class Read<A> {
- *  abstract fun read(s: String): Option<A>
+ *  abstract fun read(s: String): A?
  *
  *  companion object {
  *
  *   val stringRead: Read<String> =
  *    object : Read<String>() {
- *     override fun read(s: String): Option<String> = Option(s)
+ *     override fun read(s: String): String? = s
  *    }
  *
  *   val intRead: Read<Int> =
  *    object : Read<Int>() {
- *     override fun read(s: String): Option<Int> =
- *      if (s.matches(Regex("-?[0-9]+"))) Option(s.toInt()) else None
+ *     override fun read(s: String): Int? =
+ *      if (s.matches(Regex("-?[0-9]+"))) s.toInt() else null
  *    }
  *  }
  * }
@@ -298,23 +282,23 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
  *     }()
- *     val readVal = Validated.fromOption(read.read(value)) {
+ *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
  *     }()
  *     readVal
  *   }.toValidatedNel()
  * }
  *
- * val parallelValidate = Validated.applicativeNel<ConfigError>()
  *
  * suspend fun main() {
  * //sampleStart
  *  val config = Config(mapOf("url" to "127.0.0.1", "port" to "1337"))
  *
- *  val valid = parallelValidate.tupledN(
- *  config.parse(Read.stringRead, "url"),
- *  config.parse(Read.intRead, "port")
- *  ).fix().map { (url, port) -> ConnectionParams(url, port) }
+ *  val valid = Validated.mapN(
+ *    NonEmptyList.semigroup<ConfigError>()
+ *    config.parse(Read.stringRead, "url"),
+ *    config.parse(Read.intRead, "port")
+ *  ) { (url, port) -> ConnectionParams(url, port) }
  * //sampleEnd
  *  println("valid = $valid")
  * }
@@ -324,33 +308,29 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  * an `Invalid` instance.
  *
  * ```kotlin:ank:playground
- * import arrow.core.None
- * import arrow.core.Option
- * import arrow.core.Some
  * import arrow.core.Validated
  * import arrow.core.computations.either
  * import arrow.core.valid
  * import arrow.core.invalid
  * import arrow.core.NonEmptyList
- * import arrow.core.fix
- * import arrow.reflect.applicativeNel
+ * import arrow.core.extensions.nonemptylist.semigroup.semigroup
  *
  * data class ConnectionParams(val url: String, val port: Int)
  *
  * abstract class Read<A> {
- *  abstract fun read(s: String): Option<A>
+ *  abstract fun read(s: String): A?
  *
  *  companion object {
  *
  *   val stringRead: Read<String> =
  *    object : Read<String>() {
- *     override fun read(s: String): Option<String> = Option(s)
+ *     override fun read(s: String): String? = s
  *    }
  *
  *   val intRead: Read<Int> =
  *    object : Read<Int>() {
- *     override fun read(s: String): Option<Int> =
- *      if (s.matches(Regex("-?[0-9]+"))) Option(s.toInt()) else None
+ *     override fun read(s: String): Int? =
+ *      if (s.matches(Regex("-?[0-9]+"))) s.toInt() else null
  *    }
  *  }
  * }
@@ -372,16 +352,15 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  *   }.toValidatedNel()
  * }
  *
- * val parallelValidate = Validated.applicativeNel<ConfigError>()
- *
  * suspend fun main() {
  * //sampleStart
  * val config = Config(mapOf("wrong field" to "127.0.0.1", "port" to "not a number"))
  *
- * val valid = parallelValidate.tupledN(
+ * val valid = Validated.mapN(
+ *  NonEmptyList.semigroup<ConfigError>(),
  *  config.parse(Read.stringRead, "url"),
  *  config.parse(Read.intRead, "port")
- *  ).fix().map { (url, port) -> ConnectionParams(url, port) }
+ *  ) { (url, port) -> ConnectionParams(url, port) }
  * //sampleEnd
  *  println("valid = $valid")
  * }
@@ -397,29 +376,26 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  * import arrow.core.Either
  * import arrow.core.flatMap
  * import arrow.core.left
- * import arrow.core.None
- * import arrow.core.Option
  * import arrow.core.right
- * import arrow.core.Some
  * import arrow.core.Validated
  * import arrow.core.computations.either
  * import arrow.core.valid
  * import arrow.core.invalid
  *
  * abstract class Read<A> {
- *  abstract fun read(s: String): Option<A>
+ *  abstract fun read(s: String): A?
  *
  *  companion object {
  *
  *   val stringRead: Read<String> =
  *    object : Read<String>() {
- *     override fun read(s: String): Option<String> = Option(s)
+ *     override fun read(s: String): String? = s
  *    }
  *
  *   val intRead: Read<Int> =
  *    object : Read<Int>() {
- *     override fun read(s: String): Option<Int> =
- *      if (s.matches(Regex("-?[0-9]+"))) Option(s.toInt()) else None
+ *     override fun read(s: String): Int? =
+ *      if (s.matches(Regex("-?[0-9]+"))) s.toInt() else null
  *    }
  *  }
  * }
@@ -442,10 +418,9 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  * }
  *
  * //sampleStart
- * fun positive(field: String, i: Int): Either<ConfigError, Int> {
- *  return if (i >= 0) i.right()
+ * fun positive(field: String, i: Int): Either<ConfigError, Int> =
+ *  if (i >= 0) i.right()
  *  else ConfigError.ParseConfig(field).left()
- * }
  *
  * val config = Config(mapOf("house_number" to "-42"))
  *
@@ -457,210 +432,6 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  *  println(houseNumber)
  * }
  *
- * ```
- *
- * ## Alternative validation strategies to Validated: using `ApplicativeError`
- *
- * We may use `ApplicativeError` instead of `Validated` to abstract away validation strategies and raising errors in the context we are computing in.
- *
- * ```kotlin:ank
- * import arrow.Kind
- * import arrow.core.Either
- * import arrow.core.EitherPartialOf
- * import arrow.core.Nel
- * import arrow.core.NonEmptyList
- * import arrow.core.Validated
- * import arrow.core.ValidatedPartialOf
- * import arrow.core.nel
- * import arrow.typeclasses.ApplicativeError
- * import arrow.core.extensions.validated.applicativeError.applicativeError
- * import arrow.core.extensions.either.applicativeError.applicativeError
- * import arrow.core.extensions.nonemptylist.semigroup.semigroup
- *
- * //sampleStart
- * sealed class ValidationError(val msg: String) {
- *  data class DoesNotContain(val value: String) : ValidationError("Did not contain $value")
- *  data class MaxLength(val value: Int) : ValidationError("Exceeded length of $value")
- *  data class NotAnEmail(val reasons: Nel<ValidationError>) : ValidationError("Not a valid email")
- * }
- *
- * data class FormField(val label: String, val value: String)
- * data class Email(val value: String)
- *
- * sealed class Rules<F>(A: ApplicativeError<F, Nel<ValidationError>>) : ApplicativeError<F, Nel<ValidationError>> by A {
- *
- *  private fun FormField.contains(needle: String): Kind<F, FormField> =
- *   if (value.contains(needle, false)) just(this)
- *   else raiseError(ValidationError.DoesNotContain(needle).nel())
- *
- *  private fun FormField.maxLength(maxLength: Int): Kind<F, FormField> =
- *   if (value.length <= maxLength) just(this)
- *   else raiseError(ValidationError.MaxLength(maxLength).nel())
- *
- *  fun FormField.validateEmail(): Kind<F, Email> =
- *   map(contains("@"), maxLength(250), {
- *    Email(value)
- *   }).handleErrorWith { raiseError(ValidationError.NotAnEmail(it).nel()) }
- *
- *  object ErrorAccumulationStrategy :
- *    Rules<ValidatedPartialOf<Nel<ValidationError>>>(Validated.applicativeError(NonEmptyList.semigroup()))
- *
- *  object FailFastStrategy :
- *   Rules<EitherPartialOf<Nel<ValidationError>>>(Either.applicativeError())
- *
- *  companion object {
- *   infix fun <A> failFast(f: FailFastStrategy.() -> A): A = f(FailFastStrategy)
- *   infix fun <A> accumulateErrors(f: ErrorAccumulationStrategy.() -> A): A = f(ErrorAccumulationStrategy)
- *  }
- * }
- * //sampleEnd
- * ```
- *
- * `Rules` defines abstract behaviors that can be composed and have access to the scope of `ApplicativeError` where we can invoke `just` to lift values into the positive result and `raiseError` into the error context.
- *
- * Once we have such abstract algebra defined, we can simply materialize it to data types that support different error strategies:
- *
- *  *Error accumulation*
- *
- * ```kotlin:ank:playground
- * import arrow.Kind
- * import arrow.core.Either
- * import arrow.core.EitherPartialOf
- * import arrow.core.Nel
- * import arrow.core.NonEmptyList
- * import arrow.core.Validated
- * import arrow.core.ValidatedPartialOf
- * import arrow.core.nel
- * import arrow.typeclasses.ApplicativeError
- * import arrow.core.extensions.validated.applicativeError.applicativeError
- * import arrow.core.extensions.either.applicativeError.applicativeError
- * import arrow.core.extensions.nonemptylist.semigroup.semigroup
- *
- * sealed class ValidationError(val msg: String) {
- *  data class DoesNotContain(val value: String) : ValidationError("Did not contain $value")
- *  data class MaxLength(val value: Int) : ValidationError("Exceeded length of $value")
- *  data class NotAnEmail(val reasons: Nel<ValidationError>) : ValidationError("Not a valid email")
- * }
- *
- * data class FormField(val label: String, val value: String)
- * data class Email(val value: String)
- *
- * sealed class Rules<F>(A: ApplicativeError<F, Nel<ValidationError>>) : ApplicativeError<F, Nel<ValidationError>> by A {
- *
- *  private fun FormField.contains(needle: String): Kind<F, FormField> =
- *   if (value.contains(needle, false)) just(this)
- *   else raiseError(ValidationError.DoesNotContain(needle).nel())
- *
- *  private fun FormField.maxLength(maxLength: Int): Kind<F, FormField> =
- *   if (value.length <= maxLength) just(this)
- *   else raiseError(ValidationError.MaxLength(maxLength).nel())
- *
- *  fun FormField.validateEmail(): Kind<F, Email> =
- *   map(contains("@"), maxLength(250), {
- *    Email(value)
- *   }).handleErrorWith { raiseError(ValidationError.NotAnEmail(it).nel()) }
- *
- *  object ErrorAccumulationStrategy :
- *    Rules<ValidatedPartialOf<Nel<ValidationError>>>(Validated.applicativeError(NonEmptyList.semigroup()))
- *
- *  object FailFastStrategy :
- *   Rules<EitherPartialOf<Nel<ValidationError>>>(Either.applicativeError())
- *
- *  companion object {
- *   infix fun <A> failFast(f: FailFastStrategy.() -> A): A = f(FailFastStrategy)
- *   infix fun <A> accumulateErrors(f: ErrorAccumulationStrategy.() -> A): A = f(ErrorAccumulationStrategy)
- *  }
- * }
- *
- * val value =
- * //sampleStart
- *  Rules accumulateErrors {
- *    listOf(
- *      FormField("Invalid Email Domain Label", "nowhere.com"),
- *      FormField("Too Long Email Label", "nowheretoolong${(0..251).map { "g" }}"), //this accumulates N errors
- *      FormField("Valid Email Label", "getlost@nowhere.com")
- *    ).map { it.validateEmail() }
- *    }
- * //sampleEnd
- * fun main() {
- *  println(value)
- * }
- * ```
- *  *Fail Fast*
- *
- * ```kotlin:ank:playground
- * import arrow.Kind
- * import arrow.core.Either
- * import arrow.core.EitherPartialOf
- * import arrow.core.Nel
- * import arrow.core.NonEmptyList
- * import arrow.core.Validated
- * import arrow.core.ValidatedPartialOf
- * import arrow.core.nel
- * import arrow.typeclasses.ApplicativeError
- * import arrow.core.extensions.validated.applicativeError.applicativeError
- * import arrow.core.extensions.either.applicativeError.applicativeError
- * import arrow.core.extensions.nonemptylist.semigroup.semigroup
- *
- * sealed class ValidationError(val msg: String) {
- *  data class DoesNotContain(val value: String) : ValidationError("Did not contain $value")
- *  data class MaxLength(val value: Int) : ValidationError("Exceeded length of $value")
- *  data class NotAnEmail(val reasons: Nel<ValidationError>) : ValidationError("Not a valid email")
- * }
- *
- * data class FormField(val label: String, val value: String)
- * data class Email(val value: String)
- *
- * sealed class Rules<F>(A: ApplicativeError<F, Nel<ValidationError>>) : ApplicativeError<F, Nel<ValidationError>> by A {
- *
- *  private fun FormField.contains(needle: String): Kind<F, FormField> =
- *   if (value.contains(needle, false)) just(this)
- *   else raiseError(ValidationError.DoesNotContain(needle).nel())
- *
- *  private fun FormField.maxLength(maxLength: Int): Kind<F, FormField> =
- *   if (value.length <= maxLength) just(this)
- *   else raiseError(ValidationError.MaxLength(maxLength).nel())
- *
- *  fun FormField.validateEmail(): Kind<F, Email> =
- *   map(contains("@"), maxLength(250), {
- *    Email(value)
- *   }).handleErrorWith { raiseError(ValidationError.NotAnEmail(it).nel()) }
- *
- *  object ErrorAccumulationStrategy :
- *    Rules<ValidatedPartialOf<Nel<ValidationError>>>(Validated.applicativeError(NonEmptyList.semigroup()))
- *
- *  object FailFastStrategy :
- *   Rules<EitherPartialOf<Nel<ValidationError>>>(Either.applicativeError())
- *
- *  companion object {
- *   infix fun <A> failFast(f: FailFastStrategy.() -> A): A = f(FailFastStrategy)
- *   infix fun <A> accumulateErrors(f: ErrorAccumulationStrategy.() -> A): A = f(ErrorAccumulationStrategy)
- *  }
- * }
- *
- * val value =
- * //sampleStart
- *  Rules failFast {
- *    listOf(
- *      FormField("Invalid Email Domain Label", "nowhere.com"),
- *      FormField("Too Long Email Label", "nowheretoolong${(0..251).map { "g" }}"), //this fails fast
- *      FormField("Valid Email Label", "getlost@nowhere.com")
- *    ).map { it.validateEmail() }
- *  }
- * //sampleEnd
- * fun main() {
- *  println(value)
- * }
- * ```
- *
- * ### Supported type classes
- *
- * ```kotlin:ank:replace
- * import arrow.reflect.DataType
- * import arrow.reflect.tcMarkdownList
- * import arrow.core.Validated
- *
- * DataType(Validated::class).tcMarkdownList()
  * ```
  */
 sealed class Validated<out E, out A> : ValidatedOf<E, A> {

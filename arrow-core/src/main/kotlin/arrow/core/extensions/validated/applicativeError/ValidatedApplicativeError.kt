@@ -125,7 +125,6 @@ fun <E, A> catch(
   "UNUSED_PARAMETER"
 )
 
-
 @Deprecated("This methods is invalid for Validated. ApplicativeError<F, Throwable> is inconsistent in `F`")
 fun <E, A> ApplicativeError<Kind<ForValidated, E>, Throwable>.catch(
   SE: Semigroup<E>,
