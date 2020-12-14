@@ -6,7 +6,7 @@ import arrow.core.const
 import kotlin.coroutines.RestrictsSuspension
 
 @Deprecated(
-  "Const binding doe not require suspension and this computation block will be removed."
+  "Const binding does not require suspension and this computation block will be removed."
 )
 fun interface ConstEffect<A, T> : Effect<Const<A, T>> {
 
