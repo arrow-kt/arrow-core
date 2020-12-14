@@ -345,7 +345,7 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
  *     }()
- *     val readVal = Validated.fromOption(read.read(value)) {
+ *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
  *     }()
  *     readVal
@@ -405,7 +405,7 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
  *     }()
- *     val readVal = Validated.fromOption(read.read(value)) {
+ *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
  *     }()
  *     readVal
