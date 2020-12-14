@@ -544,18 +544,20 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       SE: Semigroup<EE>,
       a: Validated<EE, A>,
       b: Validated<EE, B>,
-      lbd: (Tuple2<A, B>) -> Z
+      f: (A, B) -> Z
     ): Validated<EE, Z> =
-      tupledN(SE, a, b).map(lbd)
+      tupledN(SE, a, b,)
+        .map { (a, b) -> f(a, b) }
 
     fun <EE, A, B, C, Z> mapN(
       SE: Semigroup<EE>,
       a: Validated<EE, A>,
       b: Validated<EE, B>,
       c: Validated<EE, C>,
-      lbd: (Tuple3<A, B, C>) -> Z
+      f: (A, B, C) -> Z
     ): Validated<EE, Z> =
-      tupledN(SE, a, b, c).map(lbd)
+      tupledN(SE, a, b, c)
+        .map { (a, b, c) -> f(a, b, c) }
 
     fun <EE, A, B, C, D, Z> mapN(
       SE: Semigroup<EE>,
@@ -563,9 +565,10 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       b: Validated<EE, B>,
       c: Validated<EE, C>,
       d: Validated<EE, D>,
-      lbd: (Tuple4<A, B, C, D>) -> Z
+      f: (A, B, C, D) -> Z
     ): Validated<EE, Z> =
-      tupledN(SE, a, b, c, d).map(lbd)
+      tupledN(SE, a, b, c, d)
+        .map { (a, b, c, d) -> f(a, b, c, d) }
 
     fun <EE, A, B, C, D, E, Z> mapN(
       SE: Semigroup<EE>,
@@ -574,9 +577,10 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       c: Validated<EE, C>,
       d: Validated<EE, D>,
       e: Validated<EE, E>,
-      lbd: (Tuple5<A, B, C, D, E>) -> Z
+      f: (A, B, C, D, E) -> Z
     ): Validated<EE, Z> =
-      tupledN(SE, a, b, c, d, e).map(lbd)
+      tupledN(SE, a, b, c, d, e)
+        .map { (a, b, c, d, e) -> f(a, b, c, d, e) }
 
     fun <EE, A, B, C, D, E, FF, Z> mapN(
       SE: Semigroup<EE>,
@@ -585,10 +589,11 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       c: Validated<EE, C>,
       d: Validated<EE, D>,
       e: Validated<EE, E>,
-      f: Validated<EE, FF>,
-      lbd: (Tuple6<A, B, C, D, E, FF>) -> Z
+      ff: Validated<EE, FF>,
+      f: (A, B, C, D, E, FF) -> Z
     ): Validated<EE, Z> =
-      tupledN(SE, a, b, c, d, e, f).map(lbd)
+      tupledN(SE, a, b, c, d, e, ff)
+        .map { (a, b, c, d, e, ff) -> f(a, b, c, d, e, ff) }
 
     fun <EE, A, B, C, D, E, FF, G, Z> mapN(
       SE: Semigroup<EE>,
@@ -597,11 +602,12 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       c: Validated<EE, C>,
       d: Validated<EE, D>,
       e: Validated<EE, E>,
-      f: Validated<EE, FF>,
+      ff: Validated<EE, FF>,
       g: Validated<EE, G>,
-      lbd: (Tuple7<A, B, C, D, E, FF, G>) -> Z
+      f: (A, B, C, D, E, FF, G) -> Z
     ): Validated<EE, Z> =
-      tupledN(SE, a, b, c, d, e, f, g).map(lbd)
+      tupledN(SE, a, b, c, d, e, ff, g)
+        .map { (a, b, c, d, e, ff, g) -> f(a, b, c, d, e, ff, g) }
 
     fun <EE, A, B, C, D, E, FF, G, H, Z> mapN(
       SE: Semigroup<EE>,
@@ -610,12 +616,13 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       c: Validated<EE, C>,
       d: Validated<EE, D>,
       e: Validated<EE, E>,
-      f: Validated<EE, FF>,
+      ff: Validated<EE, FF>,
       g: Validated<EE, G>,
       h: Validated<EE, H>,
-      lbd: (Tuple8<A, B, C, D, E, FF, G, H>) -> Z
+      f: (A, B, C, D, E, FF, G, H) -> Z
     ): Validated<EE, Z> =
-      tupledN(SE, a, b, c, d, e, f, g, h).map(lbd)
+      tupledN(SE, a, b, c, d, e, ff, g, h)
+        .map { (a, b, c, d, e, ff, g, h) -> f(a, b, c, d, e, ff, g, h) }
 
     fun <EE, A, B, C, D, E, FF, G, H, I, Z> mapN(
       SE: Semigroup<EE>,
@@ -624,13 +631,14 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       c: Validated<EE, C>,
       d: Validated<EE, D>,
       e: Validated<EE, E>,
-      f: Validated<EE, FF>,
+      ff: Validated<EE, FF>,
       g: Validated<EE, G>,
       h: Validated<EE, H>,
       i: Validated<EE, I>,
-      lbd: (Tuple9<A, B, C, D, E, FF, G, H, I>) -> Z
+      f: (A, B, C, D, E, FF, G, H, I) -> Z
     ): Validated<EE, Z> =
-      tupledN(SE, a, b, c, d, e, f, g, h, i).map(lbd)
+      tupledN(SE, a, b, c, d, e, ff, g, h, i)
+        .map { (a, b, c, d, e, ff, g, h, i) -> f(a, b, c, d, e, ff, g, h, i) }
 
     fun <EE, A, B, C, D, E, FF, G, H, I, J, Z> mapN(
       SE: Semigroup<EE>,
@@ -639,14 +647,15 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       c: Validated<EE, C>,
       d: Validated<EE, D>,
       e: Validated<EE, E>,
-      f: Validated<EE, FF>,
+      ff: Validated<EE, FF>,
       g: Validated<EE, G>,
       h: Validated<EE, H>,
       i: Validated<EE, I>,
       j: Validated<EE, J>,
-      lbd: (Tuple10<A, B, C, D, E, FF, G, H, I, J>) -> Z
+      f: (A, B, C, D, E, FF, G, H, I, J) -> Z
     ): Validated<EE, Z> =
-      tupledN(SE, a, b, c, d, e, f, g, h, i, j).map(lbd)
+      tupledN(SE, a, b, c, d, e, ff, g, h, i, j)
+        .map { (a, b, c, d, e, ff, g, h, i, j) -> f(a, b, c, d, e, ff, g, h, i, j) }
 
     fun <EE, A, B> tupledN(
       SE: Semigroup<EE>,
@@ -1074,11 +1083,11 @@ fun <EE, E : EE, A> Validated<E, A>.leftWiden(): Validated<EE, A> =
 
 fun <E, A> Validated<E, A>.replicate(SE: Semigroup<E>, n: Int): Validated<E, List<A>> =
   if (n <= 0) emptyList<A>().valid()
-  else Validated.mapN(SE, this, replicate(SE, n - 1)) { (a, xs) -> listOf(a) + xs }
+  else Validated.mapN(SE, this, replicate(SE, n - 1)) { a, xs -> listOf(a) + xs }
 
 fun <E, A> Validated<E, A>.replicate(SE: Semigroup<E>, n: Int, MA: Monoid<A>): Validated<E, A> =
   if (n <= 0) MA.empty().valid()
-  else Validated.mapN(SE, this@replicate, replicate(SE, n - 1, MA)) { (a, xs) -> MA.run { a + xs } }
+  else Validated.mapN(SE, this@replicate, replicate(SE, n - 1, MA)) { a, xs -> MA.run { a + xs } }
 
 fun <E, A, B> Validated<E, A>.product(SE: Semigroup<E>, fb: Validated<E, B>): Validated<E, Tuple2<A, B>> =
   ap(SE, fb.map { b: B -> { a: A -> Tuple2(a, b) } })
