@@ -226,7 +226,7 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  * The above function can be rewritten as follows:
  *
  * ```kotlin:ank:silent
- * import arrow.core.Validate
+ * import arrow.core.Validated
  * import arrow.core.validNel
  * import arrow.core.extensions.nonemptylist.semigroup.semigroup
  *
