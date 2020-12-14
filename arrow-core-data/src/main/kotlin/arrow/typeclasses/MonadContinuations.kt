@@ -1,7 +1,7 @@
 package arrow.typeclasses
 
 import arrow.Kind
-import arrow.typeclasses.suspended.BindSyntax
+import arrow.typeclasses.suspended.Invoke
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.RestrictsSuspension
@@ -10,12 +10,12 @@ import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 import kotlin.coroutines.resume
 
 @RestrictsSuspension
-interface MonadSyntax<F> : Monad<F>, BindSyntax<F>
+interface MonadSyntax<F> : Monad<F>, Invoke<F>
 
 open class MonadContinuation<F, A>(
   M: Monad<F>,
   override val context: CoroutineContext = EmptyCoroutineContext
-) : Continuation<Kind<F, A>>, Monad<F> by M, BindSyntax<F>, MonadSyntax<F> {
+) : Continuation<Kind<F, A>>, Monad<F> by M, Invoke<F>, MonadSyntax<F> {
 
   override fun resume(value: Kind<F, A>) {
     returnedMonad = value

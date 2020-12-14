@@ -14,18 +14,19 @@ import arrow.Kind
  * }
  * ```
  */
+@Deprecated("The operators of BindingSyntax can have problems when you do not capture the value, please use Invoke instead", ReplaceWith("Invoke", "arrow.typeclasses.suspended.Invoke"), DeprecationLevel.ERROR)
 interface BindSyntax<F> : Invoke<F> {
 
-  @Deprecated("This operator can have problems when you do not capture the value, please use () or invoke() instead", ReplaceWith("invoke()"))
+  @Deprecated("This operator can have problems when you do not capture the value, please use () or invoke() instead", ReplaceWith("invoke()"), DeprecationLevel.ERROR)
   suspend fun <A> Kind<F, A>.bind(): A =
     invoke()
 
-  @Deprecated("This operator can have problems when you do not capture the value, please use () or invoke() instead", ReplaceWith("invoke()"))
+  @Deprecated("This operator can have problems when you do not capture the value, please use () or invoke() instead", ReplaceWith("invoke()"), DeprecationLevel.ERROR)
   suspend operator fun <A> Kind<F, A>.not(): A =
     invoke()
 
   // TODO remove it completely
-  @Deprecated("This operator can have problems when you do not capture the value, please use () or invoke() instead", ReplaceWith("invoke()"))
+  @Deprecated("This operator can have problems when you do not capture the value, please use () or invoke() instead", ReplaceWith("invoke()"), DeprecationLevel.ERROR)
   suspend operator fun <A> Kind<F, A>.component1(): A =
     invoke()
 }
