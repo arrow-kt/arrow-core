@@ -110,7 +110,7 @@ fun <E, A> Kind<Kind<ForValidated, E>, A>.attempt(SE: Semigroup<E>): Validated<E
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-//@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Validated.catch(arg0, arg1)", "arrow.core.catch"))
+// @Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Validated.catch(arg0, arg1)", "arrow.core.catch"))
 // TODO refactor suspend fun Validated.catch to inline fun Validated.catch, binary breaking
 fun <E, A> catch(
   SE: Semigroup<E>,
@@ -146,7 +146,7 @@ fun <E, A> ApplicativeError<Kind<ForValidated, E>, Throwable>.catch(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-//@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Validated.catch(arg0) { arg1() } ", "arrow.core.catch"))
+// @Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Validated.catch(arg0) { arg1() } ", "arrow.core.catch"))
 // TODO refactor suspend fun Validated.catch to inline fun Validated.catch, binary breaking
 suspend fun <E, A> effectCatch(
   SE: Semigroup<E>,
