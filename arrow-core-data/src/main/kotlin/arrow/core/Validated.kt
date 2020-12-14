@@ -546,7 +546,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       b: Validated<EE, B>,
       f: (A, B) -> Z
     ): Validated<EE, Z> =
-      tupledN(SE, a, b,)
+      tupledN(SE, a, b)
         .map { (a, b) -> f(a, b) }
 
     fun <EE, A, B, C, Z> mapN(
