@@ -464,17 +464,17 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
     inline fun <E, A> fromNullable(value: A?, ifNull: () -> E): Validated<E, A> =
       value?.let(::Valid) ?: Invalid(ifNull())
 
-    suspend fun <A> catch(f: () -> A): Validated<Throwable, A> =
+    suspend fun <A> catch(f: suspend () -> A): Validated<Throwable, A> =
       try {
         f().valid()
       } catch (e: Throwable) {
         e.nonFatalOrThrow().invalid()
       }
 
-    suspend fun <E, A> catch(recover: (Throwable) -> E, f: () -> A): Validated<E, A> =
-      catch(f).mapLeft(recover)
+//    fun <E, A> catch(recover: (Throwable) -> E, f: () -> A): Validated<E, A> =
+//      catch(f).mapLeft(recover)
 
-    suspend fun <A> catchNel(f: () -> A): ValidatedNel<Throwable, A> =
+    suspend fun <A> catchNel(f: suspend () -> A): ValidatedNel<Throwable, A> =
       try {
         f().validNel()
       } catch (e: Throwable) {
