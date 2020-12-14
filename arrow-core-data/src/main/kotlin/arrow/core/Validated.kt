@@ -295,7 +295,7 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  *  val config = Config(mapOf("url" to "127.0.0.1", "port" to "1337"))
  *
  *  val valid = Validated.mapN(
- *    NonEmptyList.semigroup<ConfigError>()
+ *    NonEmptyList.semigroup<ConfigError>(),
  *    config.parse(Read.stringRead, "url"),
  *    config.parse(Read.intRead, "port")
  *  ) { (url, port) -> ConnectionParams(url, port) }
