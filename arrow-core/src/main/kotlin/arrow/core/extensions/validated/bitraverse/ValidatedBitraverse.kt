@@ -80,7 +80,7 @@ fun <A, B, C, D> Kind<Kind<ForValidated, A>, B>.bimap(arg1: Function1<A, C>, arg
  *  fun main() {
  *  //sampleStart
  *  val f: (Int) -> Option<Int> = { Some(it + 1) }
- * 3) }
+ *  val g: (Int) -> Option<Int> = { Some(it * 3) }
  *
  *  val tuple = Tuple2(1, 2)
  *  val bitraverseResult = tuple.bitraverse(Option.applicative(), f, g)
