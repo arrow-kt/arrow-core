@@ -73,6 +73,17 @@ fun <E, A, B> lift(arg0: Function1<A, B>): Function1<Kind<Kind<ForValidated, E>,
 fun <E, A> Kind<Kind<ForValidated, E>, A>.void(): Validated<E, Unit> =
   fix().void()
 
+@JvmName("unit")
+@Suppress(
+  "UNCHECKED_CAST",
+  "USELESS_CAST",
+  "EXTENSION_SHADOWED_BY_MEMBER",
+  "UNUSED_PARAMETER"
+)
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("void()"))
+fun <E, A> Kind<Kind<ForValidated, E>, A>.unit(): Validated<E, Unit> =
+  fix().void()
+
 @JvmName("fproduct")
 @Suppress(
   "UNCHECKED_CAST",
