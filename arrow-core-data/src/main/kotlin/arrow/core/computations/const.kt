@@ -28,7 +28,7 @@ fun interface RestrictedConstEffect<E, A> : ConstEffect<E, A>
 
 @Suppress("ClassName")
 @Deprecated(
-  "Const binding doe not require suspension and this computation block will be removed."
+  "Const binding does not require suspension and this computation block will be removed."
 )
 object const {
   inline fun <A, T> eager(crossinline c: suspend RestrictedConstEffect<A, *>.() -> A): Const<A, T> =
