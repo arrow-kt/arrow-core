@@ -32,7 +32,7 @@ internal open class SuspendMonadContinuation<R>(
     _decision.loop { decision ->
       when (decision) {
         UNDECIDED -> {
-          val r: R? = result.fold({ it }) { it.shiftedOrNull() }
+          val r: R? = result.fold({ it }) { EMPTY_VALUE.unbox(it.shiftedOrNull()) }
           when {
             r == null -> {
               parent.resumeWithException(result.exceptionOrNull()!!)
@@ -46,7 +46,9 @@ internal open class SuspendMonadContinuation<R>(
         }
         else -> { // If not `UNDECIDED` then we need to pass result to `parent`
           val res: Result<R> = result.fold({ Result.success(it) }, { t ->
-            t.shiftedOrNull()?.let(Result.Companion::success) ?: Result.failure(t)
+            val x = t.shiftedOrNull()
+            if (x === EMPTY_VALUE) Result.failure(t)
+            else Result.success(EMPTY_VALUE.unbox(x))
           })
           parent.resumeWith(res)
           return
@@ -72,10 +74,10 @@ internal open class SuspendMonadContinuation<R>(
       else -> cause.shortCircuitCause()
     }
 
-  private fun Throwable.shiftedOrNull(): R? {
+  private fun Throwable.shiftedOrNull(): Any? {
     val shortCircuit = if (this is ShortCircuit) this else shortCircuitCause()
     return if (shortCircuit != null && shortCircuit.token === token) shortCircuit.raiseValue as R
-    else null
+    else EMPTY_VALUE
   }
 
   override suspend fun <A> shift(r: R): A =
@@ -88,6 +90,7 @@ internal open class SuspendMonadContinuation<R>(
         else it
       }
     } catch (e: Throwable) {
-      e.shiftedOrNull() ?: throw e
+      val x = e.shiftedOrNull()
+      if (x === EMPTY_VALUE) throw e else x
     }
 }
