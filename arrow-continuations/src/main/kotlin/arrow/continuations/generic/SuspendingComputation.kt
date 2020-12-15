@@ -33,15 +33,7 @@ internal open class SuspendMonadContinuation<R>(
     _decision.loop { decision ->
       when (decision) {
         UNDECIDED -> {
-          val r: R? = when {
-            result.isFailure -> {
-              val e = result.exceptionOrNull()
-              if (e is ShortCircuit && e.token === token) e.raiseValue as R else null
-            }
-            result.isSuccess -> result.getOrNull()
-            else -> throw RuntimeException("Internal Arrow Exception")
-          }
-
+          val r: R? = result.fold({ it }) { it.shiftedOrNull() }
           when {
             r == null -> {
               parent.resumeWithException(result.exceptionOrNull()!!)
@@ -55,8 +47,7 @@ internal open class SuspendMonadContinuation<R>(
         }
         else -> { // If not `UNDECIDED` then we need to pass result to `parent`
           val res: Result<R> = result.fold({ Result.success(it) }, { t ->
-            if (t is ShortCircuit && t.token === token) Result.success(t.raiseValue as R)
-            else Result.failure(t)
+            t.shiftedOrNull()?.let(Result.Companion::success) ?: Result.failure(t)
           })
           parent.resumeWith(res)
           return
@@ -74,6 +65,20 @@ internal open class SuspendMonadContinuation<R>(
       }
     }
 
+  // If ShortCircuit causes CancellationException, we also want to shift back to R
+  private tailrec fun Throwable.shortCircuitCause(): ShortCircuit? =
+    when (val cause = this.cause) {
+      null -> null
+      is ShortCircuit -> cause
+      else -> cause.shortCircuitCause()
+    }
+
+  private fun Throwable.shiftedOrNull(): R? {
+    val shortCircuit = if (this is ShortCircuit) this else shortCircuitCause()
+    return if (shortCircuit != null && shortCircuit.token === token) shortCircuit.raiseValue as R
+    else null
+  }
+
   override suspend fun <A> shift(r: R): A =
     throw ShortCircuit(token, r)
 
@@ -84,7 +89,6 @@ internal open class SuspendMonadContinuation<R>(
         else it
       }
     } catch (e: Throwable) {
-      if (e is ShortCircuit && e.token === token) e.raiseValue as R
-      else throw e
+      e.shiftedOrNull() ?: throw e
     }
 }
