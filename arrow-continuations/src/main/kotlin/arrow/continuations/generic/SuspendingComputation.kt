@@ -27,7 +27,7 @@ internal open class SuspendMonadContinuation<R>(
   private val _decision = atomic<Any>(UNDECIDED)
   private val token: Token = Token()
 
-  override val context: CoroutineContext = EmptyCoroutineContext
+  override val context: CoroutineContext = parent.context
 
   override fun resumeWith(result: Result<R>) {
     _decision.loop { decision ->
