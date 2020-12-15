@@ -13,7 +13,6 @@ import arrow.core.extensions.ValidatedApplicativeError
 import arrow.core.fix
 import arrow.core.invalid
 import arrow.core.redeem
-import arrow.core.valid
 import arrow.typeclasses.ApplicativeError
 import arrow.typeclasses.Semigroup
 import kotlin.Function0
@@ -110,18 +109,13 @@ fun <E, A> Kind<Kind<ForValidated, E>, A>.attempt(SE: Semigroup<E>): Validated<E
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-// @Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Validated.catch(arg0, arg1)", "arrow.core.catch"))
-// TODO refactor suspend fun Validated.catch to inline fun Validated.catch, binary breaking
+ @Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Validated.catch(arg0, arg1)", "arrow.core.catch"))
 fun <E, A> catch(
   SE: Semigroup<E>,
   arg0: Function1<Throwable, E>,
   arg1: Function0<A>
 ): Validated<E, A> =
-  try {
-    arg1.invoke().valid()
-  } catch (e: Throwable) {
-    arg0.invoke(e).invalid()
-  }
+  Companion.catch(arg0, arg1)
 
 @JvmName("catch")
 @Suppress(
@@ -130,7 +124,6 @@ fun <E, A> catch(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-
 @Deprecated("This methods is invalid for Validated. ApplicativeError<F, Throwable> is inconsistent in `F`")
 fun <E, A> ApplicativeError<Kind<ForValidated, E>, Throwable>.catch(
   SE: Semigroup<E>,
@@ -146,13 +139,13 @@ fun <E, A> ApplicativeError<Kind<ForValidated, E>, Throwable>.catch(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
- @Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Validated.catch(arg1).mapLeft(arg0)", "arrow.core.catch"))
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Validated.catch(arg0) { arg1() }", "arrow.core.catch"))
 suspend fun <E, A> effectCatch(
   SE: Semigroup<E>,
   arg0: Function1<Throwable, E>,
   arg1: suspend () -> A
 ): Validated<E, A> =
-  Validated.catch(arg1).mapLeft(arg0)
+   Validated.catch(arg0) { arg1() }
 
 @JvmName("effectCatch")
 @Suppress(

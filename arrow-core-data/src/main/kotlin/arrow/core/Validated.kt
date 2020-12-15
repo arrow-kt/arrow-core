@@ -464,6 +464,14 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
     inline fun <E, A> fromNullable(value: A?, ifNull: () -> E): Validated<E, A> =
       value?.let(::Valid) ?: Invalid(ifNull())
 
+    inline fun <A> catch(f: () -> A): Validated<Throwable, A> =
+      try {
+        f().valid()
+      } catch (e: Throwable) {
+        e.nonFatalOrThrow().invalid()
+      }
+
+    @Deprecated("Use the inline version. Hidden for binary compat", level = DeprecationLevel.HIDDEN)
     suspend fun <A> catch(f: suspend () -> A): Validated<Throwable, A> =
       try {
         f().valid()
@@ -471,9 +479,17 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
         e.nonFatalOrThrow().invalid()
       }
 
-//    fun <E, A> catch(recover: (Throwable) -> E, f: () -> A): Validated<E, A> =
-//      catch(f).mapLeft(recover)
+    inline fun <E, A> catch(recover: (Throwable) -> E, f: () -> A): Validated<E, A> =
+      catch(f).mapLeft(recover)
 
+    inline fun <A> catchNel(f: () -> A): ValidatedNel<Throwable, A> =
+      try {
+        f().validNel()
+      } catch (e: Throwable) {
+        e.nonFatalOrThrow().invalidNel()
+      }
+
+    @Deprecated("Use the inline version. Hidden for binary compat", level = DeprecationLevel.HIDDEN)
     suspend fun <A> catchNel(f: suspend () -> A): ValidatedNel<Throwable, A> =
       try {
         f().validNel()
