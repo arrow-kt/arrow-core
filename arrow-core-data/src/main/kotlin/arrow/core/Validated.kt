@@ -481,18 +481,18 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
         e.nonFatalOrThrow().invalidNel()
       }
 
-    /** Construct an [Eq] instance which use [EQL] and [EQR] to compare the [Invalid] and [Valid] cases **/
-    fun <L, R> eq(EQL: Eq<L>, EQR: Eq<R>): Eq<Validated<L, R>> =
-      ValidatedEq(EQL, EQR)
+    /** Construct an [Eq] instance which use [EQE] and [EQA] to compare the [Invalid] and [Valid] cases **/
+    fun <E, A> eq(EQE: Eq<E>, EQA: Eq<A>): Eq<Validated<E, A>> =
+      ValidatedEq(EQE, EQA)
 
-    fun <L, R> hash(HL: Hash<L>, HR: Hash<R>): Hash<Validated<L, R>> =
-      ValidatedHash(HL, HR)
+    fun <E, A> hash(HE: Hash<E>, HA: Hash<A>): Hash<Validated<E, A>> =
+      ValidatedHash(HE, HA)
 
-    fun <L, R> show(SL: Show<L>, SR: Show<R>): Show<Validated<L, R>> =
-      ValidatedShow(SL, SR)
+    fun <E, A> show(SE: Show<E>, SA: Show<A>): Show<Validated<E, A>> =
+      ValidatedShow(SE, SA)
 
-    fun <L, R> order(OL: Order<L>, OR: Order<R>): Order<Validated<L, R>> =
-      ValidatedOrder(OL, OR)
+    fun <E, A> order(OE: Order<E>, OA: Order<A>): Order<Validated<E, A>> =
+      ValidatedOrder(OE, OA)
 
     /**
      * Lifts a function `A -> B` to the [Validated] structure.
@@ -540,220 +540,220 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
 
     fun <E> unit(): Validated<E, Unit> = unit
 
-    fun <EE, A, B, Z> mapN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
+    fun <E, A, B, Z> mapN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
       f: (A, B) -> Z
-    ): Validated<EE, Z> =
+    ): Validated<E, Z> =
       tupledN(SE, a, b)
         .map { (a, b) -> f(a, b) }
 
-    fun <EE, A, B, C, Z> mapN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
-      c: Validated<EE, C>,
+    fun <E, A, B, C, Z> mapN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
+      c: Validated<E, C>,
       f: (A, B, C) -> Z
-    ): Validated<EE, Z> =
+    ): Validated<E, Z> =
       tupledN(SE, a, b, c)
         .map { (a, b, c) -> f(a, b, c) }
 
-    fun <EE, A, B, C, D, Z> mapN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
-      c: Validated<EE, C>,
-      d: Validated<EE, D>,
+    fun <E, A, B, C, D, Z> mapN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
+      c: Validated<E, C>,
+      d: Validated<E, D>,
       f: (A, B, C, D) -> Z
-    ): Validated<EE, Z> =
+    ): Validated<E, Z> =
       tupledN(SE, a, b, c, d)
         .map { (a, b, c, d) -> f(a, b, c, d) }
 
-    fun <EE, A, B, C, D, E, Z> mapN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
-      c: Validated<EE, C>,
-      d: Validated<EE, D>,
-      e: Validated<EE, E>,
-      f: (A, B, C, D, E) -> Z
-    ): Validated<EE, Z> =
+    fun <E, A, B, C, D, EE, Z> mapN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
+      c: Validated<E, C>,
+      d: Validated<E, D>,
+      e: Validated<E, EE>,
+      f: (A, B, C, D, EE) -> Z
+    ): Validated<E, Z> =
       tupledN(SE, a, b, c, d, e)
         .map { (a, b, c, d, e) -> f(a, b, c, d, e) }
 
-    fun <EE, A, B, C, D, E, FF, Z> mapN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
-      c: Validated<EE, C>,
-      d: Validated<EE, D>,
-      e: Validated<EE, E>,
-      ff: Validated<EE, FF>,
-      f: (A, B, C, D, E, FF) -> Z
-    ): Validated<EE, Z> =
+    fun <E, A, B, C, D, EE, FF, Z> mapN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
+      c: Validated<E, C>,
+      d: Validated<E, D>,
+      e: Validated<E, EE>,
+      ff: Validated<E, FF>,
+      f: (A, B, C, D, EE, FF) -> Z
+    ): Validated<E, Z> =
       tupledN(SE, a, b, c, d, e, ff)
         .map { (a, b, c, d, e, ff) -> f(a, b, c, d, e, ff) }
 
-    fun <EE, A, B, C, D, E, FF, G, Z> mapN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
-      c: Validated<EE, C>,
-      d: Validated<EE, D>,
-      e: Validated<EE, E>,
-      ff: Validated<EE, FF>,
-      g: Validated<EE, G>,
-      f: (A, B, C, D, E, FF, G) -> Z
-    ): Validated<EE, Z> =
+    fun <E, A, B, C, D, EE, F, G, Z> mapN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
+      c: Validated<E, C>,
+      d: Validated<E, D>,
+      e: Validated<E, EE>,
+      ff: Validated<E, F>,
+      g: Validated<E, G>,
+      f: (A, B, C, D, EE, F, G) -> Z
+    ): Validated<E, Z> =
       tupledN(SE, a, b, c, d, e, ff, g)
         .map { (a, b, c, d, e, ff, g) -> f(a, b, c, d, e, ff, g) }
 
-    fun <EE, A, B, C, D, E, FF, G, H, Z> mapN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
-      c: Validated<EE, C>,
-      d: Validated<EE, D>,
-      e: Validated<EE, E>,
-      ff: Validated<EE, FF>,
-      g: Validated<EE, G>,
-      h: Validated<EE, H>,
-      f: (A, B, C, D, E, FF, G, H) -> Z
-    ): Validated<EE, Z> =
+    fun <E, A, B, C, D, EE, F, G, H, Z> mapN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
+      c: Validated<E, C>,
+      d: Validated<E, D>,
+      e: Validated<E, EE>,
+      ff: Validated<E, F>,
+      g: Validated<E, G>,
+      h: Validated<E, H>,
+      f: (A, B, C, D, EE, F, G, H) -> Z
+    ): Validated<E, Z> =
       tupledN(SE, a, b, c, d, e, ff, g, h)
         .map { (a, b, c, d, e, ff, g, h) -> f(a, b, c, d, e, ff, g, h) }
 
-    fun <EE, A, B, C, D, E, FF, G, H, I, Z> mapN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
-      c: Validated<EE, C>,
-      d: Validated<EE, D>,
-      e: Validated<EE, E>,
-      ff: Validated<EE, FF>,
-      g: Validated<EE, G>,
-      h: Validated<EE, H>,
-      i: Validated<EE, I>,
-      f: (A, B, C, D, E, FF, G, H, I) -> Z
-    ): Validated<EE, Z> =
+    fun <E, A, B, C, D, EE, F, G, H, I, Z> mapN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
+      c: Validated<E, C>,
+      d: Validated<E, D>,
+      e: Validated<E, EE>,
+      ff: Validated<E, F>,
+      g: Validated<E, G>,
+      h: Validated<E, H>,
+      i: Validated<E, I>,
+      f: (A, B, C, D, EE, F, G, H, I) -> Z
+    ): Validated<E, Z> =
       tupledN(SE, a, b, c, d, e, ff, g, h, i)
         .map { (a, b, c, d, e, ff, g, h, i) -> f(a, b, c, d, e, ff, g, h, i) }
 
-    fun <EE, A, B, C, D, E, FF, G, H, I, J, Z> mapN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
-      c: Validated<EE, C>,
-      d: Validated<EE, D>,
-      e: Validated<EE, E>,
-      ff: Validated<EE, FF>,
-      g: Validated<EE, G>,
-      h: Validated<EE, H>,
-      i: Validated<EE, I>,
-      j: Validated<EE, J>,
-      f: (A, B, C, D, E, FF, G, H, I, J) -> Z
-    ): Validated<EE, Z> =
+    fun <E, A, B, C, D, EE, F, G, H, I, J, Z> mapN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
+      c: Validated<E, C>,
+      d: Validated<E, D>,
+      e: Validated<E, EE>,
+      ff: Validated<E, F>,
+      g: Validated<E, G>,
+      h: Validated<E, H>,
+      i: Validated<E, I>,
+      j: Validated<E, J>,
+      f: (A, B, C, D, EE, F, G, H, I, J) -> Z
+    ): Validated<E, Z> =
       tupledN(SE, a, b, c, d, e, ff, g, h, i, j)
         .map { (a, b, c, d, e, ff, g, h, i, j) -> f(a, b, c, d, e, ff, g, h, i, j) }
 
-    fun <EE, A, B> tupledN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>
-    ): Validated<EE, Tuple2<A, B>> =
+    fun <E, A, B> tupledN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>
+    ): Validated<E, Tuple2<A, B>> =
       a.product(SE, b)
 
-    fun <EE, A, B, C> tupledN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
-      c: Validated<EE, C>
-    ): Validated<EE, Tuple3<A, B, C>> =
+    fun <E, A, B, C> tupledN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
+      c: Validated<E, C>
+    ): Validated<E, Tuple3<A, B, C>> =
       a.product(SE, b).product(SE, c)
 
-    fun <EE, A, B, C, D> tupledN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
-      c: Validated<EE, C>,
-      d: Validated<EE, D>
-    ): Validated<EE, Tuple4<A, B, C, D>> =
+    fun <E, A, B, C, D> tupledN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
+      c: Validated<E, C>,
+      d: Validated<E, D>
+    ): Validated<E, Tuple4<A, B, C, D>> =
       a.product(SE, b).product(SE, c).product(SE, d)
 
-    fun <EE, A, B, C, D, E> tupledN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
-      c: Validated<EE, C>,
-      d: Validated<EE, D>,
-      e: Validated<EE, E>
-    ): Validated<EE, Tuple5<A, B, C, D, E>> =
+    fun <E, A, B, C, D, EE> tupledN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
+      c: Validated<E, C>,
+      d: Validated<E, D>,
+      e: Validated<E, EE>
+    ): Validated<E, Tuple5<A, B, C, D, EE>> =
       a.product(SE, b).product(SE, c).product(SE, d).product(SE, e)
 
-    fun <EE, A, B, C, D, E, FF> tupledN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
-      c: Validated<EE, C>,
-      d: Validated<EE, D>,
-      e: Validated<EE, E>,
-      f: Validated<EE, FF>
-    ): Validated<EE, Tuple6<A, B, C, D, E, FF>> =
+    fun <E, A, B, C, D, EE, F> tupledN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
+      c: Validated<E, C>,
+      d: Validated<E, D>,
+      e: Validated<E, EE>,
+      f: Validated<E, F>
+    ): Validated<E, Tuple6<A, B, C, D, EE, F>> =
       a.product(SE, b).product(SE, c).product(SE, d).product(SE, e).product(SE, f)
 
-    fun <EE, A, B, C, D, E, FF, G> tupledN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
-      c: Validated<EE, C>,
-      d: Validated<EE, D>,
-      e: Validated<EE, E>,
-      f: Validated<EE, FF>,
-      g: Validated<EE, G>
-    ): Validated<EE, Tuple7<A, B, C, D, E, FF, G>> =
+    fun <E, A, B, C, D, EE, F, G> tupledN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
+      c: Validated<E, C>,
+      d: Validated<E, D>,
+      e: Validated<E, EE>,
+      f: Validated<E, F>,
+      g: Validated<E, G>
+    ): Validated<E, Tuple7<A, B, C, D, EE, F, G>> =
       a.product(SE, b).product(SE, c).product(SE, d).product(SE, e).product(SE, f).product(SE, g)
 
-    fun <EE, A, B, C, D, E, FF, G, H> tupledN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
-      c: Validated<EE, C>,
-      d: Validated<EE, D>,
-      e: Validated<EE, E>,
-      f: Validated<EE, FF>,
-      g: Validated<EE, G>,
-      h: Validated<EE, H>
-    ): Validated<EE, Tuple8<A, B, C, D, E, FF, G, H>> =
+    fun <E, A, B, C, D, EE, F, G, H> tupledN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
+      c: Validated<E, C>,
+      d: Validated<E, D>,
+      e: Validated<E, EE>,
+      f: Validated<E, F>,
+      g: Validated<E, G>,
+      h: Validated<E, H>
+    ): Validated<E, Tuple8<A, B, C, D, EE, F, G, H>> =
       a.product(SE, b).product(SE, c).product(SE, d).product(SE, e).product(SE, f).product(SE, g).product(SE, h)
 
-    fun <EE, A, B, C, D, E, FF, G, H, I> tupledN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
-      c: Validated<EE, C>,
-      d: Validated<EE, D>,
-      e: Validated<EE, E>,
-      f: Validated<EE, FF>,
-      g: Validated<EE, G>,
-      h: Validated<EE, H>,
-      i: Validated<EE, I>
-    ): Validated<EE, Tuple9<A, B, C, D, E, FF, G, H, I>> =
+    fun <E, A, B, C, D, EE, F, G, H, I> tupledN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
+      c: Validated<E, C>,
+      d: Validated<E, D>,
+      e: Validated<E, EE>,
+      f: Validated<E, F>,
+      g: Validated<E, G>,
+      h: Validated<E, H>,
+      i: Validated<E, I>
+    ): Validated<E, Tuple9<A, B, C, D, EE, F, G, H, I>> =
       a.product(SE, b).product(SE, c).product(SE, d).product(SE, e).product(SE, f).product(SE, g).product(SE, h).product(SE, i)
 
-    fun <EE, A, B, C, D, E, FF, G, H, I, J> tupledN(
-      SE: Semigroup<EE>,
-      a: Validated<EE, A>,
-      b: Validated<EE, B>,
-      c: Validated<EE, C>,
-      d: Validated<EE, D>,
-      e: Validated<EE, E>,
-      f: Validated<EE, FF>,
-      g: Validated<EE, G>,
-      h: Validated<EE, H>,
-      i: Validated<EE, I>,
-      j: Validated<EE, J>
-    ): Validated<EE, Tuple10<A, B, C, D, E, FF, G, H, I, J>> =
+    fun <E, A, B, C, D, EE, F, G, H, I, J> tupledN(
+      SE: Semigroup<E>,
+      a: Validated<E, A>,
+      b: Validated<E, B>,
+      c: Validated<E, C>,
+      d: Validated<E, D>,
+      e: Validated<E, EE>,
+      f: Validated<E, F>,
+      g: Validated<E, G>,
+      h: Validated<E, H>,
+      i: Validated<E, I>,
+      j: Validated<E, J>
+    ): Validated<E, Tuple10<A, B, C, D, EE, F, G, H, I, J>> =
       a.product(SE, b).product(SE, c).product(SE, d).product(SE, e).product(SE, f).product(SE, g)
         .product(SE, h).product(SE, i).product(SE, j)
   }
@@ -851,46 +851,46 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
   fun <B> tupleRight(b: B): Validated<E, Tuple2<A, B>> =
     map { a -> Tuple2(a, b) }
 
-  inline fun <D> traverse(fa: (A) -> Iterable<D>): List<Validated<E, D>> =
+  inline fun <B> traverse(fa: (A) -> Iterable<B>): List<Validated<E, B>> =
     fold({ emptyList() }, { fa(it).map { Valid(it) } })
 
-  inline fun <D> traverse_(fa: (A) -> Iterable<D>): List<Unit> =
+  inline fun <B> traverse_(fa: (A) -> Iterable<B>): List<Unit> =
     fold({ emptyList() }, { fa(it).void() })
 
-  inline fun <EE, D> traverseEither(fa: (A) -> Either<EE, D>): Either<EE, Validated<E, D>> =
+  inline fun <EE, B> traverseEither(fa: (A) -> Either<EE, B>): Either<EE, Validated<E, B>> =
     when (this) {
       is Valid -> fa(this.a).map { Valid(it) }
       is Invalid -> this.right()
     }
 
-  inline fun <EE, D> traverseEither_(fa: (A) -> Either<EE, D>): Either<EE, Unit> =
+  inline fun <EE, B> traverseEither_(fa: (A) -> Either<EE, B>): Either<EE, Unit> =
     fold({ Either.right(Unit) }, { fa(it).void() })
 
-  inline fun <C> bifoldLeft(
-    c: C,
-    fe: (C, E) -> C,
-    fa: (C, A) -> C
-  ): C =
+  inline fun <B> bifoldLeft(
+    c: B,
+    fe: (B, E) -> B,
+    fa: (B, A) -> B
+  ): B =
     fold({ fe(c, it) }, { fa(c, it) })
 
-  inline fun <C> bifoldRight(
-    c: Eval<C>,
-    fe: (E, Eval<C>) -> Eval<C>,
-    fa: (A, Eval<C>) -> Eval<C>
-  ): Eval<C> =
+  inline fun <B> bifoldRight(
+    c: Eval<B>,
+    fe: (E, Eval<B>) -> Eval<B>,
+    fa: (A, Eval<B>) -> Eval<B>
+  ): Eval<B> =
     fold({ fe(it, c) }, { fa(it, c) })
 
-  inline fun <C> bifoldMap(MN: Monoid<C>, g: (E) -> C, f: (A) -> C) = MN.run {
+  inline fun <B> bifoldMap(MN: Monoid<B>, g: (E) -> B, f: (A) -> B) = MN.run {
     bifoldLeft(MN.empty(), { c, b -> c.combine(g(b)) }) { c, a -> c.combine(f(a)) }
   }
 
-  fun <C, D> bitraverse(fe: (E) -> Iterable<C>, fa: (A) -> Iterable<D>): List<Validated<C, D>> =
+  fun <EE, B> bitraverse(fe: (E) -> Iterable<EE>, fa: (A) -> Iterable<B>): List<Validated<EE, B>> =
     fold({ fe(it).map { Invalid(it) } }, { fa(it).map { Valid(it) } })
 
-  fun <C, D, EE> bitraverseEither(
-    fe: (E) -> Either<EE, D>,
+  fun <EE, B, C> bitraverseEither(
+    fe: (E) -> Either<EE, B>,
     fa: (A) -> Either<EE, C>
-  ): Either<EE, Validated<D, C>> =
+  ): Either<EE, Validated<B, C>> =
     fold({ fe(it).map { Invalid(it) } }, { fa(it).map { Valid(it) } })
 
   fun <B> foldMap(MB: Monoid<B>, f: (A) -> B): B =
@@ -986,7 +986,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
    *
    * Apply a function to an Invalid or Valid value, returning a new Invalid or Valid value respectively.
    */
-  inline fun <EE, AA> bimap(fe: (E) -> EE, fa: (A) -> AA): Validated<EE, AA> =
+  inline fun <EE, B> bimap(fe: (E) -> EE, fa: (A) -> B): Validated<EE, B> =
     fold({ Invalid(fe(it)) }, { Valid(fa(it)) })
 
   /**
@@ -1054,7 +1054,7 @@ fun <E, B> Validated<E, B>.eqv(
 }
 
 /**
- * Replaces the [B] value inside [F] with [A] resulting in a Kind<F, A>
+ * Replaces the [B] value inside [Validated] with [A] resulting in Validated<E, A>
  */
 fun <E, A, B> A.mapConst(fb: Validated<E, B>): Validated<E, A> =
   fb.mapConst(this)
@@ -1096,65 +1096,65 @@ fun <E, A, B, Z> Validated<E, A>.map2(SE: Semigroup<E>, fb: Validated<E, B>, f: 
   product(SE, fb).map(f)
 
 @JvmName("product3")
-fun <EE, A, B, Z> Validated<EE, Tuple2<A, B>>.product(
-  SE: Semigroup<EE>,
-  other: Validated<EE, Z>,
-): Validated<EE, Tuple3<A, B, Z>> =
+fun <E, A, B, C> Validated<E, Tuple2<A, B>>.product(
+  SE: Semigroup<E>,
+  other: Validated<E, C>,
+): Validated<E, Tuple3<A, B, C>> =
   map2(SE, other) { (ab, c) -> Tuple3(ab.a, ab.b, c) }
 
 @JvmName("product4")
-fun <EE, A, B, C, Z> Validated<EE, Tuple3<A, B, C>>.product(
-  SE: Semigroup<EE>,
-  other: Validated<EE, Z>,
-): Validated<EE, Tuple4<A, B, C, Z>> =
+fun <E, A, B, C, D> Validated<E, Tuple3<A, B, C>>.product(
+  SE: Semigroup<E>,
+  other: Validated<E, D>,
+): Validated<E, Tuple4<A, B, C, D>> =
   map2(SE, other) { (abc, d) -> Tuple4(abc.a, abc.b, abc.c, d) }
 
 @JvmName("product5")
-fun <EE, A, B, C, D, Z> Validated<EE, Tuple4<A, B, C, D>>.product(
-  SE: Semigroup<EE>,
-  other: Validated<EE, Z>,
-): Validated<EE, Tuple5<A, B, C, D, Z>> =
+fun <E, A, B, C, D, EE> Validated<E, Tuple4<A, B, C, D>>.product(
+  SE: Semigroup<E>,
+  other: Validated<E, EE>,
+): Validated<E, Tuple5<A, B, C, D, EE>> =
   map2(SE, other) { (abcd, e) -> Tuple5(abcd.a, abcd.b, abcd.c, abcd.d, e) }
 
 @JvmName("product6")
-fun <EE, A, B, C, D, E, Z> Validated<EE, Tuple5<A, B, C, D, E>>.product(
-  SE: Semigroup<EE>,
-  other: Validated<EE, Z>,
-): Validated<EE, Tuple6<A, B, C, D, E, Z>> =
+fun <E, A, B, C, D, EE, F> Validated<E, Tuple5<A, B, C, D, EE>>.product(
+  SE: Semigroup<E>,
+  other: Validated<E, F>,
+): Validated<E, Tuple6<A, B, C, D, EE, F>> =
   map2(SE, other) { (abcde, f) -> Tuple6(abcde.a, abcde.b, abcde.c, abcde.d, abcde.e, f) }
 
 @JvmName("product7")
-fun <EE, A, B, C, D, E, FF, Z> Validated<EE, Tuple6<A, B, C, D, E, FF>>.product(
-  SE: Semigroup<EE>,
-  other: Validated<EE, Z>,
-): Validated<EE, Tuple7<A, B, C, D, E, FF, Z>> =
+fun <E, A, B, C, D, EE, F, G> Validated<E, Tuple6<A, B, C, D, EE, F>>.product(
+  SE: Semigroup<E>,
+  other: Validated<E, G>,
+): Validated<E, Tuple7<A, B, C, D, EE, F, G>> =
   map2(SE, other) { (abcdef, g) -> Tuple7(abcdef.a, abcdef.b, abcdef.c, abcdef.d, abcdef.e, abcdef.f, g) }
 
 @JvmName("product8")
-fun <EE, A, B, C, D, E, FF, G, Z> Validated<EE, Tuple7<A, B, C, D, E, FF, G>>.product(
-  SE: Semigroup<EE>,
-  other: Validated<EE, Z>,
-): Validated<EE, Tuple8<A, B, C, D, E, FF, G, Z>> =
+fun <E, A, B, C, D, EE, F, G, H> Validated<E, Tuple7<A, B, C, D, EE, F, G>>.product(
+  SE: Semigroup<E>,
+  other: Validated<E, H>,
+): Validated<E, Tuple8<A, B, C, D, EE, F, G, H>> =
   map2(SE, other) { (abcdefg, h) -> Tuple8(abcdefg.a, abcdefg.b, abcdefg.c, abcdefg.d, abcdefg.e, abcdefg.f, abcdefg.g, h) }
 
 @JvmName("product9")
-fun <EE, A, B, C, D, E, FF, G, H, Z> Validated<EE, Tuple8<A, B, C, D, E, FF, G, H>>.product(
-  SE: Semigroup<EE>,
-  other: Validated<EE, Z>,
-): Validated<EE, Tuple9<A, B, C, D, E, FF, G, H, Z>> =
+fun <E, A, B, C, D, EE, F, G, H, I> Validated<E, Tuple8<A, B, C, D, EE, F, G, H>>.product(
+  SE: Semigroup<E>,
+  other: Validated<E, I>,
+): Validated<E, Tuple9<A, B, C, D, EE, F, G, H, I>> =
   map2(SE, other) { (abcdefgh, i) -> Tuple9(abcdefgh.a, abcdefgh.b, abcdefgh.c, abcdefgh.d, abcdefgh.e, abcdefgh.f, abcdefgh.g, abcdefgh.h, i) }
 
 @JvmName("product10")
-fun <EE, A, B, C, D, E, FF, G, H, I, Z> Validated<EE, Tuple9<A, B, C, D, E, FF, G, H, I>>.product(
-  SE: Semigroup<EE>,
-  other: Validated<EE, Z>,
-): Validated<EE, Tuple10<A, B, C, D, E, FF, G, H, I, Z>> =
+fun <E, A, B, C, D, EE, F, G, H, I, J> Validated<E, Tuple9<A, B, C, D, EE, F, G, H, I>>.product(
+  SE: Semigroup<E>,
+  other: Validated<E, J>,
+): Validated<E, Tuple10<A, B, C, D, EE, F, G, H, I, J>> =
   map2(SE, other) { (abcdefghi, j) -> Tuple10(abcdefghi.a, abcdefghi.b, abcdefghi.c, abcdefghi.d, abcdefghi.e, abcdefghi.f, abcdefghi.g, abcdefghi.h, abcdefghi.i, j) }
 
-fun <A, B> Validated<Iterable<A>, Iterable<B>>.bisequence(): List<Validated<A, B>> =
+fun <E, A> Validated<Iterable<E>, Iterable<A>>.bisequence(): List<Validated<E, A>> =
   bitraverse(::identity, ::identity)
 
-fun <A, B, E> Validated<Either<E, A>, Either<E, B>>.bisequenceEither(): Either<E, Validated<A, B>> =
+fun <E, A, B> Validated<Either<E, A>, Either<E, B>>.bisequenceEither(): Either<E, Validated<A, B>> =
   bitraverseEither(::identity, ::identity)
 
 fun <E, A> Validated<E, A>.fold(MA: Monoid<A>): A = MA.run {
@@ -1164,10 +1164,10 @@ fun <E, A> Validated<E, A>.fold(MA: Monoid<A>): A = MA.run {
 fun <E, A> Validated<E, A>.combineAll(MA: Monoid<A>): A =
   fold(MA)
 
-fun <A, B> Validated<A, Iterable<B>>.sequence(): List<Validated<A, B>> =
+fun <E, A> Validated<E, Iterable<A>>.sequence(): List<Validated<E, A>> =
   traverse(::identity)
 
-fun <A, B> Validated<A, Iterable<B>>.sequence_(): List<Unit> =
+fun <E, A> Validated<E, Iterable<A>>.sequence_(): List<Unit> =
   traverse_(::identity)
 
 fun <E, A, B> Validated<A, Either<E, B>>.sequenceEither(): Either<E, Validated<A, B>> =
@@ -1176,34 +1176,34 @@ fun <E, A, B> Validated<A, Either<E, B>>.sequenceEither(): Either<E, Validated<A
 fun <E, A, B> Validated<A, Either<E, B>>.traverseEither_(): Either<E, Unit> =
   traverseEither_(::identity)
 
-fun <L, R> Validated<L, R>.compare(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Ordering = fold(
-  { l1 -> b.fold({ l2 -> OL.run { l1.compare(l2) } }, { LT }) },
-  { r1 -> b.fold({ GT }, { r2 -> OR.run { r1.compare(r2) } }) }
+fun <E, A> Validated<E, A>.compare(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Ordering = fold(
+  { l1 -> b.fold({ l2 -> OE.run { l1.compare(l2) } }, { LT }) },
+  { r1 -> b.fold({ GT }, { r2 -> OA.run { r1.compare(r2) } }) }
 )
 
-fun <L, R> Validated<L, R>.compareTo(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Int =
-  compare(OL, OR, b).toInt()
+fun <E, A> Validated<E, A>.compareTo(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Int =
+  compare(OE, OA, b).toInt()
 
-fun <L, R> Validated<L, R>.lt(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Boolean =
-  compare(OL, OR, b) == LT
+fun <E, A> Validated<E, A>.lt(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Boolean =
+  compare(OE, OA, b) == LT
 
-fun <L, R> Validated<L, R>.lte(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Boolean =
-  compare(OL, OR, b) != GT
+fun <E, A> Validated<E, A>.lte(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Boolean =
+  compare(OE, OA, b) != GT
 
-fun <L, R> Validated<L, R>.gt(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Boolean =
-  compare(OL, OR, b) == GT
+fun <E, A> Validated<E, A>.gt(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Boolean =
+  compare(OE, OA, b) == GT
 
-fun <L, R> Validated<L, R>.gte(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Boolean =
-  compare(OL, OR, b) != LT
+fun <E, A> Validated<E, A>.gte(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Boolean =
+  compare(OE, OA, b) != LT
 
-fun <L, R> Validated<L, R>.max(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Validated<L, R> =
-  if (gt(OL, OR, b)) this else b
+fun <E, A> Validated<E, A>.max(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Validated<E, A> =
+  if (gt(OE, OA, b)) this else b
 
-fun <L, R> Validated<L, R>.min(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Validated<L, R> =
-  if (lt(OL, OR, b)) this else b
+fun <E, A> Validated<E, A>.min(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Validated<E, A> =
+  if (lt(OE, OA, b)) this else b
 
-fun <L, R> Validated<L, R>.sort(OL: Order<L>, OR: Order<R>, b: Validated<L, R>): Tuple2<Validated<L, R>, Validated<L, R>> =
-  if (gte(OL, OR, b)) Tuple2(this, b) else Tuple2(b, this)
+fun <E, A> Validated<E, A>.sort(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Tuple2<Validated<E, A>, Validated<E, A>> =
+  if (gte(OE, OA, b)) Tuple2(this, b) else Tuple2(b, this)
 
 fun <E, A, B> Validated<E, Either<A, B>>.select(f: Validated<E, (A) -> B>): Validated<E, B> =
   fold({ Invalid(it) }, { it.fold({ l -> f.map { ff -> ff(l) } }, { r -> r.valid() }) })
@@ -1235,19 +1235,19 @@ fun <E> Validated<E, Boolean>.andS(f: Validated<E, Boolean>): Validated<E, Boole
 /**
  * Return the Valid value, or the default if Invalid
  */
-inline fun <E, B> ValidatedOf<E, B>.getOrElse(default: () -> B): B =
+inline fun <E, A> ValidatedOf<E, A>.getOrElse(default: () -> A): A =
   fix().fold({ default() }, ::identity)
 
 /**
  * Return the Valid value, or null if Invalid
  */
-fun <E, B> ValidatedOf<E, B>.orNull(): B? =
+fun <E, A> ValidatedOf<E, A>.orNull(): A? =
   getOrElse { null }
 
 /**
  * Return the Valid value, or the result of f if Invalid
  */
-inline fun <E, B> ValidatedOf<E, B>.valueOr(f: (E) -> B): B =
+inline fun <E, A> ValidatedOf<E, A>.valueOr(f: (E) -> A): A =
   fix().fold({ f(it) }, ::identity)
 
 /**
@@ -1320,10 +1320,12 @@ inline fun <E, A, B> Validated<E, A>.redeem(fe: (E) -> B, fa: (A) -> B): Validat
 fun <E, A> Validated<E, A>.attempt(): Validated<Nothing, Either<E, A>> =
   map { Right(it) }.handleError { Left(it) }
 
+@Deprecated("@extension kinded projected functions are deprecated. Replace with traverse or traverseEither from arrow.core.*")
 fun <G, E, A, B> ValidatedOf<E, A>.traverse(GA: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, Validated<E, B>> = GA.run {
   fix().fold({ e -> just(Invalid(e)) }, { a -> f(a).map(::Valid) })
 }
 
+@Deprecated("@extension kinded projected functions are deprecated. Replace with sequence or sequenceEither from arrow.core.*")
 fun <G, E, A> ValidatedOf<E, Kind<G, A>>.sequence(GA: Applicative<G>): Kind<G, Validated<E, A>> =
   fix().traverse(GA, ::identity)
 

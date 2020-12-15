@@ -1083,8 +1083,8 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
         .fold({ t: Throwable -> unrecoverableState(t); throw t }, { b: B -> b })
   }
 
-  fun <C> mapConst(b: C): Either<A, C> =
-    map { b }
+  fun <C> mapConst(c: C): Either<A, C> =
+    map { c }
 
   fun void(): Either<A, Unit> =
     mapConst(Unit)
