@@ -1617,6 +1617,12 @@ fun <A, B> EitherOf<A, B>.contains(elem: B): Boolean =
 fun <A, B, C> EitherOf<A, B>.ap(ff: EitherOf<A, (B) -> C>): Either<A, C> =
   flatMap { a -> ff.fix().map { f -> f(a) } }
 
+fun <A, B, C> Either<A, B>.apEval(ff: Eval<Either<A, (B) -> C>>): Eval<Either<A, C>> =
+  ff.map { this.ap(it) }
+
+fun <A, B, C, Z> Either<A, B>.map2Eval(fb: Eval<Either<A, C>>, f: (Tuple2<B, C>) -> Z): Eval<Either<A, Z>> =
+  apEval(fb.map { it.map { c -> { b: B -> f(Tuple2(b, c)) } } })
+
 fun <A, B> EitherOf<A, B>.combineK(y: EitherOf<A, B>): Either<A, B> =
   when (this) {
     is Left -> y.fix()
