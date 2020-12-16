@@ -434,7 +434,7 @@ inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  *
  * ```
  */
-sealed class Validated<out E, out A> : ValidatedOf<E, A> {
+sealed class Validated<out E, out A> : ValidatedOf<E, A>, Iter<A> {
 
   companion object {
 
@@ -928,6 +928,8 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
     { e -> HL.run { e.hashWithSalt(salt.hashWithSalt(0)) } },
     { a -> HR.run { a.hashWithSalt(salt.hashWithSalt(1)) } }
   )
+
+  override fun iterator(): Iterator<A> = fold({ emptyList<A>().iterator() }, { iterator { yield(it) } })
 
   data class Valid<out A>(val a: A) : Validated<Nothing, A>() {
     override fun toString(): String = show(Show.any(), Show.any())
