@@ -6,6 +6,7 @@ import arrow.core.Either.Right
 import arrow.core.Validated.Valid
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
+import arrow.typeclasses.Order
 import arrow.typeclasses.Show
 import arrow.typeclasses.hashWithSalt
 
@@ -1106,6 +1107,9 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
 
     fun <A, B> show(SA: Show<A>, SB: Show<B>): Show<Either<A, B>> =
       EitherShow(SA, SB)
+
+    fun <A, B> order(OA: Order<A>, OB: Order<B>): Order<Either<A, B>> =
+      EitherOrder(OA, OB)
   }
 
   fun <C> mapConst(c: C): Either<A, C> =
@@ -1368,6 +1372,34 @@ fun <L, R> Either<L, R>.eqv(
   }
 }
 
+fun <A, B> Either<A, B>.compare(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Ordering = fold(
+  { a1 -> b.fold({ a2 -> OA.run { a1.compare(a2) } }, { LT }) },
+  { b1 -> b.fold({ GT }, { b2 -> OB.run { b1.compare(b2) } }) }
+)
+
+fun <A, B> Either<A, B>.compareTo(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Int =
+  compare(OA, OB, b).toInt()
+
+fun <A, B> Either<A, B>.lt(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Boolean =
+  compare(OA, OB, b) == LT
+
+fun <A, B> Either<A, B>.lte(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Boolean =
+  compare(OA, OB, b) != GT
+
+fun <A, B> Either<A, B>.gt(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Boolean =
+  compare(OA, OB, b) == GT
+
+fun <A, B> Either<A, B>.gte(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Boolean =
+  compare(OA, OB, b) != LT
+
+fun <A, B> Either<A, B>.max(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Either<A, B> =
+  if (gt(OA, OB, b)) this else b
+
+fun <A, B> Either<A, B>.min(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Either<A, B> =
+  if (lt(OA, OB, b)) this else b
+
+fun <A, B> Either<A, B>.sort(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Tuple2<Either<A, B>, Either<A, B>> =
+  if (gte(OA, OB, b)) Tuple2(this, b) else Tuple2(b, this)
 
 private class EitherEq<L, R>(
   private val EQL: Eq<L>,
@@ -1394,4 +1426,12 @@ private class EitherShow<L, R>(
 ) : Show<Either<L, R>> {
   override fun Either<L, R>.show(): String =
     show(SL, SR)
+}
+
+private class EitherOrder<L, R>(
+  private val OL: Order<L>,
+  private val OR: Order<R>
+) : Order<Either<L, R>> {
+  override fun Either<L, R>.compare(b: Either<L, R>): Ordering =
+    compare(OL, OR, b)
 }

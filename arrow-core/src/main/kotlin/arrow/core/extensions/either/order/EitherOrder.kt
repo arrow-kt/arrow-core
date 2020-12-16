@@ -17,6 +17,7 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("compareTo(OL, OR, arg1)", "arrow.core.compareTo"))
 fun <L, R> Either<L, R>.compareTo(
   OL: Order<L>,
   OR: Order<R>,
@@ -32,6 +33,7 @@ fun <L, R> Either<L, R>.compareTo(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("eqv(OL, OR, arg1)", "arrow.core.eqv"))
 fun <L, R> Either<L, R>.eqv(
   OL: Order<L>,
   OR: Order<R>,
@@ -47,6 +49,7 @@ fun <L, R> Either<L, R>.eqv(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("lt(OL, OR, arg1)", "arrow.core.lt"))
 fun <L, R> Either<L, R>.lt(
   OL: Order<L>,
   OR: Order<R>,
@@ -62,6 +65,7 @@ fun <L, R> Either<L, R>.lt(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("lte(OL, OR, arg1)", "arrow.core.lte"))
 fun <L, R> Either<L, R>.lte(
   OL: Order<L>,
   OR: Order<R>,
@@ -77,6 +81,7 @@ fun <L, R> Either<L, R>.lte(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("gt(OL, OR, arg1)", "arrow.core.gt"))
 fun <L, R> Either<L, R>.gt(
   OL: Order<L>,
   OR: Order<R>,
@@ -92,6 +97,7 @@ fun <L, R> Either<L, R>.gt(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("gte(OL, OR, arg1)", "arrow.core.gte"))
 fun <L, R> Either<L, R>.gte(
   OL: Order<L>,
   OR: Order<R>,
@@ -107,6 +113,7 @@ fun <L, R> Either<L, R>.gte(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("max(OL, OR, arg1)", "arrow.core.max"))
 fun <L, R> Either<L, R>.max(
   OL: Order<L>,
   OR: Order<R>,
@@ -122,6 +129,7 @@ fun <L, R> Either<L, R>.max(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("min(OL, OR, arg1)", "arrow.core.min"))
 fun <L, R> Either<L, R>.min(
   OL: Order<L>,
   OR: Order<R>,
@@ -137,6 +145,7 @@ fun <L, R> Either<L, R>.min(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("sort(OL, OR, arg1)", "arrow.core.sort"))
 fun <L, R> Either<L, R>.sort(
   OL: Order<L>,
   OR: Order<R>,
@@ -149,6 +158,7 @@ fun <L, R> Either<L, R>.sort(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Either.order(OL, OR)", "arrow.core.order"))
 inline fun <L, R> Companion.order(OL: Order<L>, OR: Order<R>): EitherOrder<L, R> = object :
   arrow.core.extensions.EitherOrder<L, R> {
   override fun OL(): arrow.typeclasses.Order<L> = OL
