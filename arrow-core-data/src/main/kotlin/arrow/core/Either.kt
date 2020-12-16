@@ -1103,6 +1103,9 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
 
     fun <A, B> hash(HA: Hash<A>, HB: Hash<B>): Hash<Either<A, B>> =
       EitherHash(HA, HB)
+
+    fun <A, B> show(SA: Show<A>, SB: Show<B>): Show<Either<A, B>> =
+      EitherShow(SA, SB)
   }
 
   fun <C> mapConst(c: C): Either<A, C> =
@@ -1383,4 +1386,12 @@ private class EitherHash<L, R>(
 
   override fun Either<L, R>.hashWithSalt(salt: Int): Int =
     hashWithSalt(HL, HR, salt)
+}
+
+private class EitherShow<L, R>(
+  private val SL: Show<L>,
+  private val SR: Show<R>
+) : Show<Either<L, R>> {
+  override fun Either<L, R>.show(): String =
+    show(SL, SR)
 }
