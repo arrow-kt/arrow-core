@@ -23,6 +23,7 @@ internal val eqK2_singleton: EitherEqK2 = object : arrow.core.extensions.EitherE
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 fun <A, B> Kind<Kind<ForEither, A>, B>.eqK(
   arg1: Kind<Kind<ForEither, A>, B>,
   arg2: Eq<A>,
@@ -38,6 +39,7 @@ fun <A, B> Kind<Kind<ForEither, A>, B>.eqK(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 fun <A, B> liftEq(arg0: Eq<A>, arg1: Eq<B>): Eq<Kind<Kind<ForEither, A>, B>> = arrow.core.Either
   .eqK2()
   .liftEq<A, B>(arg0, arg1) as arrow.typeclasses.Eq<arrow.Kind<arrow.Kind<arrow.core.ForEither, A>,
@@ -47,4 +49,5 @@ fun <A, B> liftEq(arg0: Eq<A>, arg1: Eq<B>): Eq<Kind<Kind<ForEither, A>, B>> = a
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 inline fun Companion.eqK2(): EitherEqK2 = eqK2_singleton

@@ -16,6 +16,7 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 fun <L, A> Kind<Kind<ForEither, L>, A>.eqK(
   EQL: Eq<L>,
   arg1: Kind<Kind<ForEither, L>, A>,
@@ -31,6 +32,7 @@ fun <L, A> Kind<Kind<ForEither, L>, A>.eqK(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 fun <L, A> liftEq(EQL: Eq<L>, arg0: Eq<A>): Eq<Kind<Kind<ForEither, L>, A>> = arrow.core.Either
   .eqK<L>(EQL)
   .liftEq<A>(arg0) as arrow.typeclasses.Eq<arrow.Kind<arrow.Kind<arrow.core.ForEither, L>, A>>
@@ -39,6 +41,7 @@ fun <L, A> liftEq(EQL: Eq<L>, arg0: Eq<A>): Eq<Kind<Kind<ForEither, L>, A>> = ar
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 inline fun <L> Companion.eqK(EQL: Eq<L>): EitherEqK<L> = object : arrow.core.extensions.EitherEqK<L> {
   override fun EQL(): arrow.typeclasses.Eq<L> = EQL
 }
