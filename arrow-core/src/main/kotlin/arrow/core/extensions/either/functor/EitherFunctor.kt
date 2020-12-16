@@ -5,7 +5,9 @@ import arrow.core.Either
 import arrow.core.Either.Companion
 import arrow.core.ForEither
 import arrow.core.Tuple2
+import arrow.core.widen as _widen
 import arrow.core.extensions.EitherFunctor
+import arrow.core.fix
 import kotlin.Any
 import kotlin.Function1
 import kotlin.PublishedApi
@@ -47,10 +49,9 @@ internal val functor_singleton: EitherFunctor<Any?> = object : EitherFunctor<Any
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("map(arg1)"))
 fun <L, A, B> Kind<Kind<ForEither, L>, A>.map(arg1: Function1<A, B>): Either<L, B> =
-  arrow.core.Either.functor<L>().run {
-    this@map.map<A, B>(arg1) as arrow.core.Either<L, B>
-  }
+  fix().map(arg1)
 
 @JvmName("imap")
 @Suppress(
@@ -59,10 +60,9 @@ fun <L, A, B> Kind<Kind<ForEither, L>, A>.map(arg1: Function1<A, B>): Either<L, 
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun <L, A, B> Kind<Kind<ForEither, L>, A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>):
-  Either<L, B> = arrow.core.Either.functor<L>().run {
-  this@imap.imap<A, B>(arg1, arg2) as arrow.core.Either<L, B>
-}
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("map(arg1)"))
+fun <L, A, B> Kind<Kind<ForEither, L>, A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>): Either<L, B> =
+  fix().map(arg1)
 
 /**
  *  Lifts a function `A -> B` to the [F] structure returning a polymorphic function
@@ -94,11 +94,11 @@ fun <L, A, B> Kind<Kind<ForEither, L>, A>.imap(arg1: Function1<A, B>, arg2: Func
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun <L, A, B> lift(arg0: Function1<A, B>): Function1<Kind<Kind<ForEither, L>, A>,
-  Kind<Kind<ForEither, L>, B>> = arrow.core.Either
-  .functor<L>()
-  .lift<A, B>(arg0) as kotlin.Function1<arrow.Kind<arrow.Kind<arrow.core.ForEither, L>, A>,
-  arrow.Kind<arrow.Kind<arrow.core.ForEither, L>, B>>
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Either.lift(arg0)", "arrow.core.lift"))
+fun <L, A, B> lift(arg0: Function1<A, B>): Function1<Kind<Kind<ForEither, L>, A>, Kind<Kind<ForEither, L>, B>> =
+  Either.functor<L>()
+    .lift<A, B>(arg0) as kotlin.Function1<arrow.Kind<arrow.Kind<arrow.core.ForEither, L>, A>,
+    arrow.Kind<arrow.Kind<arrow.core.ForEither, L>, B>>
 
 @JvmName("void")
 @Suppress(
@@ -107,22 +107,9 @@ fun <L, A, B> lift(arg0: Function1<A, B>): Function1<Kind<Kind<ForEither, L>, A>
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("void()", "arrow.core.void"))
 fun <L, A> Kind<Kind<ForEither, L>, A>.void(): Either<L, Unit> =
-  arrow.core.Either.functor<L>().run {
-    this@void.void<A>() as arrow.core.Either<L, kotlin.Unit>
-  }
-
-@JvmName("unit")
-@Suppress(
-  "UNCHECKED_CAST",
-  "USELESS_CAST",
-  "EXTENSION_SHADOWED_BY_MEMBER",
-  "UNUSED_PARAMETER"
-)
-fun <L, A> Kind<Kind<ForEither, L>, A>.unit(): Either<L, Unit> =
-  arrow.core.Either.functor<L>().run {
-    this@unit.unit<A>() as arrow.core.Either<L, kotlin.Unit>
-  }
+  fix().void()
 
 /**
  *  Applies [f] to an [A] inside [F] and returns the [F] structure with a tuple of the [A] value and the
@@ -154,10 +141,9 @@ fun <L, A> Kind<Kind<ForEither, L>, A>.unit(): Either<L, Unit> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("fproduct(arg1)"))
 fun <L, A, B> Kind<Kind<ForEither, L>, A>.fproduct(arg1: Function1<A, B>): Either<L, Tuple2<A, B>> =
-  arrow.core.Either.functor<L>().run {
-    this@fproduct.fproduct<A, B>(arg1) as arrow.core.Either<L, arrow.core.Tuple2<A, B>>
-  }
+  fix().fproduct(arg1)
 
 /**
  *  Replaces [A] inside [F] with [B] resulting in a Kind<F, B>
@@ -188,10 +174,9 @@ fun <L, A, B> Kind<Kind<ForEither, L>, A>.fproduct(arg1: Function1<A, B>): Eithe
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("mapConst(arg1)"))
 fun <L, A, B> Kind<Kind<ForEither, L>, A>.mapConst(arg1: B): Either<L, B> =
-  arrow.core.Either.functor<L>().run {
-    this@mapConst.mapConst<A, B>(arg1) as arrow.core.Either<L, B>
-  }
+  fix().mapConst(arg1)
 
 /**
  *  Replaces the [B] value inside [F] with [A] resulting in a Kind<F, A>
@@ -203,10 +188,9 @@ fun <L, A, B> Kind<Kind<ForEither, L>, A>.mapConst(arg1: B): Either<L, B> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("arg1.mapConst(this)"))
 fun <L, A, B> A.mapConst(arg1: Kind<Kind<ForEither, L>, B>): Either<L, A> =
-  arrow.core.Either.functor<L>().run {
-    this@mapConst.mapConst<A, B>(arg1) as arrow.core.Either<L, A>
-  }
+  arg1.fix().mapConst(this)
 
 /**
  *  Pairs [B] with [A] returning a Kind<F, Tuple2<B, A>>
@@ -237,10 +221,9 @@ fun <L, A, B> A.mapConst(arg1: Kind<Kind<ForEither, L>, B>): Either<L, A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("tupleLeft(arg1"))
 fun <L, A, B> Kind<Kind<ForEither, L>, A>.tupleLeft(arg1: B): Either<L, Tuple2<B, A>> =
-  arrow.core.Either.functor<L>().run {
-    this@tupleLeft.tupleLeft<A, B>(arg1) as arrow.core.Either<L, arrow.core.Tuple2<B, A>>
-  }
+  fix().tupleLeft(arg1)
 
 /**
  *  Pairs [A] with [B] returning a Kind<F, Tuple2<A, B>>
@@ -271,10 +254,9 @@ fun <L, A, B> Kind<Kind<ForEither, L>, A>.tupleLeft(arg1: B): Either<L, Tuple2<B
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("tupleRight(arg1"))
 fun <L, A, B> Kind<Kind<ForEither, L>, A>.tupleRight(arg1: B): Either<L, Tuple2<A, B>> =
-  arrow.core.Either.functor<L>().run {
-    this@tupleRight.tupleRight<A, B>(arg1) as arrow.core.Either<L, arrow.core.Tuple2<A, B>>
-  }
+  fix().tupleRight(arg1)
 
 /**
  *  Given [A] is a sub type of [B], re-type this value from Kind<F, A> to Kind<F, B>
@@ -307,10 +289,9 @@ fun <L, A, B> Kind<Kind<ForEither, L>, A>.tupleRight(arg1: B): Either<L, Tuple2<
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("widen()", "arrow.core.widen"))
 fun <L, B, A : B> Kind<Kind<ForEither, L>, A>.widen(): Either<L, B> =
-  arrow.core.Either.functor<L>().run {
-    this@widen.widen<B, A>() as arrow.core.Either<L, B>
-  }
+  fix()._widen()
 
 /**
  *  ank_macro_hierarchy(arrow.typeclasses.Functor)
@@ -380,5 +361,6 @@ fun <L, B, A : B> Kind<Kind<ForEither, L>, A>.widen(): Either<L, B> =
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Functor typeclasses is deprecated. Use concrete methods on Validated")
 inline fun <L> Companion.functor(): EitherFunctor<L> = functor_singleton as
   arrow.core.extensions.EitherFunctor<L>

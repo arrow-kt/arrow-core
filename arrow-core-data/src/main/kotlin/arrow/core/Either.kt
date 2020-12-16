@@ -959,6 +959,61 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
   fun orNull(): B? = fold({ null }, { it })
 
   /**
+   *  Applies [f] to an [B] inside [Either] and returns the [Either] structure with a tuple of the [B] value and the
+   *  computed [C] value as result of applying [f]
+   *
+   *  ```kotlin:ank:playground
+   *  import arrow.core.*
+   *
+   *  fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   "Hello".right().fproduct<String>({ "$it World" })
+   *   //sampleEnd
+   *   println(result)
+   *  }
+   *  ```
+   */
+  fun <C> fproduct(f: (B) -> C): Either<A, Tuple2<B, C>> =
+    map { b -> Tuple2(b, f(b)) }
+
+  /**
+   *  Pairs [C] with [B] returning a Either<A, Tuple2<C, B>>
+   *
+   *  ```kotlin:ank:playground
+   *  import arrow.core.*
+   *
+   *  fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   "Hello".left().tupleLeft<String>("World")
+   *   //sampleEnd
+   *   println(result)
+   *  }
+   *  ```
+   */
+  fun <C> tupleLeft(c: C): Either<A, Tuple2<C, B>> =
+    map { b -> Tuple2(c, b) }
+
+  /**
+   *  Pairs [C] with [B] returning a Either<A, Tuple2<B, C>>
+   *
+   *  ```kotlin:ank:playground
+   *  import arrow.core.*
+   *
+   *  fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   "Hello".left().tupleRight<String>("World")
+   *   //sampleEnd
+   *   println(result)
+   *  }
+   *  ```
+   */
+  fun <C> tupleRight(c: C): Either<A, Tuple2<B, C>> =
+    map { b -> Tuple2(b, c) }
+
+  /**
    * The left side of the disjoint union, as opposed to the [Right] side.
    */
   @Suppress("DataClassPrivateConstructor")
@@ -1100,6 +1155,25 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
         .fold({ t: Throwable -> throwable(t) }, { b: B -> b.right() })
         .fold({ t: Throwable -> unrecoverableState(t); throw t }, { b: B -> b })
 
+    /**
+     *  Lifts a function `(B) -> C` to the [Either] structure returning a polymorphic function
+     *  that can be applied over all [Either] values in the shape of Either<A, B>
+     *
+     *  ```kotlin:ank:playground
+     *  import arrow.core.*
+     *
+     *  fun main(args: Array<String>) {
+     *   //sampleStart
+     *   val f = Either.lift<String, String, String>({ s: CharSequence -> "$s World" })
+     *   val result = f("Hello".right())
+     *   //sampleEnd
+     *   println(result)
+     *  }
+     *  ```
+     */
+    fun <A, B, C> lift(f: (B) -> C): (Either<A, B>) -> Either<A, C> =
+      { it.map(f) }
+
     /** Construct an [Eq] instance which use [EQL] and [EQR] to compare the [Left] and [Right] cases **/
     fun <L, R> eq(EQL: Eq<L>, EQR: Eq<R>): Eq<Either<L, R>> =
       EitherEq(EQL, EQR)
@@ -1120,6 +1194,23 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
       EitherMonoid(MA, MB)
   }
 
+  /**
+   *  Replaces [B] inside [Either] with [C] resulting in a Either<A, C>
+   *
+   *  Kind<F, A> -> Kind<F, B>
+   *
+   *  ```kotlin:ank:playground
+   *  import arrow.core.*
+   *
+   *  fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   "Hello World".left().mapConst<String>("...")
+   *   //sampleEnd
+   *   println(result)
+   *  }
+   *  ```
+   */
   fun <C> mapConst(c: C): Either<A, C> =
     map { c }
 
@@ -1429,6 +1520,25 @@ fun <A, B> Iterable<Either<A, B>>.combineAll(MA: Monoid<A>, MB: Monoid<B>): Eith
     acc.combine(MA, MB, e)
   }
 
+/**
+ * Given [B] is a sub type of [C], re-type this value from Either<A, B> to Either<A, B>
+ *
+ * ```kotlin:ank:playground:extension
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val string: Either<Int, String> = "Hello".left()
+ *   val chars: Either<Int, CharSequence> =
+ *     string.widen<Int, CharSequence, String>()
+ *   //sampleEnd
+ *   println(chars)
+ * }
+ * ```
+ */
+fun <A, C, B : C> Either<A, B>.widen(): Either<A, C> =
+  this
+
 private class EitherEq<L, R>(
   private val EQL: Eq<L>,
   private val EQR: Eq<R>
@@ -1465,8 +1575,8 @@ private class EitherOrder<L, R>(
 }
 
 private open class EitherSemigroup<L, R>(
-private val SGL: Semigroup<L>,
-private val SGR: Semigroup<R>
+  private val SGL: Semigroup<L>,
+  private val SGR: Semigroup<R>
 ) : Semigroup<Either<L, R>> {
 
   override fun Either<L, R>.combine(b: Either<L, R>): Either<L, R> =
