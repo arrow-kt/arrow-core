@@ -24,6 +24,7 @@ internal val semigroupK_singleton: EitherSemigroupK<Any?> = object : EitherSemig
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 fun <L, A> Kind<Kind<ForEither, L>, A>.combineK(arg1: Kind<Kind<ForEither, L>, A>): Either<L, A> =
   arrow.core.Either.semigroupK<L>().run {
     this@combineK.combineK<A>(arg1) as arrow.core.Either<L, A>
@@ -36,6 +37,7 @@ fun <L, A> Kind<Kind<ForEither, L>, A>.combineK(arg1: Kind<Kind<ForEither, L>, A
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 fun <L, A> algebra(): Semigroup<Kind<Kind<ForEither, L>, A>> = arrow.core.Either
   .semigroupK<L>()
   .algebra<A>() as arrow.typeclasses.Semigroup<arrow.Kind<arrow.Kind<arrow.core.ForEither, L>, A>>
@@ -44,5 +46,6 @@ fun <L, A> algebra(): Semigroup<Kind<Kind<ForEither, L>, A>> = arrow.core.Either
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 inline fun <L> Companion.semigroupK(): EitherSemigroupK<L> = semigroupK_singleton as
   arrow.core.extensions.EitherSemigroupK<L>
