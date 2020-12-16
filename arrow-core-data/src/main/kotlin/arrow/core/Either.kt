@@ -1539,6 +1539,62 @@ fun <A, B> Iterable<Either<A, B>>.combineAll(MA: Monoid<A>, MB: Monoid<B>): Eith
 fun <A, C, B : C> Either<A, B>.widen(): Either<A, C> =
   this
 
+fun <A, B, C> Either<A, B>.product(fb: Either<A, C>): Either<A, Tuple2<B, C>> =
+  flatMap { a ->
+    fb.map { b -> Tuple2(a, b) }
+  }
+
+fun <A, B, C, D> Either<A, B>.map2(fb: Either<A, C>, f: (Tuple2<B, C>) -> D): Either<A, D> =
+  product(fb).map(f)
+
+@JvmName("product3")
+fun <A, B, C, D> Either<A, Tuple2<B, C>>.product(
+  other: Either<A, D>,
+): Either<A, Tuple3<B, C, D>> =
+  map2(other) { (abcdefg, h) -> Tuple3(abcdefg.a, abcdefg.b, h) }
+
+@JvmName("product4")
+fun <A, B, C, D, E> Either<A, Tuple3<B, C, D>>.product(
+  other: Either<A, E>,
+): Either<A, Tuple4<B, C, D, E>> =
+  map2(other) { (abcdefg, h) -> Tuple4(abcdefg.a, abcdefg.b, abcdefg.c, h) }
+
+@JvmName("product5")
+fun <A, B, C, D, E, F> Either<A, Tuple4<B, C, D, E>>.product(
+  other: Either<A, F>,
+): Either<A, Tuple5<B, C, D, E, F>> =
+  map2(other) { (abcdefg, h) -> Tuple5(abcdefg.a, abcdefg.b, abcdefg.c, abcdefg.d, h) }
+
+@JvmName("product6")
+fun <A, B, C, D, E, F, G> Either<A, Tuple5<B, C, D, E, F>>.product(
+  other: Either<A, G>,
+): Either<A, Tuple6<B, C, D, E, F, G>> =
+  map2(other) { (abcdefg, h) -> Tuple6(abcdefg.a, abcdefg.b, abcdefg.c, abcdefg.d, abcdefg.e, h) }
+
+@JvmName("product7")
+fun <A, B, C, D, E, F, G, H> Either<A, Tuple6<B, C, D, E, F, G>>.product(
+  other: Either<A, H>,
+): Either<A, Tuple7<B, C, D, E, F, G, H>> =
+  map2(other) { (abcdefg, h) -> Tuple7(abcdefg.a, abcdefg.b, abcdefg.c, abcdefg.d, abcdefg.e, abcdefg.f, h) }
+
+@JvmName("product8")
+fun <A, B, C, D, E, F, G, H, I> Either<A, Tuple7<B, C, D, E, F, G, H>>.product(
+  other: Either<A, I>,
+): Either<A, Tuple8<B, C, D, E, F, G, H, I>> =
+  map2(other) { (abcdefg, h) -> Tuple8(abcdefg.a, abcdefg.b, abcdefg.c, abcdefg.d, abcdefg.e, abcdefg.f, abcdefg.g, h) }
+
+@JvmName("product9")
+fun <A, B, C, D, E, F, G, H, I, J> Either<A, Tuple8<B, C, D, E, F, G, H, I>>.product(
+  other: Either<A, J>,
+): Either<A, Tuple9<B, C, D, E, F, G, H, I, J>> =
+  map2(other) { (abcdefgh, i) -> Tuple9(abcdefgh.a, abcdefgh.b, abcdefgh.c, abcdefgh.d, abcdefgh.e, abcdefgh.f, abcdefgh.g, abcdefgh.h, i) }
+
+@JvmName("product10")
+fun <A, B, C, D, E, F, G, H, I, J, K> Either<A, Tuple9<B, C, D, E, F, G, H, I, J>>.product(
+  other: Either<A, K>,
+): Either<A, Tuple10<B, C, D, E, F, G, H, I, J, K>> =
+  map2(other) { (abcdefghi, j) -> Tuple10(abcdefghi.a, abcdefghi.b, abcdefghi.c, abcdefghi.d, abcdefghi.e, abcdefghi.f, abcdefghi.g, abcdefghi.h, abcdefghi.i, j) }
+
 private class EitherEq<L, R>(
   private val EQL: Eq<L>,
   private val EQR: Eq<R>
