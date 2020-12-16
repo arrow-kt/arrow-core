@@ -1,29 +1,39 @@
 package arrow.core.computations
 
-import arrow.Kind
-import arrow.continuations.generic.DelimContScope
+import arrow.continuations.Effect
 import arrow.core.Const
-import arrow.core.ConstPartialOf
-import arrow.core.EagerBind
 import arrow.core.const
-import arrow.core.fix
-import arrow.typeclasses.suspended.BindSyntax
+import kotlin.coroutines.RestrictsSuspension
 
+@Deprecated(
+  "Const binding does not require suspension and this computation block will be removed."
+)
+fun interface ConstEffect<A, T> : Effect<Const<A, T>> {
+
+  @Deprecated("The monadic operator for the Arrow 1.x series will become invoke in 0.13", ReplaceWith("()"))
+  suspend fun <B> Const<A, B>.bind(): B = this()
+
+  @Deprecated("The monadic operator for the Arrow 1.x series will become invoke in 0.13", ReplaceWith("()"))
+  suspend operator fun <B> Const<A, B>.not(): B = this()
+
+  suspend operator fun <B> Const<A, B>.invoke(): B =
+    value() as B
+}
+
+@Deprecated(
+  "Const binding does not require suspension and this computation block will be removed."
+)
+@RestrictsSuspension
+fun interface RestrictedConstEffect<E, A> : ConstEffect<E, A>
+
+@Suppress("ClassName")
+@Deprecated(
+  "Const binding does not require suspension and this computation block will be removed."
+)
 object const {
+  inline fun <A, T> eager(crossinline c: suspend RestrictedConstEffect<A, *>.() -> A): Const<A, T> =
+    Effect.restricted(eff = { RestrictedConstEffect { it } }, f = c, just = { it.const() })
 
-  fun <A, T> eager(c: suspend EagerBind<ConstPartialOf<A>>.() -> A): Const<A, T> =
-    DelimContScope.reset {
-      c(object : EagerBind<ConstPartialOf<A>> {
-        override suspend fun <T> Kind<ConstPartialOf<A>, T>.invoke(): T =
-          fix().value() as T
-      }).const()
-    }
-
-  suspend operator fun <A, T> invoke(c: suspend BindSyntax<ConstPartialOf<A>>.() -> A): Const<A, T> =
-    DelimContScope.reset {
-      c(object : BindSyntax<ConstPartialOf<A>> {
-        override suspend fun <T> Kind<ConstPartialOf<A>, T>.invoke(): T =
-          fix().value() as T
-      }).const()
-    }
+  suspend inline operator fun <A, T> invoke(crossinline c: suspend ConstEffect<A, *>.() -> A): Const<A, T> =
+    Effect.suspended(eff = { ConstEffect { it } }, f = c, just = { it.const() })
 }

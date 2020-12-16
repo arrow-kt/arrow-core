@@ -3,6 +3,7 @@ package arrow.core
 import arrow.Kind
 import arrow.core.Either.Left
 import arrow.core.Either.Right
+import arrow.core.Validated.Valid
 import arrow.higherkind
 import arrow.typeclasses.Show
 
@@ -764,9 +765,9 @@ import arrow.typeclasses.Show
  * val value =
  * //sampleStart
  *  either<Int, Int> {
- *   val (a) = Either.Right(1)
- *   val (b) = Either.Right(1 + a)
- *   val (c) = Either.Right(1 + b)
+ *   val a = Either.Right(1)()
+ *   val b = Either.Right(1 + a)()
+ *   val c = Either.Right(1 + b)()
  *   a + b + c
  *  }
  * //sampleEnd
@@ -868,7 +869,6 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
    * Left(12).map { "flower" }  // Result: Left(12)
    * ```
    */
-  @Suppress("UNCHECKED_CAST")
   inline fun <C> map(f: (B) -> C): Either<A, C> =
     flatMap { Right(f(it)) }
 
@@ -983,11 +983,23 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     }
   )
 
+  fun toValidatedNel(): ValidatedNel<A, B> =
+    fold({ Validated.invalidNel(it) }, ::Valid)
+
+  fun toValidated(): Validated<A, B> =
+    fold({ it.invalid() }, { it.valid() })
+
   companion object {
 
     fun <L> left(left: L): Either<L, Nothing> = Left(left)
 
     fun <R> right(right: R): Either<Nothing, R> = Right(right)
+
+    val leftUnit: Either<Unit, Nothing> = left(Unit)
+
+    val unit: Either<Nothing, Unit> = right(Unit)
+
+    fun <L> unit(): Either<L, Unit> = unit
 
     fun <A> fromNullable(a: A?): Either<Unit, A> = a?.right() ?: Unit.left()
 
@@ -1070,6 +1082,12 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
         .fold({ t: Throwable -> throwable(t) }, { b: B -> b.right() })
         .fold({ t: Throwable -> unrecoverableState(t); throw t }, { b: B -> b })
   }
+
+  fun <C> mapConst(c: C): Either<A, C> =
+    map { c }
+
+  fun void(): Either<A, Unit> =
+    mapConst(Unit)
 }
 
 fun <L> Left(left: L): Either<L, Nothing> = Left(left)
