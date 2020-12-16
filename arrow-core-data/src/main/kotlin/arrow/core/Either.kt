@@ -5,10 +5,14 @@ import arrow.core.Either.Left
 import arrow.core.Either.Right
 import arrow.core.Validated.Valid
 import arrow.typeclasses.Eq
+import arrow.typeclasses.Hash
 import arrow.typeclasses.Show
+import arrow.typeclasses.hashWithSalt
 
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
-class ForEither private constructor() { companion object }
+class ForEither private constructor() {
+  companion object
+}
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 typealias EitherOf<A, B> = arrow.Kind2<ForEither, A, B>
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
@@ -1096,6 +1100,9 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     /** Construct an [Eq] instance which use [EQL] and [EQR] to compare the [Left] and [Right] cases **/
     fun <L, R> eq(EQL: Eq<L>, EQR: Eq<R>): Eq<Either<L, R>> =
       EitherEq(EQL, EQR)
+
+    fun <A, B> hash(HA: Hash<A>, HB: Hash<B>): Hash<Either<A, B>> =
+      EitherHash(HA, HB)
   }
 
   fun <C> mapConst(c: C): Either<A, C> =
@@ -1103,6 +1110,18 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
 
   fun void(): Either<A, Unit> =
     mapConst(Unit)
+
+  fun hash(HL: Hash<A>, HR: Hash<B>): Int =
+    fold(
+      { HL.run { it.hashWithSalt(0) } },
+      { HR.run { it.hashWithSalt(1) } }
+    )
+
+  fun hashWithSalt(HL: Hash<A>, HR: Hash<B>, salt: Int): Int =
+    fold(
+      { l -> HL.run { l.hashWithSalt(salt.hashWithSalt(0)) } },
+      { r -> HR.run { r.hashWithSalt(salt.hashWithSalt(1)) } }
+    )
 }
 
 fun <L> Left(left: L): Either<L, Nothing> = Left(left)
@@ -1322,9 +1341,7 @@ fun <L, R> Either<L, R>.neqv(
   EQL: Eq<L>,
   EQR: Eq<R>,
   other: Either<L, R>
-): Boolean = Either.eq(EQL, EQR).run {
-  this@neqv.neqv(other)
-}
+): Boolean = !eqv(EQL, EQR, other)
 
 /**
  * Compares two instances of [Either] and returns true if they're considered not equal for this instance.
@@ -1337,22 +1354,33 @@ fun <L, R> Either<L, R>.eqv(
   EQL: Eq<L>,
   EQR: Eq<R>,
   other: Either<L, R>
-): Boolean = Either.eq(EQL, EQR).run {
-  this@eqv.neqv(other)
+): Boolean = when (this) {
+  is Left -> when (other) {
+    is Left -> EQL.run { a.eqv(other.a) }
+    is Right -> false
+  }
+  is Right -> when (other) {
+    is Left -> false
+    is Right -> EQR.run { this@eqv.b.eqv(other.b) }
+  }
 }
+
 
 private class EitherEq<L, R>(
   private val EQL: Eq<L>,
   private val EQR: Eq<R>
 ) : Eq<Either<L, R>> {
-  override fun Either<L, R>.eqv(b: Either<L, R>): Boolean = when (this) {
-    is Either.Left -> when (b) {
-      is Either.Left -> EQL.run { a.eqv(b.a) }
-      is Either.Right -> false
-    }
-    is Either.Right -> when (b) {
-      is Either.Left -> false
-      is Either.Right -> EQR.run { this@eqv.b.eqv(b.b) }
-    }
-  }
+  override fun Either<L, R>.eqv(b: Either<L, R>): Boolean =
+    eqv(EQL, EQR, b)
+}
+
+private class EitherHash<L, R>(
+  private val HL: Hash<L>,
+  private val HR: Hash<R>
+) : Hash<Either<L, R>> {
+  override fun Either<L, R>.hash(): Int =
+    hash(HL, HR)
+
+  override fun Either<L, R>.hashWithSalt(salt: Int): Int =
+    hashWithSalt(HL, HR, salt)
 }

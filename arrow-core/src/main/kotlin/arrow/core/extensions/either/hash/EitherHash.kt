@@ -9,6 +9,7 @@ import kotlin.Suppress
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Either.hash(HL, HR)"))
 inline fun <L, R> Companion.hash(HL: Hash<L>, HR: Hash<R>): EitherHash<L, R> = object :
   arrow.core.extensions.EitherHash<L, R> {
   override fun HL(): arrow.typeclasses.Hash<L> = HL
