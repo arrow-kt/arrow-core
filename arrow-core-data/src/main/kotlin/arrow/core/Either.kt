@@ -805,7 +805,7 @@ inline fun <A, B> EitherOf<A, B>.fix(): Either<A, B> =
  * ```
  *
  */
-sealed class Either<out A, out B> : EitherOf<A, B> {
+sealed class Either<out A, out B> : EitherOf<A, B>, Iter<B> {
 
   /**
    * Returns `true` if this is a [Right], `false` otherwise.
@@ -1064,6 +1064,8 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
   fun isEmpty(): Boolean = isLeft
 
   fun isNotEmpty(): Boolean = isRight
+
+  override fun iterator(): Iterator<B> = fold({ emptyList<B>().iterator() }, { iterator { yield(it) }})
 
   /**
    * The left side of the disjoint union, as opposed to the [Right] side.

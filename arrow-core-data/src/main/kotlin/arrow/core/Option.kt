@@ -368,7 +368,7 @@ import arrow.typeclasses.Show
   ReplaceWith("A?")
 )
 @higherkind
-sealed class Option<out A> : OptionOf<A> {
+sealed class Option<out A> : OptionOf<A>, Iter<A> {
 
   companion object {
 
@@ -552,6 +552,8 @@ sealed class Option<out A> : OptionOf<A> {
       "Some(${SA.run { it.show() }})"
     }
   )
+
+  override fun iterator(): Iterator<A> = fold({ emptyList<A>().iterator() }, { iterator { yield(it) } })
 }
 
 object None : Option<Nothing>() {
