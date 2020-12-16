@@ -1311,6 +1311,112 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
           }
         }
       }
+
+    fun <A, B, C> tupledN(
+      b: Either<A, B>,
+      c: Either<A, C>
+    ): Either<A, Tuple2<B, C>> =
+      b.product(c)
+
+    fun <A, B, C, D> tupledN(
+      b: Either<A, B>,
+      c: Either<A, C>,
+      d: Either<A, D>
+    ): Either<A, Tuple3<B, C, D>> =
+      mapN(b, c, d) { b, c, d ->
+        Tuple3(b, c, d)
+      }
+
+    fun <A, B, C, D, E> tupledN(
+      b: Either<A, B>,
+      c: Either<A, C>,
+      d: Either<A, D>,
+      e: Either<A, E>
+    ): Either<A, Tuple4<B, C, D, E>> =
+      mapN(b, c, d, e) { b, c, d, e ->
+        Tuple4(b, c, d, e)
+      }
+
+    fun <A, B, C, D, E, F> tupledN(
+      b: Either<A, B>,
+      c: Either<A, C>,
+      d: Either<A, D>,
+      e: Either<A, E>,
+      f: Either<A, F>
+    ): Either<A, Tuple5<B, C, D, E, F>> =
+      mapN(b, c, d, e, f) { b, c, d, e, f ->
+        Tuple5(b, c, d, e, f)
+      }
+
+    fun <A, B, C, D, E, F, G> tupledN(
+      b: Either<A, B>,
+      c: Either<A, C>,
+      d: Either<A, D>,
+      e: Either<A, E>,
+      f: Either<A, F>,
+      g: Either<A, G>
+    ): Either<A, Tuple6<B, C, D, E, F, G>> =
+      mapN(b, c, d, e, f, g) { b, c, d, e, f, g ->
+        Tuple6(b, c, d, e, f, g)
+      }
+
+    fun <A, B, C, D, E, F, G, H> tupledN(
+      b: Either<A, B>,
+      c: Either<A, C>,
+      d: Either<A, D>,
+      e: Either<A, E>,
+      f: Either<A, F>,
+      g: Either<A, G>,
+      h: Either<A, H>
+    ): Either<A, Tuple7<B, C, D, E, F, G, H>> =
+      mapN(b, c, d, e, f, g, h) { b, c, d, e, f, g, h ->
+        Tuple7(b, c, d, e, f, g, h)
+      }
+
+    fun <A, B, C, D, E, F, G, H, I> tupledN(
+      b: Either<A, B>,
+      c: Either<A, C>,
+      d: Either<A, D>,
+      e: Either<A, E>,
+      f: Either<A, F>,
+      g: Either<A, G>,
+      h: Either<A, H>,
+      i: Either<A, I>
+    ): Either<A, Tuple8<B, C, D, E, F, G, H, I>> =
+      mapN(b, c, d, e, f, g, h, i) { b, c, d, e, f, g, h, i ->
+        Tuple8(b, c, d, e, f, g, h, i)
+      }
+
+    fun <A, B, C, D, E, F, G, H, I, J> tupledN(
+      b: Either<A, B>,
+      c: Either<A, C>,
+      d: Either<A, D>,
+      e: Either<A, E>,
+      f: Either<A, F>,
+      g: Either<A, G>,
+      h: Either<A, H>,
+      i: Either<A, I>,
+      j: Either<A, J>
+    ): Either<A, Tuple9<B, C, D, E, F, G, H, I, J>> =
+      mapN(b, c, d, e, f, g, h, i, j) { b, c, d, e, f, g, h, i, j ->
+        Tuple9(b, c, d, e, f, g, h, i, j)
+      }
+
+    fun <A, B, C, D, E, F, G, H, I, J, K> tupledN(
+      b: Either<A, B>,
+      c: Either<A, C>,
+      d: Either<A, D>,
+      e: Either<A, E>,
+      f: Either<A, F>,
+      g: Either<A, G>,
+      h: Either<A, H>,
+      i: Either<A, I>,
+      j: Either<A, J>,
+      k: Either<A, K>
+    ): Either<A, Tuple10<B, C, D, E, F, G, H, I, J, K>> =
+      mapN(b, c, d, e, f, g, h, i, j, k) { b, c, d, e, f, g, h, i, j, k ->
+        Tuple10(b, c, d, e, f, g, h, i, j, k)
+      }
   }
 
   /**
