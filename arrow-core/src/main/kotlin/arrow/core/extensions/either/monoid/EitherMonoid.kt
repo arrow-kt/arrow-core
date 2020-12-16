@@ -16,6 +16,7 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("combineAll(MOL, MOR)", "arrow.core.combineAll"))
 fun <L, R> Collection<Either<L, R>>.combineAll(MOL: Monoid<L>, MOR: Monoid<R>): Either<L, R> =
   arrow.core.Either.monoid<L, R>(MOL, MOR).run {
     this@combineAll.combineAll() as arrow.core.Either<L, R>
@@ -28,6 +29,7 @@ fun <L, R> Collection<Either<L, R>>.combineAll(MOL: Monoid<L>, MOR: Monoid<R>): 
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("arg0.combineAll(MOL, MOR)", "arrow.core.combineAll"))
 fun <L, R> combineAll(
   MOL: Monoid<L>,
   MOR: Monoid<R>,
@@ -40,6 +42,7 @@ fun <L, R> combineAll(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Either.monoid(MOL, MOR)", "arrow.core.monoid"))
 inline fun <L, R> Companion.monoid(MOL: Monoid<L>, MOR: Monoid<R>): EitherMonoid<L, R> = object :
   arrow.core.extensions.EitherMonoid<L, R> {
   override fun MOL(): arrow.typeclasses.Monoid<L> = MOL

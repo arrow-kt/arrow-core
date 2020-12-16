@@ -1115,6 +1115,9 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
 
     fun <A, B> semigroup(SA: Semigroup<A>, SB: Semigroup<B>): Semigroup<Either<A, B>> =
       EitherSemigroup(SA, SB)
+
+    fun <A, B> monoid(MA: Monoid<A>, MB: Monoid<B>): Monoid<Either<A, B>> =
+      EitherMonoid(MA, MB)
   }
 
   fun <C> mapConst(c: C): Either<A, C> =
@@ -1421,6 +1424,11 @@ fun <A, B> Either<A, B>.combine(SGA: Semigroup<A>, SGB: Semigroup<B>, b: Either<
 fun <A, B> Either<A, B>.maybeCombine(SGA: Semigroup<A>, SGB: Semigroup<B>, b: Either<A, B>?): Either<A, B> =
   b?.let { combine(SGA, SGB, it) } ?: this
 
+fun <A, B> Iterable<Either<A, B>>.combineAll(MA: Monoid<A>, MB: Monoid<B>): Either<A, B> =
+  fold(Right(MB.empty()) as Either<A, B>) { acc, e ->
+    acc.combine(MA, MB, e)
+  }
+
 private class EitherEq<L, R>(
   private val EQL: Eq<L>,
   private val EQR: Eq<R>
@@ -1456,9 +1464,9 @@ private class EitherOrder<L, R>(
     compare(OL, OR, b)
 }
 
-private class EitherSemigroup<L, R>(
-  private val SGL: Semigroup<L>,
-  private val SGR: Semigroup<R>
+private open class EitherSemigroup<L, R>(
+private val SGL: Semigroup<L>,
+private val SGR: Semigroup<R>
 ) : Semigroup<Either<L, R>> {
 
   override fun Either<L, R>.combine(b: Either<L, R>): Either<L, R> =
@@ -1466,4 +1474,17 @@ private class EitherSemigroup<L, R>(
 
   override fun Either<L, R>.maybeCombine(b: Either<L, R>?): Either<L, R> =
     maybeCombine(SGL, SGR, b)
+}
+
+private class EitherMonoid<L, R>(
+  private val MOL: Monoid<L>,
+  private val MOR: Monoid<R>
+) : Monoid<Either<L, R>>, EitherSemigroup<L, R>(MOL, MOR) {
+  override fun empty(): Either<L, R> = Right(MOR.empty())
+
+  override fun Collection<Either<L, R>>.combineAll(): Either<L, R> =
+    combineAll(MOL, MOR)
+
+  override fun combineAll(elems: List<Either<L, R>>): Either<L, R> =
+    elems.combineAll(MOL, MOR)
 }
