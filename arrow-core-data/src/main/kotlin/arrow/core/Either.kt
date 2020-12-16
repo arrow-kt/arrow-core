@@ -4,8 +4,20 @@ import arrow.Kind
 import arrow.core.Either.Left
 import arrow.core.Either.Right
 import arrow.core.Validated.Valid
-import arrow.higherkind
+import arrow.typeclasses.Eq
 import arrow.typeclasses.Show
+
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
+class ForEither private constructor() { companion object }
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
+typealias EitherOf<A, B> = arrow.Kind2<ForEither, A, B>
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
+typealias EitherPartialOf<A> = arrow.Kind<ForEither, A>
+
+@Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
+inline fun <A, B> EitherOf<A, B>.fix(): Either<A, B> =
+  this as Either<A, B>
 
 /**
  *
@@ -786,7 +798,6 @@ import arrow.typeclasses.Show
  * ```
  *
  */
-@higherkind
 sealed class Either<out A, out B> : EitherOf<A, B> {
 
   /**
@@ -1081,6 +1092,10 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
         .fold({ t: Throwable -> throwable(t) }, { it.fold({ e: E -> catchAndFlatten { error(e) } }, { a: A -> catchAndFlatten { success(a) } }) })
         .fold({ t: Throwable -> throwable(t) }, { b: B -> b.right() })
         .fold({ t: Throwable -> unrecoverableState(t); throw t }, { b: B -> b })
+
+    /** Construct an [Eq] instance which use [EQL] and [EQR] to compare the [Left] and [Right] cases **/
+    fun <L, R> eq(EQL: Eq<L>, EQR: Eq<R>): Eq<Either<L, R>> =
+      EitherEq(EQL, EQR)
   }
 
   fun <C> mapConst(c: C): Either<A, C> =
@@ -1295,3 +1310,49 @@ inline fun <A, B, C> EitherOf<A, B>.handleErrorWith(f: (A) -> EitherOf<C, B>): E
     is Left -> f(either.a).fix()
     is Right -> either
   }
+
+/**
+ * Compares two instances of [Either] and returns true if they're considered not equal for this instance.
+ *
+ * @receiver object to compare with [other]
+ * @param other object to compare with [this@neqv]
+ * @returns false if [this@neqv] and [other] are equivalent, true otherwise.
+ */
+fun <L, R> Either<L, R>.neqv(
+  EQL: Eq<L>,
+  EQR: Eq<R>,
+  other: Either<L, R>
+): Boolean = Either.eq(EQL, EQR).run {
+  this@neqv.neqv(other)
+}
+
+/**
+ * Compares two instances of [Either] and returns true if they're considered not equal for this instance.
+ *
+ * @receiver object to compare with [other]
+ * @param other object to compare with [this@neqv]
+ * @returns false if [this@neqv] and [other] are equivalent, true otherwise.
+ */
+fun <L, R> Either<L, R>.eqv(
+  EQL: Eq<L>,
+  EQR: Eq<R>,
+  other: Either<L, R>
+): Boolean = Either.eq(EQL, EQR).run {
+  this@eqv.neqv(other)
+}
+
+private class EitherEq<L, R>(
+  private val EQL: Eq<L>,
+  private val EQR: Eq<R>
+) : Eq<Either<L, R>> {
+  override fun Either<L, R>.eqv(b: Either<L, R>): Boolean = when (this) {
+    is Either.Left -> when (b) {
+      is Either.Left -> EQL.run { a.eqv(b.a) }
+      is Either.Right -> false
+    }
+    is Either.Right -> when (b) {
+      is Either.Left -> false
+      is Either.Right -> EQR.run { this@eqv.b.eqv(b.b) }
+    }
+  }
+}
