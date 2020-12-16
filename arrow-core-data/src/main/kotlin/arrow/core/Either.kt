@@ -6,7 +6,9 @@ import arrow.core.Either.Right
 import arrow.core.Validated.Valid
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
+import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
+import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.hashWithSalt
 
@@ -1110,6 +1112,9 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
 
     fun <A, B> order(OA: Order<A>, OB: Order<B>): Order<Either<A, B>> =
       EitherOrder(OA, OB)
+
+    fun <A, B> semigroup(SA: Semigroup<A>, SB: Semigroup<B>): Semigroup<Either<A, B>> =
+      EitherSemigroup(SA, SB)
   }
 
   fun <C> mapConst(c: C): Either<A, C> =
@@ -1401,6 +1406,21 @@ fun <A, B> Either<A, B>.min(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Either
 fun <A, B> Either<A, B>.sort(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Tuple2<Either<A, B>, Either<A, B>> =
   if (gte(OA, OB, b)) Tuple2(this, b) else Tuple2(b, this)
 
+fun <A, B> Either<A, B>.combine(SGA: Semigroup<A>, SGB: Semigroup<B>, b: Either<A, B>): Either<A, B> =
+  when (this) {
+    is Left -> when (b) {
+      is Left -> Left(SGA.run { a.combine(b.a) })
+      is Right -> this
+    }
+    is Right -> when (b) {
+      is Left -> b
+      is Right -> Either.right(SGB.run { this@combine.b.combine(b.b) })
+    }
+  }
+
+fun <A, B> Either<A, B>.maybeCombine(SGA: Semigroup<A>, SGB: Semigroup<B>, b: Either<A, B>?): Either<A, B> =
+  b?.let { combine(SGA, SGB, it) } ?: this
+
 private class EitherEq<L, R>(
   private val EQL: Eq<L>,
   private val EQR: Eq<R>
@@ -1434,4 +1454,16 @@ private class EitherOrder<L, R>(
 ) : Order<Either<L, R>> {
   override fun Either<L, R>.compare(b: Either<L, R>): Ordering =
     compare(OL, OR, b)
+}
+
+private class EitherSemigroup<L, R>(
+  private val SGL: Semigroup<L>,
+  private val SGR: Semigroup<R>
+) : Semigroup<Either<L, R>> {
+
+  override fun Either<L, R>.combine(b: Either<L, R>): Either<L, R> =
+    combine(SGL, SGR, b)
+
+  override fun Either<L, R>.maybeCombine(b: Either<L, R>?): Either<L, R> =
+    maybeCombine(SGL, SGR, b)
 }

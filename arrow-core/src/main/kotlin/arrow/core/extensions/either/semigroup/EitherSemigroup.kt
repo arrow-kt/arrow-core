@@ -14,6 +14,7 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("combine(SGL, SGR, arg1)", "arrow.core.combine"))
 fun <L, R> Either<L, R>.plus(
   SGL: Semigroup<L>,
   SGR: Semigroup<R>,
@@ -29,6 +30,7 @@ fun <L, R> Either<L, R>.plus(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("maybeCombine(SGL, SGR, arg1)", "arrow.core.combine"))
 fun <L, R> Either<L, R>.maybeCombine(
   SGL: Semigroup<L>,
   SGR: Semigroup<R>,
@@ -41,6 +43,7 @@ fun <L, R> Either<L, R>.maybeCombine(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Either.semigroup(SGL, SGR)", "arrow.core.semigroup"))
 inline fun <L, R> Companion.semigroup(SGL: Semigroup<L>, SGR: Semigroup<R>): EitherSemigroup<L, R> =
   object : arrow.core.extensions.EitherSemigroup<L, R> {
     override fun SGL():
