@@ -1508,6 +1508,9 @@ inline fun <A, B, C> EitherOf<A, B>.flatMap(f: (B) -> Either<A, C>): Either<A, C
     }
   }
 
+fun <A, B> Either<A, Either<A, B>>.flatten(): Either<A, B> =
+  flatMap(::identity)
+
 /**
  * Returns the value from this [Either.Right] or the given argument if this is a [Either.Left].
  *
@@ -1882,6 +1885,17 @@ fun <A, B> Either<A, B>.replicate(n: Int, MB: Monoid<B>): Either<A, B> =
       is Right -> List(n) { this@replicate.b }.combineAll().right()
     }
   }
+
+fun <A, B, C> Either<A, B>.mproduct(f: (B) -> Either<A, C>): Either<A, Tuple2<B, C>> =
+  flatMap { a ->
+    f(a).map { b -> Tuple2(a, b) }
+  }
+
+fun <A, B> Either<A, Boolean>.ifM(ifTrue: () -> Either<A, B>, ifFalse: () -> Either<A, B>): Either<A, B> =
+  flatMap { if (it) ifTrue() else ifFalse() }
+
+fun <A, B, C> Either<A, Either<B, C>>.selectM(f: Either<A, (B) -> C>): Either<A, C> =
+  flatMap { it.fold({ a -> f.map { ff -> ff(a) } }, { b -> b.right() }) }
 
 private class EitherEq<L, R>(
   private val EQL: Eq<L>,

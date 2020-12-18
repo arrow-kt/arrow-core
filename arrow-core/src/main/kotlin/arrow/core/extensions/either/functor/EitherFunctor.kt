@@ -361,6 +361,6 @@ fun <L, B, A : B> Kind<Kind<ForEither, L>, A>.widen(): Either<L, B> =
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated("Functor typeclasses is deprecated. Use concrete methods on Validated")
+@Deprecated("Functor typeclasses is deprecated. Use concrete methods on Either")
 inline fun <L> Companion.functor(): EitherFunctor<L> = functor_singleton as
   arrow.core.extensions.EitherFunctor<L>

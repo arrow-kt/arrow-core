@@ -141,7 +141,7 @@ fun <L, A> ApplicativeError<Kind<ForEither, L>, Throwable>.catch(arg1: Function0
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith(" Either.catch(arg0) { arg1() }", "arrow.core.catch"))
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Either.catch(arg0) { arg1() }", "arrow.core.catch"))
 suspend fun <L, A> effectCatch(arg0: Function1<Throwable, L>, arg1: suspend () -> A): Either<L, A> =
   Either.catch(arg0) { arg1() }
 
@@ -162,6 +162,6 @@ suspend fun <L, F, A> ApplicativeError<F, Throwable>.effectCatch(arg1: suspend (
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated("ApplicativeErrpr typeclasses is deprecated. Use concrete methods on Validated")
+@Deprecated("ApplicativeError typeclasses is deprecated. Use concrete methods on Either")
 inline fun <L> Companion.applicativeError(): EitherApplicativeError<L> = applicativeError_singleton
   as arrow.core.extensions.EitherApplicativeError<L>

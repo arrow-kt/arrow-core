@@ -847,6 +847,6 @@ fun <L, A, B> Kind<Kind<ForEither, L>, A>.apTap(arg1: Kind<Kind<ForEither, L>, B
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated("Apply typeclasses is deprecated. Use concrete methods on Validated")
+@Deprecated("Apply typeclasses is deprecated. Use concrete methods on Either")
 inline fun <L> Companion.apply(): EitherApply<L> = apply_singleton as
   arrow.core.extensions.EitherApply<L>
