@@ -1036,6 +1036,15 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
   inline fun <AA, C> traverseValidated_(fa: (B) -> Validated<AA, C>): Validated<AA, Unit> =
     fold({ Valid(Unit) }, { fa(it).void() })
 
+  inline fun <AA, C> bitraverse(fe: (A) -> Iterable<AA>, fa: (B) -> Iterable<C>): List<Either<AA, C>> =
+    fold({ fe(it).map { Left(it) } }, { fa(it).map { Right(it) } })
+
+  inline fun <AA, C, D> bitraverseValidated(
+    fe: (A) -> Validated<AA, C>,
+    fa: (B) -> Validated<AA, D>
+  ): Validated<AA, Either<C, D>> =
+    fold({ fe(it).map { Left(it) } }, { fa(it).map {Right(it) } })
+
   /**
    * The left side of the disjoint union, as opposed to the [Right] side.
    */
@@ -1935,6 +1944,12 @@ fun <A, B, C> Either<A, Validated<B, C>>.sequenceValidated(): Validated<B, Eithe
 
 fun <A, B, C> Either<A, Validated<B, C>>.sequenceValidated_(): Validated<B, Unit> =
   traverseValidated_(::identity)
+
+fun <A, B> Either<Iterable<A>, Iterable<B>>.bisequence(): List<Either<A, B>> =
+  bitraverse(::identity, ::identity)
+
+fun <A, B, C> Either<Validated<A, B>, Validated<A, C>>.bisequenceValidated(): Validated<A, Either<B, C>> =
+  bitraverseValidated(::identity, ::identity)
 
 private class EitherEq<L, R>(
   private val EQL: Eq<L>,

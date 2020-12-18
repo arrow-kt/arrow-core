@@ -5,6 +5,7 @@ import arrow.core.Either
 import arrow.core.Either.Companion
 import arrow.core.ForEither
 import arrow.core.extensions.EitherBitraverse
+import arrow.core.fix
 import arrow.typeclasses.Applicative
 import kotlin.Function1
 import kotlin.PublishedApi
@@ -25,6 +26,7 @@ internal val bitraverse_singleton: EitherBitraverse = object :
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated. Replace with bitraverse or bitraverseValidated from arrow.core.*")
 fun <G, A, B, C, D> Kind<Kind<ForEither, A>, B>.bitraverse(
   arg1: Applicative<G>,
   arg2: Function1<A, Kind<G, C>>,
@@ -41,6 +43,7 @@ fun <G, A, B, C, D> Kind<Kind<ForEither, A>, B>.bitraverse(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated. Replace with bisequence or bisequenceValidated from arrow.core.*")
 fun <G, A, B> Kind<Kind<ForEither, Kind<G, A>>, Kind<G, B>>.bisequence(arg1: Applicative<G>):
   Kind<G, Kind<Kind<ForEither, A>, B>> = arrow.core.Either.bitraverse().run {
   this@bisequence.bisequence<G, A, B>(arg1) as arrow.Kind<G,
@@ -54,10 +57,10 @@ fun <G, A, B> Kind<Kind<ForEither, Kind<G, A>>, Kind<G, B>>.bisequence(arg1: App
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("bimap(arg1, arg2)"))
 fun <A, B, C, D> Kind<Kind<ForEither, A>, B>.bimap(arg1: Function1<A, C>, arg2: Function1<B, D>):
-  Either<C, D> = arrow.core.Either.bitraverse().run {
-  this@bimap.bimap<A, B, C, D>(arg1, arg2) as arrow.core.Either<C, D>
-}
+  Either<C, D> =
+  fix().bimap(arg1, arg2)
 
 /**
  *  ank_macro_hierarchy(arrow.typeclasses.Bitraverse)
@@ -108,4 +111,5 @@ fun <A, B, C, D> Kind<Kind<ForEither, A>, B>.bimap(arg1: Function1<A, C>, arg2: 
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Functor typeclasses is deprecated. Use concrete methods on Either")
 inline fun Companion.bitraverse(): EitherBitraverse = bitraverse_singleton
