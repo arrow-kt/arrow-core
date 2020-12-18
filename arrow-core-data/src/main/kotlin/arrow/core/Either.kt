@@ -1845,6 +1845,9 @@ fun <A, B> Iterable<Either<A, B>>.combineAll(MA: Monoid<A>, MB: Monoid<B>): Eith
 fun <A, C, B : C> Either<A, B>.widen(): Either<A, C> =
   this
 
+fun <AA, A : AA, B> Either<A, B>.leftWiden(): Either<AA, B> =
+  this
+
 fun <A, B, C> Either<A, B>.product(fb: Either<A, C>): Either<A, Tuple2<B, C>> =
   flatMap { a ->
     fb.map { b -> Tuple2(a, b) }
