@@ -1886,16 +1886,28 @@ fun <A, B> Either<A, B>.replicate(n: Int, MB: Monoid<B>): Either<A, B> =
     }
   }
 
-fun <A, B, C> Either<A, B>.mproduct(f: (B) -> Either<A, C>): Either<A, Tuple2<B, C>> =
+inline fun <A, B, C> Either<A, B>.mproduct(f: (B) -> Either<A, C>): Either<A, Tuple2<B, C>> =
   flatMap { a ->
     f(a).map { b -> Tuple2(a, b) }
   }
 
-fun <A, B> Either<A, Boolean>.ifM(ifTrue: () -> Either<A, B>, ifFalse: () -> Either<A, B>): Either<A, B> =
+inline fun <A, B> Either<A, Boolean>.ifM(ifTrue: () -> Either<A, B>, ifFalse: () -> Either<A, B>): Either<A, B> =
   flatMap { if (it) ifTrue() else ifFalse() }
 
 fun <A, B, C> Either<A, Either<B, C>>.selectM(f: Either<A, (B) -> C>): Either<A, C> =
   flatMap { it.fold({ a -> f.map { ff -> ff(a) } }, { b -> b.right() }) }
+
+inline fun <A, B> Either<A, B>.ensure(error: () -> A, predicate: (B) -> Boolean): Either<A, B> =
+  when(this) {
+    is Right -> if(predicate(this.b)) this else error().left()
+    is Left -> this
+  }
+
+inline fun <A, B, C, D> Either<A, B>.redeemWith(fa: (A) -> Either<C, D>, fb: (B) -> Either<C, D>): Either<C, D> =
+  when(this) {
+    is Left -> fa(this.a)
+    is Right -> fb(this.b)
+  }
 
 private class EitherEq<L, R>(
   private val EQL: Eq<L>,
