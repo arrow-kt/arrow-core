@@ -1050,9 +1050,8 @@ fun <E, B> Validated<E, B>.neqv(
   EQL: Eq<E>,
   EQR: Eq<B>,
   other: Validated<E, B>
-): Boolean = Validated.eq(EQL, EQR).run {
-  this@neqv.neqv(other)
-}
+): Boolean =
+  !eqv(EQL, EQR, other)
 
 /**
  * Compares two instances of [Validated] and returns true if they're considered not equal for this instance.
@@ -1065,15 +1064,16 @@ fun <E, B> Validated<E, B>.eqv(
   EQL: Eq<E>,
   EQR: Eq<B>,
   other: Validated<E, B>
-): Boolean = Validated.eq(EQL, EQR).run {
-  this@eqv.neqv(other)
+): Boolean = when (this) {
+  is Valid -> when (other) {
+    is Invalid -> false
+    is Valid -> EQR.run { a.eqv(other.a) }
+  }
+  is Invalid -> when (other) {
+    is Invalid -> EQL.run { e.eqv(other.e) }
+    is Valid -> false
+  }
 }
-
-/**
- * Replaces the [B] value inside [Validated] with [A] resulting in Validated<E, A>
- */
-fun <E, A, B> A.mapConst(fb: Validated<E, B>): Validated<E, A> =
-  fb.mapConst(this)
 
 /**
  * Given [A] is a sub type of [B], re-type this value from Validated<E, A> to Validated<E, B>
@@ -1394,16 +1394,8 @@ private class ValidatedEq<L, R>(
   private val EQR: Eq<R>
 ) : Eq<Validated<L, R>> {
 
-  override fun Validated<L, R>.eqv(b: Validated<L, R>): Boolean = when (this) {
-    is Valid -> when (b) {
-      is Invalid -> false
-      is Valid -> EQR.run { a.eqv(b.a) }
-    }
-    is Invalid -> when (b) {
-      is Invalid -> EQL.run { e.eqv(b.e) }
-      is Valid -> false
-    }
-  }
+  override fun Validated<L, R>.eqv(b: Validated<L, R>): Boolean =
+    eqv(EQL, EQR, b)
 }
 
 private class ValidatedShow<L, R>(
