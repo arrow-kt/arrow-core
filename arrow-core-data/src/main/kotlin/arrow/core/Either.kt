@@ -4,8 +4,6 @@ import arrow.Kind
 import arrow.core.Either.Companion.resolve
 import arrow.core.Either.Left
 import arrow.core.Either.Right
-import arrow.core.Valid
-import arrow.typeclasses.Align
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
