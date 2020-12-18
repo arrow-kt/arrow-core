@@ -4,7 +4,6 @@ import arrow.continuations.generic.ShortCircuit
 import arrow.core.Left
 import arrow.core.Right
 import arrow.core.computations.either
-import arrow.fx.coroutines.ComputationPool
 import arrow.fx.coroutines.ExitCase
 import arrow.fx.coroutines.Promise
 import arrow.fx.coroutines.bracketCase
@@ -192,7 +191,7 @@ suspend fun completeOnCancellation(latch: CompletableDeferred<Unit>, cancelled: 
 
 internal suspend fun Throwable.suspend(): Nothing =
   suspendCoroutineUninterceptedOrReturn { cont ->
-    suspend { throw this }.startCoroutine(Continuation(ComputationPool) {
+    suspend { throw this }.startCoroutine(Continuation(Dispatchers.Default) {
       cont.intercepted().resumeWith(it)
     })
 
@@ -201,7 +200,7 @@ internal suspend fun Throwable.suspend(): Nothing =
 
 internal suspend fun <A> A.suspend(): A =
   suspendCoroutineUninterceptedOrReturn { cont ->
-    suspend { this }.startCoroutine(Continuation(ComputationPool) {
+    suspend { this }.startCoroutine(Continuation(Dispatchers.Default) {
       cont.intercepted().resumeWith(it)
     })
 
