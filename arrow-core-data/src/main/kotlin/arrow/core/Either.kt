@@ -862,6 +862,10 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
       }
     }
 
+  fun <C> foldMap(MN: Monoid<C>, f: (B) -> C): C = MN.run {
+    foldLeft(MN.empty()) { b, a -> b.combine(f(a)) }
+  }
+
   inline fun <C> bifoldLeft(c: C, f: (C, A) -> C, g: (C, B) -> C): C =
     fold({ f(c, it) }, { g(c, it) })
 
@@ -1048,17 +1052,28 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     fe: (A) -> Validated<AA, C>,
     fa: (B) -> Validated<AA, D>
   ): Validated<AA, Either<C, D>> =
-    fold({ fe(it).map { Left(it) } }, { fa(it).map {Right(it) } })
+    fold({ fe(it).map { Left(it) } }, { fa(it).map { Right(it) } })
+
+  inline fun findOrNull(predicate: (B) -> Boolean): B? =
+    when (this) {
+      is Right -> if (predicate(this.b)) this.b else null
+      is Left -> null
+    }
+
+  inline fun all(predicate: (B) -> Boolean): Boolean =
+    fold({ true }, predicate)
+
+  fun isEmpty(): Boolean = isLeft
+
+  fun isNotEmpty(): Boolean = isRight
 
   /**
    * The left side of the disjoint union, as opposed to the [Right] side.
    */
   @Suppress("DataClassPrivateConstructor")
   data class Left<out A> @PublishedApi internal constructor(val a: A) : Either<A, Nothing>() {
-    override val isLeft
-      get() = true
-    override val isRight
-      get() = false
+    override val isLeft = true
+    override val isRight = false
 
     override fun toString(): String = show(Show.any(), Show.any())
 
@@ -1072,10 +1087,8 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
    */
   @Suppress("DataClassPrivateConstructor")
   data class Right<out B> @PublishedApi internal constructor(val b: B) : Either<Nothing, B>() {
-    override val isLeft
-      get() = false
-    override val isRight
-      get() = true
+    override val isLeft = false
+    override val isRight = true
 
     override fun toString(): String = show(Show.any(), Show.any())
 
@@ -1930,13 +1943,13 @@ fun <A, B, C> Either<A, Either<B, C>>.selectM(f: Either<A, (B) -> C>): Either<A,
   flatMap { it.fold({ a -> f.map { ff -> ff(a) } }, { b -> b.right() }) }
 
 inline fun <A, B> Either<A, B>.ensure(error: () -> A, predicate: (B) -> Boolean): Either<A, B> =
-  when(this) {
-    is Right -> if(predicate(this.b)) this else error().left()
+  when (this) {
+    is Right -> if (predicate(this.b)) this else error().left()
     is Left -> this
   }
 
 inline fun <A, B, C, D> Either<A, B>.redeemWith(fa: (A) -> Either<C, D>, fb: (B) -> Either<C, D>): Either<C, D> =
-  when(this) {
+  when (this) {
     is Left -> fa(this.a)
     is Right -> fb(this.b)
   }
