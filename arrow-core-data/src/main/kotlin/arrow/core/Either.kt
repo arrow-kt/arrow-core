@@ -4,7 +4,7 @@ import arrow.Kind
 import arrow.core.Either.Companion.resolve
 import arrow.core.Either.Left
 import arrow.core.Either.Right
-import arrow.core.Validated.Valid
+import arrow.core.Valid
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
@@ -1021,6 +1021,21 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
       is Right -> List(n) { this.b }.right()
     }
 
+  inline fun <C> traverse(fa: (B) -> Iterable<C>): List<Either<A, C>> =
+    fold({ emptyList() }, { fa(it).map { Right(it) } })
+
+  inline fun <C> traverse_(fa: (B) -> Iterable<C>): List<Unit> =
+    fold({ emptyList() }, { fa(it).void() })
+
+  inline fun <AA, C> traverseValidated(fa: (B) -> Validated<AA, C>): Validated<AA, Either<A, C>> =
+    when (this) {
+      is Right -> fa(this.b).map { Right(it) }
+      is Left -> this.valid()
+    }
+
+  inline fun <AA, C> traverseValidated_(fa: (B) -> Validated<AA, C>): Validated<AA, Unit> =
+    fold({ Valid(Unit) }, { fa(it).void() })
+
   /**
    * The left side of the disjoint union, as opposed to the [Right] side.
    */
@@ -1908,6 +1923,18 @@ inline fun <A, B, C, D> Either<A, B>.redeemWith(fa: (A) -> Either<C, D>, fb: (B)
     is Left -> fa(this.a)
     is Right -> fb(this.b)
   }
+
+fun <A, B> Either<A, Iterable<B>>.sequence(): List<Either<A, B>> =
+  traverse(::identity)
+
+fun <A, B> Either<A, Iterable<B>>.sequence_(): List<Unit> =
+  traverse_(::identity)
+
+fun <A, B, C> Either<A, Validated<B, C>>.sequenceValidated(): Validated<B, Either<A, C>> =
+  traverseValidated(::identity)
+
+fun <A, B, C> Either<A, Validated<B, C>>.sequenceValidated_(): Validated<B, Unit> =
+  traverseValidated_(::identity)
 
 private class EitherEq<L, R>(
   private val EQL: Eq<L>,

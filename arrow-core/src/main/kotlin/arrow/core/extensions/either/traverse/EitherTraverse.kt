@@ -5,6 +5,7 @@ import arrow.core.Either
 import arrow.core.Either.Companion
 import arrow.core.ForEither
 import arrow.core.extensions.EitherTraverse
+import arrow.core.fix
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Monad
 import kotlin.Any
@@ -26,6 +27,7 @@ internal val traverse_singleton: EitherTraverse<Any?> = object : EitherTraverse<
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated. Replace with traverse or traverseValidated from arrow.core.*")
 fun <L, G, A, B> Kind<Kind<ForEither, L>, A>.traverse(
   arg1: Applicative<G>,
   arg2: Function1<A, Kind<G, B>>
@@ -41,6 +43,7 @@ fun <L, G, A, B> Kind<Kind<ForEither, L>, A>.traverse(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated. Replace with sequence or sequenceValidated from arrow.core.*")
 fun <L, G, A> Kind<Kind<ForEither, L>, Kind<G, A>>.sequence(arg1: Applicative<G>): Kind<G,
   Kind<Kind<ForEither, L>, A>> = arrow.core.Either.traverse<L>().run {
   this@sequence.sequence<G, A>(arg1) as arrow.Kind<G, arrow.Kind<arrow.Kind<arrow.core.ForEither,
@@ -54,10 +57,9 @@ fun <L, G, A> Kind<Kind<ForEither, L>, Kind<G, A>>.sequence(arg1: Applicative<G>
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("map(arg1)"))
 fun <L, A, B> Kind<Kind<ForEither, L>, A>.map(arg1: Function1<A, B>): Either<L, B> =
-  arrow.core.Either.traverse<L>().run {
-    this@map.map<A, B>(arg1) as arrow.core.Either<L, B>
-  }
+  fix().map(arg1)
 
 @JvmName("flatTraverse")
 @Suppress(
@@ -66,6 +68,7 @@ fun <L, A, B> Kind<Kind<ForEither, L>, A>.map(arg1: Function1<A, B>): Either<L, 
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated. This signature is not valid for Validated.")
 fun <L, G, A, B> Kind<Kind<ForEither, L>, A>.flatTraverse(
   arg1: Monad<Kind<ForEither, L>>,
   arg2: Applicative<G>,
@@ -79,5 +82,6 @@ fun <L, G, A, B> Kind<Kind<ForEither, L>, A>.flatTraverse(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Traverse typeclasses is deprecated. Use concrete methods on Validated")
 inline fun <L> Companion.traverse(): EitherTraverse<L> = traverse_singleton as
   arrow.core.extensions.EitherTraverse<L>
