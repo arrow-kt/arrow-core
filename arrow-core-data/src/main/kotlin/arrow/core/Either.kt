@@ -1013,6 +1013,13 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
   fun <C> tupleRight(c: C): Either<A, Tuple2<B, C>> =
     map { b -> Tuple2(b, c) }
 
+  fun replicate(n: Int): Either<A, List<B>> =
+    if (n <= 0) emptyList<B>().right()
+    else when(this) {
+      is Left -> this
+      is Right -> List(n) { this.b }.right()
+    }
+
   /**
    * The left side of the disjoint union, as opposed to the [Right] side.
    */
@@ -1825,6 +1832,15 @@ fun <A, B, C, D, E, F, G, H, I, J, K> Either<A, Tuple9<B, C, D, E, F, G, H, I, J
   other: Either<A, K>,
 ): Either<A, Tuple10<B, C, D, E, F, G, H, I, J, K>> =
   map2(other) { (abcdefghi, j) -> Tuple10(abcdefghi.a, abcdefghi.b, abcdefghi.c, abcdefghi.d, abcdefghi.e, abcdefghi.f, abcdefghi.g, abcdefghi.h, abcdefghi.i, j) }
+
+fun <A, B> Either<A, B>.replicate(n: Int, MB: Monoid<B>): Either<A, B> =
+  if (n <= 0) MB.empty().right()
+  else MB.run {
+    when (this@replicate) {
+      is Left -> this@replicate
+      is Right -> List(n) { this@replicate.b }.combineAll().right()
+    }
+  }
 
 private class EitherEq<L, R>(
   private val EQL: Eq<L>,

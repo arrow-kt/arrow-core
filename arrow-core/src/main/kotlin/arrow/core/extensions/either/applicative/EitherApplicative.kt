@@ -2,9 +2,12 @@ package arrow.core.extensions.either.applicative
 
 import arrow.Kind
 import arrow.core.Either
+import arrow.core.replicate as _replicate
 import arrow.core.Either.Companion
 import arrow.core.ForEither
 import arrow.core.extensions.EitherApplicative
+import arrow.core.fix
+import arrow.core.right
 import arrow.typeclasses.Monoid
 import kotlin.Any
 import kotlin.Function1
@@ -28,9 +31,9 @@ internal val applicative_singleton: EitherApplicative<Any?> = object : EitherApp
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun <L, A> A.just(): Either<L, A> = arrow.core.Either.applicative<L>().run {
-  this@just.just<A>() as arrow.core.Either<L, A>
-}
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("this.right()", "arrow.core.right"))
+fun <L, A> A.just(): Either<L, A> =
+  right()
 
 @JvmName("unit")
 @Suppress(
@@ -39,9 +42,9 @@ fun <L, A> A.just(): Either<L, A> = arrow.core.Either.applicative<L>().run {
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun <L> unit(): Either<L, Unit> = arrow.core.Either
-  .applicative<L>()
-  .unit() as arrow.core.Either<L, kotlin.Unit>
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Either.unit()", "arrow.core.unit"))
+fun <L> unit(): Either<L, Unit> =
+  Either.unit()
 
 @JvmName("map")
 @Suppress(
@@ -50,10 +53,9 @@ fun <L> unit(): Either<L, Unit> = arrow.core.Either
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("map(arg1)"))
 fun <L, A, B> Kind<Kind<ForEither, L>, A>.map(arg1: Function1<A, B>): Either<L, B> =
-  arrow.core.Either.applicative<L>().run {
-    this@map.map<A, B>(arg1) as arrow.core.Either<L, B>
-  }
+  fix().map(arg1)
 
 @JvmName("replicate")
 @Suppress(
@@ -62,10 +64,9 @@ fun <L, A, B> Kind<Kind<ForEither, L>, A>.map(arg1: Function1<A, B>): Either<L, 
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("replicate(arg1)"))
 fun <L, A> Kind<Kind<ForEither, L>, A>.replicate(arg1: Int): Either<L, List<A>> =
-  arrow.core.Either.applicative<L>().run {
-    this@replicate.replicate<A>(arg1) as arrow.core.Either<L, kotlin.collections.List<A>>
-  }
+  fix().replicate(arg1)
 
 @JvmName("replicate")
 @Suppress(
@@ -74,14 +75,14 @@ fun <L, A> Kind<Kind<ForEither, L>, A>.replicate(arg1: Int): Either<L, List<A>> 
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("replicate(arg1, arg2)", "arrow.core.replicate"))
 fun <L, A> Kind<Kind<ForEither, L>, A>.replicate(arg1: Int, arg2: Monoid<A>): Either<L, A> =
-  arrow.core.Either.applicative<L>().run {
-    this@replicate.replicate<A>(arg1, arg2) as arrow.core.Either<L, A>
-  }
+  fix()._replicate(arg1, arg2)
 
 @Suppress(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Validated")
 inline fun <L> Companion.applicative(): EitherApplicative<L> = applicative_singleton as
   arrow.core.extensions.EitherApplicative<L>
