@@ -527,7 +527,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
      * }
      * ```
      */
-    fun <E, A, B> lift(f: (A) -> B): (Validated<E, A>) -> Validated<E, B> =
+    inline fun <E, A, B> lift(crossinline f: (A) -> B): (Validated<E, A>) -> Validated<E, B> =
       { fa -> fa.map(f) }
 
     /**
@@ -547,7 +547,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
      * }
      * ```
      */
-    fun <A, B, C, D> lift(fl: (A) -> C, fr: (B) -> D): (Validated<A, B>) -> Validated<C, D> =
+    inline fun <A, B, C, D> lift(crossinline fl: (A) -> C, crossinline fr: (B) -> D): (Validated<A, B>) -> Validated<C, D> =
       { fa -> fa.bimap(fl, fr) }
 
     val s = 1.inc()
@@ -556,7 +556,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
 
     fun <E> unit(): Validated<E, Unit> = unit
 
-    fun <E, A, B, Z> mapN(
+    inline fun <E, A, B, Z> mapN(
       SE: Semigroup<E>,
       a: Validated<E, A>,
       b: Validated<E, B>,
@@ -565,7 +565,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       tupledN(SE, a, b)
         .map { (a, b) -> f(a, b) }
 
-    fun <E, A, B, C, Z> mapN(
+    inline fun <E, A, B, C, Z> mapN(
       SE: Semigroup<E>,
       a: Validated<E, A>,
       b: Validated<E, B>,
@@ -575,7 +575,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       tupledN(SE, a, b, c)
         .map { (a, b, c) -> f(a, b, c) }
 
-    fun <E, A, B, C, D, Z> mapN(
+    inline fun <E, A, B, C, D, Z> mapN(
       SE: Semigroup<E>,
       a: Validated<E, A>,
       b: Validated<E, B>,
@@ -586,7 +586,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       tupledN(SE, a, b, c, d)
         .map { (a, b, c, d) -> f(a, b, c, d) }
 
-    fun <E, A, B, C, D, EE, Z> mapN(
+    inline fun <E, A, B, C, D, EE, Z> mapN(
       SE: Semigroup<E>,
       a: Validated<E, A>,
       b: Validated<E, B>,
@@ -598,7 +598,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       tupledN(SE, a, b, c, d, e)
         .map { (a, b, c, d, e) -> f(a, b, c, d, e) }
 
-    fun <E, A, B, C, D, EE, FF, Z> mapN(
+    inline fun <E, A, B, C, D, EE, FF, Z> mapN(
       SE: Semigroup<E>,
       a: Validated<E, A>,
       b: Validated<E, B>,
@@ -611,7 +611,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       tupledN(SE, a, b, c, d, e, ff)
         .map { (a, b, c, d, e, ff) -> f(a, b, c, d, e, ff) }
 
-    fun <E, A, B, C, D, EE, F, G, Z> mapN(
+    inline fun <E, A, B, C, D, EE, F, G, Z> mapN(
       SE: Semigroup<E>,
       a: Validated<E, A>,
       b: Validated<E, B>,
@@ -625,7 +625,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       tupledN(SE, a, b, c, d, e, ff, g)
         .map { (a, b, c, d, e, ff, g) -> f(a, b, c, d, e, ff, g) }
 
-    fun <E, A, B, C, D, EE, F, G, H, Z> mapN(
+    inline fun <E, A, B, C, D, EE, F, G, H, Z> mapN(
       SE: Semigroup<E>,
       a: Validated<E, A>,
       b: Validated<E, B>,
@@ -640,7 +640,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       tupledN(SE, a, b, c, d, e, ff, g, h)
         .map { (a, b, c, d, e, ff, g, h) -> f(a, b, c, d, e, ff, g, h) }
 
-    fun <E, A, B, C, D, EE, F, G, H, I, Z> mapN(
+    inline fun <E, A, B, C, D, EE, F, G, H, I, Z> mapN(
       SE: Semigroup<E>,
       a: Validated<E, A>,
       b: Validated<E, B>,
@@ -656,7 +656,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
       tupledN(SE, a, b, c, d, e, ff, g, h, i)
         .map { (a, b, c, d, e, ff, g, h, i) -> f(a, b, c, d, e, ff, g, h, i) }
 
-    fun <E, A, B, C, D, EE, F, G, H, I, J, Z> mapN(
+    inline fun <E, A, B, C, D, EE, F, G, H, I, J, Z> mapN(
       SE: Semigroup<E>,
       a: Validated<E, A>,
       b: Validated<E, B>,
@@ -810,7 +810,7 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
    * }
    * ```
    */
-  fun <B> fproduct(f: (A) -> B): Validated<E, Tuple2<A, B>> =
+  inline fun <B> fproduct(f: (A) -> B): Validated<E, Tuple2<A, B>> =
     map { a -> Tuple2(a, f(a)) }
 
   /**
@@ -900,16 +900,16 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
     bifoldLeft(MN.empty(), { c, b -> c.combine(g(b)) }) { c, a -> c.combine(f(a)) }
   }
 
-  fun <EE, B> bitraverse(fe: (E) -> Iterable<EE>, fa: (A) -> Iterable<B>): List<Validated<EE, B>> =
+  inline fun <EE, B> bitraverse(fe: (E) -> Iterable<EE>, fa: (A) -> Iterable<B>): List<Validated<EE, B>> =
     fold({ fe(it).map { Invalid(it) } }, { fa(it).map { Valid(it) } })
 
-  fun <EE, B, C> bitraverseEither(
+  inline fun <EE, B, C> bitraverseEither(
     fe: (E) -> Either<EE, B>,
     fa: (A) -> Either<EE, C>
   ): Either<EE, Validated<B, C>> =
     fold({ fe(it).map { Invalid(it) } }, { fa(it).map { Valid(it) } })
 
-  fun <B> foldMap(MB: Monoid<B>, f: (A) -> B): B =
+  inline fun <B> foldMap(MB: Monoid<B>, f: (A) -> B): B =
     fold({ MB.empty() }, f)
 
   fun show(SE: Show<E>, SA: Show<A>): String = fold(
