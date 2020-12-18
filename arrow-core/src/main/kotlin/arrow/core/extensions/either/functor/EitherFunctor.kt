@@ -338,7 +338,7 @@ fun <L, B, A : B> Kind<Kind<ForEither, L>, A>.widen(): Either<L, B> =
  *  suspend fun main(args: Array<String>) {
  *   val result =
  *   //sampleStart
- * 2 }
+ *   Either.catch { "1".toInt() }.map { it * 2 }
  *   //sampleEnd
  *   println(result)
  *  }
@@ -351,7 +351,7 @@ fun <L, B, A : B> Kind<Kind<ForEither, L>, A>.widen(): Either<L, B> =
  *  fun main(args: Array<String>) {
  *   val result =
  *   //sampleStart
- * 2 }
+ *   Option(1).map { it * 2 }
  *   //sampleEnd
  *   println(result)
  *  }
