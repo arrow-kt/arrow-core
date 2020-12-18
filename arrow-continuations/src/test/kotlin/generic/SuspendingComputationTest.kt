@@ -1,14 +1,9 @@
 package generic
 
-import arrow.continuations.generic.ShortCircuit
 import arrow.core.Left
 import arrow.core.Right
 import arrow.core.computations.either
-import arrow.fx.coroutines.ExitCase
-import arrow.fx.coroutines.Promise
-import arrow.fx.coroutines.bracketCase
 import io.kotlintest.fail
-import io.kotlintest.matchers.types.shouldBeInstanceOf
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.kotlintest.specs.StringSpec
@@ -122,26 +117,6 @@ class SuspendingComputationTest : StringSpec({
       println(x)
       1
     } shouldBe Left("test")
-  }
-
-  "Short-circuiting cancels Arrow Fx Coroutines" {
-    val exit = Promise<ExitCase>()
-
-    either<String, Int> {
-      val i: Int = bracketCase(
-        acquire = { Unit },
-        use = {
-          Left("hello").invoke()
-        },
-        release = { _, exitCase -> exit.complete(exitCase) }
-      )
-
-      5
-    } shouldBe Left("hello")
-
-    exit.get().shouldBeInstanceOf<ExitCase.Failure> {
-      it.failure.shouldBeInstanceOf<ShortCircuit>()
-    }
   }
 
   "Short-circuiting cancels KotlinX Coroutines" {
