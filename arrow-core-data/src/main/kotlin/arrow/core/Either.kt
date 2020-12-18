@@ -1,6 +1,7 @@
 package arrow.core
 
 import arrow.Kind
+import arrow.core.Either.Companion.resolve
 import arrow.core.Either.Left
 import arrow.core.Either.Right
 import arrow.core.Validated.Valid
@@ -1015,7 +1016,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
 
   fun replicate(n: Int): Either<A, List<B>> =
     if (n <= 0) emptyList<B>().right()
-    else when(this) {
+    else when (this) {
       is Left -> this
       is Right -> List(n) { this.b }.right()
     }
@@ -1121,23 +1122,51 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     inline fun <L, R> conditionally(test: Boolean, ifFalse: () -> L, ifTrue: () -> R): Either<L, R> =
       if (test) right(ifTrue()) else left(ifFalse())
 
+    @Deprecated("Use the inline version. Hidden for binary compat", level = DeprecationLevel.HIDDEN)
     suspend inline fun <R> catch(f: suspend () -> R): Either<Throwable, R> =
+      catch { f() }
+
+    inline fun <R> catch(f: () -> R): Either<Throwable, R> =
       try {
         f().right()
       } catch (t: Throwable) {
         t.nonFatalOrThrow().left()
       }
 
+    @Deprecated("Use the inline version. Hidden for binary compat", level = DeprecationLevel.HIDDEN)
     suspend inline fun <R> catchAndFlatten(f: suspend () -> Either<Throwable, R>): Either<Throwable, R> =
+      catchAndFlatten { f() }
+
+    inline fun <R> catchAndFlatten(f: () -> Either<Throwable, R>): Either<Throwable, R> =
       catch(f).fold({ it.left() }, { it })
 
-    @Deprecated("Use catch with mapLeft instead", ReplaceWith("catch(f).mapLeft(fe)"))
+    @Deprecated("Use the inline version. Hidden for binary compat", level = DeprecationLevel.HIDDEN)
     suspend fun <L, R> catch(fe: (Throwable) -> L, f: suspend () -> R): Either<L, R> =
       try {
         f().right()
       } catch (t: Throwable) {
         fe(t.nonFatalOrThrow()).left()
       }
+
+    inline fun <L, R> catch(fe: (Throwable) -> L, f: () -> R): Either<L, R> =
+      try {
+        f().right()
+      } catch (t: Throwable) {
+        fe(t.nonFatalOrThrow()).left()
+      }
+
+    @Deprecated("Use the inline version. Hidden for binary compat", level = DeprecationLevel.HIDDEN)
+    suspend inline fun <E, A, B> resolve(
+      f: suspend () -> Either<E, A>,
+      success: suspend (a: A) -> Either<Throwable, B>,
+      error: suspend (e: E) -> Either<Throwable, B>,
+      throwable: suspend (throwable: Throwable) -> Either<Throwable, B>,
+      unrecoverableState: suspend (throwable: Throwable) -> Either<Throwable, Unit>
+    ): B =
+      catch { f() }
+        .fold({ t: Throwable -> throwable(t) }, { it.fold({ e: E -> catchAndFlatten { error(e) } }, { a: A -> catchAndFlatten { success(a) } }) })
+        .fold({ t: Throwable -> throwable(t) }, { b: B -> b.right() })
+        .fold({ t: Throwable -> unrecoverableState(t); throw t }, { b: B -> b })
 
     /**
      * The resolve function can resolve any suspended function that yields an Either into one type of value.
@@ -1150,12 +1179,12 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
      * @param unrecoverableState the function to apply if [resolve] is in an unrecoverable state.
      * @return the result of applying the [resolve] function.
      */
-    suspend inline fun <E, A, B> resolve(
-      f: suspend () -> Either<E, A>,
-      success: suspend (a: A) -> Either<Throwable, B>,
-      error: suspend (e: E) -> Either<Throwable, B>,
-      throwable: suspend (throwable: Throwable) -> Either<Throwable, B>,
-      unrecoverableState: suspend (throwable: Throwable) -> Either<Throwable, Unit>
+    inline fun <E, A, B> resolve(
+      f: () -> Either<E, A>,
+      success: (a: A) -> Either<Throwable, B>,
+      error: (e: E) -> Either<Throwable, B>,
+      throwable: (throwable: Throwable) -> Either<Throwable, B>,
+      unrecoverableState: (throwable: Throwable) -> Either<Throwable, Unit>
     ): B =
       catch(f)
         .fold({ t: Throwable -> throwable(t) }, { it.fold({ e: E -> catchAndFlatten { error(e) } }, { a: A -> catchAndFlatten { success(a) } }) })
@@ -1672,6 +1701,18 @@ inline fun <A, B, C> EitherOf<A, B>.handleErrorWith(f: (A) -> EitherOf<C, B>): E
   when (val either = fix()) {
     is Left -> f(either.a).fix()
     is Right -> either
+  }
+
+inline fun <A, B> Either<A, B>.handleError(f: (A) -> B): Either<A, B> =
+  when (this) {
+    is Left -> f(a).right()
+    is Right -> this
+  }
+
+inline fun <A, B, C> Either<A, B>.redeem(fe: (A) -> C, fa: (B) -> C): Either<A, C> =
+  when (this) {
+    is Left -> fe(a).right()
+    is Right -> map(fa)
   }
 
 /**
