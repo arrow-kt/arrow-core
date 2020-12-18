@@ -24,6 +24,7 @@ internal val bicrosswalk_singleton: EitherBicrosswalk = object :
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated. Replace with bitraverse or bitraverseValidated from arrow.core.*")
 fun <F, A, B, C, D> bicrosswalk(
   arg0: Align<F>,
   arg1: Kind<Kind<ForEither, A>, B>,
@@ -41,6 +42,7 @@ fun <F, A, B, C, D> bicrosswalk(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated. Replace with bisequence or bisequenceValidated from arrow.core.*")
 fun <F, A, B> bisequenceL(arg0: Align<F>, arg1: Kind<Kind<ForEither, Kind<F, A>>, Kind<F, B>>):
   Kind<F, Kind<Kind<ForEither, A>, B>> = arrow.core.Either
   .bicrosswalk()
@@ -51,4 +53,5 @@ fun <F, A, B> bisequenceL(arg0: Align<F>, arg1: Kind<Kind<ForEither, Kind<F, A>>
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Bicrosswalk typeclasses is deprecated. Use concrete methods on Either")
 inline fun Companion.bicrosswalk(): EitherBicrosswalk = bicrosswalk_singleton
