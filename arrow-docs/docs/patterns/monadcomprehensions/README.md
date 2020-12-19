@@ -157,9 +157,14 @@ This will blow up the stack and won't be obvious to users that our method can fa
 import arrow.core.computations.either
 import arrow.core.Right
 
-either {
-  val one = Right(1)()
-  1 + one 
+suspend fun test(): Either<String, Int> =
+ either {
+   val one = Right(1)()
+   1 + one 
+ }
+ 
+suspend fun main() {
+  println(test())
 }
 ```
 
@@ -171,10 +176,15 @@ The equivalent code without using comprehensions would look like:
 import arrow.core.flatMap
 import arrow.core.Right
 
-Right { 1 }
-  .flatMap { one ->
+//sampleStart
+val x: Either<String, Int> = Right(1)
+val result = x.flatMap { one ->
     Right(one + 1)
-  }
+}
+//sampleEnd
+suspend fun main() {
+  println(result)
+}
 ```
 
 With this new style, we can rewrite our original example of database fetching as:
@@ -226,16 +236,11 @@ suspend fun main(): Unit {
   val dean = either<NotFound, Dean> {
     val alice = student(Name("Alice"))()
     val uca = university(alice.universityId)()
-    val james = dean(uca.deanId)()
+    val james = dean(uca.deanName)()
     james
   }
   //sampleEnd
   println(dean)
-}
- 
-
-suspend fun main() {
-  println(program())
 }
 ```
 
