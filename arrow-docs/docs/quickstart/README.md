@@ -21,9 +21,7 @@ Use the list below to learn more about Λrrow's main features.
 
 - [Patterns]({{ '/patterns/glossary/' | relative_url }}): tutorials and approaches to day-to-day challenges using FP
 - [Libraries]({{ '/quickstart/libraries/' | relative_url }}): all the libraries provided by Λrrow
-- [Type classes]({{ '/typeclasses/intro/' | relative_url }}): defining behaviors for data
-- [Data types]({{ '/datatypes/intro/' | relative_url }}): common abstractions
-- [Effects]({{ '/effects/io/' | relative_url }}): interfacing with external systems
+- [Effects]({{ '/effects/async/' | relative_url }}): interfacing with external systems
 - [Optics]({{ '/optics/iso/' | relative_url }}): inspecting and modifying data structures
 
 ## Curated external links

@@ -9,7 +9,7 @@ permalink: /integrations/retrofit/
 
 
 
-Arrow contains an [integration module]({{'/quickstart/libraries/#arrow-integrations-retrofit-adapter' | relative_url }}) for Retrofit so you can use any synchronous or asynchronous datatype of your choice, like [`ObservableK`]({{ '/integrations/rx2' | relative_url }}) or [`IO`]({{ '/effects/io' | relative_url }}).
+Arrow contains an [integration module]({{'/quickstart/libraries/#arrow-integrations-retrofit-adapter' | relative_url }}) for Retrofit so you can use any synchronous or asynchronous datatype of your choice, like [`ObservableK`]({{ '/integrations/rx2' | relative_url }}).
 
 
 ### Using `Call` directly with extensions functions
@@ -54,15 +54,6 @@ interface ApiClientTest {
 ```
 
 You can use `CallK` to have [`Async`]({{ '/effects/async' | relative_url }}), [`MonadDefer`]({{ '/effects/monaddefer' | relative_url }}) and [`MonadError`]({{ '/arrow/typeclasses/monaderror/' | relative_url }}) instances as your data wrapper.
-
-### Using `CallK` with `IO`
-
-```kotlin
-createApiClientTest(baseUrl)
-  .testCallK() // CallK
-  .async(IO.async()) // Kind<ForIO, Response<ResponseMock>>
-  .fix() // IO<Response<ResponseMock>>
-```
 
 ### Using `CallK` with `ObservableK`
 
