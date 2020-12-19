@@ -1,0 +1,794 @@
+package arrow.core
+
+import arrow.typeclasses.Eq
+import arrow.typeclasses.Hash
+import arrow.typeclasses.Monoid
+import arrow.typeclasses.Semigroup
+import arrow.typeclasses.Show
+import arrow.typeclasses.defaultSalt
+import arrow.typeclasses.hashWithSalt
+import kotlin.collections.foldRight as _foldRight
+
+inline fun <A, B> Iterable<A>.foldRight(initial: B, operation: (A, acc: B) -> B): B =
+  when (this) {
+    is List -> _foldRight(initial, operation)
+    else -> reversed().fold(initial) { acc, a -> operation(a, acc) }
+  }
+
+fun <A, B> Iterable<A>.ap(ff: Iterable<(A) -> B>): List<B> =
+  flatMap { a -> ff.map { f -> f(a) } }
+
+inline fun <E, A, B> Iterable<A>.traverseEither(f: (A) -> Either<E, B>): Either<E, List<B>> =
+  foldRight(emptyList<B>().right() as Either<E, List<B>>) { a, acc ->
+    f(a).ap(acc.map { bs -> { b: B -> listOf(b) + bs } })
+  }
+
+inline fun <E, A, B> Iterable<A>.traverseEither_(f: (A) -> Either<E, B>): Either<E, Unit> =
+  foldRight(Unit.right() as Either<E, Unit>) { a, _ ->
+    f(a).void()
+  }
+
+fun <E, A> Iterable<Either<E, A>>.sequenceEither(): Either<E, List<A>> =
+  traverseEither(::identity)
+
+fun <E, A> Iterable<Either<E, A>>.sequenceEither_(): Either<E, Unit> =
+  traverseEither_(::identity)
+
+inline fun <E, A, B> Iterable<A>.traverseValidated(semigroup: Semigroup<E>, f: (A) -> Validated<E, B>): Validated<E, List<B>> =
+  foldRight(emptyList<B>().valid() as Validated<E, List<B>>) { a, acc ->
+    f(a).ap(semigroup, acc.map { bs -> { b: B -> listOf(b) + bs } })
+  }
+
+inline fun <E, A, B> Iterable<A>.traverseValidated_(semigroup: Semigroup<E>, f: (A) -> Validated<E, B>): Validated<E, Unit> =
+  foldRight(Unit.valid() as Validated<E, Unit>) { a, acc ->
+    f(a).ap(semigroup, acc.map { { Unit } })
+  }
+
+fun <E, A> Iterable<Validated<E, A>>.sequenceValidated(semigroup: Semigroup<E>): Validated<E, List<A>> =
+  traverseValidated(semigroup, ::identity)
+
+fun <E, A> Iterable<Validated<E, A>>.sequenceValidated_(semigroup: Semigroup<E>): Validated<E, Unit> =
+  traverseValidated_(semigroup, ::identity)
+
+inline fun <A, B, Z> Iterable<A>.map2(fb: Iterable<B>, f: (Tuple2<A, B>) -> Z): List<Z> =
+  flatMap { a ->
+    fb.map { b ->
+      f(Tuple2(a, b))
+    }
+  }
+
+fun <A, B> Iterable<A>.mapConst(b: B): List<B> =
+  map { b }
+
+fun <A> Iterable<A>.void(): List<Unit> =
+  mapConst(Unit)
+
+fun <A, B> List<A>.foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> {
+  fun loop(fa_p: List<A>): Eval<B> = when {
+    fa_p.isEmpty() -> lb
+    else -> f(fa_p.first(), Eval.defer { loop(fa_p.drop(1)) })
+  }
+
+  return Eval.defer { loop(this) }
+}
+
+/**
+ * Returns a [List<Tuple2<A?, B?>>] containing the zipped values of the two lists with null for padding.
+ *
+ * Example:
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * //sampleStart
+ * val padRight = listOf(1, 2).padZip(listOf("a"))        // Result: [Tuple2(1, "a"), Tuple2(2, null)]
+ * val padLeft = listOf(1).padZip(listOf("a", "b")))       // Result: [Tuple2(1, "a"), Tuple2(null, "b")]
+ * val noPadding = listOf(1, 2).padZip(listOf("a", "b")))  // Result: [Tuple2(1, "a"), Tuple2(2, "b")]
+ * //sampleEnd
+ *
+ * fun main() {
+ *   println("padRight = $padRight")
+ *   println("padLeft = $padLeft")
+ *   println("noPadding = $noPadding")
+ * }
+ * ```
+ */
+fun <A, B> Iterable<A>.padZipWithNull(
+  other: Iterable<B>
+): List<Tuple2<A?, B?>> =
+  alignWith(other) { ior ->
+    ior.fold(
+      { it toT null },
+      { null toT it },
+      { a, b -> a toT b }
+    )
+  }
+
+/**
+ * Returns a [ListK<C>] containing the result of applying some transformation `(A?, B?) -> C`
+ * on a zip.
+ *
+ * Example:
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * //sampleStart
+ * val padZipRight = listOf(1, 2).padZip(listOf("a")) { l, r -> l toT r }     // Result: [Tuple2(1, "a"), Tuple2(2, null)]
+ * val padZipLeft = listOf(1).padZip(listOf("a", "b")) { l, r -> l toT r }    // Result: [Tuple2(1, "a"), Tuple2(null, "b")]
+ * val noPadding = listOf(1, 2).padZip(listOf("a", "b")) { l, r -> l toT r }  // Result: [Tuple2(1, "a"), Tuple2(2, "b")]
+ * //sampleEnd
+ *
+ * fun main() {
+ *   println("padZipRight = $padZipRight")
+ *   println("padZipLeft = $padZipLeft")
+ *   println("noPadding = $noPadding")
+ * }
+ * ```
+ */
+inline fun <A, B, C> Iterable<A>.padZip(
+  other: Iterable<B>,
+  fa: (A?, B?) -> C
+): List<C> =
+  padZipWithNull(other).map { fa(it.a, it.b) }
+
+/**
+ * Returns a [List<C>] containing the result of applying some transformation `(A?, B) -> C`
+ * on a zip, excluding all cases where the right value is null.
+ *
+ * Example:
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * //sampleStart
+ * val left = listOf(1, 2).leftPadZip(listOf("a")) { l, r -> l toT r }      // Result: [Tuple2(1, "a")]
+ * val right = listOf(1).leftPadZip(listOf("a", "b")) { l, r -> l toT r }   // Result: [Tuple2(1, "a"), Tuple2(null, "b")]
+ * val both = listOf(1, 2).leftPadZip(listOf("a", "b")) { l, r -> l toT r } // Result: [Tuple2(1, "a"), Tuple2(2, "b")]
+ * //sampleEnd
+ *
+ * fun main() {
+ *   println("left = $left")
+ *   println("right = $right")
+ *   println("both = $both")
+ * }
+ * ```
+ */
+inline fun <A, B, C> Iterable<A>.leftPadZip(
+  other: Iterable<B>,
+  fab: (A?, B) -> C
+): List<C> =
+  padZip(other) { a: A?, b: B? -> b?.let { fab(a, it) } }.mapNotNull(::identity)
+
+/**
+ * Returns a [List<Tuple2<A?, B>>] containing the zipped values of the two listKs
+ * with null for padding on the left.
+ *
+ * Example:
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * //sampleStart
+ * val padRight = listOf(1, 2).leftPadZip(listOf("a"))        // Result: [Tuple2(1, "a")]
+ * val padLeft = listOf(1).leftPadZip(listOf("a", "b"))       // Result: [Tuple2(1, "a"), Tuple2(null, "b")]
+ * val noPadding = listOf(1, 2).leftPadZip(listOf("a", "b"))  // Result: [Tuple2(1, "a"), Tuple2(2, "b")]
+ * //sampleEnd
+ *
+ * fun main() {
+ *   println("left = $left")
+ *   println("right = $right")
+ *   println("both = $both")
+ * }
+ * ```
+ */
+fun <A, B> Iterable<A>.leftPadZip(
+  other: Iterable<B>
+): List<Tuple2<A?, B>> =
+  this.leftPadZip(other) { a, b -> a toT b }
+
+/**
+ * Returns a [List<C>] containing the result of applying some transformation `(A, B?) -> C`
+ * on a zip, excluding all cases where the left value is null.
+ *
+ * Example:
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * //sampleStart
+ * val left = listOf(1, 2).rightPadZip(listOf("a")) { l, r -> l toT r }      // Result: [Tuple2(1, "a"), Tuple2(null, "b")]
+ * val right = listOf(1).rightPadZip(listOf("a", "b")) { l, r -> l toT r }   // Result: [Tuple2(1, "a")]
+ * val both = listOf(1, 2).rightPadZip(listOf("a", "b")) { l, r -> l toT r } // Result: [Tuple2(1, "a"), Tuple2(2, "b")]
+ * //sampleEnd
+ *
+ * fun main() {
+ *   println("left = $left")
+ *   println("right = $right")
+ *   println("both = $both")
+ * }
+ * ```
+ */
+inline fun <A, B, C> Iterable<A>.rightPadZip(
+  other: Iterable<B>,
+  fa: (A, B?) -> C
+): List<C> =
+  other.leftPadZip(this) { a, b -> fa(b, a) }
+
+/**
+ * Returns a [List<Tuple2<A, B?>>] containing the zipped values of the two listKs
+ * with null for padding on the right.
+ *
+ * Example:
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * //sampleStart
+ * val padRight = listOf(1, 2).rightPadZip(listOf("a"))        // Result: [Tuple2(1, "a"), Tuple2(2, null)]
+ * val padLeft = listOf(1).rightPadZip(listOf("a", "b"))       // Result: [Tuple2(1, "a")]
+ * val noPadding = listOf(1, 2).rightPadZip(listOf("a", "b"))  // Result: [Tuple2(1, "a"), Tuple2(2, "b")]
+ * //sampleEnd
+ *
+ * fun main() {
+ *   println("left = $left")
+ *   println("right = $right")
+ *   println("both = $both")
+ * }
+ * ```
+ */
+fun <A, B> Iterable<A>.rightPadZip(
+  other: Iterable<B>
+): List<Tuple2<A, B?>> =
+  this.rightPadZip(other) { a, b -> a toT b }
+
+fun <A> Iterable<A>.show(SA: Show<A>): String = "[" +
+  joinToString(", ") { SA.run { it.show() } } + "]"
+
+@Suppress("UNCHECKED_CAST")
+private tailrec fun <A, B> go(
+  buf: MutableList<B>,
+  f: (A) -> Iterable<Either<A, B>>,
+  v: List<Either<A, B>>
+) {
+  if (v.isNotEmpty()) {
+    when (val head: Either<A, B> = v.first()) {
+      is Either.Right -> {
+        buf += head.b
+        go(buf, f, v.drop(1))
+      }
+      is Either.Left -> go(buf, f, (f(head.a) + v.drop(1)))
+    }
+  }
+}
+
+fun <A, B> tailRecM(a: A, f: (A) -> Iterable<Either<A, B>>): List<B> {
+  val buf = mutableListOf<B>()
+  go(buf, f, f(a).toList())
+  return ListK(buf)
+}
+
+/**
+ * Combines two structures by taking the union of their shapes and combining the elements with the given function.
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *    listOf("A", "B").alignWith(listOf(1, 2, 3)) {
+ *      "$it"
+ *    }
+ *   //sampleEnd
+ *   println(result)
+ * }
+ * ```
+ */
+inline fun <A, B, C> Iterable<A>.alignWith(b: Iterable<B>, fa: (Ior<A, B>) -> C): List<C> =
+  align(b).map(fa)
+
+/**
+ * Combines two structures by taking the union of their shapes and using Ior to hold the elements.
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *     listOf("A", "B").align(listOf(1, 2, 3))
+ *   //sampleEnd
+ *   println(result)
+ * }
+ * ```
+ */
+fun <A, B> Iterable<A>.align(b: Iterable<B>): List<Ior<A, B>> =
+  alignRec(this, b)
+
+private fun <X, Y> alignRec(ls: Iterable<X>, rs: Iterable<Y>): List<Ior<X, Y>> {
+  val ls = if (ls is List) ls else ls.toList()
+  val rs = if (rs is List) rs else rs.toList()
+  return when {
+    ls.isEmpty() -> rs.map { it.rightIor() }
+    rs.isEmpty() -> ls.map { it.leftIor() }
+    else -> listOf(Ior.Both(ls.first(), rs.first())) + alignRec(ls.drop(1), rs.drop(1))
+  }
+}
+
+/**
+ * aligns two structures and combine them with the given [Semigroup.combine]
+ */
+fun <A> Iterable<A>.salign(
+  SG: Semigroup<A>,
+  other: Iterable<A>
+): Iterable<A> = SG.run {
+  alignWith(other) {
+    it.fold(::identity, ::identity) { a, b ->
+      a.combine(b)
+    }
+  }
+}
+
+/**
+ * unzips the structure holding the resulting elements in an `Tuple2`
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *      listOf("A" toT 1, "B" toT 2).k().unzip()
+ *   //sampleEnd
+ *   println(result)
+ * }
+ * ```
+ */
+fun <A, B> Iterable<Tuple2<A, B>>.unzip(): Tuple2<List<A>, List<B>> =
+  fold(emptyList<A>() toT emptyList<B>()) { (l, r), x ->
+    l + x.a toT r + x.b
+  }
+
+/**
+ * after applying the given function unzip the resulting structure into its elements.
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *    listOf("A:1", "B:2", "C:3").k().unzipWith { e ->
+ *      e.split(":").let {
+ *        it.first() toT it.last()
+ *      }
+ *    }
+ *   //sampleEnd
+ *   println(result)
+ * }
+ * ```
+ */
+inline fun <A, B, C> Iterable<C>.unzipWith(fc: (C) -> Tuple2<A, B>): Tuple2<List<A>, List<B>> =
+  map(fc).unzip()
+
+/**
+ * splits a union into its component parts.
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *    listOf(("A" toT 1).bothIor(), ("B" toT 2).bothIor(), "C".leftIor())
+ *      .unalign()
+ *   //sampleEnd
+ *   println(result)
+ * }
+ * ```
+ */
+fun <A, B> Iterable<Ior<A, B>>.unalign(): Tuple2<List<A>, List<B>> =
+  fold(emptyList<A>() toT emptyList<B>()) { (l, r), x ->
+    x.fold(
+      { l + it toT r },
+      { l toT r + it },
+      { a, b -> l + a toT r + b }
+    )
+  }
+
+/**
+ * after applying the given function, splits the resulting union shaped structure into its components parts
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *      listOf(1, 2, 3).unalignWith {
+ *        it.leftIor()
+ *      }
+ *   //sampleEnd
+ *   println(result)
+ * }
+ * ```
+ */
+inline fun <A, B, C> Iterable<C>.unalignWith(fa: (C) -> Ior<A, B>): Tuple2<List<A>, List<B>> =
+  map(fa).unalign()
+
+fun <A, B> Iterable<A>.product(fb: Iterable<B>): List<Tuple2<A, B>> =
+  fb.ap(map { a: A -> { b: B -> Tuple2(a, b) } })
+
+fun <A> Iterable<A>.combineAll(MA: Monoid<A>): A = MA.run {
+  this@combineAll.fold(empty()) { acc, a ->
+    acc.combine(a)
+  }
+}
+
+/**
+ * attempt to split the computation, giving access to the first result.
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *    listOf("A", "B", "C").splitM()
+ *   //sampleEnd
+ *   println(result)
+ * }
+ */
+fun <A> Iterable<A>.splitM(): Tuple2<List<A>, A>? =
+  firstOrNull()?.let { first ->
+    Tuple2(tail(), first)
+  }
+
+fun <A> Iterable<A>.tail(): List<A> =
+  drop(1)
+
+/**
+ * interleave both computations in a fair way.
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val infinite = generateSequence { "#" }
+ *   val result =
+ *    infinite.interleave(sequenceOf("A", "B", "C"))
+ *      .take(3)
+ *      .toList()
+ *   //sampleEnd
+ *   println(result)
+ * }
+ */
+fun <A> Iterable<A>.interleave(other: Iterable<A>): List<A> =
+  this.splitM()?.let { (fa, a) ->
+    listOf(a) + other.interleave(fa)
+  } ?: other.toList()
+
+/**
+ * Fair conjunction. Similarly to interleave
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *    listOf(1,2,3).unweave { i -> listOf("$i, ${i + 1}") }
+ *   //sampleEnd
+ *   println(result)
+ * }
+ */
+fun <A, B> Iterable<A>.unweave(ffa: (A) -> Iterable<B>): List<B> =
+  splitM()?.let { (fa, a) ->
+    ffa(a).interleave(fa.unweave(ffa))
+  } ?: emptyList()
+
+/**
+ * Logical conditional. The equivalent of Prolog's soft-cut.
+ * If its first argument succeeds at all, then the results will be
+ * fed into the success branch. Otherwise, the failure branch is taken.
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *    listOf(1,2,3).ifThen(listOf("empty")) { i ->
+ *      listOf("$i, ${i + 1}")
+ *    }
+ *   //sampleEnd
+ *   println(result)
+ * }
+ */
+inline fun <A, B> Iterable<A>.ifThen(fb: Iterable<B>, ffa: (A) -> Iterable<B>): Iterable<B> =
+  splitM()?.let { (fa, a) ->
+    ffa(a) + fa.flatMap(ffa)
+  } ?: fb.toList()
+
+fun <A, B> Iterable<Either<A, B>>.uniteEither(): List<B> =
+  flatMap { either ->
+    either.fold({ emptyList<B>() }, { b -> listOf(b) })
+  }
+
+fun <A, B> Iterable<Validated<A, B>>.uniteValidated(): List<B> =
+  flatMap { validated ->
+    validated.fold({ emptyList<B>() }, { b -> listOf(b) })
+  }
+
+/**
+ * Separate the inner [Either] values into the [Either.Left] and [Either.Right].
+ *
+ * @receiver Iterable of Validated
+ * @return a tuple containing List with [Either.Left] and another List with its [Either.Right] values.
+ */
+fun <A, B> Iterable<Either<A, B>>.separateEither(): Tuple2<List<A>, List<B>> {
+  val asep = flatMap { gab -> gab.fold({ listOf(it) }, { emptyList() }) }
+  val bsep = flatMap { gab -> gab.fold({ emptyList() }, { listOf(it) }) }
+  return Tuple2(asep, bsep)
+}
+
+/**
+ * Separate the inner [Validated] values into the [Validated.Invalid] and [Validated.Valid].
+ *
+ * @receiver Iterable of Validated
+ * @return a tuple containing List with [Validated.Invalid] and another List with its [Validated.Valid] values.
+ */
+fun <A, B> Iterable<Validated<A, B>>.separateValidated(): Tuple2<List<A>, List<B>> {
+  val asep = flatMap { gab -> gab.fold({ listOf(it) }, { emptyList() }) }
+  val bsep = flatMap { gab -> gab.fold({ emptyList() }, { listOf(it) }) }
+  return Tuple2(asep, bsep)
+}
+
+fun <A> Iterable<Iterable<A>>.flatten(): List<A> =
+  flatMap(::identity)
+
+inline fun <B> Iterable<Boolean>.ifM(ifFalse: () -> Iterable<B>, ifTrue: () -> Iterable<B>): List<B> =
+  flatMap { bool ->
+    if (bool) ifTrue() else ifFalse()
+  }
+
+fun <A, B> Iterable<Either<A, B>>.selectM(f: Iterable<(A) -> B>): List<B> =
+  flatMap { it.fold({ a -> f.map { ff -> ff(a) } }, { b -> listOf(b) }) }
+
+fun <A> Iterable<A>.hash(HA: Hash<A>): Int =
+  hashWithSalt(HA, defaultSalt)
+
+fun <A> Iterable<A>.hashWithSalt(HA: Hash<A>, salt: Int): Int = HA.run {
+  val salt2 = if (this is Collection<*>) size else defaultSalt
+  fold(salt) { hash, x -> x.hashWithSalt(hash) }.hashWithSalt(salt2)
+}
+
+/**
+ *  Applies [f] to an [A] inside [Iterable] and returns the [List] structure with a tuple of the [A] value and the
+ *  computed [B] value as result of applying [f]
+ *
+ *  ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ *  fun main(args: Array<String>) {
+ *   val result =
+ *   //sampleStart
+ *   listOf("Hello").fproduct { "$it World" }
+ *   //sampleEnd
+ *   println(result)
+ *  }
+ *  ```
+ */
+inline fun <A, B> Iterable<A>.fproduct(f: (A) -> B): List<Tuple2<A, B>> =
+  map { a -> Tuple2(a, f(a)) }
+
+/**
+ *  Pairs [B] with [A] returning a List<Tuple2<B, A>>
+ *
+ *  ```kotlin:ank:playground
+ *  import arrow.core.*
+ *
+ *  fun main(args: Array<String>) {
+ *   val result =
+ *   //sampleStart
+ *   listOf("Hello", "Hello2").tupleLeft("World")
+ *   //sampleEnd
+ *   println(result)
+ *  }
+ *  ```
+ */
+fun <A, B> Iterable<A>.tupleLeft(b: B): List<Tuple2<B, A>> =
+  map { a -> Tuple2(b, a) }
+
+/**
+ *  Pairs [A] with [B] returning a List<Tuple2<A, B>>
+ *
+ *  ```kotlin:ank:playground
+ *  import arrow.core.*
+ *
+ *  fun main(args: Array<String>) {
+ *   val result =
+ *   //sampleStart
+ *   "Hello".just().tupleRight("World")
+ *   //sampleEnd
+ *   println(result)
+ *  }
+ *  ```
+ */
+fun <A, B> List<A>.tupleRight(b: B): List<Tuple2<A, B>> =
+  map { a -> Tuple2(a, b) }
+
+/**
+ *  Given [A] is a sub type of [B], re-type this value from Iterable<A> to Iterable<B>
+ *
+ *  Kind<F, A> -> Kind<F, B>
+ *
+ *  ```kotlin:ank:playground
+ *  import arrow.core.*
+ *
+ *  fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result: Iterable<CharSequence> =
+ *     listOf("Hello World").widen()
+ *   //sampleEnd
+ *   println(result)
+ *  }
+ *  ```
+ */
+fun <B, A : B> Iterable<A>.widen(): Iterable<B> =
+  this
+
+fun <A> Iterable<A>.fold(MA: Monoid<A>): A = MA.run {
+  this@fold.fold(empty()) { acc, a ->
+    acc.combine(a)
+  }
+}
+
+fun <A, B> Iterable<A>.foldMap(MB: Monoid<B>, f: (A) -> B): B = MB.run {
+  this@foldMap.fold(empty()) { acc, a ->
+    acc.combine(f(a))
+  }
+}
+
+fun <A> Iterable<A>.eqv(EQA: Eq<A>, other: Iterable<A>): Boolean = EQA.run {
+  if (this is Collection<*> && other is Collection && this.size != other.size) false
+  else {
+    zip(other) { a, b -> a.eqv(b) }
+      .fold(true) { acc, bool -> acc && bool }
+  }
+}
+
+fun <A> Iterable<A>.neqv(EQA: Eq<A>, other: Iterable<A>): Boolean =
+  !eqv(EQA, other)
+
+fun <A, B> Iterable<A>.crosswalk(f: (A) -> Iterable<B>): List<List<B>> =
+  fold(emptyList()) { bs, a ->
+    f(a).alignWith(bs) { ior ->
+      ior.fold(
+        { listOf(it) },
+        ::identity,
+        { l, r -> listOf(l) + r }
+      )
+    }
+  }
+
+@PublishedApi
+internal val unit: List<Unit> =
+  listOf(Unit)
+
+inline fun <B, C, D> mapN(
+  b: Iterable<B>,
+  c: Iterable<C>,
+  map: (B, C) -> D
+): List<D> =
+  mapN(b, c, unit, unit, unit, unit, unit, unit, unit, unit) { b, c, _, _, _, _, _, _, _, _ -> map(b, c) }
+
+inline fun <B, C, D, E> mapN(
+  b: Iterable<B>,
+  c: Iterable<C>,
+  d: Iterable<D>,
+  map: (B, C, D) -> E
+): List<E> =
+  mapN(b, c, d, unit, unit, unit, unit, unit, unit, unit) { b, c, d, _, _, _, _, _, _, _ -> map(b, c, d) }
+
+inline fun <B, C, D, E, F> mapN(
+  b: Iterable<B>,
+  c: Iterable<C>,
+  d: Iterable<D>,
+  e: Iterable<E>,
+  map: (B, C, D, E) -> F
+): List<F> =
+  mapN(b, c, d, e, unit, unit, unit, unit, unit, unit) { b, c, d, e, _, _, _, _, _, _ -> map(b, c, d, e) }
+
+inline fun <B, C, D, E, F, G> mapN(
+  b: Iterable<B>,
+  c: Iterable<C>,
+  d: Iterable<D>,
+  e: Iterable<E>,
+  f: Iterable<F>,
+  map: (B, C, D, E, F) -> G
+): List<G> =
+  mapN(b, c, d, e, f, unit, unit, unit, unit, unit) { b, c, d, e, f, _, _, _, _, _ -> map(b, c, d, e, f) }
+
+inline fun <B, C, D, E, F, G, H> mapN(
+  b: Iterable<B>,
+  c: Iterable<C>,
+  d: Iterable<D>,
+  e: Iterable<E>,
+  f: Iterable<F>,
+  g: Iterable<G>,
+  map: (B, C, D, E, F, G) -> H
+): List<H> =
+  mapN(b, c, d, e, f, g, unit, unit, unit, unit) { b, c, d, e, f, g, _, _, _, _ -> map(b, c, d, e, f, g) }
+
+inline fun <B, C, D, E, F, G, H, I> mapN(
+  b: Iterable<B>,
+  c: Iterable<C>,
+  d: Iterable<D>,
+  e: Iterable<E>,
+  f: Iterable<F>,
+  g: Iterable<G>,
+  h: Iterable<H>,
+  map: (B, C, D, E, F, G, H) -> I
+): List<I> =
+  mapN(b, c, d, e, f, g, h, unit, unit, unit) { b, c, d, e, f, g, h, _, _, _ -> map(b, c, d, e, f, g, h) }
+
+inline fun <B, C, D, E, F, G, H, I, J> mapN(
+  b: Iterable<B>,
+  c: Iterable<C>,
+  d: Iterable<D>,
+  e: Iterable<E>,
+  f: Iterable<F>,
+  g: Iterable<G>,
+  h: Iterable<H>,
+  i: Iterable<I>,
+  map: (B, C, D, E, F, G, H, I) -> J
+): List<J> =
+  mapN(b, c, d, e, f, g, h, i, unit, unit) { b, c, d, e, f, g, h, i, _, _ -> map(b, c, d, e, f, g, h, i) }
+
+inline fun <B, C, D, E, F, G, H, I, J, K> mapN(
+  b: Iterable<B>,
+  c: Iterable<C>,
+  d: Iterable<D>,
+  e: Iterable<E>,
+  f: Iterable<F>,
+  g: Iterable<G>,
+  h: Iterable<H>,
+  i: Iterable<I>,
+  j: Iterable<J>,
+  map: (B, C, D, E, F, G, H, I, J) -> K
+): List<K> =
+  mapN(b, c, d, e, f, g, h, i, j, unit) { b, c, d, e, f, g, h, i, j, _ -> map(b, c, d, e, f, g, h, i, j) }
+
+inline fun <B, C, D, E, F, G, H, I, J, K, L> mapN(
+  b: Iterable<B>,
+  c: Iterable<C>,
+  d: Iterable<D>,
+  e: Iterable<E>,
+  f: Iterable<F>,
+  g: Iterable<G>,
+  h: Iterable<H>,
+  i: Iterable<I>,
+  j: Iterable<J>,
+  k: Iterable<K>,
+  map: (B, C, D, E, F, G, H, I, J, K) -> L
+): List<L> =
+  b.flatMap { bb ->
+    c.flatMap { cc ->
+      d.flatMap { dd ->
+        e.flatMap { ee ->
+          f.flatMap { ff ->
+            g.flatMap { gg ->
+              h.flatMap { hh ->
+                i.flatMap { ii ->
+                  j.flatMap { jj ->
+                    k.map { kk ->
+                      map(bb, cc, dd, ee, ff, gg, hh, ii, jj, kk)
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+
