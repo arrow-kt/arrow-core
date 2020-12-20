@@ -1838,9 +1838,6 @@ fun <A, B> Either<A, B>.combine(SGA: Semigroup<A>, SGB: Semigroup<B>, b: Either<
     }
   }
 
-fun <A, B> Either<A, B>.maybeCombine(SGA: Semigroup<A>, SGB: Semigroup<B>, b: Either<A, B>?): Either<A, B> =
-  b?.let { combine(SGA, SGB, it) } ?: this
-
 fun <A, B> Iterable<Either<A, B>>.combineAll(MA: Monoid<A>, MB: Monoid<B>): Either<A, B> =
   fold(Right(MB.empty()) as Either<A, B>) { acc, e ->
     acc.combine(MA, MB, e)
@@ -2018,7 +2015,7 @@ private open class EitherSemigroup<L, R>(
     combine(SGL, SGR, b)
 
   override fun Either<L, R>.maybeCombine(b: Either<L, R>?): Either<L, R> =
-    maybeCombine(SGL, SGR, b)
+    b?.let { combine(SGL, SGR, it) } ?: this
 }
 
 private class EitherMonoid<L, R>(
