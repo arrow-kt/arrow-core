@@ -34,9 +34,9 @@ internal val apply_singleton: ListKApply = object : arrow.core.extensions.ListKA
   "UNUSED_PARAMETER"
 )
 fun <A, B> Kind<ForListK, A>.ap(arg1: Kind<ForListK, Function1<A, B>>): ListK<B> =
-    arrow.core.ListK.apply().run {
-  this@ap.ap<A, B>(arg1) as arrow.core.ListK<B>
-}
+  arrow.core.ListK.apply().run {
+    this@ap.ap<A, B>(arg1) as arrow.core.ListK<B>
+  }
 
 @JvmName("apEval")
 @Suppress(
@@ -46,7 +46,7 @@ fun <A, B> Kind<ForListK, A>.ap(arg1: Kind<ForListK, Function1<A, B>>): ListK<B>
   "UNUSED_PARAMETER"
 )
 fun <A, B> Kind<ForListK, A>.apEval(arg1: Eval<Kind<ForListK, Function1<A, B>>>):
-    Eval<Kind<ForListK, B>> = arrow.core.ListK.apply().run {
+  Eval<Kind<ForListK, B>> = arrow.core.ListK.apply().run {
   this@apEval.apEval<A, B>(arg1) as arrow.core.Eval<arrow.Kind<arrow.core.ForListK, B>>
 }
 
@@ -57,8 +57,11 @@ fun <A, B> Kind<ForListK, A>.apEval(arg1: Eval<Kind<ForListK, Function1<A, B>>>)
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun <A, B, Z> Kind<ForListK, A>.map2Eval(arg1: Eval<Kind<ForListK, B>>, arg2: Function1<Tuple2<A,
-    B>, Z>): Eval<Kind<ForListK, Z>> = arrow.core.ListK.apply().run {
+fun <A, B, Z> Kind<ForListK, A>.map2Eval(
+  arg1: Eval<Kind<ForListK, B>>,
+  arg2: Function1<Tuple2<A,
+    B>, Z>
+): Eval<Kind<ForListK, Z>> = arrow.core.ListK.apply().run {
   this@map2Eval.map2Eval<A, B, Z>(arg1, arg2) as arrow.core.Eval<arrow.Kind<arrow.core.ForListK, Z>>
 }
 
@@ -74,8 +77,8 @@ fun <A, B, Z> map(
   arg1: Kind<ForListK, B>,
   arg2: Function1<Tuple2<A, B>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .map<A, B, Z>(arg0, arg1, arg2) as arrow.core.ListK<Z>
+  .apply()
+  .map<A, B, Z>(arg0, arg1, arg2) as arrow.core.ListK<Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -89,8 +92,8 @@ fun <A, B, Z> mapN(
   arg1: Kind<ForListK, B>,
   arg2: Function1<Tuple2<A, B>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .mapN<A, B, Z>(arg0, arg1, arg2) as arrow.core.ListK<Z>
+  .apply()
+  .mapN<A, B, Z>(arg0, arg1, arg2) as arrow.core.ListK<Z>
 
 @JvmName("map")
 @Suppress(
@@ -105,8 +108,8 @@ fun <A, B, C, Z> map(
   arg2: Kind<ForListK, C>,
   arg3: Function1<Tuple3<A, B, C>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .map<A, B, C, Z>(arg0, arg1, arg2, arg3) as arrow.core.ListK<Z>
+  .apply()
+  .map<A, B, C, Z>(arg0, arg1, arg2, arg3) as arrow.core.ListK<Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -121,8 +124,8 @@ fun <A, B, C, Z> mapN(
   arg2: Kind<ForListK, C>,
   arg3: Function1<Tuple3<A, B, C>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .mapN<A, B, C, Z>(arg0, arg1, arg2, arg3) as arrow.core.ListK<Z>
+  .apply()
+  .mapN<A, B, C, Z>(arg0, arg1, arg2, arg3) as arrow.core.ListK<Z>
 
 @JvmName("map")
 @Suppress(
@@ -138,8 +141,8 @@ fun <A, B, C, D, Z> map(
   arg3: Kind<ForListK, D>,
   arg4: Function1<Tuple4<A, B, C, D>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .map<A, B, C, D, Z>(arg0, arg1, arg2, arg3, arg4) as arrow.core.ListK<Z>
+  .apply()
+  .map<A, B, C, D, Z>(arg0, arg1, arg2, arg3, arg4) as arrow.core.ListK<Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -155,8 +158,8 @@ fun <A, B, C, D, Z> mapN(
   arg3: Kind<ForListK, D>,
   arg4: Function1<Tuple4<A, B, C, D>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .mapN<A, B, C, D, Z>(arg0, arg1, arg2, arg3, arg4) as arrow.core.ListK<Z>
+  .apply()
+  .mapN<A, B, C, D, Z>(arg0, arg1, arg2, arg3, arg4) as arrow.core.ListK<Z>
 
 @JvmName("map")
 @Suppress(
@@ -173,8 +176,8 @@ fun <A, B, C, D, E, Z> map(
   arg4: Kind<ForListK, E>,
   arg5: Function1<Tuple5<A, B, C, D, E>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .map<A, B, C, D, E, Z>(arg0, arg1, arg2, arg3, arg4, arg5) as arrow.core.ListK<Z>
+  .apply()
+  .map<A, B, C, D, E, Z>(arg0, arg1, arg2, arg3, arg4, arg5) as arrow.core.ListK<Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -191,8 +194,8 @@ fun <A, B, C, D, E, Z> mapN(
   arg4: Kind<ForListK, E>,
   arg5: Function1<Tuple5<A, B, C, D, E>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .mapN<A, B, C, D, E, Z>(arg0, arg1, arg2, arg3, arg4, arg5) as arrow.core.ListK<Z>
+  .apply()
+  .mapN<A, B, C, D, E, Z>(arg0, arg1, arg2, arg3, arg4, arg5) as arrow.core.ListK<Z>
 
 @JvmName("map")
 @Suppress(
@@ -210,8 +213,8 @@ fun <A, B, C, D, E, FF, Z> map(
   arg5: Kind<ForListK, FF>,
   arg6: Function1<Tuple6<A, B, C, D, E, FF>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .map<A, B, C, D, E, FF, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6) as arrow.core.ListK<Z>
+  .apply()
+  .map<A, B, C, D, E, FF, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6) as arrow.core.ListK<Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -229,8 +232,8 @@ fun <A, B, C, D, E, FF, Z> mapN(
   arg5: Kind<ForListK, FF>,
   arg6: Function1<Tuple6<A, B, C, D, E, FF>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .mapN<A, B, C, D, E, FF, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6) as arrow.core.ListK<Z>
+  .apply()
+  .mapN<A, B, C, D, E, FF, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6) as arrow.core.ListK<Z>
 
 @JvmName("map")
 @Suppress(
@@ -249,9 +252,9 @@ fun <A, B, C, D, E, FF, G, Z> map(
   arg6: Kind<ForListK, G>,
   arg7: Function1<Tuple7<A, B, C, D, E, FF, G>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .map<A, B, C, D, E, FF, G, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) as
-    arrow.core.ListK<Z>
+  .apply()
+  .map<A, B, C, D, E, FF, G, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) as
+  arrow.core.ListK<Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -270,9 +273,9 @@ fun <A, B, C, D, E, FF, G, Z> mapN(
   arg6: Kind<ForListK, G>,
   arg7: Function1<Tuple7<A, B, C, D, E, FF, G>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .mapN<A, B, C, D, E, FF, G, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) as
-    arrow.core.ListK<Z>
+  .apply()
+  .mapN<A, B, C, D, E, FF, G, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) as
+  arrow.core.ListK<Z>
 
 @JvmName("map")
 @Suppress(
@@ -292,9 +295,9 @@ fun <A, B, C, D, E, FF, G, H, Z> map(
   arg7: Kind<ForListK, H>,
   arg8: Function1<Tuple8<A, B, C, D, E, FF, G, H>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .map<A, B, C, D, E, FF, G, H, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) as
-    arrow.core.ListK<Z>
+  .apply()
+  .map<A, B, C, D, E, FF, G, H, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) as
+  arrow.core.ListK<Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -314,9 +317,9 @@ fun <A, B, C, D, E, FF, G, H, Z> mapN(
   arg7: Kind<ForListK, H>,
   arg8: Function1<Tuple8<A, B, C, D, E, FF, G, H>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .mapN<A, B, C, D, E, FF, G, H, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) as
-    arrow.core.ListK<Z>
+  .apply()
+  .mapN<A, B, C, D, E, FF, G, H, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) as
+  arrow.core.ListK<Z>
 
 @JvmName("map")
 @Suppress(
@@ -337,9 +340,9 @@ fun <A, B, C, D, E, FF, G, H, I, Z> map(
   arg8: Kind<ForListK, I>,
   arg9: Function1<Tuple9<A, B, C, D, E, FF, G, H, I>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .map<A, B, C, D, E, FF, G, H, I, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
-    as arrow.core.ListK<Z>
+  .apply()
+  .map<A, B, C, D, E, FF, G, H, I, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
+  as arrow.core.ListK<Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -360,9 +363,9 @@ fun <A, B, C, D, E, FF, G, H, I, Z> mapN(
   arg8: Kind<ForListK, I>,
   arg9: Function1<Tuple9<A, B, C, D, E, FF, G, H, I>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .mapN<A, B, C, D, E, FF, G, H, I, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
-    as arrow.core.ListK<Z>
+  .apply()
+  .mapN<A, B, C, D, E, FF, G, H, I, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
+  as arrow.core.ListK<Z>
 
 @JvmName("map")
 @Suppress(
@@ -384,8 +387,8 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> map(
   arg9: Kind<ForListK, J>,
   arg10: Function1<Tuple10<A, B, C, D, E, FF, G, H, I, J>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .map<A, B, C, D, E, FF, G, H, I, J,
+  .apply()
+  .map<A, B, C, D, E, FF, G, H, I, J,
     Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10) as arrow.core.ListK<Z>
 
 @JvmName("mapN")
@@ -408,8 +411,8 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> mapN(
   arg9: Kind<ForListK, J>,
   arg10: Function1<Tuple10<A, B, C, D, E, FF, G, H, I, J>, Z>
 ): ListK<Z> = arrow.core.ListK
-   .apply()
-   .mapN<A, B, C, D, E, FF, G, H, I, J,
+  .apply()
+  .mapN<A, B, C, D, E, FF, G, H, I, J,
     Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10) as arrow.core.ListK<Z>
 
 @JvmName("map2")
@@ -420,7 +423,7 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> mapN(
   "UNUSED_PARAMETER"
 )
 fun <A, B, Z> Kind<ForListK, A>.map2(arg1: Kind<ForListK, B>, arg2: Function1<Tuple2<A, B>, Z>):
-    ListK<Z> = arrow.core.ListK.apply().run {
+  ListK<Z> = arrow.core.ListK.apply().run {
   this@map2.map2<A, B, Z>(arg1, arg2) as arrow.core.ListK<Z>
 }
 
@@ -432,9 +435,9 @@ fun <A, B, Z> Kind<ForListK, A>.map2(arg1: Kind<ForListK, B>, arg2: Function1<Tu
   "UNUSED_PARAMETER"
 )
 fun <A, B> Kind<ForListK, A>.product(arg1: Kind<ForListK, B>): ListK<Tuple2<A, B>> =
-    arrow.core.ListK.apply().run {
-  this@product.product<A, B>(arg1) as arrow.core.ListK<arrow.core.Tuple2<A, B>>
-}
+  arrow.core.ListK.apply().run {
+    this@product.product<A, B>(arg1) as arrow.core.ListK<arrow.core.Tuple2<A, B>>
+  }
 
 @JvmName("product1")
 @Suppress(
@@ -443,10 +446,10 @@ fun <A, B> Kind<ForListK, A>.product(arg1: Kind<ForListK, B>): ListK<Tuple2<A, B
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun <A, B, Z> Kind<ForListK, Tuple2<A, B>>.product(arg1: Kind<ForListK, Z>): ListK<Tuple3<A, B, Z>>
-    = arrow.core.ListK.apply().run {
-  this@product.product<A, B, Z>(arg1) as arrow.core.ListK<arrow.core.Tuple3<A, B, Z>>
-}
+fun <A, B, Z> Kind<ForListK, Tuple2<A, B>>.product(arg1: Kind<ForListK, Z>): ListK<Tuple3<A, B, Z>> =
+  arrow.core.ListK.apply().run {
+    this@product.product<A, B, Z>(arg1) as arrow.core.ListK<arrow.core.Tuple3<A, B, Z>>
+  }
 
 @JvmName("product2")
 @Suppress(
@@ -456,7 +459,7 @@ fun <A, B, Z> Kind<ForListK, Tuple2<A, B>>.product(arg1: Kind<ForListK, Z>): Lis
   "UNUSED_PARAMETER"
 )
 fun <A, B, C, Z> Kind<ForListK, Tuple3<A, B, C>>.product(arg1: Kind<ForListK, Z>): ListK<Tuple4<A,
-    B, C, Z>> = arrow.core.ListK.apply().run {
+  B, C, Z>> = arrow.core.ListK.apply().run {
   this@product.product<A, B, C, Z>(arg1) as arrow.core.ListK<arrow.core.Tuple4<A, B, C, Z>>
 }
 
@@ -468,7 +471,7 @@ fun <A, B, C, Z> Kind<ForListK, Tuple3<A, B, C>>.product(arg1: Kind<ForListK, Z>
   "UNUSED_PARAMETER"
 )
 fun <A, B, C, D, Z> Kind<ForListK, Tuple4<A, B, C, D>>.product(arg1: Kind<ForListK, Z>):
-    ListK<Tuple5<A, B, C, D, Z>> = arrow.core.ListK.apply().run {
+  ListK<Tuple5<A, B, C, D, Z>> = arrow.core.ListK.apply().run {
   this@product.product<A, B, C, D, Z>(arg1) as arrow.core.ListK<arrow.core.Tuple5<A, B, C, D, Z>>
 }
 
@@ -480,7 +483,7 @@ fun <A, B, C, D, Z> Kind<ForListK, Tuple4<A, B, C, D>>.product(arg1: Kind<ForLis
   "UNUSED_PARAMETER"
 )
 fun <A, B, C, D, E, Z> Kind<ForListK, Tuple5<A, B, C, D, E>>.product(arg1: Kind<ForListK, Z>):
-    ListK<Tuple6<A, B, C, D, E, Z>> = arrow.core.ListK.apply().run {
+  ListK<Tuple6<A, B, C, D, E, Z>> = arrow.core.ListK.apply().run {
   this@product.product<A, B, C, D, E, Z>(arg1) as arrow.core.ListK<arrow.core.Tuple6<A, B, C, D, E,
     Z>>
 }
@@ -492,8 +495,10 @@ fun <A, B, C, D, E, Z> Kind<ForListK, Tuple5<A, B, C, D, E>>.product(arg1: Kind<
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun <A, B, C, D, E, FF, Z> Kind<ForListK, Tuple6<A, B, C, D, E, FF>>.product(arg1: Kind<ForListK,
-    Z>): ListK<Tuple7<A, B, C, D, E, FF, Z>> = arrow.core.ListK.apply().run {
+fun <A, B, C, D, E, FF, Z> Kind<ForListK, Tuple6<A, B, C, D, E, FF>>.product(
+  arg1: Kind<ForListK,
+    Z>
+): ListK<Tuple7<A, B, C, D, E, FF, Z>> = arrow.core.ListK.apply().run {
   this@product.product<A, B, C, D, E, FF, Z>(arg1) as arrow.core.ListK<arrow.core.Tuple7<A, B, C, D,
     E, FF, Z>>
 }
@@ -506,11 +511,11 @@ fun <A, B, C, D, E, FF, Z> Kind<ForListK, Tuple6<A, B, C, D, E, FF>>.product(arg
   "UNUSED_PARAMETER"
 )
 fun <A, B, C, D, E, FF, G, Z> Kind<ForListK, Tuple7<A, B, C, D, E, FF,
-    G>>.product(arg1: Kind<ForListK, Z>): ListK<Tuple8<A, B, C, D, E, FF, G, Z>> =
-    arrow.core.ListK.apply().run {
-  this@product.product<A, B, C, D, E, FF, G, Z>(arg1) as arrow.core.ListK<arrow.core.Tuple8<A, B, C,
-    D, E, FF, G, Z>>
-}
+  G>>.product(arg1: Kind<ForListK, Z>): ListK<Tuple8<A, B, C, D, E, FF, G, Z>> =
+  arrow.core.ListK.apply().run {
+    this@product.product<A, B, C, D, E, FF, G, Z>(arg1) as arrow.core.ListK<arrow.core.Tuple8<A, B, C,
+      D, E, FF, G, Z>>
+  }
 
 @JvmName("product7")
 @Suppress(
@@ -520,11 +525,11 @@ fun <A, B, C, D, E, FF, G, Z> Kind<ForListK, Tuple7<A, B, C, D, E, FF,
   "UNUSED_PARAMETER"
 )
 fun <A, B, C, D, E, FF, G, H, Z> Kind<ForListK, Tuple8<A, B, C, D, E, FF, G,
-    H>>.product(arg1: Kind<ForListK, Z>): ListK<Tuple9<A, B, C, D, E, FF, G, H, Z>> =
-    arrow.core.ListK.apply().run {
-  this@product.product<A, B, C, D, E, FF, G, H, Z>(arg1) as arrow.core.ListK<arrow.core.Tuple9<A, B,
-    C, D, E, FF, G, H, Z>>
-}
+  H>>.product(arg1: Kind<ForListK, Z>): ListK<Tuple9<A, B, C, D, E, FF, G, H, Z>> =
+  arrow.core.ListK.apply().run {
+    this@product.product<A, B, C, D, E, FF, G, H, Z>(arg1) as arrow.core.ListK<arrow.core.Tuple9<A, B,
+      C, D, E, FF, G, H, Z>>
+  }
 
 @JvmName("product8")
 @Suppress(
@@ -534,11 +539,11 @@ fun <A, B, C, D, E, FF, G, H, Z> Kind<ForListK, Tuple8<A, B, C, D, E, FF, G,
   "UNUSED_PARAMETER"
 )
 fun <A, B, C, D, E, FF, G, H, I, Z> Kind<ForListK, Tuple9<A, B, C, D, E, FF, G, H,
-    I>>.product(arg1: Kind<ForListK, Z>): ListK<Tuple10<A, B, C, D, E, FF, G, H, I, Z>> =
-    arrow.core.ListK.apply().run {
-  this@product.product<A, B, C, D, E, FF, G, H, I, Z>(arg1) as
-    arrow.core.ListK<arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, Z>>
-}
+  I>>.product(arg1: Kind<ForListK, Z>): ListK<Tuple10<A, B, C, D, E, FF, G, H, I, Z>> =
+  arrow.core.ListK.apply().run {
+    this@product.product<A, B, C, D, E, FF, G, H, I, Z>(arg1) as
+      arrow.core.ListK<arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, Z>>
+  }
 
 @JvmName("tupled")
 @Suppress(
@@ -548,9 +553,9 @@ fun <A, B, C, D, E, FF, G, H, I, Z> Kind<ForListK, Tuple9<A, B, C, D, E, FF, G, 
   "UNUSED_PARAMETER"
 )
 fun <A, B> tupled(arg0: Kind<ForListK, A>, arg1: Kind<ForListK, B>): ListK<Tuple2<A, B>> =
-    arrow.core.ListK
-   .apply()
-   .tupled<A, B>(arg0, arg1) as arrow.core.ListK<arrow.core.Tuple2<A, B>>
+  arrow.core.ListK
+    .apply()
+    .tupled<A, B>(arg0, arg1) as arrow.core.ListK<arrow.core.Tuple2<A, B>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -560,9 +565,9 @@ fun <A, B> tupled(arg0: Kind<ForListK, A>, arg1: Kind<ForListK, B>): ListK<Tuple
   "UNUSED_PARAMETER"
 )
 fun <A, B> tupledN(arg0: Kind<ForListK, A>, arg1: Kind<ForListK, B>): ListK<Tuple2<A, B>> =
-    arrow.core.ListK
-   .apply()
-   .tupledN<A, B>(arg0, arg1) as arrow.core.ListK<arrow.core.Tuple2<A, B>>
+  arrow.core.ListK
+    .apply()
+    .tupledN<A, B>(arg0, arg1) as arrow.core.ListK<arrow.core.Tuple2<A, B>>
 
 @JvmName("tupled")
 @Suppress(
@@ -576,8 +581,8 @@ fun <A, B, C> tupled(
   arg1: Kind<ForListK, B>,
   arg2: Kind<ForListK, C>
 ): ListK<Tuple3<A, B, C>> = arrow.core.ListK
-   .apply()
-   .tupled<A, B, C>(arg0, arg1, arg2) as arrow.core.ListK<arrow.core.Tuple3<A, B, C>>
+  .apply()
+  .tupled<A, B, C>(arg0, arg1, arg2) as arrow.core.ListK<arrow.core.Tuple3<A, B, C>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -591,8 +596,8 @@ fun <A, B, C> tupledN(
   arg1: Kind<ForListK, B>,
   arg2: Kind<ForListK, C>
 ): ListK<Tuple3<A, B, C>> = arrow.core.ListK
-   .apply()
-   .tupledN<A, B, C>(arg0, arg1, arg2) as arrow.core.ListK<arrow.core.Tuple3<A, B, C>>
+  .apply()
+  .tupledN<A, B, C>(arg0, arg1, arg2) as arrow.core.ListK<arrow.core.Tuple3<A, B, C>>
 
 @JvmName("tupled")
 @Suppress(
@@ -607,8 +612,8 @@ fun <A, B, C, D> tupled(
   arg2: Kind<ForListK, C>,
   arg3: Kind<ForListK, D>
 ): ListK<Tuple4<A, B, C, D>> = arrow.core.ListK
-   .apply()
-   .tupled<A, B, C, D>(arg0, arg1, arg2, arg3) as arrow.core.ListK<arrow.core.Tuple4<A, B, C, D>>
+  .apply()
+  .tupled<A, B, C, D>(arg0, arg1, arg2, arg3) as arrow.core.ListK<arrow.core.Tuple4<A, B, C, D>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -623,8 +628,8 @@ fun <A, B, C, D> tupledN(
   arg2: Kind<ForListK, C>,
   arg3: Kind<ForListK, D>
 ): ListK<Tuple4<A, B, C, D>> = arrow.core.ListK
-   .apply()
-   .tupledN<A, B, C, D>(arg0, arg1, arg2, arg3) as arrow.core.ListK<arrow.core.Tuple4<A, B, C, D>>
+  .apply()
+  .tupledN<A, B, C, D>(arg0, arg1, arg2, arg3) as arrow.core.ListK<arrow.core.Tuple4<A, B, C, D>>
 
 @JvmName("tupled")
 @Suppress(
@@ -640,9 +645,9 @@ fun <A, B, C, D, E> tupled(
   arg3: Kind<ForListK, D>,
   arg4: Kind<ForListK, E>
 ): ListK<Tuple5<A, B, C, D, E>> = arrow.core.ListK
-   .apply()
-   .tupled<A, B, C, D, E>(arg0, arg1, arg2, arg3, arg4) as arrow.core.ListK<arrow.core.Tuple5<A, B,
-    C, D, E>>
+  .apply()
+  .tupled<A, B, C, D, E>(arg0, arg1, arg2, arg3, arg4) as arrow.core.ListK<arrow.core.Tuple5<A, B,
+  C, D, E>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -658,9 +663,9 @@ fun <A, B, C, D, E> tupledN(
   arg3: Kind<ForListK, D>,
   arg4: Kind<ForListK, E>
 ): ListK<Tuple5<A, B, C, D, E>> = arrow.core.ListK
-   .apply()
-   .tupledN<A, B, C, D, E>(arg0, arg1, arg2, arg3, arg4) as arrow.core.ListK<arrow.core.Tuple5<A, B,
-    C, D, E>>
+  .apply()
+  .tupledN<A, B, C, D, E>(arg0, arg1, arg2, arg3, arg4) as arrow.core.ListK<arrow.core.Tuple5<A, B,
+  C, D, E>>
 
 @JvmName("tupled")
 @Suppress(
@@ -677,9 +682,9 @@ fun <A, B, C, D, E, FF> tupled(
   arg4: Kind<ForListK, E>,
   arg5: Kind<ForListK, FF>
 ): ListK<Tuple6<A, B, C, D, E, FF>> = arrow.core.ListK
-   .apply()
-   .tupled<A, B, C, D, E, FF>(arg0, arg1, arg2, arg3, arg4, arg5) as
-    arrow.core.ListK<arrow.core.Tuple6<A, B, C, D, E, FF>>
+  .apply()
+  .tupled<A, B, C, D, E, FF>(arg0, arg1, arg2, arg3, arg4, arg5) as
+  arrow.core.ListK<arrow.core.Tuple6<A, B, C, D, E, FF>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -696,9 +701,9 @@ fun <A, B, C, D, E, FF> tupledN(
   arg4: Kind<ForListK, E>,
   arg5: Kind<ForListK, FF>
 ): ListK<Tuple6<A, B, C, D, E, FF>> = arrow.core.ListK
-   .apply()
-   .tupledN<A, B, C, D, E, FF>(arg0, arg1, arg2, arg3, arg4, arg5) as
-    arrow.core.ListK<arrow.core.Tuple6<A, B, C, D, E, FF>>
+  .apply()
+  .tupledN<A, B, C, D, E, FF>(arg0, arg1, arg2, arg3, arg4, arg5) as
+  arrow.core.ListK<arrow.core.Tuple6<A, B, C, D, E, FF>>
 
 @JvmName("tupled")
 @Suppress(
@@ -716,9 +721,9 @@ fun <A, B, C, D, E, FF, G> tupled(
   arg5: Kind<ForListK, FF>,
   arg6: Kind<ForListK, G>
 ): ListK<Tuple7<A, B, C, D, E, FF, G>> = arrow.core.ListK
-   .apply()
-   .tupled<A, B, C, D, E, FF, G>(arg0, arg1, arg2, arg3, arg4, arg5, arg6) as
-    arrow.core.ListK<arrow.core.Tuple7<A, B, C, D, E, FF, G>>
+  .apply()
+  .tupled<A, B, C, D, E, FF, G>(arg0, arg1, arg2, arg3, arg4, arg5, arg6) as
+  arrow.core.ListK<arrow.core.Tuple7<A, B, C, D, E, FF, G>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -736,9 +741,9 @@ fun <A, B, C, D, E, FF, G> tupledN(
   arg5: Kind<ForListK, FF>,
   arg6: Kind<ForListK, G>
 ): ListK<Tuple7<A, B, C, D, E, FF, G>> = arrow.core.ListK
-   .apply()
-   .tupledN<A, B, C, D, E, FF, G>(arg0, arg1, arg2, arg3, arg4, arg5, arg6) as
-    arrow.core.ListK<arrow.core.Tuple7<A, B, C, D, E, FF, G>>
+  .apply()
+  .tupledN<A, B, C, D, E, FF, G>(arg0, arg1, arg2, arg3, arg4, arg5, arg6) as
+  arrow.core.ListK<arrow.core.Tuple7<A, B, C, D, E, FF, G>>
 
 @JvmName("tupled")
 @Suppress(
@@ -757,9 +762,9 @@ fun <A, B, C, D, E, FF, G, H> tupled(
   arg6: Kind<ForListK, G>,
   arg7: Kind<ForListK, H>
 ): ListK<Tuple8<A, B, C, D, E, FF, G, H>> = arrow.core.ListK
-   .apply()
-   .tupled<A, B, C, D, E, FF, G, H>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) as
-    arrow.core.ListK<arrow.core.Tuple8<A, B, C, D, E, FF, G, H>>
+  .apply()
+  .tupled<A, B, C, D, E, FF, G, H>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) as
+  arrow.core.ListK<arrow.core.Tuple8<A, B, C, D, E, FF, G, H>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -778,9 +783,9 @@ fun <A, B, C, D, E, FF, G, H> tupledN(
   arg6: Kind<ForListK, G>,
   arg7: Kind<ForListK, H>
 ): ListK<Tuple8<A, B, C, D, E, FF, G, H>> = arrow.core.ListK
-   .apply()
-   .tupledN<A, B, C, D, E, FF, G, H>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) as
-    arrow.core.ListK<arrow.core.Tuple8<A, B, C, D, E, FF, G, H>>
+  .apply()
+  .tupledN<A, B, C, D, E, FF, G, H>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) as
+  arrow.core.ListK<arrow.core.Tuple8<A, B, C, D, E, FF, G, H>>
 
 @JvmName("tupled")
 @Suppress(
@@ -800,9 +805,9 @@ fun <A, B, C, D, E, FF, G, H, I> tupled(
   arg7: Kind<ForListK, H>,
   arg8: Kind<ForListK, I>
 ): ListK<Tuple9<A, B, C, D, E, FF, G, H, I>> = arrow.core.ListK
-   .apply()
-   .tupled<A, B, C, D, E, FF, G, H, I>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) as
-    arrow.core.ListK<arrow.core.Tuple9<A, B, C, D, E, FF, G, H, I>>
+  .apply()
+  .tupled<A, B, C, D, E, FF, G, H, I>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) as
+  arrow.core.ListK<arrow.core.Tuple9<A, B, C, D, E, FF, G, H, I>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -822,9 +827,9 @@ fun <A, B, C, D, E, FF, G, H, I> tupledN(
   arg7: Kind<ForListK, H>,
   arg8: Kind<ForListK, I>
 ): ListK<Tuple9<A, B, C, D, E, FF, G, H, I>> = arrow.core.ListK
-   .apply()
-   .tupledN<A, B, C, D, E, FF, G, H, I>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) as
-    arrow.core.ListK<arrow.core.Tuple9<A, B, C, D, E, FF, G, H, I>>
+  .apply()
+  .tupledN<A, B, C, D, E, FF, G, H, I>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) as
+  arrow.core.ListK<arrow.core.Tuple9<A, B, C, D, E, FF, G, H, I>>
 
 @JvmName("tupled")
 @Suppress(
@@ -845,10 +850,10 @@ fun <A, B, C, D, E, FF, G, H, I, J> tupled(
   arg8: Kind<ForListK, I>,
   arg9: Kind<ForListK, J>
 ): ListK<Tuple10<A, B, C, D, E, FF, G, H, I, J>> = arrow.core.ListK
-   .apply()
-   .tupled<A, B, C, D, E, FF, G, H, I,
+  .apply()
+  .tupled<A, B, C, D, E, FF, G, H, I,
     J>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) as
-    arrow.core.ListK<arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
+  arrow.core.ListK<arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -869,10 +874,10 @@ fun <A, B, C, D, E, FF, G, H, I, J> tupledN(
   arg8: Kind<ForListK, I>,
   arg9: Kind<ForListK, J>
 ): ListK<Tuple10<A, B, C, D, E, FF, G, H, I, J>> = arrow.core.ListK
-   .apply()
-   .tupledN<A, B, C, D, E, FF, G, H, I,
+  .apply()
+  .tupledN<A, B, C, D, E, FF, G, H, I,
     J>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) as
-    arrow.core.ListK<arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
+  arrow.core.ListK<arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
 
 @JvmName("followedBy")
 @Suppress(
@@ -882,9 +887,9 @@ fun <A, B, C, D, E, FF, G, H, I, J> tupledN(
   "UNUSED_PARAMETER"
 )
 fun <A, B> Kind<ForListK, A>.followedBy(arg1: Kind<ForListK, B>): ListK<B> =
-    arrow.core.ListK.apply().run {
-  this@followedBy.followedBy<A, B>(arg1) as arrow.core.ListK<B>
-}
+  arrow.core.ListK.apply().run {
+    this@followedBy.followedBy<A, B>(arg1) as arrow.core.ListK<B>
+  }
 
 @JvmName("apTap")
 @Suppress(
@@ -894,9 +899,9 @@ fun <A, B> Kind<ForListK, A>.followedBy(arg1: Kind<ForListK, B>): ListK<B> =
   "UNUSED_PARAMETER"
 )
 fun <A, B> Kind<ForListK, A>.apTap(arg1: Kind<ForListK, B>): ListK<A> =
-    arrow.core.ListK.apply().run {
-  this@apTap.apTap<A, B>(arg1) as arrow.core.ListK<A>
-}
+  arrow.core.ListK.apply().run {
+    this@apTap.apTap<A, B>(arg1) as arrow.core.ListK<A>
+  }
 
 @Suppress(
   "UNCHECKED_CAST",

@@ -36,8 +36,8 @@ fun <A, B> Kind<ForListK, A>.zip(arg1: Kind<ForListK, B>): ListK<Tuple2<A, B>> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun <A, B, C> Kind<ForListK, A>.zipWith(arg1: Kind<ForListK, B>, arg2: Function2<A, B, C>): ListK<C>
-    = arrow.core.ListK.zip().run {
+fun <A, B, C> Kind<ForListK, A>.zipWith(arg1: Kind<ForListK, B>, arg2: Function2<A, B, C>): ListK<C> =
+    arrow.core.ListK.zip().run {
   this@zipWith.zipWith<A, B, C>(arg1, arg2) as arrow.core.ListK<C>
 }
 

@@ -209,8 +209,10 @@ fun <A, B> Kind<ForListK, A>.mproduct(arg1: Function1<A, Kind<ForListK, B>>): Li
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun <B> Kind<ForListK, Boolean>.ifM(arg1: Function0<Kind<ForListK, B>>,
-    arg2: Function0<Kind<ForListK, B>>): ListK<B> = arrow.core.ListK.monad().run {
+fun <B> Kind<ForListK, Boolean>.ifM(
+  arg1: Function0<Kind<ForListK, B>>,
+  arg2: Function0<Kind<ForListK, B>>
+): ListK<B> = arrow.core.ListK.monad().run {
   this@ifM.ifM<B>(arg1, arg2) as arrow.core.ListK<B>
 }
 

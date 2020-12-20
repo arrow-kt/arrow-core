@@ -146,8 +146,8 @@ fun <A> orEmpty(arg0: Applicative<ForListK>, arg1: Monoid<A>): List<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun <G, A, B> List<A>.traverse_(arg1: Applicative<G>, arg2: Function1<A, Kind<G, B>>): Kind<G, Unit>
-    = arrow.core.extensions.list.foldable.List.foldable().run {
+fun <G, A, B> List<A>.traverse_(arg1: Applicative<G>, arg2: Function1<A, Kind<G, B>>): Kind<G, Unit> =
+    arrow.core.extensions.list.foldable.List.foldable().run {
   arrow.core.ListK(this@traverse_).traverse_<G, A, B>(arg1, arg2) as arrow.Kind<G, kotlin.Unit>
 }
 

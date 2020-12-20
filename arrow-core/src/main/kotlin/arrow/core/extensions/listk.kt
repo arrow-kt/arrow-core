@@ -22,7 +22,6 @@ import arrow.core.fix
 import arrow.core.identity
 import arrow.core.k
 import arrow.core.toT
-import arrow.extension
 import arrow.typeclasses.Align
 import arrow.typeclasses.Alternative
 import arrow.typeclasses.Applicative

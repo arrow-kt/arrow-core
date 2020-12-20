@@ -29,9 +29,9 @@ internal val semialign_singleton: ListKSemialign = object : arrow.core.extension
   "UNUSED_PARAMETER"
 )
 fun <A, B> align(arg0: Kind<ForListK, A>, arg1: Kind<ForListK, B>): ListK<Ior<A, B>> =
-    arrow.core.ListK
-   .semialign()
-   .align<A, B>(arg0, arg1) as arrow.core.ListK<arrow.core.Ior<A, B>>
+  arrow.core.ListK
+    .semialign()
+    .align<A, B>(arg0, arg1) as arrow.core.ListK<arrow.core.Ior<A, B>>
 
 @JvmName("alignWith")
 @Suppress(
@@ -45,8 +45,8 @@ fun <A, B, C> alignWith(
   arg1: Kind<ForListK, B>,
   arg2: Function1<Ior<A, B>, C>
 ): ListK<C> = arrow.core.ListK
-   .semialign()
-   .alignWith<A, B, C>(arg0, arg1, arg2) as arrow.core.ListK<C>
+  .semialign()
+  .alignWith<A, B, C>(arg0, arg1, arg2) as arrow.core.ListK<C>
 
 @JvmName("salign")
 @Suppress(
@@ -56,9 +56,9 @@ fun <A, B, C> alignWith(
   "UNUSED_PARAMETER"
 )
 fun <A> Kind<ForListK, A>.salign(arg1: Semigroup<A>, arg2: Kind<ForListK, A>): ListK<A> =
-    arrow.core.ListK.semialign().run {
-  this@salign.salign<A>(arg1, arg2) as arrow.core.ListK<A>
-}
+  arrow.core.ListK.semialign().run {
+    this@salign.salign<A>(arg1, arg2) as arrow.core.ListK<A>
+  }
 
 @JvmName("padZip")
 @Suppress(
@@ -68,10 +68,10 @@ fun <A> Kind<ForListK, A>.salign(arg1: Semigroup<A>, arg2: Kind<ForListK, A>): L
   "UNUSED_PARAMETER"
 )
 fun <A, B> Kind<ForListK, A>.padZip(arg1: Kind<ForListK, B>): ListK<Tuple2<Option<A>, Option<B>>> =
-    arrow.core.ListK.semialign().run {
-  this@padZip.padZip<A, B>(arg1) as arrow.core.ListK<arrow.core.Tuple2<arrow.core.Option<A>,
-    arrow.core.Option<B>>>
-}
+  arrow.core.ListK.semialign().run {
+    this@padZip.padZip<A, B>(arg1) as arrow.core.ListK<arrow.core.Tuple2<arrow.core.Option<A>,
+      arrow.core.Option<B>>>
+  }
 
 @JvmName("padZipWith")
 @Suppress(
@@ -80,8 +80,11 @@ fun <A, B> Kind<ForListK, A>.padZip(arg1: Kind<ForListK, B>): ListK<Tuple2<Optio
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun <A, B, C> Kind<ForListK, A>.padZipWith(arg1: Kind<ForListK, B>, arg2: Function2<Option<A>,
-    Option<B>, C>): ListK<C> = arrow.core.ListK.semialign().run {
+fun <A, B, C> Kind<ForListK, A>.padZipWith(
+  arg1: Kind<ForListK, B>,
+  arg2: Function2<Option<A>,
+    Option<B>, C>
+): ListK<C> = arrow.core.ListK.semialign().run {
   this@padZipWith.padZipWith<A, B, C>(arg1, arg2) as arrow.core.ListK<C>
 }
 

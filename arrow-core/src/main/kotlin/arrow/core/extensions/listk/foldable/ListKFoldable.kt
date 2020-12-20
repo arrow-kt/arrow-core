@@ -34,9 +34,9 @@ internal val foldable_singleton: ListKFoldable = object : arrow.core.extensions.
   "UNUSED_PARAMETER"
 )
 fun <A, B> Kind<ForListK, A>.foldLeft(arg1: B, arg2: Function2<B, A, B>): B =
-    arrow.core.ListK.foldable().run {
-  this@foldLeft.foldLeft<A, B>(arg1, arg2) as B
-}
+  arrow.core.ListK.foldable().run {
+    this@foldLeft.foldLeft<A, B>(arg1, arg2) as B
+  }
 
 @JvmName("foldRight")
 @Suppress(
@@ -45,10 +45,10 @@ fun <A, B> Kind<ForListK, A>.foldLeft(arg1: B, arg2: Function2<B, A, B>): B =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun <A, B> Kind<ForListK, A>.foldRight(arg1: Eval<B>, arg2: Function2<A, Eval<B>, Eval<B>>): Eval<B>
-    = arrow.core.ListK.foldable().run {
-  this@foldRight.foldRight<A, B>(arg1, arg2) as arrow.core.Eval<B>
-}
+fun <A, B> Kind<ForListK, A>.foldRight(arg1: Eval<B>, arg2: Function2<A, Eval<B>, Eval<B>>): Eval<B> =
+  arrow.core.ListK.foldable().run {
+    this@foldRight.foldRight<A, B>(arg1, arg2) as arrow.core.Eval<B>
+  }
 
 @JvmName("fold")
 @Suppress(
@@ -69,7 +69,7 @@ fun <A> Kind<ForListK, A>.fold(arg1: Monoid<A>): A = arrow.core.ListK.foldable()
   "UNUSED_PARAMETER"
 )
 fun <A, B> Kind<ForListK, A>.reduceLeftToOption(arg1: Function1<A, B>, arg2: Function2<B, A, B>):
-    Option<B> = arrow.core.ListK.foldable().run {
+  Option<B> = arrow.core.ListK.foldable().run {
   this@reduceLeftToOption.reduceLeftToOption<A, B>(arg1, arg2) as arrow.core.Option<B>
 }
 
@@ -80,8 +80,11 @@ fun <A, B> Kind<ForListK, A>.reduceLeftToOption(arg1: Function1<A, B>, arg2: Fun
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun <A, B> Kind<ForListK, A>.reduceRightToOption(arg1: Function1<A, B>, arg2: Function2<A, Eval<B>,
-    Eval<B>>): Eval<Option<B>> = arrow.core.ListK.foldable().run {
+fun <A, B> Kind<ForListK, A>.reduceRightToOption(
+  arg1: Function1<A, B>,
+  arg2: Function2<A, Eval<B>,
+    Eval<B>>
+): Eval<Option<B>> = arrow.core.ListK.foldable().run {
   this@reduceRightToOption.reduceRightToOption<A, B>(arg1, arg2) as
     arrow.core.Eval<arrow.core.Option<B>>
 }
@@ -94,9 +97,9 @@ fun <A, B> Kind<ForListK, A>.reduceRightToOption(arg1: Function1<A, B>, arg2: Fu
   "UNUSED_PARAMETER"
 )
 fun <A> Kind<ForListK, A>.reduceLeftOption(arg1: Function2<A, A, A>): Option<A> =
-    arrow.core.ListK.foldable().run {
-  this@reduceLeftOption.reduceLeftOption<A>(arg1) as arrow.core.Option<A>
-}
+  arrow.core.ListK.foldable().run {
+    this@reduceLeftOption.reduceLeftOption<A>(arg1) as arrow.core.Option<A>
+  }
 
 @JvmName("reduceRightOption")
 @Suppress(
@@ -106,9 +109,9 @@ fun <A> Kind<ForListK, A>.reduceLeftOption(arg1: Function2<A, A, A>): Option<A> 
   "UNUSED_PARAMETER"
 )
 fun <A> Kind<ForListK, A>.reduceRightOption(arg1: Function2<A, Eval<A>, Eval<A>>): Eval<Option<A>> =
-    arrow.core.ListK.foldable().run {
-  this@reduceRightOption.reduceRightOption<A>(arg1) as arrow.core.Eval<arrow.core.Option<A>>
-}
+  arrow.core.ListK.foldable().run {
+    this@reduceRightOption.reduceRightOption<A>(arg1) as arrow.core.Eval<arrow.core.Option<A>>
+  }
 
 @JvmName("combineAll")
 @Suppress(
@@ -129,9 +132,9 @@ fun <A> Kind<ForListK, A>.combineAll(arg1: Monoid<A>): A = arrow.core.ListK.fold
   "UNUSED_PARAMETER"
 )
 fun <A, B> Kind<ForListK, A>.foldMap(arg1: Monoid<B>, arg2: Function1<A, B>): B =
-    arrow.core.ListK.foldable().run {
-  this@foldMap.foldMap<A, B>(arg1, arg2) as B
-}
+  arrow.core.ListK.foldable().run {
+    this@foldMap.foldMap<A, B>(arg1, arg2) as B
+  }
 
 @JvmName("orEmpty")
 @Suppress(
@@ -141,8 +144,8 @@ fun <A, B> Kind<ForListK, A>.foldMap(arg1: Monoid<B>, arg2: Function1<A, B>): B 
   "UNUSED_PARAMETER"
 )
 fun <A> orEmpty(arg0: Applicative<ForListK>, arg1: Monoid<A>): ListK<A> = arrow.core.ListK
-   .foldable()
-   .orEmpty<A>(arg0, arg1) as arrow.core.ListK<A>
+  .foldable()
+  .orEmpty<A>(arg0, arg1) as arrow.core.ListK<A>
 
 @JvmName("traverse_")
 @Suppress(
@@ -152,7 +155,7 @@ fun <A> orEmpty(arg0: Applicative<ForListK>, arg1: Monoid<A>): ListK<A> = arrow.
   "UNUSED_PARAMETER"
 )
 fun <G, A, B> Kind<ForListK, A>.traverse_(arg1: Applicative<G>, arg2: Function1<A, Kind<G, B>>):
-    Kind<G, Unit> = arrow.core.ListK.foldable().run {
+  Kind<G, Unit> = arrow.core.ListK.foldable().run {
   this@traverse_.traverse_<G, A, B>(arg1, arg2) as arrow.Kind<G, kotlin.Unit>
 }
 
@@ -164,9 +167,9 @@ fun <G, A, B> Kind<ForListK, A>.traverse_(arg1: Applicative<G>, arg2: Function1<
   "UNUSED_PARAMETER"
 )
 fun <G, A> Kind<ForListK, Kind<G, A>>.sequence_(arg1: Applicative<G>): Kind<G, Unit> =
-    arrow.core.ListK.foldable().run {
-  this@sequence_.sequence_<G, A>(arg1) as arrow.Kind<G, kotlin.Unit>
-}
+  arrow.core.ListK.foldable().run {
+    this@sequence_.sequence_<G, A>(arg1) as arrow.Kind<G, kotlin.Unit>
+  }
 
 @JvmName("find")
 @Suppress(
@@ -176,9 +179,9 @@ fun <G, A> Kind<ForListK, Kind<G, A>>.sequence_(arg1: Applicative<G>): Kind<G, U
   "UNUSED_PARAMETER"
 )
 fun <A> Kind<ForListK, A>.find(arg1: Function1<A, Boolean>): Option<A> =
-    arrow.core.ListK.foldable().run {
-  this@find.find<A>(arg1) as arrow.core.Option<A>
-}
+  arrow.core.ListK.foldable().run {
+    this@find.find<A>(arg1) as arrow.core.Option<A>
+  }
 
 @JvmName("exists")
 @Suppress(
@@ -188,9 +191,9 @@ fun <A> Kind<ForListK, A>.find(arg1: Function1<A, Boolean>): Option<A> =
   "UNUSED_PARAMETER"
 )
 fun <A> Kind<ForListK, A>.exists(arg1: Function1<A, Boolean>): Boolean =
-    arrow.core.ListK.foldable().run {
-  this@exists.exists<A>(arg1) as kotlin.Boolean
-}
+  arrow.core.ListK.foldable().run {
+    this@exists.exists<A>(arg1) as kotlin.Boolean
+  }
 
 @JvmName("forAll")
 @Suppress(
@@ -200,9 +203,9 @@ fun <A> Kind<ForListK, A>.exists(arg1: Function1<A, Boolean>): Boolean =
   "UNUSED_PARAMETER"
 )
 fun <A> Kind<ForListK, A>.forAll(arg1: Function1<A, Boolean>): Boolean =
-    arrow.core.ListK.foldable().run {
-  this@forAll.forAll<A>(arg1) as kotlin.Boolean
-}
+  arrow.core.ListK.foldable().run {
+    this@forAll.forAll<A>(arg1) as kotlin.Boolean
+  }
 
 @JvmName("all")
 @Suppress(
@@ -212,9 +215,9 @@ fun <A> Kind<ForListK, A>.forAll(arg1: Function1<A, Boolean>): Boolean =
   "UNUSED_PARAMETER"
 )
 fun <A> Kind<ForListK, A>.all(arg1: Function1<A, Boolean>): Boolean =
-    arrow.core.ListK.foldable().run {
-  this@all.all<A>(arg1) as kotlin.Boolean
-}
+  arrow.core.ListK.foldable().run {
+    this@all.all<A>(arg1) as kotlin.Boolean
+  }
 
 @JvmName("isEmpty")
 @Suppress(
@@ -335,9 +338,9 @@ fun <A> Kind<ForListK, A>.firstOption(): Option<A> = arrow.core.ListK.foldable()
   "UNUSED_PARAMETER"
 )
 fun <A> Kind<ForListK, A>.firstOption(arg1: Function1<A, Boolean>): Option<A> =
-    arrow.core.ListK.foldable().run {
-  this@firstOption.firstOption<A>(arg1) as arrow.core.Option<A>
-}
+  arrow.core.ListK.foldable().run {
+    this@firstOption.firstOption<A>(arg1) as arrow.core.Option<A>
+  }
 
 @JvmName("firstOrNone")
 @Suppress(
@@ -358,9 +361,9 @@ fun <A> Kind<ForListK, A>.firstOrNone(): Option<A> = arrow.core.ListK.foldable()
   "UNUSED_PARAMETER"
 )
 fun <A> Kind<ForListK, A>.firstOrNone(arg1: Function1<A, Boolean>): Option<A> =
-    arrow.core.ListK.foldable().run {
-  this@firstOrNone.firstOrNone<A>(arg1) as arrow.core.Option<A>
-}
+  arrow.core.ListK.foldable().run {
+    this@firstOrNone.firstOrNone<A>(arg1) as arrow.core.Option<A>
+  }
 
 @JvmName("toList")
 @Suppress(
