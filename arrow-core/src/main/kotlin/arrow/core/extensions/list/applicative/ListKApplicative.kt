@@ -2,7 +2,9 @@ package arrow.core.extensions.list.applicative
 
 import arrow.core.extensions.ListKApplicative
 import arrow.typeclasses.Monoid
+import arrow.core.replicate as _replicate
 import kotlin.Function1
+import kotlin.collections.map as _map
 import kotlin.Int
 import kotlin.PublishedApi
 import kotlin.Suppress
@@ -17,9 +19,9 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun <A> A.just(): List<A> = arrow.core.extensions.list.applicative.List.applicative().run {
-  this@just.just<A>() as kotlin.collections.List<A>
-}
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("listOf(this)"))
+fun <A> A.just(): List<A> =
+  listOf(this)
 
 @JvmName("unit")
 @Suppress(
@@ -28,9 +30,9 @@ fun <A> A.just(): List<A> = arrow.core.extensions.list.applicative.List.applicat
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun unit(): List<Unit> = arrow.core.extensions.list.applicative.List
-   .applicative()
-   .unit() as kotlin.collections.List<kotlin.Unit>
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("listOf(Unit)"))
+fun unit(): List<Unit> =
+  listOf(Unit)
 
 @JvmName("map")
 @Suppress(
@@ -39,10 +41,9 @@ fun unit(): List<Unit> = arrow.core.extensions.list.applicative.List
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("map(arg1)"))
 fun <A, B> List<A>.map(arg1: Function1<A, B>): List<B> =
-    arrow.core.extensions.list.applicative.List.applicative().run {
-  arrow.core.ListK(this@map).map<A, B>(arg1) as kotlin.collections.List<B>
-}
+  _map(arg1)
 
 @JvmName("replicate")
 @Suppress(
@@ -51,11 +52,9 @@ fun <A, B> List<A>.map(arg1: Function1<A, B>): List<B> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("replicate(arg1)", "arrow.core.replicate"))
 fun <A> List<A>.replicate(arg1: Int): List<List<A>> =
-    arrow.core.extensions.list.applicative.List.applicative().run {
-  arrow.core.ListK(this@replicate).replicate<A>(arg1) as
-    kotlin.collections.List<kotlin.collections.List<A>>
-}
+  _replicate(arg1)
 
 @JvmName("replicate")
 @Suppress(
@@ -64,21 +63,22 @@ fun <A> List<A>.replicate(arg1: Int): List<List<A>> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("replicate(arg1, arg2)", "arrow.core.replicate"))
 fun <A> List<A>.replicate(arg1: Int, arg2: Monoid<A>): List<A> =
-    arrow.core.extensions.list.applicative.List.applicative().run {
-  arrow.core.ListK(this@replicate).replicate<A>(arg1, arg2) as kotlin.collections.List<A>
-}
+  _replicate(arg1, arg2)
 
 /**
  * cached extension
  */
 @PublishedApi()
 internal val applicative_singleton: ListKApplicative = object :
-    arrow.core.extensions.ListKApplicative {}
+  arrow.core.extensions.ListKApplicative {}
 
 object List {
   @Suppress(
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
-  inline fun applicative(): ListKApplicative = applicative_singleton}
+  @Deprecated("Applicative typeclasses is deprecated. Use concrete methods on List")
+  inline fun applicative(): ListKApplicative = applicative_singleton
+}

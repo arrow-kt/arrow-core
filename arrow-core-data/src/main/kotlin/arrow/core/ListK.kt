@@ -592,7 +592,7 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
         }
       }
 
-    fun <B, C, D> tupledN(
+    fun <B, C> tupledN(
       b: Iterable<B>,
       c: Iterable<C>
     ): List<Tuple2<B, C>> =

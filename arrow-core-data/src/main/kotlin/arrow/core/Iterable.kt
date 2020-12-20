@@ -3,7 +3,6 @@ package arrow.core
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
-import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.defaultSalt
@@ -713,4 +712,10 @@ fun <A, B, C, D, EE, F, G, H, I, J> Iterable<Tuple9<A, B, C, D, EE, F, G, H, I>>
 ): List<Tuple10<A, B, C, D, EE, F, G, H, I, J>> =
   map2(other) { (abcdefghi, j) -> Tuple10(abcdefghi.a, abcdefghi.b, abcdefghi.c, abcdefghi.d, abcdefghi.e, abcdefghi.f, abcdefghi.g, abcdefghi.h, abcdefghi.i, j) }
 
+fun <A> Iterable<A>.replicate(n: Int): List<List<A>> =
+  if (n <= 0) emptyList()
+  else toList().let { l -> List(n) { l } }
 
+fun <A> Iterable<A>.replicate(n: Int, MA: Monoid<A>): List<A> =
+  if (n <= 0) listOf(MA.empty())
+  else ListK.mapN(this@replicate, replicate(n - 1, MA)) { a, xs -> MA.run { a + xs } }
