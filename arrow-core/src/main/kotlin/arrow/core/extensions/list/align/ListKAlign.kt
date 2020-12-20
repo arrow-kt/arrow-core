@@ -13,9 +13,9 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun <A> empty(): List<A> = arrow.core.extensions.list.align.List
-   .align()
-   .empty<A>() as kotlin.collections.List<A>
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("emptyList()"))
+fun <A> empty(): List<A> =
+  emptyList()
 
 /**
  * cached extension
@@ -28,4 +28,5 @@ object List {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("Align typeclasses is deprecated. Use concrete methods on List")
   inline fun align(): ListKAlign = align_singleton}
