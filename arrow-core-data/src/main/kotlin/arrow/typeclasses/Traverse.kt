@@ -115,7 +115,7 @@ import arrow.core.ValidatedNel
  * }
  * ```
  *
- * In our above example, `F` is `List`, and `G` is `Option` or `Either`. For the profile example, traverse says given a `List<User>` and a function `(User) -> Either<NotFound, Profile>`, it can give you a `IO<List<Profile>>`.
+ * In our above example, `F` is `List`, and `G` is `Option` or `Either`. For the profile example, traverse says given a `List<User>` and a function `(User) -> Either<NotFound, Profile>`, it can give you a `Either<NotFound, List<Profile>>`.
  *
  * Abstracting away the `G` (still imagining `F` to be `List`), [traverse] says given a collection of data, and a function that takes a piece of data and returns an value `B` wrapped in a container `G`, it will traverse the collection, applying the function and aggregating the values (in a `List`) as it goes.
  *
@@ -127,7 +127,7 @@ import arrow.core.ValidatedNel
  * map(::f).sequence(AP) == traverse(AP, ::f)
  * ```
  *
- * where AP stands for an `Applicative<G>`, which is in prior snippets `Applicative<ForOption>` or `Applicative<ForIO>`.
+ * where AP stands for an `Applicative<G>`, which is in prior snippets `Applicative<ForOption>` or `Applicative<EitherPartialOf<E>>`.
  *
  * ### Sequencing effects
  *
