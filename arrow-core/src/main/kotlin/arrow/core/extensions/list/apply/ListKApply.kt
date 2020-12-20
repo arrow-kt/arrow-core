@@ -2,7 +2,12 @@ package arrow.core.extensions.list.apply
 
 import arrow.Kind
 import arrow.core.Eval
+import arrow.core.ap as _ap
+import arrow.core.map2 as _map2
+import arrow.core.product as _product
+import kotlin.collections.flatMap as _flatMap
 import arrow.core.ForListK
+import arrow.core.ListK
 import arrow.core.Tuple10
 import arrow.core.Tuple2
 import arrow.core.Tuple3
@@ -13,6 +18,8 @@ import arrow.core.Tuple7
 import arrow.core.Tuple8
 import arrow.core.Tuple9
 import arrow.core.extensions.ListKApply
+import arrow.core.fix
+import arrow.core.k
 import kotlin.Function1
 import kotlin.PublishedApi
 import kotlin.Suppress
@@ -26,10 +33,9 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("_ap(arg1)", "arrow.core.ap"))
 fun <A, B> List<A>.ap(arg1: List<Function1<A, B>>): List<B> =
-    arrow.core.extensions.list.apply.List.apply().run {
-  arrow.core.ListK(this@ap).ap<A, B>(arrow.core.ListK(arg1)) as kotlin.collections.List<B>
-}
+  _ap(arg1)
 
 @JvmName("apEval")
 @Suppress(
@@ -38,11 +44,9 @@ fun <A, B> List<A>.ap(arg1: List<Function1<A, B>>): List<B> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("arg1.map { this.ap(it.fix()) }.map { it.k() }", "arrow.core.k", "arrow.core.fix"))
 fun <A, B> List<A>.apEval(arg1: Eval<Kind<ForListK, Function1<A, B>>>): Eval<Kind<ForListK, B>> =
-    arrow.core.extensions.list.apply.List.apply().run {
-  arrow.core.ListK(this@apEval).apEval<A, B>(arg1) as
-    arrow.core.Eval<arrow.Kind<arrow.core.ForListK, B>>
-}
+  arg1.map { this.ap(it.fix()) }.map { it.k() }
 
 @JvmName("map2Eval")
 @Suppress(
@@ -51,11 +55,10 @@ fun <A, B> List<A>.apEval(arg1: Eval<Kind<ForListK, Function1<A, B>>>): Eval<Kin
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("apEval(arg1.map { it.fix().map { b -> { a: A -> arg2(Tuple2(a, b)) } } })", "arrow.core.k", "arrow.core.Tuple2"))
 fun <A, B, Z> List<A>.map2Eval(arg1: Eval<Kind<ForListK, B>>, arg2: Function1<Tuple2<A, B>, Z>):
-    Eval<Kind<ForListK, Z>> = arrow.core.extensions.list.apply.List.apply().run {
-  arrow.core.ListK(this@map2Eval).map2Eval<A, B, Z>(arg1, arg2) as
-    arrow.core.Eval<arrow.Kind<arrow.core.ForListK, Z>>
-}
+  Eval<Kind<ForListK, Z>> =
+  apEval(arg1.map { it.fix().map { b -> { a: A -> arg2(Tuple2(a, b)) } } })
 
 @JvmName("map")
 @Suppress(
@@ -64,13 +67,13 @@ fun <A, B, Z> List<A>.map2Eval(arg1: Eval<Kind<ForListK, B>>, arg2: Function1<Tu
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1).map(arg2)", "arrow.core.tupledN"))
 fun <A, B, Z> map(
   arg0: List<A>,
   arg1: List<B>,
   arg2: Function1<Tuple2<A, B>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .map<A, B, Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arg2) as kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1).map(arg2)
 
 @JvmName("mapN")
 @Suppress(
@@ -79,14 +82,13 @@ fun <A, B, Z> map(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1).map(arg2)", "arrow.core.tupledN"))
 fun <A, B, Z> mapN(
   arg0: List<A>,
   arg1: List<B>,
   arg2: Function1<Tuple2<A, B>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .mapN<A, B, Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arg2) as
-    kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1).map(arg2)
 
 @JvmName("map")
 @Suppress(
@@ -95,15 +97,14 @@ fun <A, B, Z> mapN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2).map(arg3)", "arrow.core.tupledN"))
 fun <A, B, C, Z> map(
   arg0: List<A>,
   arg1: List<B>,
   arg2: List<C>,
   arg3: Function1<Tuple3<A, B, C>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .map<A, B, C, Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arg3) as
-    kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1, arg2).map(arg3)
 
 @JvmName("mapN")
 @Suppress(
@@ -112,15 +113,14 @@ fun <A, B, C, Z> map(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2).map(arg3)", "arrow.core.tupledN"))
 fun <A, B, C, Z> mapN(
   arg0: List<A>,
   arg1: List<B>,
   arg2: List<C>,
   arg3: Function1<Tuple3<A, B, C>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .mapN<A, B, C, Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arg3)
-    as kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1, arg2).map(arg3)
 
 @JvmName("map")
 @Suppress(
@@ -129,17 +129,15 @@ fun <A, B, C, Z> mapN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3).map(arg4)", "arrow.core.tupledN"))
 fun <A, B, C, D, Z> map(
   arg0: List<A>,
   arg1: List<B>,
   arg2: List<C>,
   arg3: List<D>,
   arg4: Function1<Tuple4<A, B, C, D>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .map<A, B, C, D,
-    Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arg4)
-    as kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1, arg2, arg3).map(arg4)
 
 @JvmName("mapN")
 @Suppress(
@@ -148,17 +146,15 @@ fun <A, B, C, D, Z> map(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3).map(arg4)", "arrow.core.tupledN"))
 fun <A, B, C, D, Z> mapN(
   arg0: List<A>,
   arg1: List<B>,
   arg2: List<C>,
   arg3: List<D>,
   arg4: Function1<Tuple4<A, B, C, D>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .mapN<A, B, C, D,
-    Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arg4)
-    as kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1, arg2, arg3).map(arg4)
 
 @JvmName("map")
 @Suppress(
@@ -167,6 +163,7 @@ fun <A, B, C, D, Z> mapN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4).map(arg5)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, Z> map(
   arg0: List<A>,
   arg1: List<B>,
@@ -174,11 +171,8 @@ fun <A, B, C, D, E, Z> map(
   arg3: List<D>,
   arg4: List<E>,
   arg5: Function1<Tuple5<A, B, C, D, E>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .map<A, B, C, D, E,
-    Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arg5)
-    as kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4).map(arg5)
 
 @JvmName("mapN")
 @Suppress(
@@ -187,6 +181,7 @@ fun <A, B, C, D, E, Z> map(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4).map(arg5)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, Z> mapN(
   arg0: List<A>,
   arg1: List<B>,
@@ -194,11 +189,8 @@ fun <A, B, C, D, E, Z> mapN(
   arg3: List<D>,
   arg4: List<E>,
   arg5: Function1<Tuple5<A, B, C, D, E>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .mapN<A, B, C, D, E,
-    Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arg5)
-    as kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4).map(arg5)
 
 @JvmName("map")
 @Suppress(
@@ -207,6 +199,7 @@ fun <A, B, C, D, E, Z> mapN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5).map(arg6)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, Z> map(
   arg0: List<A>,
   arg1: List<B>,
@@ -215,11 +208,8 @@ fun <A, B, C, D, E, FF, Z> map(
   arg4: List<E>,
   arg5: List<FF>,
   arg6: Function1<Tuple6<A, B, C, D, E, FF>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .map<A, B, C, D, E, FF,
-    Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arg6)
-    as kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5).map(arg6)
 
 @JvmName("mapN")
 @Suppress(
@@ -228,6 +218,7 @@ fun <A, B, C, D, E, FF, Z> map(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5).map(arg6)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, Z> mapN(
   arg0: List<A>,
   arg1: List<B>,
@@ -236,11 +227,8 @@ fun <A, B, C, D, E, FF, Z> mapN(
   arg4: List<E>,
   arg5: List<FF>,
   arg6: Function1<Tuple6<A, B, C, D, E, FF>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .mapN<A, B, C, D, E, FF,
-    Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arg6)
-    as kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5).map(arg6)
 
 @JvmName("map")
 @Suppress(
@@ -249,6 +237,7 @@ fun <A, B, C, D, E, FF, Z> mapN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6).map(arg7)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, G, Z> map(
   arg0: List<A>,
   arg1: List<B>,
@@ -258,11 +247,8 @@ fun <A, B, C, D, E, FF, G, Z> map(
   arg5: List<FF>,
   arg6: List<G>,
   arg7: Function1<Tuple7<A, B, C, D, E, FF, G>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .map<A, B, C, D, E, FF, G,
-    Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arrow.core.ListK(arg6), arg7)
-    as kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6).map(arg7)
 
 @JvmName("mapN")
 @Suppress(
@@ -271,6 +257,7 @@ fun <A, B, C, D, E, FF, G, Z> map(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6).map(arg7)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, G, Z> mapN(
   arg0: List<A>,
   arg1: List<B>,
@@ -280,11 +267,8 @@ fun <A, B, C, D, E, FF, G, Z> mapN(
   arg5: List<FF>,
   arg6: List<G>,
   arg7: Function1<Tuple7<A, B, C, D, E, FF, G>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .mapN<A, B, C, D, E, FF, G,
-    Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arrow.core.ListK(arg6), arg7)
-    as kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6).map(arg7)
 
 @JvmName("map")
 @Suppress(
@@ -293,6 +277,7 @@ fun <A, B, C, D, E, FF, G, Z> mapN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7).map(arg8)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, G, H, Z> map(
   arg0: List<A>,
   arg1: List<B>,
@@ -303,11 +288,8 @@ fun <A, B, C, D, E, FF, G, H, Z> map(
   arg6: List<G>,
   arg7: List<H>,
   arg8: Function1<Tuple8<A, B, C, D, E, FF, G, H>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .map<A, B, C, D, E, FF, G, H,
-    Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arrow.core.ListK(arg6), arrow.core.ListK(arg7), arg8)
-    as kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7).map(arg8)
 
 @JvmName("mapN")
 @Suppress(
@@ -316,6 +298,7 @@ fun <A, B, C, D, E, FF, G, H, Z> map(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7).map(arg8)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, G, H, Z> mapN(
   arg0: List<A>,
   arg1: List<B>,
@@ -326,11 +309,8 @@ fun <A, B, C, D, E, FF, G, H, Z> mapN(
   arg6: List<G>,
   arg7: List<H>,
   arg8: Function1<Tuple8<A, B, C, D, E, FF, G, H>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .mapN<A, B, C, D, E, FF, G, H,
-    Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arrow.core.ListK(arg6), arrow.core.ListK(arg7), arg8)
-    as kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7).map(arg8)
 
 @JvmName("map")
 @Suppress(
@@ -339,6 +319,7 @@ fun <A, B, C, D, E, FF, G, H, Z> mapN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8).map(arg9)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, G, H, I, Z> map(
   arg0: List<A>,
   arg1: List<B>,
@@ -350,11 +331,8 @@ fun <A, B, C, D, E, FF, G, H, I, Z> map(
   arg7: List<H>,
   arg8: List<I>,
   arg9: Function1<Tuple9<A, B, C, D, E, FF, G, H, I>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .map<A, B, C, D, E, FF, G, H, I,
-    Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arrow.core.ListK(arg6), arrow.core.ListK(arg7), arrow.core.ListK(arg8), arg9)
-    as kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8).map(arg9)
 
 @JvmName("mapN")
 @Suppress(
@@ -363,6 +341,7 @@ fun <A, B, C, D, E, FF, G, H, I, Z> map(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8).map(arg9)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, G, H, I, Z> mapN(
   arg0: List<A>,
   arg1: List<B>,
@@ -374,11 +353,8 @@ fun <A, B, C, D, E, FF, G, H, I, Z> mapN(
   arg7: List<H>,
   arg8: List<I>,
   arg9: Function1<Tuple9<A, B, C, D, E, FF, G, H, I>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .mapN<A, B, C, D, E, FF, G, H, I,
-    Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arrow.core.ListK(arg6), arrow.core.ListK(arg7), arrow.core.ListK(arg8), arg9)
-    as kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8).map(arg9)
 
 @JvmName("map")
 @Suppress(
@@ -387,6 +363,7 @@ fun <A, B, C, D, E, FF, G, H, I, Z> mapN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9).map(arg10)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, G, H, I, J, Z> map(
   arg0: List<A>,
   arg1: List<B>,
@@ -399,11 +376,8 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> map(
   arg8: List<I>,
   arg9: List<J>,
   arg10: Function1<Tuple10<A, B, C, D, E, FF, G, H, I, J>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .map<A, B, C, D, E, FF, G, H, I, J,
-    Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arrow.core.ListK(arg6), arrow.core.ListK(arg7), arrow.core.ListK(arg8), arrow.core.ListK(arg9), arg10)
-    as kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9).map(arg10)
 
 @JvmName("mapN")
 @Suppress(
@@ -412,6 +386,7 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> map(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9).map(arg10)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, G, H, I, J, Z> mapN(
   arg0: List<A>,
   arg1: List<B>,
@@ -424,11 +399,8 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> mapN(
   arg8: List<I>,
   arg9: List<J>,
   arg10: Function1<Tuple10<A, B, C, D, E, FF, G, H, I, J>, Z>
-): List<Z> = arrow.core.extensions.list.apply.List
-   .apply()
-   .mapN<A, B, C, D, E, FF, G, H, I, J,
-    Z>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arrow.core.ListK(arg6), arrow.core.ListK(arg7), arrow.core.ListK(arg8), arrow.core.ListK(arg9), arg10)
-    as kotlin.collections.List<Z>
+): List<Z> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9).map(arg10)
 
 @JvmName("map2")
 @Suppress(
@@ -437,11 +409,9 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> mapN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("map2(arg1, arg2)", "arrow.core.map2"))
 fun <A, B, Z> List<A>.map2(arg1: List<B>, arg2: Function1<Tuple2<A, B>, Z>): List<Z> =
-    arrow.core.extensions.list.apply.List.apply().run {
-  arrow.core.ListK(this@map2).map2<A, B, Z>(arrow.core.ListK(arg1), arg2) as
-    kotlin.collections.List<Z>
-}
+  _map2(arg1, arg2)
 
 @JvmName("product")
 @Suppress(
@@ -450,11 +420,9 @@ fun <A, B, Z> List<A>.map2(arg1: List<B>, arg2: Function1<Tuple2<A, B>, Z>): Lis
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("product(arg1)", "arrow.core.product"))
 fun <A, B> List<A>.product(arg1: List<B>): List<Tuple2<A, B>> =
-    arrow.core.extensions.list.apply.List.apply().run {
-  arrow.core.ListK(this@product).product<A, B>(arrow.core.ListK(arg1)) as
-    kotlin.collections.List<arrow.core.Tuple2<A, B>>
-}
+  _product(arg1)
 
 @JvmName("product1")
 @Suppress(
@@ -463,11 +431,9 @@ fun <A, B> List<A>.product(arg1: List<B>): List<Tuple2<A, B>> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("product(arg1)", "arrow.core.product"))
 fun <A, B, Z> List<Tuple2<A, B>>.product(arg1: List<Z>): List<Tuple3<A, B, Z>> =
-    arrow.core.extensions.list.apply.List.apply().run {
-  arrow.core.ListK(this@product).product<A, B, Z>(arrow.core.ListK(arg1)) as
-    kotlin.collections.List<arrow.core.Tuple3<A, B, Z>>
-}
+  _product(arg1)
 
 @JvmName("product2")
 @Suppress(
@@ -476,11 +442,9 @@ fun <A, B, Z> List<Tuple2<A, B>>.product(arg1: List<Z>): List<Tuple3<A, B, Z>> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("product(arg1)", "arrow.core.product"))
 fun <A, B, C, Z> List<Tuple3<A, B, C>>.product(arg1: List<Z>): List<Tuple4<A, B, C, Z>> =
-    arrow.core.extensions.list.apply.List.apply().run {
-  arrow.core.ListK(this@product).product<A, B, C, Z>(arrow.core.ListK(arg1)) as
-    kotlin.collections.List<arrow.core.Tuple4<A, B, C, Z>>
-}
+  _product(arg1)
 
 @JvmName("product3")
 @Suppress(
@@ -489,11 +453,9 @@ fun <A, B, C, Z> List<Tuple3<A, B, C>>.product(arg1: List<Z>): List<Tuple4<A, B,
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("product(arg1)", "arrow.core.product"))
 fun <A, B, C, D, Z> List<Tuple4<A, B, C, D>>.product(arg1: List<Z>): List<Tuple5<A, B, C, D, Z>> =
-    arrow.core.extensions.list.apply.List.apply().run {
-  arrow.core.ListK(this@product).product<A, B, C, D, Z>(arrow.core.ListK(arg1)) as
-    kotlin.collections.List<arrow.core.Tuple5<A, B, C, D, Z>>
-}
+  _product(arg1)
 
 @JvmName("product4")
 @Suppress(
@@ -502,11 +464,9 @@ fun <A, B, C, D, Z> List<Tuple4<A, B, C, D>>.product(arg1: List<Z>): List<Tuple5
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-fun <A, B, C, D, E, Z> List<Tuple5<A, B, C, D, E>>.product(arg1: List<Z>): List<Tuple6<A, B, C, D,
-    E, Z>> = arrow.core.extensions.list.apply.List.apply().run {
-  arrow.core.ListK(this@product).product<A, B, C, D, E, Z>(arrow.core.ListK(arg1)) as
-    kotlin.collections.List<arrow.core.Tuple6<A, B, C, D, E, Z>>
-}
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("product(arg1)", "arrow.core.product"))
+fun <A, B, C, D, E, Z> List<Tuple5<A, B, C, D, E>>.product(arg1: List<Z>): List<Tuple6<A, B, C, D, E, Z>> =
+  _product(arg1)
 
 @JvmName("product5")
 @Suppress(
@@ -515,11 +475,10 @@ fun <A, B, C, D, E, Z> List<Tuple5<A, B, C, D, E>>.product(arg1: List<Z>): List<
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("product(arg1)", "arrow.core.product"))
 fun <A, B, C, D, E, FF, Z> List<Tuple6<A, B, C, D, E, FF>>.product(arg1: List<Z>): List<Tuple7<A, B,
-    C, D, E, FF, Z>> = arrow.core.extensions.list.apply.List.apply().run {
-  arrow.core.ListK(this@product).product<A, B, C, D, E, FF, Z>(arrow.core.ListK(arg1)) as
-    kotlin.collections.List<arrow.core.Tuple7<A, B, C, D, E, FF, Z>>
-}
+  C, D, E, FF, Z>> =
+  _product(arg1)
 
 @JvmName("product6")
 @Suppress(
@@ -528,11 +487,10 @@ fun <A, B, C, D, E, FF, Z> List<Tuple6<A, B, C, D, E, FF>>.product(arg1: List<Z>
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("product(arg1)", "arrow.core.product"))
 fun <A, B, C, D, E, FF, G, Z> List<Tuple7<A, B, C, D, E, FF, G>>.product(arg1: List<Z>):
-    List<Tuple8<A, B, C, D, E, FF, G, Z>> = arrow.core.extensions.list.apply.List.apply().run {
-  arrow.core.ListK(this@product).product<A, B, C, D, E, FF, G, Z>(arrow.core.ListK(arg1)) as
-    kotlin.collections.List<arrow.core.Tuple8<A, B, C, D, E, FF, G, Z>>
-}
+  List<Tuple8<A, B, C, D, E, FF, G, Z>> =
+  _product(arg1)
 
 @JvmName("product7")
 @Suppress(
@@ -541,11 +499,11 @@ fun <A, B, C, D, E, FF, G, Z> List<Tuple7<A, B, C, D, E, FF, G>>.product(arg1: L
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("product(arg1)", "arrow.core.product"))
 fun <A, B, C, D, E, FF, G, H, Z> List<Tuple8<A, B, C, D, E, FF, G, H>>.product(arg1: List<Z>):
-    List<Tuple9<A, B, C, D, E, FF, G, H, Z>> = arrow.core.extensions.list.apply.List.apply().run {
-  arrow.core.ListK(this@product).product<A, B, C, D, E, FF, G, H, Z>(arrow.core.ListK(arg1)) as
-    kotlin.collections.List<arrow.core.Tuple9<A, B, C, D, E, FF, G, H, Z>>
-}
+  List<Tuple9<A, B, C, D, E, FF, G, H, Z>> =
+  _product(arg1)
+
 
 @JvmName("product8")
 @Suppress(
@@ -554,12 +512,10 @@ fun <A, B, C, D, E, FF, G, H, Z> List<Tuple8<A, B, C, D, E, FF, G, H>>.product(a
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("product(arg1)", "arrow.core.product"))
 fun <A, B, C, D, E, FF, G, H, I, Z> List<Tuple9<A, B, C, D, E, FF, G, H, I>>.product(arg1: List<Z>):
-    List<Tuple10<A, B, C, D, E, FF, G, H, I, Z>> =
-    arrow.core.extensions.list.apply.List.apply().run {
-  arrow.core.ListK(this@product).product<A, B, C, D, E, FF, G, H, I, Z>(arrow.core.ListK(arg1)) as
-    kotlin.collections.List<arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, Z>>
-}
+  List<Tuple10<A, B, C, D, E, FF, G, H, I, Z>> =
+  _product(arg1)
 
 @JvmName("tupled")
 @Suppress(
@@ -568,11 +524,9 @@ fun <A, B, C, D, E, FF, G, H, I, Z> List<Tuple9<A, B, C, D, E, FF, G, H, I>>.pro
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1)", "arrow.core.tupledN"))
 fun <A, B> tupled(arg0: List<A>, arg1: List<B>): List<Tuple2<A, B>> =
-    arrow.core.extensions.list.apply.List
-   .apply()
-   .tupled<A, B>(arrow.core.ListK(arg0), arrow.core.ListK(arg1)) as
-    kotlin.collections.List<arrow.core.Tuple2<A, B>>
+  ListK.tupledN(arg0, arg1)
 
 @JvmName("tupledN")
 @Suppress(
@@ -581,11 +535,9 @@ fun <A, B> tupled(arg0: List<A>, arg1: List<B>): List<Tuple2<A, B>> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1)", "arrow.core.tupledN"))
 fun <A, B> tupledN(arg0: List<A>, arg1: List<B>): List<Tuple2<A, B>> =
-    arrow.core.extensions.list.apply.List
-   .apply()
-   .tupledN<A, B>(arrow.core.ListK(arg0), arrow.core.ListK(arg1)) as
-    kotlin.collections.List<arrow.core.Tuple2<A, B>>
+  ListK.tupledN(arg0, arg1)
 
 @JvmName("tupled")
 @Suppress(
@@ -594,14 +546,13 @@ fun <A, B> tupledN(arg0: List<A>, arg1: List<B>): List<Tuple2<A, B>> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2)", "arrow.core.tupledN"))
 fun <A, B, C> tupled(
   arg0: List<A>,
   arg1: List<B>,
   arg2: List<C>
-): List<Tuple3<A, B, C>> = arrow.core.extensions.list.apply.List
-   .apply()
-   .tupled<A, B, C>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2)) as
-    kotlin.collections.List<arrow.core.Tuple3<A, B, C>>
+): List<Tuple3<A, B, C>> =
+  ListK.tupledN(arg0, arg1, arg2)
 
 @JvmName("tupledN")
 @Suppress(
@@ -610,14 +561,13 @@ fun <A, B, C> tupled(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2)", "arrow.core.tupledN"))
 fun <A, B, C> tupledN(
   arg0: List<A>,
   arg1: List<B>,
   arg2: List<C>
-): List<Tuple3<A, B, C>> = arrow.core.extensions.list.apply.List
-   .apply()
-   .tupledN<A, B, C>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2)) as
-    kotlin.collections.List<arrow.core.Tuple3<A, B, C>>
+): List<Tuple3<A, B, C>> =
+  ListK.tupledN(arg0, arg1, arg2)
 
 @JvmName("tupled")
 @Suppress(
@@ -626,16 +576,14 @@ fun <A, B, C> tupledN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3)", "arrow.core.tupledN"))
 fun <A, B, C, D> tupled(
   arg0: List<A>,
   arg1: List<B>,
   arg2: List<C>,
   arg3: List<D>
-): List<Tuple4<A, B, C, D>> = arrow.core.extensions.list.apply.List
-   .apply()
-   .tupled<A, B, C,
-    D>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3))
-    as kotlin.collections.List<arrow.core.Tuple4<A, B, C, D>>
+): List<Tuple4<A, B, C, D>> =
+  ListK.tupledN(arg0, arg1, arg2, arg3)
 
 @JvmName("tupledN")
 @Suppress(
@@ -644,16 +592,14 @@ fun <A, B, C, D> tupled(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3)", "arrow.core.tupledN"))
 fun <A, B, C, D> tupledN(
   arg0: List<A>,
   arg1: List<B>,
   arg2: List<C>,
   arg3: List<D>
-): List<Tuple4<A, B, C, D>> = arrow.core.extensions.list.apply.List
-   .apply()
-   .tupledN<A, B, C,
-    D>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3))
-    as kotlin.collections.List<arrow.core.Tuple4<A, B, C, D>>
+): List<Tuple4<A, B, C, D>> =
+  ListK.tupledN(arg0, arg1, arg2, arg3)
 
 @JvmName("tupled")
 @Suppress(
@@ -662,17 +608,15 @@ fun <A, B, C, D> tupledN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4)", "arrow.core.tupledN"))
 fun <A, B, C, D, E> tupled(
   arg0: List<A>,
   arg1: List<B>,
   arg2: List<C>,
   arg3: List<D>,
   arg4: List<E>
-): List<Tuple5<A, B, C, D, E>> = arrow.core.extensions.list.apply.List
-   .apply()
-   .tupled<A, B, C, D,
-    E>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4))
-    as kotlin.collections.List<arrow.core.Tuple5<A, B, C, D, E>>
+): List<Tuple5<A, B, C, D, E>> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4)
 
 @JvmName("tupledN")
 @Suppress(
@@ -681,17 +625,15 @@ fun <A, B, C, D, E> tupled(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4)", "arrow.core.tupledN"))
 fun <A, B, C, D, E> tupledN(
   arg0: List<A>,
   arg1: List<B>,
   arg2: List<C>,
   arg3: List<D>,
   arg4: List<E>
-): List<Tuple5<A, B, C, D, E>> = arrow.core.extensions.list.apply.List
-   .apply()
-   .tupledN<A, B, C, D,
-    E>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4))
-    as kotlin.collections.List<arrow.core.Tuple5<A, B, C, D, E>>
+): List<Tuple5<A, B, C, D, E>> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4)
 
 @JvmName("tupled")
 @Suppress(
@@ -700,6 +642,7 @@ fun <A, B, C, D, E> tupledN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF> tupled(
   arg0: List<A>,
   arg1: List<B>,
@@ -707,11 +650,8 @@ fun <A, B, C, D, E, FF> tupled(
   arg3: List<D>,
   arg4: List<E>,
   arg5: List<FF>
-): List<Tuple6<A, B, C, D, E, FF>> = arrow.core.extensions.list.apply.List
-   .apply()
-   .tupled<A, B, C, D, E,
-    FF>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5))
-    as kotlin.collections.List<arrow.core.Tuple6<A, B, C, D, E, FF>>
+): List<Tuple6<A, B, C, D, E, FF>> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5)
 
 @JvmName("tupledN")
 @Suppress(
@@ -720,6 +660,7 @@ fun <A, B, C, D, E, FF> tupled(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF> tupledN(
   arg0: List<A>,
   arg1: List<B>,
@@ -727,11 +668,8 @@ fun <A, B, C, D, E, FF> tupledN(
   arg3: List<D>,
   arg4: List<E>,
   arg5: List<FF>
-): List<Tuple6<A, B, C, D, E, FF>> = arrow.core.extensions.list.apply.List
-   .apply()
-   .tupledN<A, B, C, D, E,
-    FF>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5))
-    as kotlin.collections.List<arrow.core.Tuple6<A, B, C, D, E, FF>>
+): List<Tuple6<A, B, C, D, E, FF>> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5)
 
 @JvmName("tupled")
 @Suppress(
@@ -740,6 +678,7 @@ fun <A, B, C, D, E, FF> tupledN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, G> tupled(
   arg0: List<A>,
   arg1: List<B>,
@@ -748,11 +687,8 @@ fun <A, B, C, D, E, FF, G> tupled(
   arg4: List<E>,
   arg5: List<FF>,
   arg6: List<G>
-): List<Tuple7<A, B, C, D, E, FF, G>> = arrow.core.extensions.list.apply.List
-   .apply()
-   .tupled<A, B, C, D, E, FF,
-    G>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arrow.core.ListK(arg6))
-    as kotlin.collections.List<arrow.core.Tuple7<A, B, C, D, E, FF, G>>
+): List<Tuple7<A, B, C, D, E, FF, G>> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6)
 
 @JvmName("tupledN")
 @Suppress(
@@ -761,6 +697,7 @@ fun <A, B, C, D, E, FF, G> tupled(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, G> tupledN(
   arg0: List<A>,
   arg1: List<B>,
@@ -769,11 +706,8 @@ fun <A, B, C, D, E, FF, G> tupledN(
   arg4: List<E>,
   arg5: List<FF>,
   arg6: List<G>
-): List<Tuple7<A, B, C, D, E, FF, G>> = arrow.core.extensions.list.apply.List
-   .apply()
-   .tupledN<A, B, C, D, E, FF,
-    G>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arrow.core.ListK(arg6))
-    as kotlin.collections.List<arrow.core.Tuple7<A, B, C, D, E, FF, G>>
+): List<Tuple7<A, B, C, D, E, FF, G>> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6)
 
 @JvmName("tupled")
 @Suppress(
@@ -782,6 +716,7 @@ fun <A, B, C, D, E, FF, G> tupledN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, G, H> tupled(
   arg0: List<A>,
   arg1: List<B>,
@@ -791,11 +726,8 @@ fun <A, B, C, D, E, FF, G, H> tupled(
   arg5: List<FF>,
   arg6: List<G>,
   arg7: List<H>
-): List<Tuple8<A, B, C, D, E, FF, G, H>> = arrow.core.extensions.list.apply.List
-   .apply()
-   .tupled<A, B, C, D, E, FF, G,
-    H>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arrow.core.ListK(arg6), arrow.core.ListK(arg7))
-    as kotlin.collections.List<arrow.core.Tuple8<A, B, C, D, E, FF, G, H>>
+): List<Tuple8<A, B, C, D, E, FF, G, H>> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)
 
 @JvmName("tupledN")
 @Suppress(
@@ -804,6 +736,7 @@ fun <A, B, C, D, E, FF, G, H> tupled(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, G, H> tupledN(
   arg0: List<A>,
   arg1: List<B>,
@@ -813,11 +746,8 @@ fun <A, B, C, D, E, FF, G, H> tupledN(
   arg5: List<FF>,
   arg6: List<G>,
   arg7: List<H>
-): List<Tuple8<A, B, C, D, E, FF, G, H>> = arrow.core.extensions.list.apply.List
-   .apply()
-   .tupledN<A, B, C, D, E, FF, G,
-    H>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arrow.core.ListK(arg6), arrow.core.ListK(arg7))
-    as kotlin.collections.List<arrow.core.Tuple8<A, B, C, D, E, FF, G, H>>
+): List<Tuple8<A, B, C, D, E, FF, G, H>> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)
 
 @JvmName("tupled")
 @Suppress(
@@ -826,6 +756,7 @@ fun <A, B, C, D, E, FF, G, H> tupledN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, G, H, I> tupled(
   arg0: List<A>,
   arg1: List<B>,
@@ -836,11 +767,8 @@ fun <A, B, C, D, E, FF, G, H, I> tupled(
   arg6: List<G>,
   arg7: List<H>,
   arg8: List<I>
-): List<Tuple9<A, B, C, D, E, FF, G, H, I>> = arrow.core.extensions.list.apply.List
-   .apply()
-   .tupled<A, B, C, D, E, FF, G, H,
-    I>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arrow.core.ListK(arg6), arrow.core.ListK(arg7), arrow.core.ListK(arg8))
-    as kotlin.collections.List<arrow.core.Tuple9<A, B, C, D, E, FF, G, H, I>>
+): List<Tuple9<A, B, C, D, E, FF, G, H, I>> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
 
 @JvmName("tupledN")
 @Suppress(
@@ -849,6 +777,7 @@ fun <A, B, C, D, E, FF, G, H, I> tupled(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, G, H, I> tupledN(
   arg0: List<A>,
   arg1: List<B>,
@@ -859,11 +788,8 @@ fun <A, B, C, D, E, FF, G, H, I> tupledN(
   arg6: List<G>,
   arg7: List<H>,
   arg8: List<I>
-): List<Tuple9<A, B, C, D, E, FF, G, H, I>> = arrow.core.extensions.list.apply.List
-   .apply()
-   .tupledN<A, B, C, D, E, FF, G, H,
-    I>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arrow.core.ListK(arg6), arrow.core.ListK(arg7), arrow.core.ListK(arg8))
-    as kotlin.collections.List<arrow.core.Tuple9<A, B, C, D, E, FF, G, H, I>>
+): List<Tuple9<A, B, C, D, E, FF, G, H, I>> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
 
 @JvmName("tupled")
 @Suppress(
@@ -872,6 +798,7 @@ fun <A, B, C, D, E, FF, G, H, I> tupledN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, G, H, I, J> tupled(
   arg0: List<A>,
   arg1: List<B>,
@@ -883,11 +810,8 @@ fun <A, B, C, D, E, FF, G, H, I, J> tupled(
   arg7: List<H>,
   arg8: List<I>,
   arg9: List<J>
-): List<Tuple10<A, B, C, D, E, FF, G, H, I, J>> = arrow.core.extensions.list.apply.List
-   .apply()
-   .tupled<A, B, C, D, E, FF, G, H, I,
-    J>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arrow.core.ListK(arg6), arrow.core.ListK(arg7), arrow.core.ListK(arg8), arrow.core.ListK(arg9))
-    as kotlin.collections.List<arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
+): List<Tuple10<A, B, C, D, E, FF, G, H, I, J>> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
 
 @JvmName("tupledN")
 @Suppress(
@@ -896,6 +820,7 @@ fun <A, B, C, D, E, FF, G, H, I, J> tupled(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)", "arrow.core.tupledN"))
 fun <A, B, C, D, E, FF, G, H, I, J> tupledN(
   arg0: List<A>,
   arg1: List<B>,
@@ -907,11 +832,8 @@ fun <A, B, C, D, E, FF, G, H, I, J> tupledN(
   arg7: List<H>,
   arg8: List<I>,
   arg9: List<J>
-): List<Tuple10<A, B, C, D, E, FF, G, H, I, J>> = arrow.core.extensions.list.apply.List
-   .apply()
-   .tupledN<A, B, C, D, E, FF, G, H, I,
-    J>(arrow.core.ListK(arg0), arrow.core.ListK(arg1), arrow.core.ListK(arg2), arrow.core.ListK(arg3), arrow.core.ListK(arg4), arrow.core.ListK(arg5), arrow.core.ListK(arg6), arrow.core.ListK(arg7), arrow.core.ListK(arg8), arrow.core.ListK(arg9))
-    as kotlin.collections.List<arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
+): List<Tuple10<A, B, C, D, E, FF, G, H, I, J>> =
+  ListK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
 
 @JvmName("followedBy")
 @Suppress(
@@ -920,11 +842,9 @@ fun <A, B, C, D, E, FF, G, H, I, J> tupledN(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("flatMap { arg1 }"))
 fun <A, B> List<A>.followedBy(arg1: List<B>): List<B> =
-    arrow.core.extensions.list.apply.List.apply().run {
-  arrow.core.ListK(this@followedBy).followedBy<A, B>(arrow.core.ListK(arg1)) as
-    kotlin.collections.List<B>
-}
+  _flatMap { arg1 }
 
 @JvmName("apTap")
 @Suppress(
@@ -933,10 +853,9 @@ fun <A, B> List<A>.followedBy(arg1: List<B>): List<B> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("ListK.mapN(this, arg1) { left, _ -> left }", "arrow.core.mapN"))
 fun <A, B> List<A>.apTap(arg1: List<B>): List<A> =
-    arrow.core.extensions.list.apply.List.apply().run {
-  arrow.core.ListK(this@apTap).apTap<A, B>(arrow.core.ListK(arg1)) as kotlin.collections.List<A>
-}
+  ListK.mapN(this, arg1) { left, _ -> left }
 
 /**
  * cached extension
@@ -949,4 +868,6 @@ object List {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
-  inline fun apply(): ListKApply = apply_singleton}
+  @Deprecated("Apply typeclasses is deprecated. Use concrete methods on List")
+  inline fun apply(): ListKApply = apply_singleton
+}
