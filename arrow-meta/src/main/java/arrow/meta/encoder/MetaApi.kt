@@ -61,7 +61,7 @@ val KotlinReservedKeywords = setOf(
  * The current implementation includes support for [TypeClassInstance] and all the subtrees under the
  * [Tree] hierarchy as well as the notion of emulated higher kinded types via `arrow.Kind`.
  * Among other things one can defunctionalize a Kinded value representation into it's concrete counter part:
- * `Kind<ForIO, A> -> IO<A>`
+ * `Kind<ForOption, A> -> Option<A>`
  */
 interface MetaApi {
 
