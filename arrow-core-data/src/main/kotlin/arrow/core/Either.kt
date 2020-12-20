@@ -1240,8 +1240,9 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
      *
      *  fun main(args: Array<String>) {
      *   //sampleStart
-     *   val f = Either.lift<String, String, String>({ s: CharSequence -> "$s World" })
-     *   val result = f("Hello".right())
+     *   val f = Either.lift<Int, CharSequence, String> { s: CharSequence -> "$s World" }
+     *   val either: Either<Int, CharSequence> = "Hello".right()
+     *   val result = f(either)
      *   //sampleEnd
      *   println(result)
      *  }
@@ -1249,6 +1250,9 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
      */
     fun <A, B, C> lift(f: (B) -> C): (Either<A, B>) -> Either<A, C> =
       { it.map(f) }
+
+    fun <A, B, C, D> lift(fa: (A) -> C, fb: (B) -> D): (Either<A, B>) -> Either<C, D> =
+      { it.bimap(fa, fb) }
 
     /** Construct an [Eq] instance which use [EQL] and [EQR] to compare the [Left] and [Right] cases **/
     fun <L, R> eq(EQL: Eq<L>, EQR: Eq<R>): Eq<Either<L, R>> =
