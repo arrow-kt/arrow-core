@@ -1,5 +1,8 @@
 package arrow.core
 
+import arrow.typeclasses.Monoid
+import arrow.typeclasses.Semigroup
+
 sealed class Ordering {
   override fun equals(other: Any?): Boolean = this === other // ref equality is fine because objects should be singletons
 
@@ -28,9 +31,22 @@ sealed class Ordering {
       0 -> EQ
       else -> if (i < 0) LT else GT
     }
+
+    fun monoid(): Monoid<Ordering> =
+      OrderingMonoid
+
+    fun semigroup(): Semigroup<Ordering> =
+      OrderingMonoid
   }
 }
 
 object LT : Ordering()
 object GT : Ordering()
 object EQ : Ordering()
+
+private object OrderingMonoid : Monoid<Ordering> {
+  override fun empty(): Ordering = EQ
+
+  override fun Ordering.combine(b: Ordering): Ordering =
+    this + b
+}

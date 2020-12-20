@@ -3,6 +3,7 @@ package arrow.core
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
+import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.defaultSalt
@@ -611,7 +612,7 @@ fun <A, B> Iterable<A>.tupleLeft(b: B): List<Tuple2<B, A>> =
  *  }
  *  ```
  */
-fun <A, B> List<A>.tupleRight(b: B): List<Tuple2<A, B>> =
+fun <A, B> Iterable<A>.tupleRight(b: B): List<Tuple2<A, B>> =
   map { a -> Tuple2(a, b) }
 
 /**
@@ -711,4 +712,5 @@ fun <A, B, C, D, EE, F, G, H, I, J> Iterable<Tuple9<A, B, C, D, EE, F, G, H, I>>
   other: Iterable<J>
 ): List<Tuple10<A, B, C, D, EE, F, G, H, I, J>> =
   map2(other) { (abcdefghi, j) -> Tuple10(abcdefghi.a, abcdefghi.b, abcdefghi.c, abcdefghi.d, abcdefghi.e, abcdefghi.f, abcdefghi.g, abcdefghi.h, abcdefghi.i, j) }
+
 
