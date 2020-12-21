@@ -3,16 +3,13 @@ package arrow.core.extensions.list.monad
 import arrow.Kind
 import arrow.core.Either
 import arrow.core.Eval
-import arrow.core.ap as _ap
 import arrow.core.ForListK
 import arrow.core.Tuple2
 import arrow.core.extensions.ListKMonad
 import arrow.core.fix
 import arrow.core.tailRecMIterable
 import kotlin.Boolean
-import kotlin.collections.flatten as _flatten
 import kotlin.collections.flatMap as _flatMap
-import kotlin.collections.map as _map
 import kotlin.Function0
 import kotlin.Function1
 import kotlin.PublishedApi

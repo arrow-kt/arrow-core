@@ -3,12 +3,9 @@
 package arrow.core
 
 import arrow.typeclasses.Eq
-import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
-import arrow.typeclasses.defaultSalt
-import arrow.typeclasses.hashWithSalt
 import kotlin.collections.foldRight as _foldRight
 
 inline fun <A, B> Iterable<A>.foldRight(initial: B, operation: (A, acc: B) -> B): B =
