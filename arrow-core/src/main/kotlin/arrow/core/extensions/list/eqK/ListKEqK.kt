@@ -17,6 +17,7 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 fun <A> List<A>.eqK(arg1: List<A>, arg2: Eq<A>): Boolean =
     arrow.core.extensions.list.eqK.List.eqK().run {
   arrow.core.ListK(this@eqK).eqK<A>(arrow.core.ListK(arg1), arg2) as kotlin.Boolean
@@ -29,6 +30,7 @@ fun <A> List<A>.eqK(arg1: List<A>, arg2: Eq<A>): Boolean =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 fun <A> liftEq(arg0: Eq<A>): Eq<Kind<ForListK, A>> = arrow.core.extensions.list.eqK.List
    .eqK()
    .liftEq<A>(arg0) as arrow.typeclasses.Eq<arrow.Kind<arrow.core.ForListK, A>>
@@ -44,4 +46,5 @@ object List {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
   inline fun eqK(): ListKEqK = eqK_singleton}
