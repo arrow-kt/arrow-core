@@ -19,6 +19,7 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("split()", "arrow.core.split"))
 fun <A> List<A>.splitM(): List<Option<Tuple2<Kind<ForListK, A>, A>>> =
     arrow.core.extensions.list.monadLogic.List.monadLogic().run {
   arrow.core.ListK(this@splitM).splitM<A>() as
@@ -33,6 +34,7 @@ fun <A> List<A>.splitM(): List<Option<Tuple2<Kind<ForListK, A>, A>>> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("interleave(arg1)", "arrow.core.interleave"))
 fun <A> List<A>.interleave(arg1: List<A>): List<A> =
     arrow.core.extensions.list.monadLogic.List.monadLogic().run {
   arrow.core.ListK(this@interleave).interleave<A>(arrow.core.ListK(arg1)) as
@@ -46,6 +48,7 @@ fun <A> List<A>.interleave(arg1: List<A>): List<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("unweave(arg1)", "arrow.core.unweave"))
 fun <A, B> List<A>.unweave(arg1: Function1<A, Kind<ForListK, B>>): List<B> =
     arrow.core.extensions.list.monadLogic.List.monadLogic().run {
   arrow.core.ListK(this@unweave).unweave<A, B>(arg1) as kotlin.collections.List<B>
@@ -58,6 +61,7 @@ fun <A, B> List<A>.unweave(arg1: Function1<A, Kind<ForListK, B>>): List<B> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("ifThen(arg1, arg2)", "arrow.core.ifThen"))
 fun <A, B> List<A>.ifThen(arg1: List<B>, arg2: Function1<A, Kind<ForListK, B>>): List<B> =
     arrow.core.extensions.list.monadLogic.List.monadLogic().run {
   arrow.core.ListK(this@ifThen).ifThen<A, B>(arrow.core.ListK(arg1), arg2) as
@@ -71,6 +75,7 @@ fun <A, B> List<A>.ifThen(arg1: List<B>, arg2: Function1<A, Kind<ForListK, B>>):
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("listOfNotNull<A>(firstOrNull())"))
 fun <A> List<A>.once(): List<A> = arrow.core.extensions.list.monadLogic.List.monadLogic().run {
   arrow.core.ListK(this@once).once<A>() as kotlin.collections.List<A>
 }
@@ -82,6 +87,7 @@ fun <A> List<A>.once(): List<A> = arrow.core.extensions.list.monadLogic.List.mon
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("firstOrNull()?.let { emptyList<Unit>() } ?: listOf(Unit)"))
 fun <A> List<A>.voidIfValue(): List<Unit> =
     arrow.core.extensions.list.monadLogic.List.monadLogic().run {
   arrow.core.ListK(this@voidIfValue).voidIfValue<A>() as kotlin.collections.List<kotlin.Unit>
@@ -99,4 +105,5 @@ object List {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("MonadLogic typeclasses is deprecated. Use concrete methods on List")
   inline fun monadLogic(): ListKMonadLogic = monadLogic_singleton}

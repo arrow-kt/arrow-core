@@ -28,6 +28,7 @@ internal val monad_singleton: ListKMonad = object : arrow.core.extensions.ListKM
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("flatMap(arg1)"))
 fun <A, B> Kind<ForListK, A>.flatMap(arg1: Function1<A, Kind<ForListK, B>>): ListK<B> =
     arrow.core.ListK.monad().run {
   this@flatMap.flatMap<A, B>(arg1) as arrow.core.ListK<B>
@@ -40,6 +41,7 @@ fun <A, B> Kind<ForListK, A>.flatMap(arg1: Function1<A, Kind<ForListK, B>>): Lis
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("tailRecMIterable(arg0) { arg1(it) }"))
 fun <A, B> tailRecM(arg0: A, arg1: Function1<A, Kind<ForListK, Either<A, B>>>): ListK<B> =
     arrow.core.ListK
    .monad()
@@ -52,6 +54,7 @@ fun <A, B> tailRecM(arg0: A, arg1: Function1<A, Kind<ForListK, Either<A, B>>>): 
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("map(arg1)"))
 fun <A, B> Kind<ForListK, A>.map(arg1: Function1<A, B>): ListK<B> = arrow.core.ListK.monad().run {
   this@map.map<A, B>(arg1) as arrow.core.ListK<B>
 }
@@ -66,6 +69,7 @@ fun <A, B> Kind<ForListK, A>.map(arg1: Function1<A, B>): ListK<B> = arrow.core.L
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("ap(arg1)", "arrow.core.ap"))
 fun <A, B> Kind<ForListK, A>.ap(arg1: Kind<ForListK, Function1<A, B>>): ListK<B> =
     arrow.core.ListK.monad().run {
   this@ap.ap<A, B>(arg1) as arrow.core.ListK<B>
@@ -78,6 +82,7 @@ fun <A, B> Kind<ForListK, A>.ap(arg1: Kind<ForListK, Function1<A, B>>): ListK<B>
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("flatten"))
 fun <A> Kind<ForListK, Kind<ForListK, A>>.flatten(): ListK<A> = arrow.core.ListK.monad().run {
   this@flatten.flatten<A>() as arrow.core.ListK<A>
 }
@@ -89,6 +94,7 @@ fun <A> Kind<ForListK, Kind<ForListK, A>>.flatten(): ListK<A> = arrow.core.ListK
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("flatMap { arg1 }"))
 fun <A, B> Kind<ForListK, A>.followedBy(arg1: Kind<ForListK, B>): ListK<B> =
     arrow.core.ListK.monad().run {
   this@followedBy.followedBy<A, B>(arg1) as arrow.core.ListK<B>
@@ -101,6 +107,7 @@ fun <A, B> Kind<ForListK, A>.followedBy(arg1: Kind<ForListK, B>): ListK<B> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("flatMap { a -> arg1.map { a } }"))
 fun <A, B> Kind<ForListK, A>.apTap(arg1: Kind<ForListK, B>): ListK<A> =
     arrow.core.ListK.monad().run {
   this@apTap.apTap<A, B>(arg1) as arrow.core.ListK<A>
@@ -113,6 +120,7 @@ fun <A, B> Kind<ForListK, A>.apTap(arg1: Kind<ForListK, B>): ListK<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("flatMap { arg1.value() }"))
 fun <A, B> Kind<ForListK, A>.followedByEval(arg1: Eval<Kind<ForListK, B>>): ListK<B> =
     arrow.core.ListK.monad().run {
   this@followedByEval.followedByEval<A, B>(arg1) as arrow.core.ListK<B>
@@ -125,6 +133,7 @@ fun <A, B> Kind<ForListK, A>.followedByEval(arg1: Eval<Kind<ForListK, B>>): List
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("flatMap { a -> arg1(a).map { a } }"))
 fun <A, B> Kind<ForListK, A>.effectM(arg1: Function1<A, Kind<ForListK, B>>): ListK<A> =
     arrow.core.ListK.monad().run {
   this@effectM.effectM<A, B>(arg1) as arrow.core.ListK<A>
@@ -137,6 +146,7 @@ fun <A, B> Kind<ForListK, A>.effectM(arg1: Function1<A, Kind<ForListK, B>>): Lis
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("flatMap { a -> arg1(a).map { a } }"))
 fun <A, B> Kind<ForListK, A>.flatTap(arg1: Function1<A, Kind<ForListK, B>>): ListK<A> =
     arrow.core.ListK.monad().run {
   this@flatTap.flatTap<A, B>(arg1) as arrow.core.ListK<A>
@@ -149,6 +159,7 @@ fun <A, B> Kind<ForListK, A>.flatTap(arg1: Function1<A, Kind<ForListK, B>>): Lis
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("flatMap { a -> arg1.map { a } }"))
 fun <A, B> Kind<ForListK, A>.productL(arg1: Kind<ForListK, B>): ListK<A> =
     arrow.core.ListK.monad().run {
   this@productL.productL<A, B>(arg1) as arrow.core.ListK<A>
@@ -161,6 +172,7 @@ fun <A, B> Kind<ForListK, A>.productL(arg1: Kind<ForListK, B>): ListK<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("flatMap { a -> arg1.map { a } }"))
 fun <A, B> Kind<ForListK, A>.forEffect(arg1: Kind<ForListK, B>): ListK<A> =
     arrow.core.ListK.monad().run {
   this@forEffect.forEffect<A, B>(arg1) as arrow.core.ListK<A>
@@ -173,6 +185,7 @@ fun <A, B> Kind<ForListK, A>.forEffect(arg1: Kind<ForListK, B>): ListK<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("flatMap { a -> arg1.value().map { a } }"))
 fun <A, B> Kind<ForListK, A>.productLEval(arg1: Eval<Kind<ForListK, B>>): ListK<A> =
     arrow.core.ListK.monad().run {
   this@productLEval.productLEval<A, B>(arg1) as arrow.core.ListK<A>
@@ -185,6 +198,7 @@ fun <A, B> Kind<ForListK, A>.productLEval(arg1: Eval<Kind<ForListK, B>>): ListK<
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("flatMap { a -> arg1.value().map { a } }"))
 fun <A, B> Kind<ForListK, A>.forEffectEval(arg1: Eval<Kind<ForListK, B>>): ListK<A> =
     arrow.core.ListK.monad().run {
   this@forEffectEval.forEffectEval<A, B>(arg1) as arrow.core.ListK<A>
@@ -197,6 +211,7 @@ fun <A, B> Kind<ForListK, A>.forEffectEval(arg1: Eval<Kind<ForListK, B>>): ListK
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("flatMap { a -> arg1(a).map { b -> Tuple2(a, b) } }"))
 fun <A, B> Kind<ForListK, A>.mproduct(arg1: Function1<A, Kind<ForListK, B>>): ListK<Tuple2<A, B>> =
     arrow.core.ListK.monad().run {
   this@mproduct.mproduct<A, B>(arg1) as arrow.core.ListK<arrow.core.Tuple2<A, B>>
@@ -209,6 +224,7 @@ fun <A, B> Kind<ForListK, A>.mproduct(arg1: Function1<A, Kind<ForListK, B>>): Li
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("ifM(arg1, arg2)", "arrow.core.ifM"))
 fun <B> Kind<ForListK, Boolean>.ifM(
   arg1: Function0<Kind<ForListK, B>>,
   arg2: Function0<Kind<ForListK, B>>
@@ -223,6 +239,7 @@ fun <B> Kind<ForListK, Boolean>.ifM(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("selectM(arg1)", "arrow.core.selectM"))
 fun <A, B> Kind<ForListK, Either<A, B>>.selectM(arg1: Kind<ForListK, Function1<A, B>>): ListK<B> =
     arrow.core.ListK.monad().run {
   this@selectM.selectM<A, B>(arg1) as arrow.core.ListK<B>
@@ -235,6 +252,7 @@ fun <A, B> Kind<ForListK, Either<A, B>>.selectM(arg1: Kind<ForListK, Function1<A
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("select(arg1)", "arrow.core.select"))
 fun <A, B> Kind<ForListK, Either<A, B>>.select(arg1: Kind<ForListK, Function1<A, B>>): ListK<B> =
     arrow.core.ListK.monad().run {
   this@select.select<A, B>(arg1) as arrow.core.ListK<B>
@@ -258,4 +276,5 @@ fun <A, B> Kind<ForListK, Either<A, B>>.select(arg1: Kind<ForListK, Function1<A,
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Monad typeclasses is deprecated. Use concrete methods on List")
 inline fun Companion.monad(): ListKMonad = monad_singleton

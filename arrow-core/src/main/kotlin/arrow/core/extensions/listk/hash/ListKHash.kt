@@ -16,6 +16,7 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("hash(HA)", "arrow.core.hash"))
 fun <A> Kind<ForListK, A>.hash(HA: Hash<A>): Int = arrow.core.ListK.hash<A>(HA).run {
   this@hash.hash() as kotlin.Int
 }
@@ -27,6 +28,7 @@ fun <A> Kind<ForListK, A>.hash(HA: Hash<A>): Int = arrow.core.ListK.hash<A>(HA).
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("hashWithSalt(HA, arg1)", "arrow.core.hashWithSalt"))
 fun <A> Kind<ForListK, A>.hashWithSalt(HA: Hash<A>, arg1: Int): Int =
     arrow.core.ListK.hash<A>(HA).run {
   this@hashWithSalt.hashWithSalt(arg1) as kotlin.Int
@@ -36,5 +38,6 @@ fun <A> Kind<ForListK, A>.hashWithSalt(HA: Hash<A>, arg1: Int): Int =
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("listHash(HA)", "arrow.core.listHash"))
 inline fun <A> Companion.hash(HA: Hash<A>): ListKHash<A> = object :
     arrow.core.extensions.ListKHash<A> { override fun HA(): arrow.typeclasses.Hash<A> = HA }

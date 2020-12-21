@@ -27,6 +27,7 @@ internal val functorFilter_singleton: ListKFunctorFilter = object :
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("mapNotNull { arg1(it).orNull() }"))
 fun <A, B> Kind<ForListK, A>.filterMap(arg1: Function1<A, Option<B>>): ListK<B> =
     arrow.core.ListK.functorFilter().run {
   this@filterMap.filterMap<A, B>(arg1) as arrow.core.ListK<B>
@@ -50,6 +51,7 @@ fun <A> Kind<ForListK, Option<A>>.flattenOption(): ListK<A> = arrow.core.ListK.f
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("mapNotNull { it.orNull() }"))
 fun <A> Kind<ForListK, A>.filter(arg1: Function1<A, Boolean>): ListK<A> =
     arrow.core.ListK.functorFilter().run {
   this@filter.filter<A>(arg1) as arrow.core.ListK<A>
@@ -62,6 +64,7 @@ fun <A> Kind<ForListK, A>.filter(arg1: Function1<A, Boolean>): ListK<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("filter(arg1::isInstance).map { arg1.cast(it) }"))
 fun <A, B> Kind<ForListK, A>.filterIsInstance(arg1: Class<B>): ListK<B> =
     arrow.core.ListK.functorFilter().run {
   this@filterIsInstance.filterIsInstance<A, B>(arg1) as arrow.core.ListK<B>
@@ -71,4 +74,5 @@ fun <A, B> Kind<ForListK, A>.filterIsInstance(arg1: Class<B>): ListK<B> =
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Functor typeclasses is deprecated. Use concrete methods on List")
 inline fun Companion.functorFilter(): ListKFunctorFilter = functorFilter_singleton

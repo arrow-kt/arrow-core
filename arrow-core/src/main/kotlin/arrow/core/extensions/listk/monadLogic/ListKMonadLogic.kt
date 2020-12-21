@@ -27,6 +27,7 @@ internal val monadLogic_singleton: ListKMonadLogic = object : arrow.core.extensi
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("split()", "arrow.core.split()"))
 fun <A> Kind<ForListK, A>.splitM(): ListK<Option<Tuple2<Kind<ForListK, A>, A>>> =
     arrow.core.ListK.monadLogic().run {
   this@splitM.splitM<A>() as
@@ -40,6 +41,7 @@ fun <A> Kind<ForListK, A>.splitM(): ListK<Option<Tuple2<Kind<ForListK, A>, A>>> 
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("interleave(arg1)", "arrow.core.interleave"))
 fun <A> Kind<ForListK, A>.interleave(arg1: Kind<ForListK, A>): ListK<A> =
     arrow.core.ListK.monadLogic().run {
   this@interleave.interleave<A>(arg1) as arrow.core.ListK<A>
@@ -52,6 +54,7 @@ fun <A> Kind<ForListK, A>.interleave(arg1: Kind<ForListK, A>): ListK<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("unweave(arg1)", "arrow.core.unweave"))
 fun <A, B> Kind<ForListK, A>.unweave(arg1: Function1<A, Kind<ForListK, B>>): ListK<B> =
     arrow.core.ListK.monadLogic().run {
   this@unweave.unweave<A, B>(arg1) as arrow.core.ListK<B>
@@ -64,6 +67,7 @@ fun <A, B> Kind<ForListK, A>.unweave(arg1: Function1<A, Kind<ForListK, B>>): Lis
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("ifThen(arg1, arg2)", "arrow.core.ifThen"))
 fun <A, B> Kind<ForListK, A>.ifThen(arg1: Kind<ForListK, B>, arg2: Function1<A, Kind<ForListK, B>>):
     ListK<B> = arrow.core.ListK.monadLogic().run {
   this@ifThen.ifThen<A, B>(arg1, arg2) as arrow.core.ListK<B>
@@ -76,6 +80,7 @@ fun <A, B> Kind<ForListK, A>.ifThen(arg1: Kind<ForListK, B>, arg2: Function1<A, 
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("listOfNotNull<A>(firstOrNull())"))
 fun <A> Kind<ForListK, A>.once(): ListK<A> = arrow.core.ListK.monadLogic().run {
   this@once.once<A>() as arrow.core.ListK<A>
 }
@@ -87,6 +92,7 @@ fun <A> Kind<ForListK, A>.once(): ListK<A> = arrow.core.ListK.monadLogic().run {
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("firstOrNull()?.let { emptyList<Unit>() } ?: listOf(Unit)"))
 fun <A> Kind<ForListK, A>.voidIfValue(): ListK<Unit> = arrow.core.ListK.monadLogic().run {
   this@voidIfValue.voidIfValue<A>() as arrow.core.ListK<kotlin.Unit>
 }
@@ -95,4 +101,5 @@ fun <A> Kind<ForListK, A>.voidIfValue(): ListK<Unit> = arrow.core.ListK.monadLog
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("MonadLogic typeclasses is deprecated. Use concrete methods on List")
 inline fun Companion.monadLogic(): ListKMonadLogic = monadLogic_singleton

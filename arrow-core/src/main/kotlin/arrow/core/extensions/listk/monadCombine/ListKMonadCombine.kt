@@ -26,6 +26,7 @@ internal val monadCombine_singleton: ListKMonadCombine = object :
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("Foldable typeclasses is deprecated. Use concrete methods on List")
 fun <G, A> Kind<ForListK, Kind<G, A>>.unite(arg1: Foldable<G>): ListK<A> =
     arrow.core.ListK.monadCombine().run {
   this@unite.unite<G, A>(arg1) as arrow.core.ListK<A>
@@ -38,6 +39,7 @@ fun <G, A> Kind<ForListK, Kind<G, A>>.unite(arg1: Foldable<G>): ListK<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("Foldable typeclasses is deprecated. Use concrete methods on List")
 fun <G, A, B> Kind<ForListK, Kind<Kind<G, A>, B>>.separate(arg1: Bifoldable<G>):
     Tuple2<Kind<ForListK, A>, Kind<ForListK, B>> = arrow.core.ListK.monadCombine().run {
   this@separate.separate<G, A, B>(arg1) as arrow.core.Tuple2<arrow.Kind<arrow.core.ForListK, A>,
@@ -48,4 +50,5 @@ fun <G, A, B> Kind<ForListK, Kind<Kind<G, A>, B>>.separate(arg1: Bifoldable<G>):
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("MonadCombine typeclasses is deprecated. Use concrete methods on List")
 inline fun Companion.monadCombine(): ListKMonadCombine = monadCombine_singleton

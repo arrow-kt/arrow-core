@@ -26,6 +26,7 @@ internal val monadFilter_singleton: ListKMonadFilter = object :
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("mapNotNull { arg1(it).orNull() }"))
 fun <A, B> Kind<ForListK, A>.filterMap(arg1: Function1<A, Option<B>>): ListK<B> =
     arrow.core.ListK.monadFilter().run {
   this@filterMap.filterMap<A, B>(arg1) as arrow.core.ListK<B>
@@ -38,6 +39,7 @@ fun <A, B> Kind<ForListK, A>.filterMap(arg1: Function1<A, Option<B>>): ListK<B> 
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("Monad bindings are deprecated")
 fun <B> bindingFilter(arg0: suspend MonadFilterSyntax<ForListK>.() -> B): ListK<B> =
     arrow.core.ListK
    .monadFilter()
@@ -47,4 +49,5 @@ fun <B> bindingFilter(arg0: suspend MonadFilterSyntax<ForListK>.() -> B): ListK<
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("MonadFilter typeclasses is deprecated. Use concrete methods on List")
 inline fun Companion.monadFilter(): ListKMonadFilter = monadFilter_singleton

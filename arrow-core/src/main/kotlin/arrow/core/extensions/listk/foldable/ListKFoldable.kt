@@ -33,6 +33,7 @@ internal val foldable_singleton: ListKFoldable = object : arrow.core.extensions.
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("fold(arg1, arg2)"))
 fun <A, B> Kind<ForListK, A>.foldLeft(arg1: B, arg2: Function2<B, A, B>): B =
   arrow.core.ListK.foldable().run {
     this@foldLeft.foldLeft<A, B>(arg1, arg2) as B
@@ -45,6 +46,7 @@ fun <A, B> Kind<ForListK, A>.foldLeft(arg1: B, arg2: Function2<B, A, B>): B =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("foldRight(arg1, arg2)", "arrow.core.foldRight"))
 fun <A, B> Kind<ForListK, A>.foldRight(arg1: Eval<B>, arg2: Function2<A, Eval<B>, Eval<B>>): Eval<B> =
   arrow.core.ListK.foldable().run {
     this@foldRight.foldRight<A, B>(arg1, arg2) as arrow.core.Eval<B>
@@ -57,6 +59,7 @@ fun <A, B> Kind<ForListK, A>.foldRight(arg1: Eval<B>, arg2: Function2<A, Eval<B>
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("combineAll(arg1)", "arrow.core.combineAll"))
 fun <A> Kind<ForListK, A>.fold(arg1: Monoid<A>): A = arrow.core.ListK.foldable().run {
   this@fold.fold<A>(arg1) as A
 }
@@ -68,6 +71,7 @@ fun <A> Kind<ForListK, A>.fold(arg1: Monoid<A>): A = arrow.core.ListK.foldable()
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("Option.fromNullable(reduceNullable(arg1, arg2))", "arrow.core.reduceNullable", "arrow.core.Option"))
 fun <A, B> Kind<ForListK, A>.reduceLeftToOption(arg1: Function1<A, B>, arg2: Function2<B, A, B>):
   Option<B> = arrow.core.ListK.foldable().run {
   this@reduceLeftToOption.reduceLeftToOption<A, B>(arg1, arg2) as arrow.core.Option<B>
@@ -80,6 +84,7 @@ fun <A, B> Kind<ForListK, A>.reduceLeftToOption(arg1: Function1<A, B>, arg2: Fun
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("reduceRightNullable(arg1, arg2).map { Option.fromNullable(it) }", "arrow.core.reduceRightNullable", "arrow.core.Option"))
 fun <A, B> Kind<ForListK, A>.reduceRightToOption(
   arg1: Function1<A, B>,
   arg2: Function2<A, Eval<B>,
@@ -96,6 +101,7 @@ fun <A, B> Kind<ForListK, A>.reduceRightToOption(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith(" Option.fromNullable(reduceNullable({ it }, arg1))", "arrow.core.reduceNullable", "arrow.core.Option"))
 fun <A> Kind<ForListK, A>.reduceLeftOption(arg1: Function2<A, A, A>): Option<A> =
   arrow.core.ListK.foldable().run {
     this@reduceLeftOption.reduceLeftOption<A>(arg1) as arrow.core.Option<A>
@@ -108,6 +114,7 @@ fun <A> Kind<ForListK, A>.reduceLeftOption(arg1: Function2<A, A, A>): Option<A> 
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("reduceRightOption({ it }, arg2).map { Option.fromNullable(it) }", "arrow.core.reduceRightNullable", "arrow.core.Option"))
 fun <A> Kind<ForListK, A>.reduceRightOption(arg1: Function2<A, Eval<A>, Eval<A>>): Eval<Option<A>> =
   arrow.core.ListK.foldable().run {
     this@reduceRightOption.reduceRightOption<A>(arg1) as arrow.core.Eval<arrow.core.Option<A>>
@@ -120,6 +127,7 @@ fun <A> Kind<ForListK, A>.reduceRightOption(arg1: Function2<A, Eval<A>, Eval<A>>
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("combineAll(arg1)", "arrow.core.combineAll"))
 fun <A> Kind<ForListK, A>.combineAll(arg1: Monoid<A>): A = arrow.core.ListK.foldable().run {
   this@combineAll.combineAll<A>(arg1) as A
 }
@@ -131,6 +139,7 @@ fun <A> Kind<ForListK, A>.combineAll(arg1: Monoid<A>): A = arrow.core.ListK.fold
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("foldMap(arg1, arg2)", "arrow.core.foldMap"))
 fun <A, B> Kind<ForListK, A>.foldMap(arg1: Monoid<B>, arg2: Function1<A, B>): B =
   arrow.core.ListK.foldable().run {
     this@foldMap.foldMap<A, B>(arg1, arg2) as B
@@ -143,6 +152,7 @@ fun <A, B> Kind<ForListK, A>.foldMap(arg1: Monoid<B>, arg2: Function1<A, B>): B 
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("listOf(arg1.empty())"))
 fun <A> orEmpty(arg0: Applicative<ForListK>, arg1: Monoid<A>): ListK<A> = arrow.core.ListK
   .foldable()
   .orEmpty<A>(arg0, arg1) as arrow.core.ListK<A>
@@ -154,6 +164,7 @@ fun <A> orEmpty(arg0: Applicative<ForListK>, arg1: Monoid<A>): ListK<A> = arrow.
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated. Replace with traverseValidated_ or traverseEither_ from arrow.core.*")
 fun <G, A, B> Kind<ForListK, A>.traverse_(arg1: Applicative<G>, arg2: Function1<A, Kind<G, B>>):
   Kind<G, Unit> = arrow.core.ListK.foldable().run {
   this@traverse_.traverse_<G, A, B>(arg1, arg2) as arrow.Kind<G, kotlin.Unit>
@@ -166,6 +177,7 @@ fun <G, A, B> Kind<ForListK, A>.traverse_(arg1: Applicative<G>, arg2: Function1<
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated. Replace with sequenceValidated_ or sequenceEither_ from arrow.core.*")
 fun <G, A> Kind<ForListK, Kind<G, A>>.sequence_(arg1: Applicative<G>): Kind<G, Unit> =
   arrow.core.ListK.foldable().run {
     this@sequence_.sequence_<G, A>(arg1) as arrow.Kind<G, kotlin.Unit>
@@ -178,6 +190,7 @@ fun <G, A> Kind<ForListK, Kind<G, A>>.sequence_(arg1: Applicative<G>): Kind<G, U
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("Option.fromNullable(firstOrNull(arg1))", "arrow.core.Option"))
 fun <A> Kind<ForListK, A>.find(arg1: Function1<A, Boolean>): Option<A> =
   arrow.core.ListK.foldable().run {
     this@find.find<A>(arg1) as arrow.core.Option<A>
@@ -190,6 +203,7 @@ fun <A> Kind<ForListK, A>.find(arg1: Function1<A, Boolean>): Option<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("any(arg1)"))
 fun <A> Kind<ForListK, A>.exists(arg1: Function1<A, Boolean>): Boolean =
   arrow.core.ListK.foldable().run {
     this@exists.exists<A>(arg1) as kotlin.Boolean
@@ -202,6 +216,7 @@ fun <A> Kind<ForListK, A>.exists(arg1: Function1<A, Boolean>): Boolean =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("all(arg1)"))
 fun <A> Kind<ForListK, A>.forAll(arg1: Function1<A, Boolean>): Boolean =
   arrow.core.ListK.foldable().run {
     this@forAll.forAll<A>(arg1) as kotlin.Boolean
@@ -214,6 +229,7 @@ fun <A> Kind<ForListK, A>.forAll(arg1: Function1<A, Boolean>): Boolean =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("all(arg1)"))
 fun <A> Kind<ForListK, A>.all(arg1: Function1<A, Boolean>): Boolean =
   arrow.core.ListK.foldable().run {
     this@all.all<A>(arg1) as kotlin.Boolean
@@ -226,6 +242,7 @@ fun <A> Kind<ForListK, A>.all(arg1: Function1<A, Boolean>): Boolean =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("isEmpty()"))
 fun <A> Kind<ForListK, A>.isEmpty(): Boolean = arrow.core.ListK.foldable().run {
   this@isEmpty.isEmpty<A>() as kotlin.Boolean
 }
@@ -237,6 +254,7 @@ fun <A> Kind<ForListK, A>.isEmpty(): Boolean = arrow.core.ListK.foldable().run {
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("isNotEmpty()"))
 fun <A> Kind<ForListK, A>.nonEmpty(): Boolean = arrow.core.ListK.foldable().run {
   this@nonEmpty.nonEmpty<A>() as kotlin.Boolean
 }
@@ -248,6 +266,7 @@ fun <A> Kind<ForListK, A>.nonEmpty(): Boolean = arrow.core.ListK.foldable().run 
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("isNotEmpty()"))
 fun <A> Kind<ForListK, A>.isNotEmpty(): Boolean = arrow.core.ListK.foldable().run {
   this@isNotEmpty.isNotEmpty<A>() as kotlin.Boolean
 }
@@ -259,6 +278,7 @@ fun <A> Kind<ForListK, A>.isNotEmpty(): Boolean = arrow.core.ListK.foldable().ru
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("size"))
 fun <A> Kind<ForListK, A>.size(arg1: Monoid<Long>): Long = arrow.core.ListK.foldable().run {
   this@size.size<A>(arg1) as kotlin.Long
 }
@@ -270,6 +290,7 @@ fun <A> Kind<ForListK, A>.size(arg1: Monoid<Long>): Long = arrow.core.ListK.fold
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on List")
 fun <G, A, B, AP : Applicative<G>, MO : Monoid<B>> Kind<ForListK, A>.foldMapA(
   arg1: AP,
   arg2: MO,
@@ -285,6 +306,7 @@ fun <G, A, B, AP : Applicative<G>, MO : Monoid<B>> Kind<ForListK, A>.foldMapA(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on List")
 fun <G, A, B, MA : Monad<G>, MO : Monoid<B>> Kind<ForListK, A>.foldMapM(
   arg1: MA,
   arg2: MO,
@@ -300,6 +322,7 @@ fun <G, A, B, MA : Monad<G>, MO : Monoid<B>> Kind<ForListK, A>.foldMapM(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on List")
 fun <G, A, B> Kind<ForListK, A>.foldM(
   arg1: Monad<G>,
   arg2: B,
@@ -315,6 +338,7 @@ fun <G, A, B> Kind<ForListK, A>.foldM(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("[arg1]"))
 fun <A> Kind<ForListK, A>.get(arg1: Long): Option<A> = arrow.core.ListK.foldable().run {
   this@get.get<A>(arg1) as arrow.core.Option<A>
 }
@@ -326,6 +350,7 @@ fun <A> Kind<ForListK, A>.get(arg1: Long): Option<A> = arrow.core.ListK.foldable
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("Option.fromNullable(firstOrNull())", "arrow.core.Option"))
 fun <A> Kind<ForListK, A>.firstOption(): Option<A> = arrow.core.ListK.foldable().run {
   this@firstOption.firstOption<A>() as arrow.core.Option<A>
 }
@@ -337,6 +362,7 @@ fun <A> Kind<ForListK, A>.firstOption(): Option<A> = arrow.core.ListK.foldable()
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("Option.fromNullable(firstOrNull(arg1))", "arrow.core.Option"))
 fun <A> Kind<ForListK, A>.firstOption(arg1: Function1<A, Boolean>): Option<A> =
   arrow.core.ListK.foldable().run {
     this@firstOption.firstOption<A>(arg1) as arrow.core.Option<A>
@@ -349,6 +375,7 @@ fun <A> Kind<ForListK, A>.firstOption(arg1: Function1<A, Boolean>): Option<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("Option.fromNullable(firstOrNull())", "arrow.core.Option"))
 fun <A> Kind<ForListK, A>.firstOrNone(): Option<A> = arrow.core.ListK.foldable().run {
   this@firstOrNone.firstOrNone<A>() as arrow.core.Option<A>
 }
@@ -360,6 +387,7 @@ fun <A> Kind<ForListK, A>.firstOrNone(): Option<A> = arrow.core.ListK.foldable()
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("Option.fromNullable(firstOrNull(arg1))", "arrow.core.Option"))
 fun <A> Kind<ForListK, A>.firstOrNone(arg1: Function1<A, Boolean>): Option<A> =
   arrow.core.ListK.foldable().run {
     this@firstOrNone.firstOrNone<A>(arg1) as arrow.core.Option<A>
@@ -372,6 +400,7 @@ fun <A> Kind<ForListK, A>.firstOrNone(arg1: Function1<A, Boolean>): Option<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("this"))
 fun <A> Kind<ForListK, A>.toList(): List<A> = arrow.core.ListK.foldable().run {
   this@toList.toList<A>() as kotlin.collections.List<A>
 }
@@ -380,4 +409,5 @@ fun <A> Kind<ForListK, A>.toList(): List<A> = arrow.core.ListK.foldable().run {
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Foldable typeclasses is deprecated. Use concrete methods on List")
 inline fun Companion.foldable(): ListKFoldable = foldable_singleton

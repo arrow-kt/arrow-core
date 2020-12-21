@@ -23,6 +23,7 @@ internal val crosswalk_singleton: ListKCrosswalk = object : arrow.core.extension
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated. Replace with crosswalk, crosswalkMap or crosswalkNull from arrow.core.*")
 fun <F, A, B> crosswalk(
   arg0: Align<F>,
   arg1: Kind<ForListK, A>,
@@ -38,6 +39,7 @@ fun <F, A, B> crosswalk(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated. Replace with sequenceValidated or sequenceEither from arrow.core.*")
 fun <F, A> sequenceL(arg0: Align<F>, arg1: Kind<ForListK, Kind<F, A>>): Kind<F, Kind<ForListK, A>> =
     arrow.core.ListK
    .crosswalk()
@@ -47,4 +49,5 @@ fun <F, A> sequenceL(arg0: Align<F>, arg1: Kind<ForListK, Kind<F, A>>): Kind<F, 
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Crosswalk typeclasses is deprecated. Use concrete methods on List")
 inline fun Companion.crosswalk(): ListKCrosswalk = crosswalk_singleton

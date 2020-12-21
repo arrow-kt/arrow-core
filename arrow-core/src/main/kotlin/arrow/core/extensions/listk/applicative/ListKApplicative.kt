@@ -28,6 +28,7 @@ internal val applicative_singleton: ListKApplicative = object :
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("listOf(this)"))
 fun <A> A.just(): ListK<A> = arrow.core.ListK.applicative().run {
   this@just.just<A>() as arrow.core.ListK<A>
 }
@@ -39,6 +40,7 @@ fun <A> A.just(): ListK<A> = arrow.core.ListK.applicative().run {
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("listOf(Unit)"))
 fun unit(): ListK<Unit> = arrow.core.ListK
    .applicative()
    .unit() as arrow.core.ListK<kotlin.Unit>
@@ -50,6 +52,7 @@ fun unit(): ListK<Unit> = arrow.core.ListK
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("map(arg1)"))
 fun <A, B> Kind<ForListK, A>.map(arg1: Function1<A, B>): ListK<B> =
     arrow.core.ListK.applicative().run {
   this@map.map<A, B>(arg1) as arrow.core.ListK<B>
@@ -62,6 +65,7 @@ fun <A, B> Kind<ForListK, A>.map(arg1: Function1<A, B>): ListK<B> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("replicate(arg1)", "arrow.core.replicate"))
 fun <A> Kind<ForListK, A>.replicate(arg1: Int): ListK<List<A>> =
     arrow.core.ListK.applicative().run {
   this@replicate.replicate<A>(arg1) as arrow.core.ListK<kotlin.collections.List<A>>
@@ -74,6 +78,7 @@ fun <A> Kind<ForListK, A>.replicate(arg1: Int): ListK<List<A>> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("replicate(arg1, arg2)", "arrow.core.replicate"))
 fun <A> Kind<ForListK, A>.replicate(arg1: Int, arg2: Monoid<A>): ListK<A> =
     arrow.core.ListK.applicative().run {
   this@replicate.replicate<A>(arg1, arg2) as arrow.core.ListK<A>
@@ -83,4 +88,5 @@ fun <A> Kind<ForListK, A>.replicate(arg1: Int, arg2: Monoid<A>): ListK<A> =
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on List")
 inline fun Companion.applicative(): ListKApplicative = applicative_singleton

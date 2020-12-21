@@ -468,12 +468,12 @@ fun <A> Iterable<A>.combineAll(MA: Monoid<A>): A = MA.run {
  * fun main(args: Array<String>) {
  *   //sampleStart
  *   val result =
- *    listOf("A", "B", "C").splitM()
+ *    listOf("A", "B", "C").split()
  *   //sampleEnd
  *   println(result)
  * }
  */
-fun <A> Iterable<A>.splitM(): Tuple2<List<A>, A>? =
+fun <A> Iterable<A>.split(): Tuple2<List<A>, A>? =
   firstOrNull()?.let { first ->
     Tuple2(tail(), first)
   }
@@ -499,7 +499,7 @@ fun <A> Iterable<A>.tail(): List<A> =
  * }
  */
 fun <A> Iterable<A>.interleave(other: Iterable<A>): List<A> =
-  this.splitM()?.let { (fa, a) ->
+  this.split()?.let { (fa, a) ->
     listOf(a) + other.interleave(fa)
   } ?: other.toList()
 
@@ -518,7 +518,7 @@ fun <A> Iterable<A>.interleave(other: Iterable<A>): List<A> =
  * }
  */
 fun <A, B> Iterable<A>.unweave(ffa: (A) -> Iterable<B>): List<B> =
-  splitM()?.let { (fa, a) ->
+  split()?.let { (fa, a) ->
     ffa(a).interleave(fa.unweave(ffa))
   } ?: emptyList()
 
@@ -541,7 +541,7 @@ fun <A, B> Iterable<A>.unweave(ffa: (A) -> Iterable<B>): List<B> =
  * }
  */
 inline fun <A, B> Iterable<A>.ifThen(fb: Iterable<B>, ffa: (A) -> Iterable<B>): Iterable<B> =
-  splitM()?.let { (fa, a) ->
+  split()?.let { (fa, a) ->
     ffa(a) + fa.flatMap(ffa)
   } ?: fb.toList()
 
