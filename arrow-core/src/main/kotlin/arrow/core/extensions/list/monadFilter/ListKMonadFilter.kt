@@ -17,6 +17,7 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("mapNotNull { arg1(it).orNull() }"))
 fun <A, B> List<A>.filterMap(arg1: Function1<A, Option<B>>): List<B> =
     arrow.core.extensions.list.monadFilter.List.monadFilter().run {
   arrow.core.ListK(this@filterMap).filterMap<A, B>(arg1) as kotlin.collections.List<B>
@@ -29,6 +30,7 @@ fun <A, B> List<A>.filterMap(arg1: Function1<A, Option<B>>): List<B> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("Monad bindings are deprecated")
 fun <B> bindingFilter(arg0: suspend MonadFilterSyntax<ForListK>.() -> B): List<B> =
     arrow.core.extensions.list.monadFilter.List
    .monadFilter()
@@ -46,4 +48,5 @@ object List {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("MonadFilter typeclasses is deprecated. Use concrete methods on List")
   inline fun monadFilter(): ListKMonadFilter = monadFilter_singleton}
