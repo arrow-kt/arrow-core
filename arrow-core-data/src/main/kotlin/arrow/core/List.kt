@@ -99,7 +99,7 @@ fun <A> List<A>.sort(OA: Order<A>, b: List<A>): Tuple2<List<A>, List<A>> =
 fun <A> listOrder(OA: Order<A>): Order<List<A>> =
   ListOrder(OA)
 
-private class ListOrder<A>(private val OA: Order<A>): Order<List<A>> {
+private class ListOrder<A>(private val OA: Order<A>) : Order<List<A>> {
   override fun List<A>.compare(b: List<A>): Ordering = compare(OA, b)
 }
 
