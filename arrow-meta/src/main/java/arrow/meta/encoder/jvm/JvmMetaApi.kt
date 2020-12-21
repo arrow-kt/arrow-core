@@ -12,6 +12,7 @@ import arrow.meta.ast.TypeName
 import arrow.meta.decoder.TypeDecoder
 import arrow.meta.encoder.MetaApi
 import arrow.meta.encoder.TypeClassInstance
+import org.jetbrains.kotlin.builtins.StandardNames.FqNames.replaceWith
 import javax.lang.model.element.TypeElement
 import kotlin.reflect.KClass
 
@@ -544,6 +545,21 @@ interface JvmMetaApi : MetaApi, TypeElementEncoder, ProcessorUtils, TypeDecoder 
     Annotation(
       type = TypeName.typeNameOf(PublishedApi::class),
       members = listOf(Code.empty),
+      useSiteTarget = null
+    )
+
+  override fun DeprecatedAnnotation(
+    msg: String,
+    replaceWithExpression: String,
+    imports: List<String>
+  ): Annotation =
+    Annotation(
+      type = TypeName.typeNameOf(Deprecated::class),
+      members = listOf(
+        Code(""""$msg""""),
+        Code("""ReplaceWith("$replaceWithExpression", "${imports.joinToString(", ")}")"""),
+        Code("DeprecationLevel.WARNING")
+      ),
       useSiteTarget = null
     )
 
