@@ -74,6 +74,42 @@ fun <A, B> List<A>.foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> {
   return Eval.defer { loop(this) }
 }
 
+fun <A, B> Iterable<A>.reduceOrNull(initial: (A) -> B, operation: (acc: B, A) -> B): B? {
+  val iterator = this.iterator()
+  if (!iterator.hasNext()) return null
+  var accumulator: B = initial(iterator.next())
+  while (iterator.hasNext()) {
+    accumulator = operation(accumulator, iterator.next())
+  }
+  return accumulator
+}
+
+inline fun <A, B> List<A>.reduceRightEvalOrNull(
+  initial: (A) -> B,
+  operation: (A, acc: Eval<B>) -> Eval<B>
+): Eval<B?> {
+  val iterator = listIterator(size)
+  if (!iterator.hasPrevious()) return Eval.now(null)
+  var accumulator: Eval<B> = Eval.now(initial(iterator.previous()))
+  while (iterator.hasPrevious()) {
+    accumulator = operation(iterator.previous(), accumulator)
+  }
+  return accumulator
+}
+
+inline fun <A, B> List<A>.reduceRightNull(
+  initial: (A) -> B,
+  operation: (A, acc: B) -> B
+): B? {
+  val iterator = listIterator(size)
+  if (!iterator.hasPrevious()) return null
+  var accumulator: B = initial(iterator.previous())
+  while (iterator.hasPrevious()) {
+    accumulator = operation(iterator.previous(), accumulator)
+  }
+  return accumulator
+}
+
 /**
  * Returns a [List<Tuple2<A?, B?>>] containing the zipped values of the two lists with null for padding.
  *
@@ -652,7 +688,7 @@ fun <A, B> Iterable<A>.foldMap(MB: Monoid<B>, f: (A) -> B): B = MB.run {
 fun <A> listEq(EQA: Eq<A>): Eq<List<A>> =
   ListEq(EQA)
 
-private class ListEq<A>(private val EQA: Eq<A>): Eq<List<A>> {
+private class ListEq<A>(private val EQA: Eq<A>) : Eq<List<A>> {
   override fun List<A>.eqv(b: List<A>): Boolean =
     eqv(EQA, b)
 }
