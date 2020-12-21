@@ -22,6 +22,7 @@ internal val monadPlus_singleton: ListKMonadPlus = object : arrow.core.extension
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("emptyList()"))
 fun <A> zeroM(): ListK<A> = arrow.core.ListK
    .monadPlus()
    .zeroM<A>() as arrow.core.ListK<A>
@@ -33,6 +34,7 @@ fun <A> zeroM(): ListK<A> = arrow.core.ListK
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("this + arg1"))
 fun <A> Kind<ForListK, A>.plusM(arg1: Kind<ForListK, A>): ListK<A> =
     arrow.core.ListK.monadPlus().run {
   this@plusM.plusM<A>(arg1) as arrow.core.ListK<A>
@@ -42,4 +44,5 @@ fun <A> Kind<ForListK, A>.plusM(arg1: Kind<ForListK, A>): ListK<A> =
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("MonadPlus typeclasses is deprecated. Use concrete methods on List")
 inline fun Companion.monadPlus(): ListKMonadPlus = monadPlus_singleton

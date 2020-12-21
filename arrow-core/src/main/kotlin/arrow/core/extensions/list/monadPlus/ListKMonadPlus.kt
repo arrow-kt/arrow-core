@@ -13,6 +13,7 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("emptyList()"))
 fun <A> zeroM(): List<A> = arrow.core.extensions.list.monadPlus.List
    .monadPlus()
    .zeroM<A>() as kotlin.collections.List<A>
@@ -24,6 +25,7 @@ fun <A> zeroM(): List<A> = arrow.core.extensions.list.monadPlus.List
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("this + arg1"))
 fun <A> List<A>.plusM(arg1: List<A>): List<A> =
     arrow.core.extensions.list.monadPlus.List.monadPlus().run {
   arrow.core.ListK(this@plusM).plusM<A>(arrow.core.ListK(arg1)) as kotlin.collections.List<A>
@@ -40,4 +42,5 @@ object List {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("MonadPlus typeclasses is deprecated. Use concrete methods on List")
   inline fun monadPlus(): ListKMonadPlus = monadPlus_singleton}
