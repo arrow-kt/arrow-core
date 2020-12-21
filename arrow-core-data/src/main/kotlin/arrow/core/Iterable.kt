@@ -673,6 +673,9 @@ fun <A, B> Iterable<A>.tupleRight(b: B): List<Tuple2<A, B>> =
 fun <B, A : B> Iterable<A>.widen(): Iterable<B> =
   this
 
+fun <B, A : B> List<A>.widen(): List<B> =
+  this
+
 fun <A> Iterable<A>.fold(MA: Monoid<A>): A = MA.run {
   this@fold.fold(empty()) { acc, a ->
     acc.combine(a)
