@@ -590,14 +590,6 @@ inline fun <B> Iterable<Boolean>.ifM(ifFalse: () -> Iterable<B>, ifTrue: () -> I
 fun <A, B> Iterable<Either<A, B>>.selectM(f: Iterable<(A) -> B>): List<B> =
   flatMap { it.fold({ a -> f.map { ff -> ff(a) } }, { b -> listOf(b) }) }
 
-fun <A> Iterable<A>.hash(HA: Hash<A>): Int =
-  hashWithSalt(HA, defaultSalt)
-
-fun <A> Iterable<A>.hashWithSalt(HA: Hash<A>, salt: Int): Int = HA.run {
-  val salt2 = if (this is Collection<*>) size else defaultSalt
-  fold(salt) { hash, x -> x.hashWithSalt(hash) }.hashWithSalt(salt2)
-}
-
 /**
  *  Applies [f] to an [A] inside [Iterable] and returns the [List] structure with a tuple of the [A] value and the
  *  computed [B] value as result of applying [f]
