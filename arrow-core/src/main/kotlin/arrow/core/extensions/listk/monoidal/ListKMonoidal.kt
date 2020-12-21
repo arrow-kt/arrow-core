@@ -20,6 +20,7 @@ internal val monoidal_singleton: ListKMonoidal = object : arrow.core.extensions.
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("emptyList<A>()"))
 fun <A> identity(): ListK<A> = arrow.core.ListK
    .monoidal()
    .identity<A>() as arrow.core.ListK<A>
@@ -28,4 +29,5 @@ fun <A> identity(): ListK<A> = arrow.core.ListK
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Monoidal typeclasses is deprecated. Use concrete methods on List")
 inline fun Companion.monoidal(): ListKMonoidal = monoidal_singleton

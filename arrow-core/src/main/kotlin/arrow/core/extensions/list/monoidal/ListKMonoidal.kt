@@ -13,6 +13,7 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("emptyList<A>()"))
 fun <A> identity(): List<A> = arrow.core.extensions.list.monoidal.List
    .monoidal()
    .identity<A>() as kotlin.collections.List<A>
@@ -28,4 +29,5 @@ object List {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("Monoidal typeclasses is deprecated. Use concrete methods on List")
   inline fun monoidal(): ListKMonoidal = monoidal_singleton}
