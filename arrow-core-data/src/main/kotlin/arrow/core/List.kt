@@ -96,6 +96,13 @@ fun <A> List<A>.min(OA: Order<A>, b: List<A>): List<A> =
 fun <A> List<A>.sort(OA: Order<A>, b: List<A>): Tuple2<List<A>, List<A>> =
   if (gte(OA, b)) Tuple2(this, b) else Tuple2(b, this)
 
+fun <A> listOrder(OA: Order<A>): Order<List<A>> =
+  ListOrder(OA)
+
+private class ListOrder<A>(private val OA: Order<A>): Order<List<A>> {
+  override fun List<A>.compare(b: List<A>): Ordering = compare(OA, b)
+}
+
 fun <A> listMonoid(): Monoid<List<A>> =
   ListMonoid as Monoid<List<A>>
 
