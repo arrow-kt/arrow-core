@@ -1,4 +1,5 @@
 @file:Suppress("unused", "FunctionName")
+
 package arrow.core
 
 import arrow.typeclasses.Eq
@@ -668,6 +669,26 @@ fun <A, B> Iterable<A>.crosswalk(f: (A) -> Iterable<B>): List<List<B>> =
         { l, r -> listOf(l) + r }
       )
     }
+  }
+
+fun <A, K, V> Iterable<A>.crosswalkMap(f: (A) -> Map<K, V>): Map<K, List<V>> =
+  fold(emptyMap()) { bs, a ->
+    f(a).alignWith(bs) { ior ->
+      ior.fold(
+        { listOf(it) },
+        ::identity,
+        { l, r -> listOf(l) + r }
+      )
+    }
+  }
+
+fun <A, B> Iterable<A>.crosswalkNull(f: (A) -> B?): List<B>? =
+  fold<A, List<B>?>(emptyList()) { bs, a ->
+    Ior.fromNullables(f(a), bs)?.fold(
+      { listOf(it) },
+      ::identity,
+      { l, r -> listOf(l) + r }
+    )
   }
 
 @PublishedApi
