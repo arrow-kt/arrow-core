@@ -294,7 +294,7 @@ private tailrec fun <A, B> go(
   }
 }
 
-fun <A, B> tailRecM(a: A, f: (A) -> Iterable<Either<A, B>>): List<B> {
+fun <A, B> tailRecMIterable(a: A, f: (A) -> Iterable<Either<A, B>>): List<B> {
   val buf = mutableListOf<B>()
   go(buf, f, f(a).toList())
   return ListK(buf)
