@@ -1,3 +1,4 @@
+@file:Suppress("unused", "FunctionName")
 package arrow.core
 
 import arrow.typeclasses.Eq
@@ -19,12 +20,12 @@ fun <A, B> Iterable<A>.ap(ff: Iterable<(A) -> B>): List<B> =
   flatMap { a -> ff.map { f -> f(a) } }
 
 inline fun <E, A, B> Iterable<A>.traverseEither(f: (A) -> Either<E, B>): Either<E, List<B>> =
-  foldRight(emptyList<B>().right() as Either<E, List<B>>) { a, acc ->
+  foldRight<A, Either<E, List<B>>>(emptyList<B>().right()) { a, acc ->
     f(a).ap(acc.map { bs -> { b: B -> listOf(b) + bs } })
   }
 
 inline fun <E, A, B> Iterable<A>.traverseEither_(f: (A) -> Either<E, B>): Either<E, Unit> =
-  foldRight(Unit.right() as Either<E, Unit>) { a, _ ->
+  foldRight<A, Either<E, Unit>>(Unit.right()) { a, _ ->
     f(a).void()
   }
 
@@ -35,12 +36,12 @@ fun <E, A> Iterable<Either<E, A>>.sequenceEither_(): Either<E, Unit> =
   traverseEither_(::identity)
 
 inline fun <E, A, B> Iterable<A>.traverseValidated(semigroup: Semigroup<E>, f: (A) -> Validated<E, B>): Validated<E, List<B>> =
-  foldRight(emptyList<B>().valid() as Validated<E, List<B>>) { a, acc ->
+  foldRight<A, Validated<E, List<B>>>(emptyList<B>().valid()) { a, acc ->
     f(a).ap(semigroup, acc.map { bs -> { b: B -> listOf(b) + bs } })
   }
 
 inline fun <E, A, B> Iterable<A>.traverseValidated_(semigroup: Semigroup<E>, f: (A) -> Validated<E, B>): Validated<E, Unit> =
-  foldRight(Unit.valid() as Validated<E, Unit>) { a, acc ->
+  foldRight<A, Validated<E, Unit>>(Unit.valid()) { a, acc ->
     f(a).ap(semigroup, acc.map { { Unit } })
   }
 
@@ -300,6 +301,7 @@ inline fun <A, B, C> Iterable<A>.alignWith(b: Iterable<B>, fa: (Ior<A, B>) -> C)
 fun <A, B> Iterable<A>.align(b: Iterable<B>): List<Ior<A, B>> =
   alignRec(this, b)
 
+@Suppress("NAME_SHADOWING")
 private fun <X, Y> alignRec(ls: Iterable<X>, rs: Iterable<Y>): List<Ior<X, Y>> {
   val ls = if (ls is List) ls else ls.toList()
   val rs = if (rs is List) rs else rs.toList()
@@ -340,7 +342,7 @@ fun <A> Iterable<A>.salign(
  * ```
  */
 fun <A, B> Iterable<Tuple2<A, B>>.unzip(): Tuple2<List<A>, List<B>> =
-  fold(emptyList<A>() toT emptyList<B>()) { (l, r), x ->
+  fold(emptyList<A>() toT emptyList()) { (l, r), x ->
     l + x.a toT r + x.b
   }
 
@@ -383,7 +385,7 @@ inline fun <A, B, C> Iterable<C>.unzipWith(fc: (C) -> Tuple2<A, B>): Tuple2<List
  * ```
  */
 fun <A, B> Iterable<Ior<A, B>>.unalign(): Tuple2<List<A>, List<B>> =
-  fold(emptyList<A>() toT emptyList<B>()) { (l, r), x ->
+  fold(emptyList<A>() toT emptyList()) { (l, r), x ->
     x.fold(
       { l + it toT r },
       { l toT r + it },
@@ -508,12 +510,12 @@ inline fun <A, B> Iterable<A>.ifThen(fb: Iterable<B>, ffa: (A) -> Iterable<B>): 
 
 fun <A, B> Iterable<Either<A, B>>.uniteEither(): List<B> =
   flatMap { either ->
-    either.fold({ emptyList<B>() }, { b -> listOf(b) })
+    either.fold({ emptyList() }, { b -> listOf(b) })
   }
 
 fun <A, B> Iterable<Validated<A, B>>.uniteValidated(): List<B> =
   flatMap { validated ->
-    validated.fold({ emptyList<B>() }, { b -> listOf(b) })
+    validated.fold({ emptyList() }, { b -> listOf(b) })
   }
 
 /**
