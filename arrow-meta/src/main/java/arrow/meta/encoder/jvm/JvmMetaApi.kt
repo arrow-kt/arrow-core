@@ -12,7 +12,6 @@ import arrow.meta.ast.TypeName
 import arrow.meta.decoder.TypeDecoder
 import arrow.meta.encoder.MetaApi
 import arrow.meta.encoder.TypeClassInstance
-import org.jetbrains.kotlin.builtins.StandardNames.FqNames.replaceWith
 import javax.lang.model.element.TypeElement
 import kotlin.reflect.KClass
 
