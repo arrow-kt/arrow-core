@@ -28,6 +28,7 @@ internal val semialign_singleton: ListKSemialign = object : arrow.core.extension
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.align(arg1)", "arrow.core.align"))
 fun <A, B> align(arg0: Kind<ForListK, A>, arg1: Kind<ForListK, B>): ListK<Ior<A, B>> =
   arrow.core.ListK
     .semialign()
@@ -40,6 +41,7 @@ fun <A, B> align(arg0: Kind<ForListK, A>, arg1: Kind<ForListK, B>): ListK<Ior<A,
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.alignWith(arg1, arg2)", "arrow.core.alignWith"))
 fun <A, B, C> alignWith(
   arg0: Kind<ForListK, A>,
   arg1: Kind<ForListK, B>,
@@ -55,6 +57,7 @@ fun <A, B, C> alignWith(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.salign(arg1, arg2)", "arrow.core.salign"))
 fun <A> Kind<ForListK, A>.salign(arg1: Semigroup<A>, arg2: Kind<ForListK, A>): ListK<A> =
   arrow.core.ListK.semialign().run {
     this@salign.salign<A>(arg1, arg2) as arrow.core.ListK<A>
@@ -67,6 +70,7 @@ fun <A> Kind<ForListK, A>.salign(arg1: Semigroup<A>, arg2: Kind<ForListK, A>): L
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.padZip(arg1)", "arrow.core.padZip"))
 fun <A, B> Kind<ForListK, A>.padZip(arg1: Kind<ForListK, B>): ListK<Tuple2<Option<A>, Option<B>>> =
   arrow.core.ListK.semialign().run {
     this@padZip.padZip<A, B>(arg1) as arrow.core.ListK<arrow.core.Tuple2<arrow.core.Option<A>,
@@ -80,6 +84,7 @@ fun <A, B> Kind<ForListK, A>.padZip(arg1: Kind<ForListK, B>): ListK<Tuple2<Optio
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.padZipWith(arg1, arg2)", "arrow.core.padZipWith"))
 fun <A, B, C> Kind<ForListK, A>.padZipWith(
   arg1: Kind<ForListK, B>,
   arg2: Function2<Option<A>,
@@ -92,4 +97,5 @@ fun <A, B, C> Kind<ForListK, A>.padZipWith(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Semialign typeclasses is deprecated. Use concrete methods on List")
 inline fun Companion.semialign(): ListKSemialign = semialign_singleton

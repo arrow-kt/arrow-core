@@ -19,6 +19,7 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.align(arg1)", "arrow.core.align"))
 fun <A, B> align(arg0: List<A>, arg1: List<B>): List<Ior<A, B>> =
     arrow.core.extensions.list.semialign.List
    .semialign()
@@ -32,6 +33,7 @@ fun <A, B> align(arg0: List<A>, arg1: List<B>): List<Ior<A, B>> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.alignWith(arg1, arg2)", "arrow.core.alignWith"))
 fun <A, B, C> alignWith(
   arg0: List<A>,
   arg1: List<B>,
@@ -48,6 +50,7 @@ fun <A, B, C> alignWith(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.salign(arg1, arg2)", "arrow.core.salign"))
 fun <A> List<A>.salign(arg1: Semigroup<A>, arg2: List<A>): List<A> =
     arrow.core.extensions.list.semialign.List.semialign().run {
   arrow.core.ListK(this@salign).salign<A>(arg1, arrow.core.ListK(arg2)) as
@@ -61,6 +64,7 @@ fun <A> List<A>.salign(arg1: Semigroup<A>, arg2: List<A>): List<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.padZip(arg1)", "arrow.core.padZip"))
 fun <A, B> List<A>.padZip(arg1: List<B>): List<Tuple2<Option<A>, Option<B>>> =
     arrow.core.extensions.list.semialign.List.semialign().run {
   arrow.core.ListK(this@padZip).padZip<A, B>(arrow.core.ListK(arg1)) as
@@ -74,6 +78,7 @@ fun <A, B> List<A>.padZip(arg1: List<B>): List<Tuple2<Option<A>, Option<B>>> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.padZipWith(arg1, arg2)", "arrow.core.padZipWith"))
 fun <A, B, C> List<A>.padZipWith(arg1: List<B>, arg2: Function2<Option<A>, Option<B>, C>): List<C> =
     arrow.core.extensions.list.semialign.List.semialign().run {
   arrow.core.ListK(this@padZipWith).padZipWith<A, B, C>(arrow.core.ListK(arg1), arg2) as
@@ -91,4 +96,5 @@ object List {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("Semialign typeclasses is deprecated. Use concrete methods on List")
   inline fun semialign(): ListKSemialign = semialign_singleton}
