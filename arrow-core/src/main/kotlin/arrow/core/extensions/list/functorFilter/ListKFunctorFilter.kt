@@ -4,6 +4,7 @@ import arrow.core.Option
 import arrow.core.extensions.ListKFunctorFilter
 import java.lang.Class
 import kotlin.Boolean
+import kotlin.collections.filter as _filter
 import kotlin.Function1
 import kotlin.PublishedApi
 import kotlin.Suppress
@@ -17,10 +18,9 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("mapNotNull { arg1(it).orNull() }"))
 fun <A, B> List<A>.filterMap(arg1: Function1<A, Option<B>>): List<B> =
-    arrow.core.extensions.list.functorFilter.List.functorFilter().run {
-  arrow.core.ListK(this@filterMap).filterMap<A, B>(arg1) as kotlin.collections.List<B>
-}
+  mapNotNull { arg1(it).orNull() }
 
 @JvmName("flattenOption")
 @Suppress(
@@ -29,10 +29,9 @@ fun <A, B> List<A>.filterMap(arg1: Function1<A, Option<B>>): List<B> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("mapNotNull { it.orNull() }"))
 fun <A> List<Option<A>>.flattenOption(): List<A> =
-    arrow.core.extensions.list.functorFilter.List.functorFilter().run {
-  arrow.core.ListK(this@flattenOption).flattenOption<A>() as kotlin.collections.List<A>
-}
+  mapNotNull { it.orNull() }
 
 @JvmName("filter")
 @Suppress(
@@ -41,10 +40,9 @@ fun <A> List<Option<A>>.flattenOption(): List<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("filter(arg1)"))
 fun <A> List<A>.filter(arg1: Function1<A, Boolean>): List<A> =
-    arrow.core.extensions.list.functorFilter.List.functorFilter().run {
-  arrow.core.ListK(this@filter).filter<A>(arg1) as kotlin.collections.List<A>
-}
+  _filter(arg1)
 
 @JvmName("filterIsInstance")
 @Suppress(
@@ -53,10 +51,9 @@ fun <A> List<A>.filter(arg1: Function1<A, Boolean>): List<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("filter(arg1::isInstance).map { arg1.cast(it) }"))
 fun <A, B> List<A>.filterIsInstance(arg1: Class<B>): List<B> =
-    arrow.core.extensions.list.functorFilter.List.functorFilter().run {
-  arrow.core.ListK(this@filterIsInstance).filterIsInstance<A, B>(arg1) as kotlin.collections.List<B>
-}
+  _filter(arg1::isInstance).map { arg1.cast(it) }
 
 /**
  * cached extension
@@ -70,4 +67,5 @@ object List {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("Functor typeclasses is deprecated. Use concrete methods on List")
   inline fun functorFilter(): ListKFunctorFilter = functorFilter_singleton}
