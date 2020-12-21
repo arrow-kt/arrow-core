@@ -23,6 +23,7 @@ internal val monoid_singleton: ListKMonoid<Any?> = object : ListKMonoid<Any?> {}
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.fold(emptyList()) { acc, l -> acc + l }"))
 fun <A> Collection<ListK<A>>.combineAll(): ListK<A> = arrow.core.ListK.monoid<A>().run {
   this@combineAll.combineAll() as arrow.core.ListK<A>
 }
@@ -34,6 +35,7 @@ fun <A> Collection<ListK<A>>.combineAll(): ListK<A> = arrow.core.ListK.monoid<A>
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.fold(emptyList()) { acc, l -> acc + l }"))
 fun <A> combineAll(arg0: List<ListK<A>>): ListK<A> = arrow.core.ListK
    .monoid<A>()
    .combineAll(arg0) as arrow.core.ListK<A>
@@ -42,5 +44,6 @@ fun <A> combineAll(arg0: List<ListK<A>>): ListK<A> = arrow.core.ListK
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("listMonoid<A>()", "arrow.core.listMonoid"))
 inline fun <A> Companion.monoid(): ListKMonoid<A> = monoid_singleton as
     arrow.core.extensions.ListKMonoid<A>

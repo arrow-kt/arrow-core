@@ -1,6 +1,7 @@
 package arrow.core
 
 import arrow.typeclasses.Hash
+import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.defaultSalt
 import arrow.typeclasses.hashWithSalt
@@ -94,3 +95,11 @@ fun <A> List<A>.min(OA: Order<A>, b: List<A>): List<A> =
  */
 fun <A> List<A>.sort(OA: Order<A>, b: List<A>): Tuple2<List<A>, List<A>> =
   if (gte(OA, b)) Tuple2(this, b) else Tuple2(b, this)
+
+fun <A> listMonoid(): Monoid<List<A>> =
+  ListMonoid as Monoid<List<A>>
+
+object ListMonoid : Monoid<List<Any?>> {
+  override fun empty(): List<Any?> = emptyList()
+  override fun List<Any?>.combine(b: List<Any?>): List<Any?> = this + b
+}
