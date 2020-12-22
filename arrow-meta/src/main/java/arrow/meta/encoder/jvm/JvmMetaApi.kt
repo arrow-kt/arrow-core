@@ -556,7 +556,10 @@ interface JvmMetaApi : MetaApi, TypeElementEncoder, ProcessorUtils, TypeDecoder 
       type = TypeName.typeNameOf(Deprecated::class),
       members = listOf(
         Code(""""$msg""""),
-        Code("""ReplaceWith("$replaceWithExpression", "${imports.joinToString(", ")}")"""),
+        Code("""ReplaceWith(
+          |"$replaceWithExpression",
+          |"${imports.joinToString(", ")}"
+          |)""".trimMargin()),
         Code("DeprecationLevel.WARNING")
       ),
       useSiteTarget = null
