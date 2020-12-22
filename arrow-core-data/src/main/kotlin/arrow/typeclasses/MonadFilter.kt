@@ -1,9 +1,11 @@
 package arrow.typeclasses
 
 import arrow.Kind
+import arrow.KindDeprecation
 import arrow.core.Option
 import kotlin.coroutines.startCoroutine
 
+@Deprecated(KindDeprecation)
 /**
  * ank_macro_hierarchy(arrow.typeclasses.MonadFilter)
  */

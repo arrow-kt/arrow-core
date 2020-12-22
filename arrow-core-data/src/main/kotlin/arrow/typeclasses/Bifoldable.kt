@@ -1,8 +1,10 @@
 package arrow.typeclasses
 
 import arrow.Kind2
+import arrow.KindDeprecation
 import arrow.core.Eval
 
+@Deprecated(KindDeprecation)
 /**
  * ank_macro_hierarchy(arrow.typeclasses.Bifoldable)
  */

@@ -2,8 +2,10 @@ package arrow.typeclasses
 
 import arrow.Kind
 import arrow.Kind2
+import arrow.KindDeprecation
 import arrow.core.Tuple2
 
+@Deprecated(KindDeprecation)
 /**
  * ank_macro_hierarchy(arrow.typeclasses.MonadCombine)
  */

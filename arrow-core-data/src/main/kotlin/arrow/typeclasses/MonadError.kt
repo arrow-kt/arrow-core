@@ -1,11 +1,13 @@
 package arrow.typeclasses
 
 import arrow.Kind
+import arrow.KindDeprecation
 import arrow.core.Either
 import arrow.core.NonFatal
 import arrow.documented
 import kotlin.coroutines.startCoroutine
 
+@Deprecated(KindDeprecation)
 /**
  * ank_macro_hierarchy(arrow.typeclasses.MonadError)
  */

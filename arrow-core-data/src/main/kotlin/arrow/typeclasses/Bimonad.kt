@@ -1,5 +1,8 @@
 package arrow.typeclasses
 
+import arrow.KindDeprecation
+
+@Deprecated(KindDeprecation)
 /**
  * ank_macro_hierarchy(arrow.typeclasses.Bimonad)
  */

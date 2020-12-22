@@ -1,6 +1,7 @@
 package arrow.typeclasses
 
 import arrow.Kind
+import arrow.KindDeprecation
 import arrow.core.Id
 import arrow.core.identity
 import arrow.core.value
@@ -13,6 +14,7 @@ import arrow.core.Nel
 import arrow.core.SequenceK
 import arrow.core.ValidatedNel
 
+@Deprecated(KindDeprecation)
 /**
  * ank_macro_hierarchy(arrow.typeclasses.Traverse)
  *

@@ -1,6 +1,7 @@
 package arrow.typeclasses
 
 import arrow.Kind
+import arrow.KindDeprecation
 import arrow.core.ForId
 import arrow.core.Id
 import arrow.core.IdOf
@@ -10,6 +11,7 @@ import arrow.core.Some
 import arrow.core.fix
 import arrow.core.value
 
+@Deprecated(KindDeprecation)
 /**
  * ank_macro_hierarchy(arrow.typeclasses.TraverseFilter)
  */
