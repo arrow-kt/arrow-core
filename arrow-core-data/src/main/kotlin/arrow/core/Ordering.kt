@@ -11,11 +11,7 @@ import arrow.typeclasses.hashWithSalt
 sealed class Ordering {
   override fun equals(other: Any?): Boolean = this === other // ref equality is fine because objects should be singletons
 
-  override fun toString(): String = when (this) {
-    LT -> "LT"
-    GT -> "GT"
-    EQ -> "EQ"
-  }
+  override fun toString(): String = show()
 
   override fun hashCode(): Int = toInt()
 
@@ -35,6 +31,12 @@ sealed class Ordering {
 
   fun hashWithSalt(salt: Int): Int =
     salt.hashWithSalt(hashCode())
+
+  fun show(): String = when (this) {
+    LT -> "LT"
+    GT -> "GT"
+    EQ -> "EQ"
+  }
 
   companion object {
     fun fromInt(i: Int): Ordering = when (i) {
@@ -134,5 +136,5 @@ private object OrderingOrder : Order<Ordering> {
 }
 
 private object OrderingShow : Show<Ordering> {
-  override fun Ordering.show(): String = this.toString()
+  override fun Ordering.show(): String = this.show()
 }
