@@ -102,20 +102,8 @@ fun Collection<Ordering>.combineAll(): Ordering =
 
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 private object OrderingEq : Eq<Ordering> {
-  override fun Ordering.eqv(b: Ordering): Boolean = when (this) {
-    is LT -> when (b) {
-      is LT -> true
-      else -> false
-    }
-    is GT -> when (b) {
-      is GT -> true
-      else -> false
-    }
-    is EQ -> when (b) {
-      is EQ -> true
-      else -> false
-    }
-  }
+  override fun Ordering.eqv(b: Ordering): Boolean =
+    this.eqv(b)
 }
 
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
