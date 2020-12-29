@@ -21,7 +21,7 @@ internal val semigroup_singleton: OrderingSemigroup = object :
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("combine(arg1)", "arrow.core.combine"))
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("combine(arg1)"))
 operator fun Ordering.plus(arg1: Ordering): Ordering = arrow.core.Ordering.semigroup().run {
   this@plus.plus(arg1) as arrow.core.Ordering
 }
@@ -33,7 +33,7 @@ operator fun Ordering.plus(arg1: Ordering): Ordering = arrow.core.Ordering.semig
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("maybeCombine(arg1)", "arrow.core.combine"))
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("arg1?.plus(this)"))
 fun Ordering.maybeCombine(arg1: Ordering): Ordering = arrow.core.Ordering.semigroup().run {
   this@maybeCombine.maybeCombine(arg1) as arrow.core.Ordering
 }
@@ -42,5 +42,5 @@ fun Ordering.maybeCombine(arg1: Ordering): Ordering = arrow.core.Ordering.semigr
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Ordering.semigroup()", "arrow.core.semigroup"))
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Ordering.semigroup()"))
 inline fun Companion.semigroup(): OrderingSemigroup = semigroup_singleton
