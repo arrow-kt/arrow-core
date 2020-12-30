@@ -116,7 +116,7 @@ private object OrderingHash : Hash<Ordering> {
 
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 private object OrderingMonoid : Monoid<Ordering> {
-  override fun empty(): Ordering = this.empty()
+  override fun empty(): Ordering = EQ
 
   override fun Ordering.combine(b: Ordering): Ordering =
     this.combine(b)
