@@ -131,9 +131,9 @@ inline fun <A, B> List<A>.reduceRightNull(
  * import arrow.core.*
  *
  * //sampleStart
- * val padRight = listOf(1, 2).padZip(listOf("a"))        // Result: [Tuple2(1, "a"), Tuple2(2, null)]
- * val padLeft = listOf(1).padZip(listOf("a", "b")))       // Result: [Tuple2(1, "a"), Tuple2(null, "b")]
- * val noPadding = listOf(1, 2).padZip(listOf("a", "b")))  // Result: [Tuple2(1, "a"), Tuple2(2, "b")]
+ * val padRight = listOf(1, 2).padZipWithNull(listOf("a"))        // Result: [Tuple2(1, "a"), Tuple2(2, null)]
+ * val padLeft = listOf(1).padZipWithNull(listOf("a", "b"))       // Result: [Tuple2(1, "a"), Tuple2(null, "b")]
+ * val noPadding = listOf(1, 2).padZipWithNull(listOf("a", "b"))  // Result: [Tuple2(1, "a"), Tuple2(2, "b")]
  * //sampleEnd
  *
  * fun main() {
@@ -502,11 +502,9 @@ fun <A> Iterable<A>.tail(): List<A> =
  *
  * fun main(args: Array<String>) {
  *   //sampleStart
- *   val infinite = generateSequence { "#" }
+ *   val tags = List(10) { "#" }
  *   val result =
- *    infinite.interleave(sequenceOf("A", "B", "C"))
- *      .take(3)
- *      .toList()
+ *    tags.interleave(listOf("A", "B", "C"))
  *   //sampleEnd
  *   println(result)
  * }
@@ -649,7 +647,7 @@ fun <A, B> Iterable<A>.tupleLeft(b: B): List<Tuple2<B, A>> =
  *  fun main(args: Array<String>) {
  *   val result =
  *   //sampleStart
- *   "Hello".just().tupleRight("World")
+ *   listOf("Hello").tupleRight("World")
  *   //sampleEnd
  *   println(result)
  *  }
