@@ -24,6 +24,7 @@ internal val semigroupK_singleton: ListKSemigroupK = object : arrow.core.extensi
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("product(arg1)", "arrow.core.product"))
 fun <A> Kind<ForListK, A>.combineK(arg1: Kind<ForListK, A>): ListK<A> =
     arrow.core.ListK.semigroupK().run {
   this@combineK.combineK<A>(arg1) as arrow.core.ListK<A>
@@ -36,6 +37,7 @@ fun <A> Kind<ForListK, A>.combineK(arg1: Kind<ForListK, A>): ListK<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("listMonoid<A>()", "arrow.core.listMonoid"))
 fun <A> algebra(): Semigroup<Kind<ForListK, A>> = arrow.core.ListK
    .semigroupK()
    .algebra<A>() as arrow.typeclasses.Semigroup<arrow.Kind<arrow.core.ForListK, A>>
@@ -44,4 +46,5 @@ fun <A> algebra(): Semigroup<Kind<ForListK, A>> = arrow.core.ListK
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 inline fun Companion.semigroupK(): ListKSemigroupK = semigroupK_singleton
