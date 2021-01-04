@@ -21,6 +21,7 @@ internal val semigroup_singleton: ListKSemigroup<Any?> = object : ListKSemigroup
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("this.plus(arg1)"))
 operator fun <A> ListK<A>.plus(arg1: ListK<A>): ListK<A> = arrow.core.ListK.semigroup<A>().run {
   this@plus.plus(arg1) as arrow.core.ListK<A>
 }
@@ -32,6 +33,7 @@ operator fun <A> ListK<A>.plus(arg1: ListK<A>): ListK<A> = arrow.core.ListK.semi
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("(arg1?.plus(this) ?: emptyList<A>())"))
 fun <A> ListK<A>.maybeCombine(arg1: ListK<A>): ListK<A> = arrow.core.ListK.semigroup<A>().run {
   this@maybeCombine.maybeCombine(arg1) as arrow.core.ListK<A>
 }
@@ -40,5 +42,6 @@ fun <A> ListK<A>.maybeCombine(arg1: ListK<A>): ListK<A> = arrow.core.ListK.semig
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("listMonoid<A>()", "arrow.core.listMonoid"))
 inline fun <A> Companion.semigroup(): ListKSemigroup<A> = semigroup_singleton as
     arrow.core.extensions.ListKSemigroup<A>

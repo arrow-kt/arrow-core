@@ -14,6 +14,7 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("this.plus(arg1)"))
 operator fun <A> List<A>.plus(arg1: List<A>): List<A> =
     arrow.core.extensions.list.semigroup.List.semigroup<A>().run {
   arrow.core.ListK(this@plus).plus(arrow.core.ListK(arg1)) as kotlin.collections.List<A>
@@ -26,6 +27,7 @@ operator fun <A> List<A>.plus(arg1: List<A>): List<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("(arg1?.plus(this) ?: emptyList<A>())"))
 fun <A> List<A>.maybeCombine(arg1: List<A>): List<A> =
     arrow.core.extensions.list.semigroup.List.semigroup<A>().run {
   arrow.core.ListK(this@maybeCombine).maybeCombine(arrow.core.ListK(arg1)) as
@@ -43,5 +45,6 @@ object List {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("@extension projected functions are deprecated", ReplaceWith("listMonoid<A>()", "arrow.core.listMonoid"))
   inline fun <A> semigroup(): ListKSemigroup<A> = semigroup_singleton as
       arrow.core.extensions.ListKSemigroup<A>}
