@@ -23,6 +23,7 @@ internal val unzip_singleton: ListKUnzip = object : arrow.core.extensions.ListKU
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("unzip()", "arrow.core.unzip"))
 fun <A, B> Kind<ForListK, Tuple2<A, B>>.unzip(): Tuple2<Kind<ForListK, A>, Kind<ForListK, B>> =
     arrow.core.ListK.unzip().run {
   this@unzip.unzip<A, B>() as arrow.core.Tuple2<arrow.Kind<arrow.core.ForListK, A>,
@@ -36,6 +37,7 @@ fun <A, B> Kind<ForListK, Tuple2<A, B>>.unzip(): Tuple2<Kind<ForListK, A>, Kind<
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("unzipWith(arg1)", "arrow.core.unzipWith"))
 fun <A, B, C> Kind<ForListK, C>.unzipWith(arg1: Function1<C, Tuple2<A, B>>): Tuple2<Kind<ForListK,
     A>, Kind<ForListK, B>> = arrow.core.ListK.unzip().run {
   this@unzipWith.unzipWith<A, B, C>(arg1) as arrow.core.Tuple2<arrow.Kind<arrow.core.ForListK, A>,
@@ -46,4 +48,5 @@ fun <A, B, C> Kind<ForListK, C>.unzipWith(arg1: Function1<C, Tuple2<A, B>>): Tup
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Unzip typeclasses is deprecated. Use concrete methods on Iterable")
 inline fun Companion.unzip(): ListKUnzip = unzip_singleton
