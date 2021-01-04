@@ -2,10 +2,12 @@ package arrow.core.extensions.list.zip
 
 import arrow.core.Tuple2
 import arrow.core.extensions.ListKZip
+import arrow.core.toTuple2
 import kotlin.Function2
 import kotlin.PublishedApi
 import kotlin.Suppress
 import kotlin.collections.List
+import kotlin.collections.zip as _zip
 import kotlin.jvm.JvmName
 
 @JvmName("zip")
@@ -15,11 +17,9 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("zip(arg1).map { it.toTuple2() }", "arrow.core.toTuple2"))
 fun <A, B> List<A>.zip(arg1: List<B>): List<Tuple2<A, B>> =
-    arrow.core.extensions.list.zip.List.zip().run {
-  arrow.core.ListK(this@zip).zip<A, B>(arrow.core.ListK(arg1)) as
-    kotlin.collections.List<arrow.core.Tuple2<A, B>>
-}
+  _zip(arg1).map { it.toTuple2() }
 
 @JvmName("zipWith")
 @Suppress(
@@ -28,11 +28,9 @@ fun <A, B> List<A>.zip(arg1: List<B>): List<Tuple2<A, B>> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("zip(arg1, arg2)"))
 fun <A, B, C> List<A>.zipWith(arg1: List<B>, arg2: Function2<A, B, C>): List<C> =
-    arrow.core.extensions.list.zip.List.zip().run {
-  arrow.core.ListK(this@zipWith).zipWith<A, B, C>(arrow.core.ListK(arg1), arg2) as
-    kotlin.collections.List<C>
-}
+  _zip(arg1, arg2)
 
 /**
  * cached extension
@@ -45,4 +43,5 @@ object List {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("Zip typeclasses is deprecated. Use concrete methods on Iterable")
   inline fun zip(): ListKZip = zip_singleton}
