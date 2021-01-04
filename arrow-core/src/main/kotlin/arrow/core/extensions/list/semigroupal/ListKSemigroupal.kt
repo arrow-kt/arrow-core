@@ -2,6 +2,7 @@ package arrow.core.extensions.list.semigroupal
 
 import arrow.core.Tuple2
 import arrow.core.extensions.ListKSemigroupal
+import arrow.core.product as _product
 import kotlin.PublishedApi
 import kotlin.Suppress
 import kotlin.collections.List
@@ -17,11 +18,9 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("product(arg1)", "arrow.core.product"))
 fun <A, B> List<A>.product(arg1: List<B>): List<Tuple2<A, B>> =
-    arrow.core.extensions.list.semigroupal.List.semigroupal().run {
-  arrow.core.ListK(this@product).product<A, B>(arrow.core.ListK(arg1)) as
-    kotlin.collections.List<arrow.core.Tuple2<A, B>>
-}
+  _product(arg1)
 
 /**
  * syntax
@@ -33,11 +32,9 @@ fun <A, B> List<A>.product(arg1: List<B>): List<Tuple2<A, B>> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("product(arg1)", "arrow.core.product"))
 operator fun <A, B> List<A>.times(arg1: List<B>): List<Tuple2<A, B>> =
-    arrow.core.extensions.list.semigroupal.List.semigroupal().run {
-  arrow.core.ListK(this@times).times<A, B>(arrow.core.ListK(arg1)) as
-    kotlin.collections.List<arrow.core.Tuple2<A, B>>
-}
+  _product(arg1)
 
 /**
  * cached extension
@@ -142,4 +139,5 @@ object List {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
   inline fun semigroupal(): ListKSemigroupal = semigroupal_singleton}

@@ -27,6 +27,7 @@ internal val semigroupal_singleton: ListKSemigroupal = object :
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("product(arg1)", "arrow.core.product"))
 fun <A, B> Kind<ForListK, A>.product(arg1: Kind<ForListK, B>): ListK<Tuple2<A, B>> =
     arrow.core.ListK.semigroupal().run {
   this@product.product<A, B>(arg1) as arrow.core.ListK<arrow.core.Tuple2<A, B>>
@@ -42,6 +43,7 @@ fun <A, B> Kind<ForListK, A>.product(arg1: Kind<ForListK, B>): ListK<Tuple2<A, B
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("product(arg1)", "arrow.core.product"))
 operator fun <A, B> Kind<ForListK, A>.times(arg1: Kind<ForListK, B>): ListK<Tuple2<A, B>> =
     arrow.core.ListK.semigroupal().run {
   this@times.times<A, B>(arg1) as arrow.core.ListK<arrow.core.Tuple2<A, B>>
@@ -142,4 +144,5 @@ operator fun <A, B> Kind<ForListK, A>.times(arg1: Kind<ForListK, B>): ListK<Tupl
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 inline fun Companion.semigroupal(): ListKSemigroupal = semigroupal_singleton
