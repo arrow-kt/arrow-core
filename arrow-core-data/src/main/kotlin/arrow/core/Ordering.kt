@@ -90,7 +90,6 @@ sealed class Ordering {
     fun semigroup(): Semigroup<Ordering> = OrderingMonoid
 
     fun show(): Show<Ordering> = OrderingShow
-
   }
 }
 
