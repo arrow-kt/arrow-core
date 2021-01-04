@@ -3,6 +3,7 @@ package arrow.core
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
+import arrow.typeclasses.Show
 import arrow.typeclasses.defaultSalt
 import arrow.typeclasses.hashWithSalt
 
@@ -110,3 +111,9 @@ object ListMonoid : Monoid<List<Any?>> {
   override fun empty(): List<Any?> = emptyList()
   override fun List<Any?>.combine(b: List<Any?>): List<Any?> = this + b
 }
+
+fun <A> listShow(SA: Show<A>): Show<List<A>> =
+  object : Show<List<A>> {
+    override fun List<A>.show(): String =
+      show(SA)
+  }

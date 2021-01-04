@@ -16,6 +16,7 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("show(arg1)", "arrow.core.show"))
 fun <A> Kind<ForListK, A>.show(SA: Show<A>): String = arrow.core.ListK.show<A>(SA).run {
   this@show.show() as kotlin.String
 }
@@ -24,5 +25,6 @@ fun <A> Kind<ForListK, A>.show(SA: Show<A>): String = arrow.core.ListK.show<A>(S
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("listShow(arg1)", "arrow.core.listShow"))
 inline fun <A> Companion.show(SA: Show<A>): ListKShow<A> = object :
     arrow.core.extensions.ListKShow<A> { override fun SA(): arrow.typeclasses.Show<A> = SA }
