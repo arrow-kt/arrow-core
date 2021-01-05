@@ -117,6 +117,14 @@ fun <K, A, B> Map<K, A>.tupleRight(b: B): Map<K, Tuple2<A, B>> =
 fun <K, B, A : B> Map<K, A>.widen(): Map<K, B> =
   this
 
+fun <K, A, B> Map<K, A>.filterMap(f: (A) -> B?): Map<K, B> {
+  val destination = LinkedHashMap<K, B>(size)
+  for ((key, a) in this) {
+    f(a)?.let { l -> destination.put(key, l) }
+  }
+  return destination
+}
+
 fun <K, A> Map<K, A>.eqv(EQK: Eq<K>, EQA: Eq<A>, b: Map<K, A>): Boolean =
   if (keys.eqv(EQK, b.keys)) EQA.run {
     keys.map { key ->
