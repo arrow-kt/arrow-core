@@ -1,5 +1,7 @@
 package arrow.core
 
+import arrow.typeclasses.Eq
+
 object MapInstances
 
 object SortedMapInstances
@@ -46,3 +48,24 @@ fun <K, A, B, C, D, EE, F, G, H, I, J> Map<K, Tuple9<A, B, C, D, EE, F, G, H, I>
   other: Map<K, J>
 ): Map<K, Tuple10<A, B, C, D, EE, F, G, H, I, J>> =
   MapK.mapN(this, other) { _, abcdefghi, j -> Tuple10(abcdefghi.a, abcdefghi.b, abcdefghi.c, abcdefghi.d, abcdefghi.e, abcdefghi.f, abcdefghi.g, abcdefghi.h, abcdefghi.i, j) }
+
+fun <K, A> Map<K, A>.eqv(EQK: Eq<K>, EQA: Eq<A>, b: Map<K, A>): Boolean =
+  if (keys.eqv(EQK, b.keys)) EQA.run {
+    keys.map { key ->
+      b[key]?.let { getValue(key).eqv(it) } ?: false
+    }.fold(true) { b1, b2 -> b1 && b2 }
+  } else false
+
+fun <K, A> Map<K, A>.neqv(EQK: Eq<K>, EQA: Eq<A>, b: Map<K, A>): Boolean =
+  !eqv(EQK, EQA, b)
+
+fun <K, A> mapEq(EQK: Eq<K>, EQA: Eq<A>): Eq<Map<K, A>> =
+  MapEq(EQK, EQA)
+
+private class MapEq<K, A>(
+  private val EQK: Eq<K>,
+  private val EQA: Eq<A>
+) : Eq<Map<K, A>> {
+  override fun Map<K, A>.eqv(b: Map<K, A>): Boolean =
+    eqv(EQK, EQA, b)
+}
