@@ -27,10 +27,12 @@ inline fun <E, A, B> Iterable<A>.flatTraverseEither(f: (A) -> Either<E, Iterable
     f(a).ap(acc.map { bs -> { b: Iterable<B> -> b + bs } })
   }
 
-inline fun <E, A> Iterable<A>.traverseEither_(f: (A) -> Either<E, *>): Either<E, Unit> =
-  foldRight<A, Either<E, Unit>>(Unit.right()) { a, _ ->
-    f(a).void()
+inline fun <E, A> Iterable<A>.traverseEither_(f: (A) -> Either<E, *>): Either<E, Unit> {
+  val void = { _: Unit -> { _: Any? -> Unit } }
+  return foldRight<A, Either<E, Unit>>(Unit.right()) { a, acc ->
+    f(a).ap(acc.map(void))
   }
+}
 
 fun <E, A> Iterable<Either<E, A>>.sequenceEither(): Either<E, List<A>> =
   traverseEither(::identity)
