@@ -311,7 +311,14 @@ fun <K, A> Map<K, A>.getOption(k: K): Option<A> = Option.fromNullable(this[k])
 
 fun <K, A> MapK<K, A>.updated(k: K, value: A): MapK<K, A> = (this + (k to value)).k()
 
+@Deprecated("Available for binary compat", level = DeprecationLevel.HIDDEN)
 fun <K, A, B> Map<K, A>.foldLeft(b: Map<K, B>, f: (Map<K, B>, Map.Entry<K, A>) -> Map<K, B>): Map<K, B> {
+  var result = b
+  this.forEach { result = f(result, it) }
+  return result
+}
+
+inline fun <K, A, B> Map<K, A>.foldLeft(b: B, f: (B, Map.Entry<K, A>) -> B): B {
   var result = b
   this.forEach { result = f(result, it) }
   return result
@@ -323,7 +330,11 @@ internal fun <K, A> Pair<K, A>?.asIterable(): Iterable<Pair<K, A>> =
     else -> listOf(this)
   }
 
+@Deprecated("Available for binary compat", level = DeprecationLevel.HIDDEN)
 fun <K, A, B> Map<K, A>.foldRight(b: Map<K, B>, f: (Map.Entry<K, A>, Map<K, B>) -> Map<K, B>): Map<K, B> =
+  this.entries.reversed().k().foldLeft(b) { x, y: Map.Entry<K, A> -> f(y, x) }
+
+inline fun <K, A, B> Map<K, A>.foldRight(b: B, f: (Map.Entry<K, A>, B) -> B): B =
   this.entries.reversed().k().foldLeft(b) { x, y: Map.Entry<K, A> -> f(y, x) }
 
 fun <K, V> mapOf(vararg tuple: Tuple2<K, V>): MapK<K, V> =
