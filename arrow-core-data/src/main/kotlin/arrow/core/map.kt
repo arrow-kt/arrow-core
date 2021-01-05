@@ -102,6 +102,21 @@ fun <K, E, A> Map<K, Validated<E, Map<K, A>>>.flatSequenceValidated(semigroup: S
 fun <K, E> Map<K, Validated<E, *>>.sequenceValidated_(semigroup: Semigroup<E>): Validated<E, Unit> =
   traverseValidated_(semigroup, ::identity)
 
+fun <K, A, B> Map<K, A>.fproduct(f: (A) -> B): Map<K, Tuple2<A, B>> =
+  mapValues { (_, a) -> Tuple2(a, f(a)) }
+
+fun <K, A> Map<K, A>.void(): Map<K, Unit> =
+  mapValues { Unit }
+
+fun <K, A, B> Map<K, A>.tupleLeft(b: B): Map<K, Tuple2<B, A>> =
+  mapValues { (_, a) -> Tuple2(b, a) }
+
+fun <K, A, B> Map<K, A>.tupleRight(b: B): Map<K, Tuple2<A, B>> =
+  mapValues { (_, a) -> Tuple2(a, b) }
+
+fun <K, B, A : B> Map<K, A>.widen(): Map<K, B> =
+  this
+
 fun <K, A> Map<K, A>.eqv(EQK: Eq<K>, EQA: Eq<A>, b: Map<K, A>): Boolean =
   if (keys.eqv(EQK, b.keys)) EQA.run {
     keys.map { key ->
