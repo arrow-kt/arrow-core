@@ -1,7 +1,9 @@
 package arrow.core
 
 import arrow.typeclasses.Eq
+import arrow.typeclasses.Hash
 import arrow.typeclasses.Semigroup
+import arrow.typeclasses.defaultSalt
 
 object MapInstances
 
@@ -144,4 +146,22 @@ private class MapEq<K, A>(
 ) : Eq<Map<K, A>> {
   override fun Map<K, A>.eqv(b: Map<K, A>): Boolean =
     eqv(EQK, EQA, b)
+}
+
+fun <K, A> Map<K, A>.hashWithSalt(HK: Hash<K>, HA: Hash<A>, salt: Int): Int =
+  values.toHashSet().hashWithSalt(HA, salt)
+    .let { hash -> keys.hashWithSalt(HK, hash) }
+
+fun <K, A> Map<K, A>.hash(HK: Hash<K>, HA: Hash<A>): Int =
+  hashWithSalt(HK, HA, defaultSalt)
+
+fun <K, A> mapHash(HK: Hash<K>, HA: Hash<A>): Hash<Map<K, A>> =
+  MapHash(HK, HA)
+
+private class MapHash<K, A>(
+  private val HK: Hash<K>,
+  private val HA: Hash<A>
+) : Hash<Map<K, A>> {
+  override fun Map<K, A>.hashWithSalt(salt: Int): Int =
+    hashWithSalt(HK, HA, salt)
 }

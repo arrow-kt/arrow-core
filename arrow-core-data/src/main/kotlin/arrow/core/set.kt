@@ -1,6 +1,8 @@
 package arrow.core
 
 import arrow.typeclasses.Eq
+import arrow.typeclasses.Hash
+import arrow.typeclasses.hashWithSalt
 
 object SetExtensions
 
@@ -13,3 +15,7 @@ fun <A> Set<A>.eqv(EQA: Eq<A>, b: Set<A>): Boolean =
       acc && found
     }
   } else false
+
+fun <A> Set<A>.hashWithSalt(HA: Hash<A>, salt: Int): Int = HA.run {
+  fold(salt) { hash, v -> v.hashWithSalt(hash) }
+}.hashWithSalt(size)
