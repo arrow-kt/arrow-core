@@ -41,6 +41,7 @@ fun <A> algebra(): Semigroup<Kind<ForListK, A>> = arrow.core.extensions.list.sem
 internal val semigroupK_singleton: ListKSemigroupK = object : arrow.core.extensions.ListKSemigroupK
     {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

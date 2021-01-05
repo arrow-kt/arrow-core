@@ -126,6 +126,7 @@ fun <A> List<A>.min(OA: Order<A>, arg1: List<A>): List<A> =
   arrow.core.ListK(this@min).min(arrow.core.ListK(arg1)) as kotlin.collections.List<A>
 }
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

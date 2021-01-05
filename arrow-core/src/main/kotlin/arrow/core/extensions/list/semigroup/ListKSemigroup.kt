@@ -40,6 +40,7 @@ fun <A> List<A>.maybeCombine(arg1: List<A>): List<A> =
 @PublishedApi()
 internal val semigroup_singleton: ListKSemigroup<Any?> = object : ListKSemigroup<Any?> {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

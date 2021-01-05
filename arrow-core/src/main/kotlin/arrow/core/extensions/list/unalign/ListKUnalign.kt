@@ -45,6 +45,7 @@ fun <A, B, C> unalignWith(arg0: List<C>, arg1: Function1<C, Ior<A, B>>): Tuple2<
 @PublishedApi()
 internal val unalign_singleton: ListKUnalign = object : arrow.core.extensions.ListKUnalign {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

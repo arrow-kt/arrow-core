@@ -43,6 +43,7 @@ fun <B> bindingFilter(arg0: suspend MonadFilterSyntax<ForListK>.() -> B): List<B
 internal val monadFilter_singleton: ListKMonadFilter = object :
     arrow.core.extensions.ListKMonadFilter {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

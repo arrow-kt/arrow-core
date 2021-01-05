@@ -115,6 +115,7 @@ fun <A> List<A>.lazyOrElse(arg1: Function0<Kind<ForListK, A>>): List<A> =
 internal val alternative_singleton: ListKAlternative = object :
   arrow.core.extensions.ListKAlternative {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

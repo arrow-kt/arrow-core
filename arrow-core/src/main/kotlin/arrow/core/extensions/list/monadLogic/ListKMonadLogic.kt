@@ -100,6 +100,7 @@ fun <A> List<A>.voidIfValue(): List<Unit> =
 internal val monadLogic_singleton: ListKMonadLogic = object : arrow.core.extensions.ListKMonadLogic
     {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

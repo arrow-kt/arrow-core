@@ -75,6 +75,7 @@ fun <G, A, B> List<A>.flatTraverse(
 @PublishedApi()
 internal val traverse_singleton: ListKTraverse = object : arrow.core.extensions.ListKTraverse {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

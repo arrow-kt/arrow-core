@@ -91,6 +91,7 @@ fun <A, B, C> List<A>.padZipWith(arg1: List<B>, arg2: Function2<Option<A>, Optio
 @PublishedApi()
 internal val semialign_singleton: ListKSemialign = object : arrow.core.extensions.ListKSemialign {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

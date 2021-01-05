@@ -47,6 +47,7 @@ fun <F, A> sequenceL(arg0: Align<F>, arg1: List<Kind<F, A>>): Kind<F, Kind<ForLi
 @PublishedApi()
 internal val crosswalk_singleton: ListKCrosswalk = object : arrow.core.extensions.ListKCrosswalk {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

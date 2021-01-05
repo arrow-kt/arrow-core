@@ -259,6 +259,7 @@ fun <A, B> List<Either<A, B>>.select(arg1: List<Function1<A, B>>): List<B> =
 @PublishedApi()
 internal val monad_singleton: ListKMonad = object : arrow.core.extensions.ListKMonad {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   /**
    *  ank_macro_hierarchy(arrow.typeclasses.Monad)

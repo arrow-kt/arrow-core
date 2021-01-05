@@ -62,6 +62,7 @@ fun <A, B> List<A>.filterIsInstance(arg1: Class<B>): List<B> =
 internal val functorFilter_singleton: ListKFunctorFilter = object :
     arrow.core.extensions.ListKFunctorFilter {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

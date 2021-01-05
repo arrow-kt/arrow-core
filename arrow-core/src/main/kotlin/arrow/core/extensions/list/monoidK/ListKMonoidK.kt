@@ -26,6 +26,7 @@ fun <A> algebra(): Monoid<Kind<ForListK, A>> = arrow.core.extensions.list.monoid
 @PublishedApi()
 internal val monoidK_singleton: ListKMonoidK = object : arrow.core.extensions.ListKMonoidK {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

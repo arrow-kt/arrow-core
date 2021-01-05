@@ -43,6 +43,7 @@ operator fun <A, B> List<A>.times(arg1: List<B>): List<Tuple2<A, B>> =
 internal val semigroupal_singleton: ListKSemigroupal = object :
     arrow.core.extensions.ListKSemigroupal {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   /**
    *  ank_macro_hierarchy(arrow.typeclasses.Semigroupal)

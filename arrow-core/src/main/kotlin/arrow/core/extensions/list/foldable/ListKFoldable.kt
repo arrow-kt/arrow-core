@@ -335,6 +335,7 @@ fun <A> List<A>.toList(): List<A> =
 @PublishedApi()
 internal val foldable_singleton: ListKFoldable = object : arrow.core.extensions.ListKFoldable {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

@@ -39,6 +39,7 @@ fun <A> combineAll(arg0: List<ListK<A>>): List<A> =
 @PublishedApi()
 internal val monoid_singleton: ListKMonoid<Any?> = object : ListKMonoid<Any?> {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

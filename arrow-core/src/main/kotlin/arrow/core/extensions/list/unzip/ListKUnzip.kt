@@ -44,6 +44,7 @@ fun <A, B, C> List<C>.unzipWith(arg1: Function1<C, Tuple2<A, B>>): Tuple2<Kind<F
 @PublishedApi()
 internal val unzip_singleton: ListKUnzip = object : arrow.core.extensions.ListKUnzip {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

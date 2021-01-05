@@ -41,6 +41,7 @@ fun <A> liftEq(arg0: Eq<A>): Eq<Kind<ForListK, A>> = arrow.core.extensions.list.
 @PublishedApi()
 internal val eqK_singleton: ListKEqK = object : arrow.core.extensions.ListKEqK {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

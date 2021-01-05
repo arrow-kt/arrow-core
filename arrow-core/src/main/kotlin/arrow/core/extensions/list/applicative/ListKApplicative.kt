@@ -74,6 +74,7 @@ fun <A> List<A>.replicate(arg1: Int, arg2: Monoid<A>): List<A> =
 internal val applicative_singleton: ListKApplicative = object :
   arrow.core.extensions.ListKApplicative {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

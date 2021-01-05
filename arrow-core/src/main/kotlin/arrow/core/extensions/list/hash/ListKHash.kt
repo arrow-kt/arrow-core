@@ -31,6 +31,7 @@ fun <A> List<A>.hash(HA: Hash<A>): Int =
 fun <A> List<A>.hashWithSalt(HA: Hash<A>, arg1: Int): Int =
   _hashWithSalt(HA, arg1)
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

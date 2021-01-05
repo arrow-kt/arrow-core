@@ -38,6 +38,7 @@ fun <A, B, C> List<A>.zipWith(arg1: List<B>, arg2: Function2<A, B, C>): List<C> 
 @PublishedApi()
 internal val zip_singleton: ListKZip = object : arrow.core.extensions.ListKZip {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

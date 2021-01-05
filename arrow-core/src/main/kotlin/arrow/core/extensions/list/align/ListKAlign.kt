@@ -23,6 +23,7 @@ fun <A> empty(): List<A> =
 @PublishedApi()
 internal val align_singleton: ListKAlign = object : arrow.core.extensions.ListKAlign {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

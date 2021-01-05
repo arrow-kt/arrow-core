@@ -45,6 +45,7 @@ fun <G, A, B> List<Kind<Kind<G, A>, B>>.separate(arg1: Bifoldable<G>): Tuple2<Ki
 internal val monadCombine_singleton: ListKMonadCombine = object :
     arrow.core.extensions.ListKMonadCombine {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

@@ -862,6 +862,7 @@ fun <A, B> List<A>.apTap(arg1: List<B>): List<A> =
 @PublishedApi()
 internal val apply_singleton: ListKApply = object : arrow.core.extensions.ListKApply {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

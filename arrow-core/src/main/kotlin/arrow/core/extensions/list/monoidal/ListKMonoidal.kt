@@ -24,6 +24,7 @@ fun <A> identity(): List<A> = arrow.core.extensions.list.monoidal.List
 @PublishedApi()
 internal val monoidal_singleton: ListKMonoidal = object : arrow.core.extensions.ListKMonoidal {}
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",

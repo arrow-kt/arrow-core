@@ -31,6 +31,7 @@ fun <A> List<A>.eqv(EQ: Eq<A>, arg1: List<A>): Boolean =
 fun <A> List<A>.neqv(EQ: Eq<A>, arg1: List<A>): Boolean =
   _neqv(EQ, arg1)
 
+@Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   @Suppress(
     "UNCHECKED_CAST",
