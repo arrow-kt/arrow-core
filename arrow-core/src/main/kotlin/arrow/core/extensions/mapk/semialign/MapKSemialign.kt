@@ -33,8 +33,8 @@ internal val semialign_singleton: MapKSemialign<Any?> = object : MapKSemialign<A
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "align(arg0, arg1)",
-  "arrow.core.MapK.align"
+    "arg0.align(arg1)",
+    "arrow.core.align"
   ),
   DeprecationLevel.WARNING
 )
@@ -53,8 +53,8 @@ fun <K, A, B> align(arg0: Kind<Kind<ForMapK, K>, A>, arg1: Kind<Kind<ForMapK, K>
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "alignWith(arg0, arg1, arg2)",
-  "arrow.core.MapK.alignWith"
+    "arg0.align(arg1) { (_, ior) -> arg2(ior) }",
+    "arrow.core.align"
   ),
   DeprecationLevel.WARNING
 )
@@ -76,8 +76,8 @@ fun <K, A, B, C> alignWith(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "salign(arg1, arg2)",
-  "arrow.core.salign"
+    "salign(arg1, arg2)",
+    "arrow.core.salign"
   ),
   DeprecationLevel.WARNING
 )
@@ -96,8 +96,10 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.salign(arg1: Semigroup<A>, arg2: Kind<Kind<
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "padZip(arg1)",
-  "arrow.core.padZip"
+    "padZip(arg1) { _, a, b -> Tuple2(Option.fromNullable(a), Option.fromNullable(b)) }",
+    "arrow.core.padZip",
+    "arrow.core.Option",
+    "arrow.core.fromNullable"
   ),
   DeprecationLevel.WARNING
 )
@@ -117,8 +119,10 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.padZip(arg1: Kind<Kind<ForMapK, K>, B>):
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "padZipWith(arg1, arg2)",
-  "arrow.core.padZipWith"
+    "padZip(arg1) { _, a, b -> arg2(Option.fromNullable(a), Option.fromNullable(b)) }",
+    "arrow.core.padZip",
+    "arrow.core.Option",
+    "arrow.core.fromNullable"
   ),
   DeprecationLevel.WARNING
 )
@@ -131,5 +135,6 @@ fun <K, A, B, C> Kind<Kind<ForMapK, K>, A>.padZipWith(arg1: Kind<Kind<ForMapK, K
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Functor typeclasses is deprecated. Use concrete methods on Map")
 inline fun <K> Companion.semialign(): MapKSemialign<K> = semialign_singleton as
     arrow.core.extensions.MapKSemialign<K>
