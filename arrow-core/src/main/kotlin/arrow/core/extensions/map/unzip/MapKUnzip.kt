@@ -44,8 +44,8 @@ fun <K, A, B> Map<K, Tuple2<A, B>>.unzip(): Tuple2<Kind<Kind<ForMapK, K>, A>, Ki
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "unzipWith(arg1)",
-  "arrow.core.unzipWith"
+  "unzip { (_, c) -> arg1(c) )",
+  "arrow.core.unzip"
   ),
   DeprecationLevel.WARNING
 )
@@ -67,4 +67,5 @@ object Map {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("Unzip typeclasses is deprecated. Use concrete methods on Map")
   inline fun <K> unzip(): MapKUnzip<K> = unzip_singleton as arrow.core.extensions.MapKUnzip<K>}
