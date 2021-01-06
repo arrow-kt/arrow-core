@@ -20,8 +20,8 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "combineAll(SG)",
-  "arrow.core.combineAll"
+    "combineAll(SG)",
+    "arrow.core.combineAll"
   ),
   DeprecationLevel.WARNING
 )
@@ -40,8 +40,8 @@ fun <K, A> Collection<MapK<K, A>>.combineAll(SG: Semigroup<A>): MapK<K, A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "combineAll(SG, arg0)",
-  "arrow.core.MapK.combineAll"
+    "arg0.combineAll(SG)",
+    "arrow.core.combineAll"
   ),
   DeprecationLevel.WARNING
 )
@@ -53,6 +53,7 @@ fun <K, A> combineAll(SG: Semigroup<A>, arg0: List<MapK<K, A>>): MapK<K, A> = ar
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("mapEq(EQK, EQA)", "arrow.core.mapEq"))
 inline fun <K, A> Companion.monoid(SG: Semigroup<A>): MapKMonoid<K, A> = object :
     arrow.core.extensions.MapKMonoid<K, A> { override fun SG(): arrow.typeclasses.Semigroup<A> = SG
     }
