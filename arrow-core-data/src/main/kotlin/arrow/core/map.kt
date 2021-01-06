@@ -138,6 +138,12 @@ fun <K, A, B> Map<K, A>.filterMap(f: (A) -> B?): Map<K, B> {
 }
 
 /**
+ * Returns a Map containing all elements that are instances of specified type parameter R.
+ */
+inline fun <K, reified R> Map<K, *>.filterIsInstance(): Map<K, R> =
+  filterMap { it as? R }
+
+/**
  * Combines two structures by taking the union of their shapes and using Ior to hold the elements.
  *
  * ```kotlin:ank:playground

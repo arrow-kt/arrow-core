@@ -2,6 +2,8 @@ package arrow.core.extensions.map.functorFilter
 
 import arrow.core.Option
 import arrow.core.extensions.MapKFunctorFilter
+import arrow.core.filterIsInstance
+import arrow.core.filterMap
 import java.lang.Class
 import kotlin.Any
 import kotlin.Boolean
@@ -10,6 +12,7 @@ import kotlin.Function1
 import kotlin.PublishedApi
 import kotlin.Suppress
 import kotlin.collections.Map
+import kotlin.collections.filter as _filter
 import kotlin.jvm.JvmName
 
 @JvmName("filterMap")
@@ -22,15 +25,13 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "filterMap(arg1)",
+  "filterMap { a -> arg1(a).orNull() }",
   "arrow.core.filterMap"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Map<K, A>.filterMap(arg1: Function1<A, Option<B>>): Map<K, B> =
-    arrow.core.extensions.map.functorFilter.Map.functorFilter<K>().run {
-  arrow.core.MapK(this@filterMap).filterMap<A, B>(arg1) as kotlin.collections.Map<K, B>
-}
+    filterMap { a -> arg1(a).orNull() }
 
 @JvmName("flattenOption")
 @Suppress(
@@ -41,16 +42,11 @@ fun <K, A, B> Map<K, A>.filterMap(arg1: Function1<A, Option<B>>): Map<K, B> =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "flattenOption()",
-  "arrow.core.flattenOption"
-  ),
+  ReplaceWith("filterMap { it.orNull() }"),
   DeprecationLevel.WARNING
 )
 fun <K, A> Map<K, Option<A>>.flattenOption(): Map<K, A> =
-    arrow.core.extensions.map.functorFilter.Map.functorFilter<K>().run {
-  arrow.core.MapK(this@flattenOption).flattenOption<A>() as kotlin.collections.Map<K, A>
-}
+  filterMap { it.orNull() }
 
 @JvmName("filter")
 @Suppress(
@@ -62,15 +58,13 @@ fun <K, A> Map<K, Option<A>>.flattenOption(): Map<K, A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "filter(arg1)",
-  "arrow.core.filter"
+  "filter { (_, a) -> arg1(a) }",
+  "kotlin.collections.filter"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> Map<K, A>.filter(arg1: Function1<A, Boolean>): Map<K, A> =
-    arrow.core.extensions.map.functorFilter.Map.functorFilter<K>().run {
-  arrow.core.MapK(this@filter).filter<A>(arg1) as kotlin.collections.Map<K, A>
-}
+    _filter { (_, a) -> arg1(a) }
 
 @JvmName("filterIsInstance")
 @Suppress(
@@ -82,16 +76,13 @@ fun <K, A> Map<K, A>.filter(arg1: Function1<A, Boolean>): Map<K, A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "filterIsInstance(arg1)",
-  "arrow.core.filterIsInstance"
+  "filterMap { if (arg1.isInstance(it)) arg1.cast(it) else null }",
+  "arrow.core.filterMap"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Map<K, A>.filterIsInstance(arg1: Class<B>): Map<K, B> =
-    arrow.core.extensions.map.functorFilter.Map.functorFilter<K>().run {
-  arrow.core.MapK(this@filterIsInstance).filterIsInstance<A, B>(arg1) as kotlin.collections.Map<K,
-    B>
-}
+  filterMap { if (arg1.isInstance(it)) arg1.cast(it) else null }
 
 /**
  * cached extension
@@ -104,5 +95,6 @@ object Map {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("FunctorFilter typeclasses is deprecated. Use concrete methods on Map")
   inline fun <K> functorFilter(): MapKFunctorFilter<K> = functorFilter_singleton as
       arrow.core.extensions.MapKFunctorFilter<K>}
