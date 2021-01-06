@@ -31,15 +31,15 @@ internal val functorFilter_singleton: MapKFunctorFilter<Any?> = object : MapKFun
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "filterMap(arg1)",
-  "arrow.core.filterMap"
+    "filterMap { a -> arg1(a).orNull() }",
+    "arrow.core.filterMap"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Kind<Kind<ForMapK, K>, A>.filterMap(arg1: Function1<A, Option<B>>): MapK<K, B> =
-    arrow.core.MapK.functorFilter<K>().run {
-  this@filterMap.filterMap<A, B>(arg1) as arrow.core.MapK<K, B>
-}
+  arrow.core.MapK.functorFilter<K>().run {
+    this@filterMap.filterMap<A, B>(arg1) as arrow.core.MapK<K, B>
+  }
 
 @JvmName("flattenOption")
 @Suppress(
@@ -51,15 +51,15 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.filterMap(arg1: Function1<A, Option<B>>)
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "flattenOption()",
-  "arrow.core.flattenOption"
+    "filterMap { it.orNull() }",
+    "arrow.core.filterMap"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> Kind<Kind<ForMapK, K>, Option<A>>.flattenOption(): MapK<K, A> =
-    arrow.core.MapK.functorFilter<K>().run {
-  this@flattenOption.flattenOption<A>() as arrow.core.MapK<K, A>
-}
+  arrow.core.MapK.functorFilter<K>().run {
+    this@flattenOption.flattenOption<A>() as arrow.core.MapK<K, A>
+  }
 
 @JvmName("filter")
 @Suppress(
@@ -71,15 +71,15 @@ fun <K, A> Kind<Kind<ForMapK, K>, Option<A>>.flattenOption(): MapK<K, A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "filter(arg1)",
-  "arrow.core.filter"
+    "filter { (_, a) -> arg1(a) }",
+    "kotlin.collections.filter"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> Kind<Kind<ForMapK, K>, A>.filter(arg1: Function1<A, Boolean>): MapK<K, A> =
-    arrow.core.MapK.functorFilter<K>().run {
-  this@filter.filter<A>(arg1) as arrow.core.MapK<K, A>
-}
+  arrow.core.MapK.functorFilter<K>().run {
+    this@filter.filter<A>(arg1) as arrow.core.MapK<K, A>
+  }
 
 @JvmName("filterIsInstance")
 @Suppress(
@@ -91,19 +91,20 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.filter(arg1: Function1<A, Boolean>): MapK<K
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "filterIsInstance(arg1)",
-  "arrow.core.filterIsInstance"
+    "filterMap { if (arg1.isInstance(it)) arg1.cast(it) else null }",
+    "arrow.core.filterMap"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Kind<Kind<ForMapK, K>, A>.filterIsInstance(arg1: Class<B>): MapK<K, B> =
-    arrow.core.MapK.functorFilter<K>().run {
-  this@filterIsInstance.filterIsInstance<A, B>(arg1) as arrow.core.MapK<K, B>
-}
+  arrow.core.MapK.functorFilter<K>().run {
+    this@filterIsInstance.filterIsInstance<A, B>(arg1) as arrow.core.MapK<K, B>
+  }
 
 @Suppress(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("FunctorFilter typeclasses is deprecated. Use concrete methods on Map")
 inline fun <K> Companion.functorFilter(): MapKFunctorFilter<K> = functorFilter_singleton as
-    arrow.core.extensions.MapKFunctorFilter<K>
+  arrow.core.extensions.MapKFunctorFilter<K>

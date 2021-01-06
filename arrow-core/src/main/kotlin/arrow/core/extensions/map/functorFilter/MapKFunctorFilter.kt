@@ -42,7 +42,7 @@ fun <K, A, B> Map<K, A>.filterMap(arg1: Function1<A, Option<B>>): Map<K, B> =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith("filterMap { it.orNull() }"),
+  ReplaceWith("filterMap { it.orNull() }", "arrow.core.filterMap"),
   DeprecationLevel.WARNING
 )
 fun <K, A> Map<K, Option<A>>.flattenOption(): Map<K, A> =
