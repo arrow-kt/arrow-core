@@ -17,10 +17,7 @@ import kotlin.jvm.JvmName
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "empty()",
-  "arrow.core.extensions.map.align.Map.empty"
-  ),
+  ReplaceWith("emptyMap<K, A>()"),
   DeprecationLevel.WARNING
 )
 fun <K, A> empty(): Map<K, A> = arrow.core.extensions.map.align.Map
@@ -38,4 +35,5 @@ object Map {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("Align typeclasses is deprecated. Use concrete methods on Map")
   inline fun <K> align(): MapKAlign<K> = align_singleton as arrow.core.extensions.MapKAlign<K>}
