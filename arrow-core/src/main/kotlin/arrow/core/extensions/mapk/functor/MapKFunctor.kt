@@ -29,10 +29,7 @@ internal val functor_singleton: MapKFunctor<Any?> = object : MapKFunctor<Any?> {
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "map(arg1)",
-  "arrow.core.map"
-  ),
+  ReplaceWith("mapValues { (_, a) -> arg1(a) }"),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Kind<Kind<ForMapK, K>, A>.map(arg1: Function1<A, B>): MapK<K, B> =
@@ -49,10 +46,7 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.map(arg1: Function1<A, B>): MapK<K, B> =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "imap(arg1, arg2)",
-  "arrow.core.imap"
-  ),
+  ReplaceWith("mapValues { (_, a) -> arg1(a) }"),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Kind<Kind<ForMapK, K>, A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>): MapK<K,
@@ -67,14 +61,7 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.imap(arg1: Function1<A, B>, arg2: Functi
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "lift(arg0)",
-  "arrow.core.MapK.lift"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("{ l: Map<K, A> -> l.mapValues { (_, a) -> arg0(a) } }"))
 fun <K, A, B> lift(arg0: Function1<A, B>): Function1<Kind<Kind<ForMapK, K>, A>, Kind<Kind<ForMapK,
     K>, B>> = arrow.core.MapK
    .functor<K>()
@@ -129,10 +116,7 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.fproduct(arg1: Function1<A, B>): MapK<K,
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "mapConst(arg1)",
-  "arrow.core.mapConst"
-  ),
+  ReplaceWith("mapValues { arg1 }"),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Kind<Kind<ForMapK, K>, A>.mapConst(arg1: B): MapK<K, B> =
@@ -149,10 +133,7 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.mapConst(arg1: B): MapK<K, B> =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "mapConst(arg1)",
-  "arrow.core.mapConst"
-  ),
+  ReplaceWith("arg1.mapValues { this }"),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> A.mapConst(arg1: Kind<Kind<ForMapK, K>, B>): MapK<K, A> =
@@ -223,5 +204,6 @@ fun <K, B, A : B> Kind<Kind<ForMapK, K>, A>.widen(): MapK<K, B> = arrow.core.Map
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Functor typeclasses is deprecated. Use concrete methods on Map")
 inline fun <K> Companion.functor(): MapKFunctor<K> = functor_singleton as
     arrow.core.extensions.MapKFunctor<K>
