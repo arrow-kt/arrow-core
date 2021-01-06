@@ -31,7 +31,7 @@ fun <A, B> List<Tuple2<A, B>>.unzip(): Tuple2<Kind<ForListK, A>, Kind<ForListK, 
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("@extension projected functions are deprecated", ReplaceWith("unzipWith(arg1)", "arrow.core.unzipWith"))
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("unzip(arg1)", "arrow.core.unzip"))
 fun <A, B, C> List<C>.unzipWith(arg1: Function1<C, Tuple2<A, B>>): Tuple2<Kind<ForListK, A>,
     Kind<ForListK, B>> = arrow.core.extensions.list.unzip.List.unzip().run {
   arrow.core.ListK(this@unzipWith).unzipWith<A, B, C>(arg1) as

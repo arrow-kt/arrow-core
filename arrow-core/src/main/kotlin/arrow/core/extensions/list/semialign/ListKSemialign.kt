@@ -33,7 +33,7 @@ fun <A, B> align(arg0: List<A>, arg1: List<B>): List<Ior<A, B>> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.alignWith(arg1, arg2)", "arrow.core.alignWith"))
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.align(arg1, arg2)", "arrow.core.align"))
 fun <A, B, C> alignWith(
   arg0: List<A>,
   arg1: List<B>,
@@ -78,7 +78,7 @@ fun <A, B> List<A>.padZip(arg1: List<B>): List<Tuple2<Option<A>, Option<B>>> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.padZipWith(arg1, arg2)", "arrow.core.padZipWith"))
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.padZip(arg1, arg2)", "arrow.core.padZip"))
 fun <A, B, C> List<A>.padZipWith(arg1: List<B>, arg2: Function2<Option<A>, Option<B>, C>): List<C> =
     arrow.core.extensions.list.semialign.List.semialign().run {
   arrow.core.ListK(this@padZipWith).padZipWith<A, B, C>(arrow.core.ListK(arg1), arg2) as

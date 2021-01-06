@@ -32,7 +32,7 @@ fun <A, B> unalign(arg0: List<Ior<A, B>>): Tuple2<Kind<ForListK, A>, Kind<ForLis
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.unalignWith(arg1)", "arrow.core.unalignWith"))
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("arg0.unalign(arg1)", "arrow.core.unalign"))
 fun <A, B, C> unalignWith(arg0: List<C>, arg1: Function1<C, Ior<A, B>>): Tuple2<Kind<ForListK, A>,
     Kind<ForListK, B>> = arrow.core.extensions.list.unalign.List
    .unalign()

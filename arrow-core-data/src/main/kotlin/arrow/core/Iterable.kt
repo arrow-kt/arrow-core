@@ -133,9 +133,9 @@ inline fun <A, B> List<A>.reduceRightNull(
  * import arrow.core.*
  *
  * //sampleStart
- * val padRight = listOf(1, 2).padZipWithNull(listOf("a"))        // Result: [Tuple2(1, "a"), Tuple2(2, null)]
- * val padLeft = listOf(1).padZipWithNull(listOf("a", "b"))       // Result: [Tuple2(1, "a"), Tuple2(null, "b")]
- * val noPadding = listOf(1, 2).padZipWithNull(listOf("a", "b"))  // Result: [Tuple2(1, "a"), Tuple2(2, "b")]
+ * val padRight = listOf(1, 2).padZip(listOf("a"))        // Result: [Tuple2(1, "a"), Tuple2(2, null)]
+ * val padLeft = listOf(1).padZip(listOf("a", "b"))       // Result: [Tuple2(1, "a"), Tuple2(null, "b")]
+ * val noPadding = listOf(1, 2).padZip(listOf("a", "b"))  // Result: [Tuple2(1, "a"), Tuple2(2, "b")]
  * //sampleEnd
  *
  * fun main() {
@@ -145,10 +145,8 @@ inline fun <A, B> List<A>.reduceRightNull(
  * }
  * ```
  */
-fun <A, B> Iterable<A>.padZipWithNull(
-  other: Iterable<B>
-): List<Tuple2<A?, B?>> =
-  alignWith(other) { ior ->
+fun <A, B> Iterable<A>.padZip(other: Iterable<B>): List<Tuple2<A?, B?>> =
+  align(other) { ior ->
     ior.fold(
       { it toT null },
       { null toT it },
@@ -177,11 +175,8 @@ fun <A, B> Iterable<A>.padZipWithNull(
  * }
  * ```
  */
-inline fun <A, B, C> Iterable<A>.padZip(
-  other: Iterable<B>,
-  fa: (A?, B?) -> C
-): List<C> =
-  padZipWithNull(other).map { fa(it.a, it.b) }
+inline fun <A, B, C> Iterable<A>.padZip(other: Iterable<B>, fa: (A?, B?) -> C): List<C> =
+  padZip(other).map { fa(it.a, it.b) }
 
 /**
  * Returns a [List<C>] containing the result of applying some transformation `(A?, B) -> C`
@@ -204,10 +199,7 @@ inline fun <A, B, C> Iterable<A>.padZip(
  * }
  * ```
  */
-inline fun <A, B, C> Iterable<A>.leftPadZip(
-  other: Iterable<B>,
-  fab: (A?, B) -> C
-): List<C> =
+inline fun <A, B, C> Iterable<A>.leftPadZip(other: Iterable<B>, fab: (A?, B) -> C): List<C> =
   padZip(other) { a: A?, b: B? -> b?.let { fab(a, it) } }.mapNotNull(::identity)
 
 /**
@@ -231,9 +223,7 @@ inline fun <A, B, C> Iterable<A>.leftPadZip(
  * }
  * ```
  */
-fun <A, B> Iterable<A>.leftPadZip(
-  other: Iterable<B>
-): List<Tuple2<A?, B>> =
+fun <A, B> Iterable<A>.leftPadZip(other: Iterable<B>): List<Tuple2<A?, B>> =
   this.leftPadZip(other) { a, b -> a toT b }
 
 /**
@@ -257,10 +247,7 @@ fun <A, B> Iterable<A>.leftPadZip(
  * }
  * ```
  */
-inline fun <A, B, C> Iterable<A>.rightPadZip(
-  other: Iterable<B>,
-  fa: (A, B?) -> C
-): List<C> =
+inline fun <A, B, C> Iterable<A>.rightPadZip(other: Iterable<B>, fa: (A, B?) -> C): List<C> =
   other.leftPadZip(this) { a, b -> fa(b, a) }
 
 /**
@@ -284,9 +271,7 @@ inline fun <A, B, C> Iterable<A>.rightPadZip(
  * }
  * ```
  */
-fun <A, B> Iterable<A>.rightPadZip(
-  other: Iterable<B>
-): List<Tuple2<A, B?>> =
+fun <A, B> Iterable<A>.rightPadZip(other: Iterable<B>): List<Tuple2<A, B?>> =
   this.rightPadZip(other) { a, b -> a toT b }
 
 fun <A> Iterable<A>.show(SA: Show<A>): String = "[" +
@@ -324,7 +309,7 @@ fun <A, B> tailRecMIterable(a: A, f: (A) -> Iterable<Either<A, B>>): List<B> {
  * fun main(args: Array<String>) {
  *   //sampleStart
  *   val result =
- *    listOf("A", "B").alignWith(listOf(1, 2, 3)) {
+ *    listOf("A", "B").align(listOf(1, 2, 3)) {
  *      "$it"
  *    }
  *   //sampleEnd
@@ -332,8 +317,8 @@ fun <A, B> tailRecMIterable(a: A, f: (A) -> Iterable<Either<A, B>>): List<B> {
  * }
  * ```
  */
-inline fun <A, B, C> Iterable<A>.alignWith(b: Iterable<B>, fa: (Ior<A, B>) -> C): List<C> =
-  align(b).map(fa)
+inline fun <A, B, C> Iterable<A>.align(b: Iterable<B>, fa: (Ior<A, B>) -> C): List<C> =
+  this.align(b).map(fa)
 
 /**
  * Combines two structures by taking the union of their shapes and using Ior to hold the elements.
@@ -371,7 +356,7 @@ fun <A> Iterable<A>.salign(
   SG: Semigroup<A>,
   other: Iterable<A>
 ): Iterable<A> = SG.run {
-  alignWith(other) {
+  align(other) {
     it.fold(::identity, ::identity) { a, b ->
       a.combine(b)
     }
@@ -407,7 +392,7 @@ fun <A, B> Iterable<Tuple2<A, B>>.unzip(): Tuple2<List<A>, List<B>> =
  * fun main(args: Array<String>) {
  *   //sampleStart
  *   val result =
- *    listOf("A:1", "B:2", "C:3").k().unzipWith { e ->
+ *    listOf("A:1", "B:2", "C:3").k().unzip { e ->
  *      e.split(":").let {
  *        it.first() toT it.last()
  *      }
@@ -417,7 +402,7 @@ fun <A, B> Iterable<Tuple2<A, B>>.unzip(): Tuple2<List<A>, List<B>> =
  * }
  * ```
  */
-inline fun <A, B, C> Iterable<C>.unzipWith(fc: (C) -> Tuple2<A, B>): Tuple2<List<A>, List<B>> =
+inline fun <A, B, C> Iterable<C>.unzip(fc: (C) -> Tuple2<A, B>): Tuple2<List<A>, List<B>> =
   map(fc).unzip()
 
 /**
@@ -454,7 +439,7 @@ fun <A, B> Iterable<Ior<A, B>>.unalign(): Tuple2<List<A>, List<B>> =
  * fun main(args: Array<String>) {
  *   //sampleStart
  *   val result =
- *      listOf(1, 2, 3).unalignWith {
+ *      listOf(1, 2, 3).unalign {
  *        it.leftIor()
  *      }
  *   //sampleEnd
@@ -462,7 +447,7 @@ fun <A, B> Iterable<Ior<A, B>>.unalign(): Tuple2<List<A>, List<B>> =
  * }
  * ```
  */
-inline fun <A, B, C> Iterable<C>.unalignWith(fa: (C) -> Ior<A, B>): Tuple2<List<A>, List<B>> =
+inline fun <A, B, C> Iterable<C>.unalign(fa: (C) -> Ior<A, B>): Tuple2<List<A>, List<B>> =
   map(fa).unalign()
 
 fun <A, B> Iterable<A>.product(fb: Iterable<B>): List<Tuple2<A, B>> =
@@ -714,7 +699,7 @@ fun <A> Iterable<A>.neqv(EQA: Eq<A>, other: Iterable<A>): Boolean =
 
 fun <A, B> Iterable<A>.crosswalk(f: (A) -> Iterable<B>): List<List<B>> =
   fold(emptyList()) { bs, a ->
-    f(a).alignWith(bs) { ior ->
+    f(a).align(bs) { ior ->
       ior.fold(
         { listOf(it) },
         ::identity,
@@ -725,7 +710,7 @@ fun <A, B> Iterable<A>.crosswalk(f: (A) -> Iterable<B>): List<List<B>> =
 
 fun <A, K, V> Iterable<A>.crosswalkMap(f: (A) -> Map<K, V>): Map<K, List<V>> =
   fold(emptyMap()) { bs, a ->
-    f(a).alignWith(bs) { ior ->
+    f(a).align(bs) { ior ->
       ior.fold(
         { listOf(it) },
         ::identity,

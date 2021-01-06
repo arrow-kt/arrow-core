@@ -91,7 +91,7 @@ class IterableTest : UnitSpec() {
         val left = a.map { it } + List(max(0, b.count() - a.count())) { null }
         val right = b.map { it } + List(max(0, a.count() - b.count())) { null }
 
-        a.padZipWithNull(b) == left.zip(right) { l, r -> l toT r }
+        a.padZip(b) == left.zip(right) { l, r -> l toT r }
       }
     }
   }
