@@ -49,8 +49,8 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.zip(arg1: Kind<Kind<ForMapK, K>, B>): Ma
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "zipWith(arg1, arg2)",
-  "arrow.core.zipWith"
+    "zip(arg1) { _, a, b -> arg2(a, b) } ",
+    "arrow.core.zip"
   ),
   DeprecationLevel.WARNING
 )
@@ -63,4 +63,5 @@ fun <K, A, B, C> Kind<Kind<ForMapK, K>, A>.zipWith(arg1: Kind<Kind<ForMapK, K>, 
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Unzip typeclasses is deprecated. Use concrete methods on Map")
 inline fun <K> Companion.zip(): MapKZip<K> = zip_singleton as arrow.core.extensions.MapKZip<K>
