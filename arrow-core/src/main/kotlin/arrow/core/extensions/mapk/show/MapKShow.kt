@@ -9,6 +9,7 @@ import kotlin.Suppress
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("mapShow(SK, SA)", "arrow.core.mapShow"))
 inline fun <K, A> Companion.show(SK: Show<K>, SA: Show<A>): MapKShow<K, A> = object :
     arrow.core.extensions.MapKShow<K, A> { override fun SK(): arrow.typeclasses.Show<K> = SK
 
