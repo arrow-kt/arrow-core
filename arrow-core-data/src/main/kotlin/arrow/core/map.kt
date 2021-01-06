@@ -410,7 +410,7 @@ fun <K, A> Map<K, A>.combine(SG: Semigroup<A>, b: Map<K, A>): Map<K, A> = with(S
 fun <K, A> Iterable<Map<K, A>>.combineAll(SG: Semigroup<A>): Map<K, A> =
   fold(emptyMap()) { acc, map -> acc.combine(SG, map) }
 
-fun <K, A> mapMonoid(SG: Semigroup<A>) : Monoid<Map<K, A>> =
+fun <K, A> mapMonoid(SG: Semigroup<A>): Monoid<Map<K, A>> =
   MapMonoid(SG)
 
 private class MapMonoid<K, A>(private val SG: Semigroup<A>) : Monoid<Map<K, A>> {
@@ -419,4 +419,3 @@ private class MapMonoid<K, A>(private val SG: Semigroup<A>) : Monoid<Map<K, A>> 
   override fun Map<K, A>.combine(b: Map<K, A>): Map<K, A> =
     combine(SG, b)
 }
-
