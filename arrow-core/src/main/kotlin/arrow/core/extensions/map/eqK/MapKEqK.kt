@@ -17,14 +17,7 @@ import kotlin.jvm.JvmName
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "eqK(EQK, arg1, arg2)",
-  "arrow.core.eqK"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 fun <K, A> Map<K, A>.eqK(
   EQK: Eq<K>,
   arg1: Map<K, A>,
@@ -40,14 +33,7 @@ fun <K, A> Map<K, A>.eqK(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "liftEq(EQK, arg0)",
-  "arrow.core.extensions.map.eqK.Map.liftEq"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 fun <K, A> liftEq(EQK: Eq<K>, arg0: Eq<A>): Eq<Kind<Kind<ForMapK, K>, A>> =
     arrow.core.extensions.map.eqK.Map
    .eqK<K>(EQK)
@@ -58,5 +44,6 @@ object Map {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
   inline fun <K> eqK(EQK: Eq<K>): MapKEqK<K> = object : arrow.core.extensions.MapKEqK<K> { override
       fun EQK(): arrow.typeclasses.Eq<K> = EQK }}
