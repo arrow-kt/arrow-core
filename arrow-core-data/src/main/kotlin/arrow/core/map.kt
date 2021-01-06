@@ -1,9 +1,9 @@
 package arrow.core
 
-import arrow.Kind
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Semigroup
+import arrow.typeclasses.Show
 import arrow.typeclasses.defaultSalt
 
 object MapInstances
@@ -121,7 +121,7 @@ fun <K, B, A : B> Map<K, A>.widen(): Map<K, B> =
   this
 
 fun <K, A, B> Map<K, A>.filterMap(f: (A) -> B?): Map<K, B> {
-  val destination = LinkedHashMap<K, B>(size)
+  val destination = LinkedHashMap<K, B>(mapCapacity(size))
   for ((key, a) in this) {
     f(a)?.let { l -> destination.put(key, l) }
   }
@@ -367,4 +367,20 @@ private class MapHash<K, A>(
 ) : Hash<Map<K, A>> {
   override fun Map<K, A>.hashWithSalt(salt: Int): Int =
     hashWithSalt(HK, HA, salt)
+}
+
+fun <A, B> Pair<A, B>.show(SA: Show<A>, SB: Show<B>): String =
+  "(" + listOf(SA.run { first.show() }, SB.run { second.show() }).joinToString(", ") + ")"
+
+fun <K, A> Map<K, A>.show(SK: Show<K>, SA: Show<A>): String =
+  "Map(${toList().k().show(Show { show(SK, SA) })})"
+
+fun <K, A> mapShow(SK: Show<K>, SA: Show<A>): Show<Map<K, A>> =
+  MapShow(SK, SA)
+
+private class MapShow<K, A>(
+  private val SK: Show<K>,
+  private val SA: Show<A>
+) : Show<Map<K, A>> {
+  override fun Map<K, A>.show(): String = show(SK, SA)
 }
