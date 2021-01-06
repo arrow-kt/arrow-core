@@ -18,8 +18,8 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "plus(SG, arg1)",
-  "arrow.core.plus"
+    "combine(SG, arg1)",
+    "arrow.core.combine"
   ),
   DeprecationLevel.WARNING
 )
@@ -38,8 +38,8 @@ fun <K, A> MapK<K, A>.plus(SG: Semigroup<A>, arg1: MapK<K, A>): MapK<K, A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "maybeCombine(SG, arg1)",
-  "arrow.core.maybeCombine"
+    "arg2?.let { it.combine(SG, this) }",
+    "arrow.core.combine"
   ),
   DeprecationLevel.WARNING
 )
@@ -52,6 +52,7 @@ fun <K, A> MapK<K, A>.maybeCombine(SG: Semigroup<A>, arg1: MapK<K, A>): MapK<K, 
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("mapEq(EQK, EQA)", "arrow.core.mapEq"))
 inline fun <K, A> Companion.semigroup(SG: Semigroup<A>): MapKSemigroup<K, A> = object :
     arrow.core.extensions.MapKSemigroup<K, A> { override fun SG(): arrow.typeclasses.Semigroup<A> =
     SG }
