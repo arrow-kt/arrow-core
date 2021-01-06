@@ -29,8 +29,8 @@ internal val unalign_singleton: MapKUnalign<Any?> = object : MapKUnalign<Any?> {
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "unalign(arg0)",
-  "arrow.core.MapK.unalign"
+    "arg0.unalign()",
+    "arrow.core.unalign"
   ),
   DeprecationLevel.WARNING
 )
@@ -50,8 +50,8 @@ fun <K, A, B> unalign(arg0: Kind<Kind<ForMapK, K>, Ior<A, B>>): Tuple2<Kind<Kind
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "unalignWith(arg0, arg1)",
-  "arrow.core.MapK.unalignWith"
+    "arg0.unalign { (_, c) -> arg1(c) }",
+    "arrow.core.unalign"
   ),
   DeprecationLevel.WARNING
 )
@@ -65,5 +65,6 @@ fun <K, A, B, C> unalignWith(arg0: Kind<Kind<ForMapK, K>, C>, arg1: Function1<C,
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Unalign typeclasses is deprecated. Use concrete methods on Map")
 inline fun <K> Companion.unalign(): MapKUnalign<K> = unalign_singleton as
     arrow.core.extensions.MapKUnalign<K>
