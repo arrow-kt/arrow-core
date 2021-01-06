@@ -24,10 +24,7 @@ internal val align_singleton: MapKAlign<Any?> = object : MapKAlign<Any?> {}
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "empty()",
-  "arrow.core.MapK.empty"
-  ),
+  ReplaceWith("emptyMap<K, A>()"),
   DeprecationLevel.WARNING
 )
 fun <K, A> empty(): MapK<K, A> = arrow.core.MapK
@@ -38,5 +35,6 @@ fun <K, A> empty(): MapK<K, A> = arrow.core.MapK
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Align typeclasses is deprecated. Use concrete methods on Map")
 inline fun <K> Companion.align(): MapKAlign<K> = align_singleton as
     arrow.core.extensions.MapKAlign<K>
