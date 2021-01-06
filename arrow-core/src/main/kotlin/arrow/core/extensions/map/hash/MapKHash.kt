@@ -33,6 +33,7 @@ object Map {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("@extension projected functions are deprecated", ReplaceWith("mapHash(HK, HA)", "arrow.core.mapHash"))
   inline fun <K, A> hash(HK: Hash<K>, HA: Hash<A>): MapKHash<K, A> = object :
       arrow.core.extensions.MapKHash<K, A> { override fun HK(): arrow.typeclasses.Hash<K> = HK
 
