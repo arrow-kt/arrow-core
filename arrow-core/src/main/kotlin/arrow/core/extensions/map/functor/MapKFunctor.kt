@@ -22,10 +22,7 @@ import kotlin.jvm.JvmName
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "map(arg1)",
-  "arrow.core.map"
-  ),
+  ReplaceWith("mapValues { (_, a) -> arg1(a) }"),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Map<K, A>.map(arg1: Function1<A, B>): Map<K, B> =
@@ -42,10 +39,7 @@ fun <K, A, B> Map<K, A>.map(arg1: Function1<A, B>): Map<K, B> =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "imap(arg1, arg2)",
-  "arrow.core.imap"
-  ),
+  ReplaceWith("mapValues { (_, a) -> arg1(a) }"),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Map<K, A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>): Map<K, B> =
@@ -60,14 +54,7 @@ fun <K, A, B> Map<K, A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>): Map<
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "lift(arg0)",
-  "arrow.core.extensions.map.functor.Map.lift"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("{ l: Map<K, A> -> l.mapValues { (_, a) -> arg0(a) } }"))
 fun <K, A, B> lift(arg0: Function1<A, B>): Function1<Kind<Kind<ForMapK, K>, A>, Kind<Kind<ForMapK,
     K>, B>> = arrow.core.extensions.map.functor.Map
    .functor<K>()
@@ -123,10 +110,7 @@ fun <K, A, B> Map<K, A>.fproduct(arg1: Function1<A, B>): Map<K, Tuple2<A, B>> =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "mapConst(arg1)",
-  "arrow.core.mapConst"
-  ),
+  ReplaceWith("mapValues { arg1 }"),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Map<K, A>.mapConst(arg1: B): Map<K, B> =
@@ -143,10 +127,7 @@ fun <K, A, B> Map<K, A>.mapConst(arg1: B): Map<K, B> =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "mapConst(arg1)",
-  "arrow.core.mapConst"
-  ),
+  ReplaceWith("arg1.mapValues { this }"),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> A.mapConst(arg1: Map<K, B>): Map<K, A> =
@@ -227,5 +208,6 @@ object Map {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("Functor typeclasses is deprecated. Use concrete methods on Map")
   inline fun <K> functor(): MapKFunctor<K> = functor_singleton as
       arrow.core.extensions.MapKFunctor<K>}
