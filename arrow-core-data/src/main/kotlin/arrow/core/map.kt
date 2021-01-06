@@ -1,5 +1,6 @@
 package arrow.core
 
+import arrow.Kind
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Semigroup
@@ -198,6 +199,136 @@ fun <K, A, B, C> Map<K, A>.padZip(other: Map<K, B>, fa: (K, A?, B?) -> C): Map<K
       { a, b -> fa(k, a, b) }
     )
   }
+
+/**
+ * Splits a union into its component parts.
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *    mapOf(
+ *      "first" to ("A" toT 1).bothIor(),
+ *      "second" to ("B" toT 2).bothIor(),
+ *      "third" to "C".leftIor()
+ *    ).unalign()
+ *   //sampleEnd
+ *   println(result)
+ * }
+ * ```
+ */
+fun <K, A, B> Map<K, Ior<A, B>>.unalign(): Tuple2<Map<K, A>, Map<K, B>> =
+  entries.fold(emptyMap<K, A>() toT emptyMap()) { (ls, rs), (k, v) ->
+    v.fold(
+      { a -> ls.plus(k to a) toT rs },
+      { b -> ls toT rs.plus(k to b) },
+      { a, b -> ls.plus(k to a) toT rs.plus(k to b) })
+  }
+
+/**
+ * after applying the given function, splits the resulting union shaped structure into its components parts
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *      mapOf("1" to 1, "2" to 2, "3" to 3)
+ *        .unalign { it.leftIor() }
+ *   //sampleEnd
+ *   println(result)
+ * }
+ * ```
+ */
+fun <K, A, B, C> Map<K, C>.unalign(fa: (Map.Entry<K, C>) -> Ior<A, B>): Tuple2<Map<K, A>, Map<K, B>> =
+  mapValues(fa).unalign()
+
+/**
+ * Unzips the structure holding the resulting elements in an `Tuple2`
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *      mapOf("first" to ("A" toT 1), "second" to ("B" toT 2)).unzip()
+ *   //sampleEnd
+ *   println(result)
+ * }
+ * ```
+ */
+fun <K, A, B> Map<K, Tuple2<A, B>>.unzip(): Tuple2<Map<K, A>, Map<K, B>> =
+  entries.fold(emptyMap<K, A>() toT emptyMap()) { (ls, rs), (k, v) ->
+    ls.plus(k to v.a) toT rs.plus(k to v.b)
+  }
+
+/**
+ * After applying the given function unzip the resulting structure into its elements.
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *    mapOf("first" to "A:1", "second" to "B:2", "third" to "C:3").unzip { (_, e) ->
+ *      e.split(":").let {
+ *        it.first() toT it.last()
+ *      }
+ *    }
+ *   //sampleEnd
+ *   println(result)
+ * }
+ * ```
+ */
+fun <K, A, B, C> Map<K, C>.unzip(fc: (Map.Entry<K, C>) -> Tuple2<A, B>): Tuple2<Map<K, A>, Map<K, B>> =
+  mapValues(fc).unzip()
+
+/**
+ * Combines to structures by taking the intersection of their shapes
+ * and using `Tuple2` to hold the elements.
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *    mapOf(1 to "A", 2 to "B").zip(mapOf(1 to "1", 2 to "2", 3 to "3"))
+ *   //sampleEnd
+ *   println(result)
+ * }
+ * ```
+ */
+fun <K, A, B> Map<K, A>.zip(other: Map<K, B>): Map<K, Tuple2<A, B>> =
+  keys.intersect(other.keys).mapNotNull { key ->
+    Nullable.mapN(this[key], other[key]) { a, b -> key to (a toT b) }
+  }.toMap()
+
+/**
+ * Combines to structures by taking the intersection of their shapes
+ * and combining the elements with the given function.
+ *
+ * ```kotlin:ank
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *    mapOf(1 to "A", 2 to "B").zip(mapOf(1 to "1", 2 to "2", 3 to "3")) {
+ *      key, a, b -> "$key -> $a # $b"
+ *    }
+ *   //sampleEnd
+ *   println(result)
+ * }
+ * ```
+ */
+fun <K, A, B, C> Map<K, A>.zip(other: Map<K, B>, f: (K, A, B) -> C): Map<K, C> =
+  zip(other).mapValues { (k, tuple) -> f(k, tuple.a, tuple.b) }
 
 fun <K, A> Map<K, A>.eqv(EQK: Eq<K>, EQA: Eq<A>, b: Map<K, A>): Boolean =
   if (keys.eqv(EQK, b.keys)) EQA.run {
