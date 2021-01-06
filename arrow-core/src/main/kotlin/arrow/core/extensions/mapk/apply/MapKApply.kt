@@ -58,8 +58,8 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.ap(arg1: Kind<Kind<ForMapK, K>, Function
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "apEval(arg1)",
-  "arrow.core.apEval"
+    "arg1.map { ff -> this.ap(ff) }",
+    "arrow.core.ap"
   ),
   DeprecationLevel.WARNING
 )
@@ -79,8 +79,9 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.apEval(arg1: Eval<Kind<Kind<ForMapK, K>,
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map2Eval(arg1, arg2)",
-  "arrow.core.map2Eval"
+    "if (arg1.value().isEmpty()) Eval.now(emptyMap<K, Z>()) else arg1.map { b -> MapK.mapN(this, b) { _, a, b -> arg2(Tuple2(a, b)) }) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -101,8 +102,9 @@ fun <K, A, B, Z> Kind<Kind<ForMapK, K>, A>.map2Eval(arg1: Eval<Kind<Kind<ForMapK
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2)",
-  "arrow.core.MapK.map"
+    "MapK.mapN(arg0, arg1) { _, a, b -> arg2(Tuple2(a, b)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -124,8 +126,9 @@ fun <K, A, B, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2)",
-  "arrow.core.MapK.mapN"
+    "MapK.mapN(arg0, arg1) { _, a, b -> arg2(Tuple2(a, b)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -147,8 +150,9 @@ fun <K, A, B, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2, arg3)",
-  "arrow.core.MapK.map"
+    "MapK.mapN(arg0, arg1, arg2) { _, a, b, c -> arg3(Tuple3(a, b, c)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -171,8 +175,9 @@ fun <K, A, B, C, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2, arg3)",
-  "arrow.core.MapK.mapN"
+    "MapK.mapN(arg0, arg1, arg2) { _, a, b, c -> arg3(Tuple3(a, b, c)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -195,8 +200,9 @@ fun <K, A, B, C, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2, arg3, arg4)",
-  "arrow.core.MapK.map"
+    "MapK.mapN(arg0, arg1, arg2, arg3) { _, a, b, c, d -> arg4(Tuple4(a, b, c, d)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -220,8 +226,9 @@ fun <K, A, B, C, D, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2, arg3, arg4)",
-  "arrow.core.MapK.mapN"
+    "MapK.mapN(arg0, arg1, arg2, arg3) { _, a, b, c, d -> arg4(Tuple4(a, b, c, d)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -245,8 +252,9 @@ fun <K, A, B, C, D, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2, arg3, arg4, arg5)",
-  "arrow.core.MapK.map"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4) { _, a, b, c, d, e -> arg5(Tuple5(a, b, c, d, e)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -271,8 +279,9 @@ fun <K, A, B, C, D, E, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2, arg3, arg4, arg5)",
-  "arrow.core.MapK.mapN"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4) { _, a, b, c, d, e -> arg5(Tuple5(a, b, c, d, e)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -297,8 +306,9 @@ fun <K, A, B, C, D, E, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
-  "arrow.core.MapK.map"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5) { _, a, b, c, d, e, f -> arg6(Tuple6(a, b, c, d, e, f)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -324,8 +334,9 @@ fun <K, A, B, C, D, E, FF, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
-  "arrow.core.MapK.mapN"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5) { _, a, b, c, d, e, f -> arg6(Tuple6(a, b, c, d, e, f)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -351,8 +362,9 @@ fun <K, A, B, C, D, E, FF, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
-  "arrow.core.MapK.map"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6) { _, a, b, c, d, e, f, g -> arg7(Tuple7(a, b, c, d, e, f, g)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -380,8 +392,9 @@ fun <K, A, B, C, D, E, FF, G, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
-  "arrow.core.MapK.mapN"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6) { _, a, b, c, d, e, f, g -> arg7(Tuple7(a, b, c, d, e, f, g)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -409,8 +422,9 @@ fun <K, A, B, C, D, E, FF, G, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
-  "arrow.core.MapK.map"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) { _, a, b, c, d, e, f, g, h -> arg8(Tuple8(a, b, c, d, e, f, g, h)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -439,8 +453,9 @@ fun <K, A, B, C, D, E, FF, G, H, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
-  "arrow.core.MapK.mapN"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) { _, a, b, c, d, e, f, g, h -> arg8(Tuple8(a, b, c, d, e, f, g, h)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -469,8 +484,9 @@ fun <K, A, B, C, D, E, FF, G, H, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
-  "arrow.core.MapK.map"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) { _, a, b, c, d, e, f, g, h, i -> arg9(Tuple9(a, b, c, d, e, f, g, h, i)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -500,8 +516,9 @@ fun <K, A, B, C, D, E, FF, G, H, I, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
-  "arrow.core.MapK.mapN"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) { _, a, b, c, d, e, f, g, h, i -> arg9(Tuple9(a, b, c, d, e, f, g, h, i)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -531,8 +548,9 @@ fun <K, A, B, C, D, E, FF, G, H, I, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)",
-  "arrow.core.MapK.map"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) { _, a, b, c, d, e, f, g, h, i, j -> arg10(Tuple10(a, b, c, d, e, f, g, h, i, j)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -563,8 +581,9 @@ fun <K, A, B, C, D, E, FF, G, H, I, J, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)",
-  "arrow.core.MapK.mapN"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) { _, a, b, c, d, e, f, g, h, i, j -> arg10(Tuple10(a, b, c, d, e, f, g, h, i, j)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -595,8 +614,9 @@ fun <K, A, B, C, D, E, FF, G, H, I, J, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map2(arg1, arg2)",
-  "arrow.core.map2"
+    "MapK.mapN(this, arg1) { _, a, b -> arg2(Tuple2(a, b)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -805,8 +825,9 @@ fun <K, A, B, C, D, E, FF, G, H, I, Z> Kind<Kind<ForMapK, K>, Tuple9<A, B, C, D,
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1)",
-  "arrow.core.MapK.tupled"
+    "MapK.tupledN(arg0, arg1)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -825,8 +846,9 @@ fun <K, A, B> tupled(arg0: Kind<Kind<ForMapK, K>, A>, arg1: Kind<Kind<ForMapK, K
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1)",
-  "arrow.core.MapK.tupledN"
+    "MapK.tupledN(arg0, arg1)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -845,8 +867,9 @@ fun <K, A, B> tupledN(arg0: Kind<Kind<ForMapK, K>, A>, arg1: Kind<Kind<ForMapK, 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1, arg2)",
-  "arrow.core.MapK.tupled"
+    "MapK.tupledN(arg0, arg1, arg2)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -868,8 +891,9 @@ fun <K, A, B, C> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1, arg2)",
-  "arrow.core.MapK.tupledN"
+    "MapK.tupledN(arg0, arg1, arg2)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -891,8 +915,9 @@ fun <K, A, B, C> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1, arg2, arg3)",
-  "arrow.core.MapK.tupled"
+    "MapK.tupledN(arg0, arg1, arg2, arg3)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -915,8 +940,9 @@ fun <K, A, B, C, D> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1, arg2, arg3)",
-  "arrow.core.MapK.tupledN"
+    "MapK.tupledN(arg0, arg1, arg2, arg3)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -939,8 +965,9 @@ fun <K, A, B, C, D> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1, arg2, arg3, arg4)",
-  "arrow.core.MapK.tupled"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -965,8 +992,9 @@ fun <K, A, B, C, D, E> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1, arg2, arg3, arg4)",
-  "arrow.core.MapK.tupledN"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -991,8 +1019,9 @@ fun <K, A, B, C, D, E> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1, arg2, arg3, arg4, arg5)",
-  "arrow.core.MapK.tupled"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1018,8 +1047,9 @@ fun <K, A, B, C, D, E, FF> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1, arg2, arg3, arg4, arg5)",
-  "arrow.core.MapK.tupledN"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1045,8 +1075,9 @@ fun <K, A, B, C, D, E, FF> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
-  "arrow.core.MapK.tupled"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1073,8 +1104,9 @@ fun <K, A, B, C, D, E, FF, G> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
-  "arrow.core.MapK.tupledN"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1101,8 +1133,9 @@ fun <K, A, B, C, D, E, FF, G> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
-  "arrow.core.MapK.tupled"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1130,8 +1163,9 @@ fun <K, A, B, C, D, E, FF, G, H> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
-  "arrow.core.MapK.tupledN"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1159,8 +1193,9 @@ fun <K, A, B, C, D, E, FF, G, H> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
-  "arrow.core.MapK.tupled"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1189,8 +1224,9 @@ fun <K, A, B, C, D, E, FF, G, H, I> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
-  "arrow.core.MapK.tupledN"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1219,8 +1255,9 @@ fun <K, A, B, C, D, E, FF, G, H, I> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
-  "arrow.core.MapK.tupled"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1251,8 +1288,9 @@ fun <K, A, B, C, D, E, FF, G, H, I, J> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
-  "arrow.core.MapK.tupledN"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1283,8 +1321,8 @@ fun <K, A, B, C, D, E, FF, G, H, I, J> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "followedBy(arg1)",
-  "arrow.core.followedBy"
+    "flatMap { arg1 }",
+    "arrow.core.flatMap"
   ),
   DeprecationLevel.WARNING
 )
@@ -1303,8 +1341,9 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.followedBy(arg1: Kind<Kind<ForMapK, K>, 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "apTap(arg1)",
-  "arrow.core.apTap"
+    "MapK.mapN(this, arg1) { _, left, _ -> left }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -1317,5 +1356,6 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.apTap(arg1: Kind<Kind<ForMapK, K>, B>): 
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Align typeclasses is deprecated. Use concrete methods on Map")
 inline fun <K> Companion.apply(): MapKApply<K> = apply_singleton as
     arrow.core.extensions.MapKApply<K>
