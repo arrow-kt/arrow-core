@@ -27,14 +27,7 @@ internal val traverse_singleton: MapKTraverse<Any?> = object : MapKTraverse<Any?
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "traverse(arg1, arg2)",
-  "arrow.core.traverse"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("@extension kinded projected functions are deprecated. Replace with traverseEither or traverseValidated from arrow.core.*")
 fun <K, G, A, B> Kind<Kind<ForMapK, K>, A>.traverse(arg1: Applicative<G>, arg2: Function1<A, Kind<G,
     B>>): Kind<G, Kind<Kind<ForMapK, K>, B>> = arrow.core.MapK.traverse<K>().run {
   this@traverse.traverse<G, A, B>(arg1, arg2) as arrow.Kind<G,
@@ -48,14 +41,7 @@ fun <K, G, A, B> Kind<Kind<ForMapK, K>, A>.traverse(arg1: Applicative<G>, arg2: 
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "sequence(arg1)",
-  "arrow.core.sequence"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("@extension kinded projected functions are deprecated. Replace with sequenceEither or sequenceValidated from arrow.core.*")
 fun <K, G, A> Kind<Kind<ForMapK, K>, Kind<G, A>>.sequence(arg1: Applicative<G>): Kind<G,
     Kind<Kind<ForMapK, K>, A>> = arrow.core.MapK.traverse<K>().run {
   this@sequence.sequence<G, A>(arg1) as arrow.Kind<G, arrow.Kind<arrow.Kind<arrow.core.ForMapK, K>,
@@ -71,10 +57,7 @@ fun <K, G, A> Kind<Kind<ForMapK, K>, Kind<G, A>>.sequence(arg1: Applicative<G>):
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "map(arg1)",
-  "arrow.core.map"
-  ),
+  ReplaceWith("mapValues { (_, a) -> arg1(a) }"),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Kind<Kind<ForMapK, K>, A>.map(arg1: Function1<A, B>): MapK<K, B> =
@@ -89,14 +72,7 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.map(arg1: Function1<A, B>): MapK<K, B> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "flatTraverse(arg1, arg2, arg3)",
-  "arrow.core.flatTraverse"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("@extension kinded projected functions are deprecated. Replace with flatTraverseEither or flatTraverseValidated from arrow.core.*")
 fun <K, G, A, B> Kind<Kind<ForMapK, K>, A>.flatTraverse(
   arg1: Monad<Kind<ForMapK, K>>,
   arg2: Applicative<G>,
@@ -110,5 +86,6 @@ fun <K, G, A, B> Kind<Kind<ForMapK, K>, A>.flatTraverse(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Traverse typeclasses is deprecated. Use concrete methods on Map")
 inline fun <K> Companion.traverse(): MapKTraverse<K> = traverse_singleton as
     arrow.core.extensions.MapKTraverse<K>
