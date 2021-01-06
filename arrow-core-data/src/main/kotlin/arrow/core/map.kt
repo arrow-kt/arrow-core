@@ -127,6 +127,78 @@ fun <K, A, B> Map<K, A>.filterMap(f: (A) -> B?): Map<K, B> {
   return destination
 }
 
+/**
+ * Combines two structures by taking the union of their shapes and using Ior to hold the elements.
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *    mapOf("1" to 1, "2" to 2).align(mapOf("1" to 1, "2" to 2, "3" to 3))
+ *   //sampleEnd
+ *   println(result)
+ * }
+ * ```
+ */
+fun <K, A, B> Map<K, A>.align(b: Map<K, B>): Map<K, Ior<A, B>> =
+  (keys + b.keys).mapNotNull { key ->
+    Ior.fromNullables(this[key], b[key])?.let { key toT it }
+  }.toMap()
+
+/**
+ * Combines two structures by taking the union of their shapes and combining the elements with the given function.
+ *
+ * ```kotlin:ank:playground
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val result =
+ *    mapOf("1" to 1, "2" to 2).align(mapOf("1" to 1, "2" to 2, "3" to 3)) { _, a ->
+ *      "$a"
+ *    }
+ *   //sampleEnd
+ *   println(result)
+ * }
+ * ```
+ */
+fun <K, A, B, C> Map<K, A>.align(b: Map<K, B>, fa: (Map.Entry<K, Ior<A, B>>) -> C): Map<K, C> =
+  this.align(b).mapValues(fa)
+
+/**
+ * aligns two structures and combine them with the given Semigroups '+'
+ */
+fun <K, A> Map<K, A>.salign(SG: Semigroup<A>, other: Map<K, A>): Map<K, A> = SG.run {
+  align(other) { (_, ior) ->
+    ior.fold(::identity, ::identity) { a, b ->
+      a.combine(b)
+    }
+  }
+}
+
+/**
+ * Align two structures as in zip, but filling in blanks with null.
+ */
+fun <K, A, B> Map<K, A>.padZip(other: Map<K, B>): Map<K, Tuple2<A?, B?>> =
+  align(other) { (_, ior) ->
+    ior.fold(
+      { it toT null },
+      { null toT it },
+      { a, b -> a toT b }
+    )
+  }
+
+fun <K, A, B, C> Map<K, A>.padZip(other: Map<K, B>, fa: (K, A?, B?) -> C): Map<K, C> =
+  align(other) { (k, ior) ->
+    ior.fold(
+      { fa(k, it, null) },
+      { fa(k, null, it) },
+      { a, b -> fa(k, a, b) }
+    )
+  }
+
 fun <K, A> Map<K, A>.eqv(EQK: Eq<K>, EQA: Eq<A>, b: Map<K, A>): Boolean =
   if (keys.eqv(EQK, b.keys)) EQA.run {
     keys.map { key ->
