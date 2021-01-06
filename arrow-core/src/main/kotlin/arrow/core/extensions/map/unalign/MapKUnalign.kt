@@ -23,8 +23,8 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "unalign(arg0)",
-  "arrow.core.extensions.map.unalign.Map.unalign"
+  "arg0.unalign()",
+  "arrow.core.unalign"
   ),
   DeprecationLevel.WARNING
 )
@@ -45,8 +45,8 @@ fun <K, A, B> unalign(arg0: Map<K, Ior<A, B>>): Tuple2<Kind<Kind<ForMapK, K>, A>
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "unalignWith(arg0, arg1)",
-  "arrow.core.extensions.map.unalign.Map.unalignWith"
+  "arg0.unalign { (_, c) -> arg1(c) }",
+  "arrow.core.unalign"
   ),
   DeprecationLevel.WARNING
 )
@@ -69,5 +69,6 @@ object Map {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("Unalign typeclasses is deprecated. Use concrete methods on Map")
   inline fun <K> unalign(): MapKUnalign<K> = unalign_singleton as
       arrow.core.extensions.MapKUnalign<K>}
