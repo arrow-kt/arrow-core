@@ -24,7 +24,6 @@ import arrow.core.toMap
 import arrow.core.toOption
 import arrow.core.toT
 import arrow.core.updated
-import arrow.extension
 import arrow.typeclasses.Align
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Apply
@@ -42,7 +41,6 @@ import arrow.typeclasses.Traverse
 import arrow.typeclasses.Zip
 import arrow.typeclasses.Unalign
 import arrow.typeclasses.Unzip
-import arrow.undocumented
 
 interface MapKFunctor<K> : Functor<MapKPartialOf<K>> {
   override fun <A, B> Kind<MapKPartialOf<K>, A>.map(f: (A) -> B): MapK<K, B> = fix().map(f)

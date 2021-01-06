@@ -38,15 +38,15 @@ internal val foldable_singleton: MapKFoldable<Any?> = object : MapKFoldable<Any?
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "foldLeft(arg1, arg2)",
-  "arrow.core.foldLeft"
+    "foldLeft(arg1, arg2)",
+    "arrow.core.foldLeft"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Kind<Kind<ForMapK, K>, A>.foldLeft(arg1: B, arg2: Function2<B, A, B>): B =
-    arrow.core.MapK.foldable<K>().run {
-  this@foldLeft.foldLeft<A, B>(arg1, arg2) as B
-}
+  arrow.core.MapK.foldable<K>().run {
+    this@foldLeft.foldLeft<A, B>(arg1, arg2) as B
+  }
 
 @JvmName("foldRight")
 @Suppress(
@@ -58,13 +58,15 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.foldLeft(arg1: B, arg2: Function2<B, A, 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "foldRight(arg1, arg2)",
-  "arrow.core.foldRight"
+    "foldRight(arg1, arg2)",
+    "arrow.core.foldRight"
   ),
   DeprecationLevel.WARNING
 )
-fun <K, A, B> Kind<Kind<ForMapK, K>, A>.foldRight(arg1: Eval<B>, arg2: Function2<A, Eval<B>,
-    Eval<B>>): Eval<B> = arrow.core.MapK.foldable<K>().run {
+fun <K, A, B> Kind<Kind<ForMapK, K>, A>.foldRight(
+  arg1: Eval<B>,
+  arg2: Function2<A, Eval<B>, Eval<B>>
+): Eval<B> = arrow.core.MapK.foldable<K>().run {
   this@foldRight.foldRight<A, B>(arg1, arg2) as arrow.core.Eval<B>
 }
 
@@ -78,8 +80,8 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.foldRight(arg1: Eval<B>, arg2: Function2
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "fold(arg1)",
-  "arrow.core.fold"
+    "fold(arg1)",
+    "arrow.core.fold"
   ),
   DeprecationLevel.WARNING
 )
@@ -97,13 +99,15 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.fold(arg1: Monoid<A>): A = arrow.core.MapK.
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "reduceLeftToOption(arg1, arg2)",
-  "arrow.core.reduceLeftToOption"
+    "reduceLeftToOption(arg1, arg2)",
+    "arrow.core.reduceLeftToOption"
   ),
   DeprecationLevel.WARNING
 )
-fun <K, A, B> Kind<Kind<ForMapK, K>, A>.reduceLeftToOption(arg1: Function1<A, B>, arg2: Function2<B,
-    A, B>): Option<B> = arrow.core.MapK.foldable<K>().run {
+fun <K, A, B> Kind<Kind<ForMapK, K>, A>.reduceLeftToOption(
+  arg1: Function1<A, B>,
+  arg2: Function2<B, A, B>
+): Option<B> = arrow.core.MapK.foldable<K>().run {
   this@reduceLeftToOption.reduceLeftToOption<A, B>(arg1, arg2) as arrow.core.Option<B>
 }
 
@@ -117,13 +121,15 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.reduceLeftToOption(arg1: Function1<A, B>
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "reduceRightToOption(arg1, arg2)",
-  "arrow.core.reduceRightToOption"
+    "reduceRightToOption(arg1, arg2)",
+    "arrow.core.reduceRightToOption"
   ),
   DeprecationLevel.WARNING
 )
-fun <K, A, B> Kind<Kind<ForMapK, K>, A>.reduceRightToOption(arg1: Function1<A, B>,
-    arg2: Function2<A, Eval<B>, Eval<B>>): Eval<Option<B>> = arrow.core.MapK.foldable<K>().run {
+fun <K, A, B> Kind<Kind<ForMapK, K>, A>.reduceRightToOption(
+  arg1: Function1<A, B>,
+  arg2: Function2<A, Eval<B>, Eval<B>>
+): Eval<Option<B>> = arrow.core.MapK.foldable<K>().run {
   this@reduceRightToOption.reduceRightToOption<A, B>(arg1, arg2) as
     arrow.core.Eval<arrow.core.Option<B>>
 }
@@ -138,15 +144,15 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.reduceRightToOption(arg1: Function1<A, B
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "reduceLeftOption(arg1)",
-  "arrow.core.reduceLeftOption"
+    "reduceLeftOption(arg1)",
+    "arrow.core.reduceLeftOption"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> Kind<Kind<ForMapK, K>, A>.reduceLeftOption(arg1: Function2<A, A, A>): Option<A> =
-    arrow.core.MapK.foldable<K>().run {
-  this@reduceLeftOption.reduceLeftOption<A>(arg1) as arrow.core.Option<A>
-}
+  arrow.core.MapK.foldable<K>().run {
+    this@reduceLeftOption.reduceLeftOption<A>(arg1) as arrow.core.Option<A>
+  }
 
 @JvmName("reduceRightOption")
 @Suppress(
@@ -158,13 +164,13 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.reduceLeftOption(arg1: Function2<A, A, A>):
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "reduceRightOption(arg1)",
-  "arrow.core.reduceRightOption"
+    "reduceRightOption(arg1)",
+    "arrow.core.reduceRightOption"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> Kind<Kind<ForMapK, K>, A>.reduceRightOption(arg1: Function2<A, Eval<A>, Eval<A>>):
-    Eval<Option<A>> = arrow.core.MapK.foldable<K>().run {
+  Eval<Option<A>> = arrow.core.MapK.foldable<K>().run {
   this@reduceRightOption.reduceRightOption<A>(arg1) as arrow.core.Eval<arrow.core.Option<A>>
 }
 
@@ -178,15 +184,15 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.reduceRightOption(arg1: Function2<A, Eval<A
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "combineAll(arg1)",
-  "arrow.core.combineAll"
+    "combineAll(arg1)",
+    "arrow.core.combineAll"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> Kind<Kind<ForMapK, K>, A>.combineAll(arg1: Monoid<A>): A =
-    arrow.core.MapK.foldable<K>().run {
-  this@combineAll.combineAll<A>(arg1) as A
-}
+  arrow.core.MapK.foldable<K>().run {
+    this@combineAll.combineAll<A>(arg1) as A
+  }
 
 @JvmName("foldMap")
 @Suppress(
@@ -198,15 +204,15 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.combineAll(arg1: Monoid<A>): A =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "foldMap(arg1, arg2)",
-  "arrow.core.foldMap"
+    "foldMap(arg1, arg2)",
+    "arrow.core.foldMap"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Kind<Kind<ForMapK, K>, A>.foldMap(arg1: Monoid<B>, arg2: Function1<A, B>): B =
-    arrow.core.MapK.foldable<K>().run {
-  this@foldMap.foldMap<A, B>(arg1, arg2) as B
-}
+  arrow.core.MapK.foldable<K>().run {
+    this@foldMap.foldMap<A, B>(arg1, arg2) as B
+  }
 
 @JvmName("orEmpty")
 @Suppress(
@@ -218,15 +224,15 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.foldMap(arg1: Monoid<B>, arg2: Function1
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "orEmpty(arg0, arg1)",
-  "arrow.core.MapK.orEmpty"
+    "orEmpty(arg0, arg1)",
+    "arrow.core.MapK.orEmpty"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> orEmpty(arg0: Applicative<Kind<ForMapK, K>>, arg1: Monoid<A>): MapK<K, A> =
-    arrow.core.MapK
-   .foldable<K>()
-   .orEmpty<A>(arg0, arg1) as arrow.core.MapK<K, A>
+  arrow.core.MapK
+    .foldable<K>()
+    .orEmpty<A>(arg0, arg1) as arrow.core.MapK<K, A>
 
 @JvmName("traverse_")
 @Suppress(
@@ -238,13 +244,15 @@ fun <K, A> orEmpty(arg0: Applicative<Kind<ForMapK, K>>, arg1: Monoid<A>): MapK<K
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "traverse_(arg1, arg2)",
-  "arrow.core.traverse_"
+    "traverse_(arg1, arg2)",
+    "arrow.core.traverse_"
   ),
   DeprecationLevel.WARNING
 )
-fun <K, G, A, B> Kind<Kind<ForMapK, K>, A>.traverse_(arg1: Applicative<G>, arg2: Function1<A,
-    Kind<G, B>>): Kind<G, Unit> = arrow.core.MapK.foldable<K>().run {
+fun <K, G, A, B> Kind<Kind<ForMapK, K>, A>.traverse_(
+  arg1: Applicative<G>,
+  arg2: Function1<A, Kind<G, B>>
+): Kind<G, Unit> = arrow.core.MapK.foldable<K>().run {
   this@traverse_.traverse_<G, A, B>(arg1, arg2) as arrow.Kind<G, kotlin.Unit>
 }
 
@@ -258,15 +266,15 @@ fun <K, G, A, B> Kind<Kind<ForMapK, K>, A>.traverse_(arg1: Applicative<G>, arg2:
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "sequence_(arg1)",
-  "arrow.core.sequence_"
+    "sequence_(arg1)",
+    "arrow.core.sequence_"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, G, A> Kind<Kind<ForMapK, K>, Kind<G, A>>.sequence_(arg1: Applicative<G>): Kind<G, Unit> =
-    arrow.core.MapK.foldable<K>().run {
-  this@sequence_.sequence_<G, A>(arg1) as arrow.Kind<G, kotlin.Unit>
-}
+  arrow.core.MapK.foldable<K>().run {
+    this@sequence_.sequence_<G, A>(arg1) as arrow.Kind<G, kotlin.Unit>
+  }
 
 @JvmName("find")
 @Suppress(
@@ -278,15 +286,15 @@ fun <K, G, A> Kind<Kind<ForMapK, K>, Kind<G, A>>.sequence_(arg1: Applicative<G>)
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "find(arg1)",
-  "arrow.core.find"
+    "find(arg1)",
+    "arrow.core.find"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> Kind<Kind<ForMapK, K>, A>.find(arg1: Function1<A, Boolean>): Option<A> =
-    arrow.core.MapK.foldable<K>().run {
-  this@find.find<A>(arg1) as arrow.core.Option<A>
-}
+  arrow.core.MapK.foldable<K>().run {
+    this@find.find<A>(arg1) as arrow.core.Option<A>
+  }
 
 @JvmName("exists")
 @Suppress(
@@ -298,15 +306,15 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.find(arg1: Function1<A, Boolean>): Option<A
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "exists(arg1)",
-  "arrow.core.exists"
+    "exists(arg1)",
+    "arrow.core.exists"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> Kind<Kind<ForMapK, K>, A>.exists(arg1: Function1<A, Boolean>): Boolean =
-    arrow.core.MapK.foldable<K>().run {
-  this@exists.exists<A>(arg1) as kotlin.Boolean
-}
+  arrow.core.MapK.foldable<K>().run {
+    this@exists.exists<A>(arg1) as kotlin.Boolean
+  }
 
 @JvmName("forAll")
 @Suppress(
@@ -318,15 +326,15 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.exists(arg1: Function1<A, Boolean>): Boolea
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "forAll(arg1)",
-  "arrow.core.forAll"
+    "forAll(arg1)",
+    "arrow.core.forAll"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> Kind<Kind<ForMapK, K>, A>.forAll(arg1: Function1<A, Boolean>): Boolean =
-    arrow.core.MapK.foldable<K>().run {
-  this@forAll.forAll<A>(arg1) as kotlin.Boolean
-}
+  arrow.core.MapK.foldable<K>().run {
+    this@forAll.forAll<A>(arg1) as kotlin.Boolean
+  }
 
 @JvmName("all")
 @Suppress(
@@ -338,15 +346,15 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.forAll(arg1: Function1<A, Boolean>): Boolea
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "all(arg1)",
-  "arrow.core.all"
+    "all(arg1)",
+    "arrow.core.all"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> Kind<Kind<ForMapK, K>, A>.all(arg1: Function1<A, Boolean>): Boolean =
-    arrow.core.MapK.foldable<K>().run {
-  this@all.all<A>(arg1) as kotlin.Boolean
-}
+  arrow.core.MapK.foldable<K>().run {
+    this@all.all<A>(arg1) as kotlin.Boolean
+  }
 
 @JvmName("isEmpty")
 @Suppress(
@@ -358,8 +366,8 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.all(arg1: Function1<A, Boolean>): Boolean =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "isEmpty()",
-  "arrow.core.isEmpty"
+    "isEmpty()",
+    "arrow.core.isEmpty"
   ),
   DeprecationLevel.WARNING
 )
@@ -377,8 +385,8 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.isEmpty(): Boolean = arrow.core.MapK.foldab
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "nonEmpty()",
-  "arrow.core.nonEmpty"
+    "nonEmpty()",
+    "arrow.core.nonEmpty"
   ),
   DeprecationLevel.WARNING
 )
@@ -396,8 +404,8 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.nonEmpty(): Boolean = arrow.core.MapK.folda
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "isNotEmpty()",
-  "arrow.core.isNotEmpty"
+    "isNotEmpty()",
+    "arrow.core.isNotEmpty"
   ),
   DeprecationLevel.WARNING
 )
@@ -415,15 +423,15 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.isNotEmpty(): Boolean = arrow.core.MapK.fol
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "size(arg1)",
-  "arrow.core.size"
+    "size(arg1)",
+    "arrow.core.size"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> Kind<Kind<ForMapK, K>, A>.size(arg1: Monoid<Long>): Long =
-    arrow.core.MapK.foldable<K>().run {
-  this@size.size<A>(arg1) as kotlin.Long
-}
+  arrow.core.MapK.foldable<K>().run {
+    this@size.size<A>(arg1) as kotlin.Long
+  }
 
 @JvmName("foldMapA")
 @Suppress(
@@ -435,8 +443,8 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.size(arg1: Monoid<Long>): Long =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "foldMapA(arg1, arg2, arg3)",
-  "arrow.core.foldMapA"
+    "foldMapA(arg1, arg2, arg3)",
+    "arrow.core.foldMapA"
   ),
   DeprecationLevel.WARNING
 )
@@ -458,8 +466,8 @@ fun <K, G, A, B, AP : Applicative<G>, MO : Monoid<B>> Kind<Kind<ForMapK, K>, A>.
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "foldMapM(arg1, arg2, arg3)",
-  "arrow.core.foldMapM"
+    "foldMapM(arg1, arg2, arg3)",
+    "arrow.core.foldMapM"
   ),
   DeprecationLevel.WARNING
 )
@@ -481,8 +489,8 @@ fun <K, G, A, B, MA : Monad<G>, MO : Monoid<B>> Kind<Kind<ForMapK, K>, A>.foldMa
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "foldM(arg1, arg2, arg3)",
-  "arrow.core.foldM"
+    "foldM(arg1, arg2, arg3)",
+    "arrow.core.foldM"
   ),
   DeprecationLevel.WARNING
 )
@@ -504,15 +512,15 @@ fun <K, G, A, B> Kind<Kind<ForMapK, K>, A>.foldM(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "get(arg1)",
-  "arrow.core.get"
+    "get(arg1)",
+    "arrow.core.get"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> Kind<Kind<ForMapK, K>, A>.get(arg1: Long): Option<A> =
-    arrow.core.MapK.foldable<K>().run {
-  this@get.get<A>(arg1) as arrow.core.Option<A>
-}
+  arrow.core.MapK.foldable<K>().run {
+    this@get.get<A>(arg1) as arrow.core.Option<A>
+  }
 
 @JvmName("firstOption")
 @Suppress(
@@ -524,8 +532,8 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.get(arg1: Long): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "firstOption()",
-  "arrow.core.firstOption"
+    "firstOption()",
+    "arrow.core.firstOption"
   ),
   DeprecationLevel.WARNING
 )
@@ -543,15 +551,15 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.firstOption(): Option<A> = arrow.core.MapK.
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "firstOption(arg1)",
-  "arrow.core.firstOption"
+    "firstOption(arg1)",
+    "arrow.core.firstOption"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> Kind<Kind<ForMapK, K>, A>.firstOption(arg1: Function1<A, Boolean>): Option<A> =
-    arrow.core.MapK.foldable<K>().run {
-  this@firstOption.firstOption<A>(arg1) as arrow.core.Option<A>
-}
+  arrow.core.MapK.foldable<K>().run {
+    this@firstOption.firstOption<A>(arg1) as arrow.core.Option<A>
+  }
 
 @JvmName("firstOrNone")
 @Suppress(
@@ -563,8 +571,8 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.firstOption(arg1: Function1<A, Boolean>): O
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "firstOrNone()",
-  "arrow.core.firstOrNone"
+    "firstOrNone()",
+    "arrow.core.firstOrNone"
   ),
   DeprecationLevel.WARNING
 )
@@ -582,15 +590,15 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.firstOrNone(): Option<A> = arrow.core.MapK.
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "firstOrNone(arg1)",
-  "arrow.core.firstOrNone"
+    "firstOrNone(arg1)",
+    "arrow.core.firstOrNone"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> Kind<Kind<ForMapK, K>, A>.firstOrNone(arg1: Function1<A, Boolean>): Option<A> =
-    arrow.core.MapK.foldable<K>().run {
-  this@firstOrNone.firstOrNone<A>(arg1) as arrow.core.Option<A>
-}
+  arrow.core.MapK.foldable<K>().run {
+    this@firstOrNone.firstOrNone<A>(arg1) as arrow.core.Option<A>
+  }
 
 @JvmName("toList")
 @Suppress(
@@ -602,8 +610,8 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.firstOrNone(arg1: Function1<A, Boolean>): O
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "toList()",
-  "arrow.core.toList"
+    "toList()",
+    "arrow.core.toList"
   ),
   DeprecationLevel.WARNING
 )
@@ -616,4 +624,4 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.toList(): List<A> = arrow.core.MapK.foldabl
   "NOTHING_TO_INLINE"
 )
 inline fun <K> Companion.foldable(): MapKFoldable<K> = foldable_singleton as
-    arrow.core.extensions.MapKFoldable<K>
+  arrow.core.extensions.MapKFoldable<K>

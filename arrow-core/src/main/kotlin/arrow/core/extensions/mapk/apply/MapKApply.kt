@@ -85,8 +85,10 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.apEval(arg1: Eval<Kind<Kind<ForMapK, K>,
   ),
   DeprecationLevel.WARNING
 )
-fun <K, A, B, Z> Kind<Kind<ForMapK, K>, A>.map2Eval(arg1: Eval<Kind<Kind<ForMapK, K>, B>>,
-    arg2: Function1<Tuple2<A, B>, Z>): Eval<Kind<Kind<ForMapK, K>, Z>> =
+fun <K, A, B, Z> Kind<Kind<ForMapK, K>, A>.map2Eval(
+  arg1: Eval<Kind<Kind<ForMapK, K>, B>>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): Eval<Kind<Kind<ForMapK, K>, Z>> =
     arrow.core.MapK.apply<K>().run {
   this@map2Eval.map2Eval<A, B, Z>(arg1, arg2) as
     arrow.core.Eval<arrow.Kind<arrow.Kind<arrow.core.ForMapK, K>, Z>>
@@ -620,8 +622,10 @@ fun <K, A, B, C, D, E, FF, G, H, I, J, Z> mapN(
   ),
   DeprecationLevel.WARNING
 )
-fun <K, A, B, Z> Kind<Kind<ForMapK, K>, A>.map2(arg1: Kind<Kind<ForMapK, K>, B>,
-    arg2: Function1<Tuple2<A, B>, Z>): MapK<K, Z> = arrow.core.MapK.apply<K>().run {
+fun <K, A, B, Z> Kind<Kind<ForMapK, K>, A>.map2(
+  arg1: Kind<Kind<ForMapK, K>, B>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): MapK<K, Z> = arrow.core.MapK.apply<K>().run {
   this@map2.map2<A, B, Z>(arg1, arg2) as arrow.core.MapK<K, Z>
 }
 
@@ -680,8 +684,10 @@ fun <K, A, B, Z> Kind<Kind<ForMapK, K>, Tuple2<A, B>>.product(arg1: Kind<Kind<Fo
   ),
   DeprecationLevel.WARNING
 )
-fun <K, A, B, C, Z> Kind<Kind<ForMapK, K>, Tuple3<A, B, C>>.product(arg1: Kind<Kind<ForMapK, K>,
-    Z>): MapK<K, Tuple4<A, B, C, Z>> = arrow.core.MapK.apply<K>().run {
+fun <K, A, B, C, Z> Kind<Kind<ForMapK, K>, Tuple3<A, B, C>>.product(
+  arg1: Kind<Kind<ForMapK, K>,
+Z>
+): MapK<K, Tuple4<A, B, C, Z>> = arrow.core.MapK.apply<K>().run {
   this@product.product<A, B, C, Z>(arg1) as arrow.core.MapK<K, arrow.core.Tuple4<A, B, C, Z>>
 }
 
@@ -700,8 +706,10 @@ fun <K, A, B, C, Z> Kind<Kind<ForMapK, K>, Tuple3<A, B, C>>.product(arg1: Kind<K
   ),
   DeprecationLevel.WARNING
 )
-fun <K, A, B, C, D, Z> Kind<Kind<ForMapK, K>, Tuple4<A, B, C, D>>.product(arg1: Kind<Kind<ForMapK,
-    K>, Z>): MapK<K, Tuple5<A, B, C, D, Z>> = arrow.core.MapK.apply<K>().run {
+fun <K, A, B, C, D, Z> Kind<Kind<ForMapK, K>, Tuple4<A, B, C, D>>.product(
+  arg1: Kind<Kind<ForMapK,
+K>, Z>
+): MapK<K, Tuple5<A, B, C, D, Z>> = arrow.core.MapK.apply<K>().run {
   this@product.product<A, B, C, D, Z>(arg1) as arrow.core.MapK<K, arrow.core.Tuple5<A, B, C, D, Z>>
 }
 

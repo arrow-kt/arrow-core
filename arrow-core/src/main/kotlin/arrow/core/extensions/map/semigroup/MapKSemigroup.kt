@@ -55,5 +55,5 @@ object Map {
   )
   @Deprecated("@extension projected functions are deprecated", ReplaceWith("mapEq(EQK, EQA)", "arrow.core.mapEq"))
   inline fun <K, A> semigroup(SG: Semigroup<A>): MapKSemigroup<K, A> = object :
-      arrow.core.extensions.MapKSemigroup<K, A> { override fun SG(): arrow.typeclasses.Semigroup<A>
-      = SG }}
+      arrow.core.extensions.MapKSemigroup<K, A> { override fun SG(): arrow.typeclasses.Semigroup<A> =
+      SG }}

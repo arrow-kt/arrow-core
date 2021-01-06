@@ -796,8 +796,10 @@ fun <K, A, B, C, D, E, FF, G, Z> Map<K, Tuple7<A, B, C, D, E, FF, G>>.product(ar
   ),
   DeprecationLevel.WARNING
 )
-fun <K, A, B, C, D, E, FF, G, H, Z> Map<K, Tuple8<A, B, C, D, E, FF, G, H>>.product(arg1: Map<K,
-  Z>): Map<K, Tuple9<A, B, C, D, E, FF, G, H, Z>> =
+fun <K, A, B, C, D, E, FF, G, H, Z> Map<K, Tuple8<A, B, C, D, E, FF, G, H>>.product(
+  arg1: Map<K,
+Z>
+): Map<K, Tuple9<A, B, C, D, E, FF, G, H, Z>> =
   arrow.core.extensions.map.apply.Map.apply<K>().run {
     arrow.core.MapK(this@product).product<A, B, C, D, E, FF, G, H, Z>(arrow.core.MapK(arg1)) as
       kotlin.collections.Map<K, arrow.core.Tuple9<A, B, C, D, E, FF, G, H, Z>>

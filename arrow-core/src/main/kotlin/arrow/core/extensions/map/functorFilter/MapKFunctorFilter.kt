@@ -2,7 +2,6 @@ package arrow.core.extensions.map.functorFilter
 
 import arrow.core.Option
 import arrow.core.extensions.MapKFunctorFilter
-import arrow.core.filterIsInstance
 import arrow.core.filterMap
 import java.lang.Class
 import kotlin.Any

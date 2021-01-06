@@ -126,8 +126,10 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.padZip(arg1: Kind<Kind<ForMapK, K>, B>):
   ),
   DeprecationLevel.WARNING
 )
-fun <K, A, B, C> Kind<Kind<ForMapK, K>, A>.padZipWith(arg1: Kind<Kind<ForMapK, K>, B>,
-    arg2: Function2<Option<A>, Option<B>, C>): MapK<K, C> = arrow.core.MapK.semialign<K>().run {
+fun <K, A, B, C> Kind<Kind<ForMapK, K>, A>.padZipWith(
+  arg1: Kind<Kind<ForMapK, K>, B>,
+  arg2: Function2<Option<A>, Option<B>, C>
+): MapK<K, C> = arrow.core.MapK.semialign<K>().run {
   this@padZipWith.padZipWith<A, B, C>(arg1, arg2) as arrow.core.MapK<K, C>
 }
 

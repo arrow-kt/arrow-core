@@ -28,8 +28,10 @@ internal val traverse_singleton: MapKTraverse<Any?> = object : MapKTraverse<Any?
   "UNUSED_PARAMETER"
 )
 @Deprecated("@extension kinded projected functions are deprecated. Replace with traverseEither or traverseValidated from arrow.core.*")
-fun <K, G, A, B> Kind<Kind<ForMapK, K>, A>.traverse(arg1: Applicative<G>, arg2: Function1<A, Kind<G,
-    B>>): Kind<G, Kind<Kind<ForMapK, K>, B>> = arrow.core.MapK.traverse<K>().run {
+fun <K, G, A, B> Kind<Kind<ForMapK, K>, A>.traverse(
+  arg1: Applicative<G>,
+  arg2: Function1<A, Kind<G, B>>
+): Kind<G, Kind<Kind<ForMapK, K>, B>> = arrow.core.MapK.traverse<K>().run {
   this@traverse.traverse<G, A, B>(arg1, arg2) as arrow.Kind<G,
     arrow.Kind<arrow.Kind<arrow.core.ForMapK, K>, B>>
 }

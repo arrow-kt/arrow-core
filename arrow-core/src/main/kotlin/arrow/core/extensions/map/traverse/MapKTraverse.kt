@@ -35,8 +35,8 @@ fun <K, G, A, B> Map<K, A>.traverse(arg1: Applicative<G>, arg2: Function1<A, Kin
   "UNUSED_PARAMETER"
 )
 @Deprecated("@extension kinded projected functions are deprecated. Replace with sequenceEither or sequenceValidated from arrow.core.*")
-fun <K, G, A> Map<K, Kind<G, A>>.sequence(arg1: Applicative<G>): Kind<G, Kind<Kind<ForMapK, K>, A>>
-    = arrow.core.extensions.map.traverse.Map.traverse<K>().run {
+fun <K, G, A> Map<K, Kind<G, A>>.sequence(arg1: Applicative<G>): Kind<G, Kind<Kind<ForMapK, K>, A>> =
+    arrow.core.extensions.map.traverse.Map.traverse<K>().run {
   arrow.core.MapK(this@sequence).sequence<G, A>(arg1) as arrow.Kind<G,
     arrow.Kind<arrow.Kind<arrow.core.ForMapK, K>, A>>
 }

@@ -34,8 +34,8 @@ internal val zip_singleton: MapKZip<Any?> = object : MapKZip<Any?> {}
   ),
   DeprecationLevel.WARNING
 )
-fun <K, A, B> Kind<Kind<ForMapK, K>, A>.zip(arg1: Kind<Kind<ForMapK, K>, B>): MapK<K, Tuple2<A, B>>
-    = arrow.core.MapK.zip<K>().run {
+fun <K, A, B> Kind<Kind<ForMapK, K>, A>.zip(arg1: Kind<Kind<ForMapK, K>, B>): MapK<K, Tuple2<A, B>> =
+    arrow.core.MapK.zip<K>().run {
   this@zip.zip<A, B>(arg1) as arrow.core.MapK<K, arrow.core.Tuple2<A, B>>
 }
 
@@ -54,8 +54,10 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.zip(arg1: Kind<Kind<ForMapK, K>, B>): Ma
   ),
   DeprecationLevel.WARNING
 )
-fun <K, A, B, C> Kind<Kind<ForMapK, K>, A>.zipWith(arg1: Kind<Kind<ForMapK, K>, B>,
-    arg2: Function2<A, B, C>): MapK<K, C> = arrow.core.MapK.zip<K>().run {
+fun <K, A, B, C> Kind<Kind<ForMapK, K>, A>.zipWith(
+  arg1: Kind<Kind<ForMapK, K>, B>,
+  arg2: Function2<A, B, C>
+): MapK<K, C> = arrow.core.MapK.zip<K>().run {
   this@zipWith.zipWith<A, B, C>(arg1, arg2) as arrow.core.MapK<K, C>
 }
 
