@@ -20,15 +20,15 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "combineAll(SG)",
-  "arrow.core.combineAll"
+    "combineAll(SG)",
+    "arrow.core.combineAll"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> Collection<MapK<K, A>>.combineAll(SG: Semigroup<A>): Map<K, A> =
-    arrow.core.extensions.map.monoid.Map.monoid<K, A>(SG).run {
-  this@combineAll.combineAll() as kotlin.collections.Map<K, A>
-}
+  arrow.core.extensions.map.monoid.Map.monoid<K, A>(SG).run {
+    this@combineAll.combineAll() as kotlin.collections.Map<K, A>
+  }
 
 @JvmName("combineAll")
 @Suppress(
@@ -40,21 +40,25 @@ fun <K, A> Collection<MapK<K, A>>.combineAll(SG: Semigroup<A>): Map<K, A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "combineAll(SG, arg0)",
-  "arrow.core.extensions.map.monoid.Map.combineAll"
+    "arg0.combineAll(SG)",
+    "arrow.core.combineAll"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A> combineAll(SG: Semigroup<A>, arg0: List<MapK<K, A>>): Map<K, A> =
-    arrow.core.extensions.map.monoid.Map
-   .monoid<K, A>(SG)
-   .combineAll(arg0) as kotlin.collections.Map<K, A>
+  arrow.core.extensions.map.monoid.Map
+    .monoid<K, A>(SG)
+    .combineAll(arg0) as kotlin.collections.Map<K, A>
 
 object Map {
   @Suppress(
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated("@extension projected functions are deprecated", ReplaceWith("mapEq(EQK, EQA)", "arrow.core.mapEq"))
   inline fun <K, A> monoid(SG: Semigroup<A>): MapKMonoid<K, A> = object :
-      arrow.core.extensions.MapKMonoid<K, A> { override fun SG(): arrow.typeclasses.Semigroup<A> =
-      SG }}
+    arrow.core.extensions.MapKMonoid<K, A> {
+    override fun SG(): arrow.typeclasses.Semigroup<A> =
+      SG
+  }
+}

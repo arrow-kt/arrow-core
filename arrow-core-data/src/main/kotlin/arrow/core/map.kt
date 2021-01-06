@@ -2,9 +2,11 @@ package arrow.core
 
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
+import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.defaultSalt
+import kotlin.coroutines.EmptyCoroutineContext.fold
 import kotlin.collections.flatMap as _flatMap
 
 object MapInstances
@@ -399,3 +401,22 @@ private class MapShow<K, A>(
 ) : Show<Map<K, A>> {
   override fun Map<K, A>.show(): String = show(SK, SA)
 }
+
+fun <K, A> Map<K, A>.combine(SG: Semigroup<A>, b: Map<K, A>): Map<K, A> = with(SG) {
+  if (size < b.size) foldLeft(b) { my, (k, b) -> my + Pair(k, b.maybeCombine(my[k])) }
+  else b.foldLeft(this@combine) { my, (k, a) -> my + Pair(k, a.maybeCombine(my[k])) }
+}
+
+fun <K, A> Iterable<Map<K, A>>.combineAll(SG: Semigroup<A>): Map<K, A> =
+  fold(emptyMap()) { acc, map -> acc.combine(SG, map) }
+
+fun <K, A> mapMonoid(SG: Semigroup<A>) : Monoid<Map<K, A>> =
+  MapMonoid(SG)
+
+private class MapMonoid<K, A>(private val SG: Semigroup<A>) : Monoid<Map<K, A>> {
+  override fun empty(): Map<K, A> = emptyMap()
+
+  override fun Map<K, A>.combine(b: Map<K, A>): Map<K, A> =
+    combine(SG, b)
+}
+
