@@ -5,10 +5,19 @@ import arrow.typeclasses.Hash
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.defaultSalt
+import kotlin.collections.flatMap as _flatMap
 
 object MapInstances
 
 object SortedMapInstances
+
+fun <K, A, B> Map<K, A>.flatMap(f: (Map.Entry<K, A>) -> Map<K, B>): Map<K, B> =
+  _flatMap { entry ->
+    f(entry)[entry.key]?.let { Pair(entry.key, it) }.asIterable()
+  }.toMap()
+
+fun <K, A, B> Map<K, A>.ap(ff: Map<K, (A) -> B>): Map<K, B> =
+  ff.flatMap { (_, f) -> this.mapValues { (_, a) -> f(a) } }
 
 fun <K, A, B> Map<K, A>.product(fb: Map<K, B>): Map<K, Tuple2<A, B>> =
   MapK.mapN(this, fb) { _, a, b -> Tuple2(a, b) }

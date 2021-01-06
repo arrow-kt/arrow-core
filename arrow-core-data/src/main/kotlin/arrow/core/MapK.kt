@@ -24,13 +24,11 @@ data class MapK<K, out A>(private val map: Map<K, A>) : MapKOf<K, A>, Map<K, A> 
   fun <B, Z> ap2(f: MapK<K, (A, B) -> Z>, fb: MapK<K, B>): Map<K, Z> =
     f.map.flatMap { (k, f) ->
       this.flatMap { a -> fb.flatMap { b -> mapOf(Tuple2(k, f(a, b))).k() } }[k]
-        ?.let { Pair(k, it) }.asIterable()
-    }.toMap().k()
+        ?.let { Pair(k, it) }.asIterable().toMap()
+    }.k()
 
   fun <B> flatMap(f: (A) -> MapK<K, B>): MapK<K, B> =
-    this.map.flatMap { (k, v) ->
-      f(v)[k]?.let { Pair(k, it) }.asIterable()
-    }.toMap().k()
+    this.map.flatMap { (_, v) -> f(v) }.k()
 
   fun <B> foldRight(b: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> = this.map.values.iterator().iterateRight(b, f)
 

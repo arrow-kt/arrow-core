@@ -3,6 +3,7 @@ package arrow.core.extensions.map.apply
 import arrow.Kind
 import arrow.core.Eval
 import arrow.core.ForMapK
+import arrow.core.MapK
 import arrow.core.Tuple10
 import arrow.core.Tuple2
 import arrow.core.Tuple3
@@ -12,7 +13,11 @@ import arrow.core.Tuple6
 import arrow.core.Tuple7
 import arrow.core.Tuple8
 import arrow.core.Tuple9
+import arrow.core.ap as _ap
 import arrow.core.extensions.MapKApply
+import arrow.core.extensions.mapk.foldable.isEmpty
+import arrow.core.fix
+import arrow.core.k
 import kotlin.Any
 import kotlin.Deprecated
 import kotlin.Function1
@@ -31,15 +36,13 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "ap(arg1)",
-  "arrow.core.ap"
+    "ap(arg1)",
+    "arrow.core.ap"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Map<K, A>.ap(arg1: Map<K, Function1<A, B>>): Map<K, B> =
-    arrow.core.extensions.map.apply.Map.apply<K>().run {
-  arrow.core.MapK(this@ap).ap<A, B>(arrow.core.MapK(arg1)) as kotlin.collections.Map<K, B>
-}
+  _ap(arg1)
 
 @JvmName("apEval")
 @Suppress(
@@ -51,16 +54,13 @@ fun <K, A, B> Map<K, A>.ap(arg1: Map<K, Function1<A, B>>): Map<K, B> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "apEval(arg1)",
-  "arrow.core.apEval"
+    "arg1.map { ff -> this.ap(ff) }",
+    "arrow.core.ap"
   ),
   DeprecationLevel.WARNING
 )
-fun <K, A, B> Map<K, A>.apEval(arg1: Eval<Kind<Kind<ForMapK, K>, Function1<A, B>>>):
-    Eval<Kind<Kind<ForMapK, K>, B>> = arrow.core.extensions.map.apply.Map.apply<K>().run {
-  arrow.core.MapK(this@apEval).apEval<A, B>(arg1) as
-    arrow.core.Eval<arrow.Kind<arrow.Kind<arrow.core.ForMapK, K>, B>>
-}
+fun <K, A, B> Map<K, A>.apEval(arg1: Eval<Kind<Kind<ForMapK, K>, Function1<A, B>>>): Eval<Kind<Kind<ForMapK, K>, B>> =
+  arg1.map { ff -> this.ap(ff.fix()) }.map { it.k() }
 
 @JvmName("map2Eval")
 @Suppress(
@@ -72,16 +72,14 @@ fun <K, A, B> Map<K, A>.apEval(arg1: Eval<Kind<Kind<ForMapK, K>, Function1<A, B>
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map2Eval(arg1, arg2)",
-  "arrow.core.map2Eval"
+    "if (arg1.value().isEmpty()) Eval.now(emptyMap<K, Z>()) else arg1.map { b -> MapK.mapN(this, b) { _, a, b -> arg2(Tuple2(a, b)) }) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
-fun <K, A, B, Z> Map<K, A>.map2Eval(arg1: Eval<Kind<Kind<ForMapK, K>, B>>, arg2: Function1<Tuple2<A,
-    B>, Z>): Eval<Kind<Kind<ForMapK, K>, Z>> = arrow.core.extensions.map.apply.Map.apply<K>().run {
-  arrow.core.MapK(this@map2Eval).map2Eval<A, B, Z>(arg1, arg2) as
-    arrow.core.Eval<arrow.Kind<arrow.Kind<arrow.core.ForMapK, K>, Z>>
-}
+fun <K, A, B, Z> Map<K, A>.map2Eval(arg1: Eval<Kind<Kind<ForMapK, K>, B>>, arg2: Function1<Tuple2<A, B>, Z>): Eval<Kind<Kind<ForMapK, K>, Z>> =
+  if (arg1.value().fix().isEmpty()) Eval.now(emptyMap<K, Z>().k()) else arg1.map { b -> MapK.mapN(this, b.fix()) { _, a, b -> arg2(Tuple2(a, b)) }.k() }
 
 @JvmName("map")
 @Suppress(
@@ -93,8 +91,9 @@ fun <K, A, B, Z> Map<K, A>.map2Eval(arg1: Eval<Kind<Kind<ForMapK, K>, B>>, arg2:
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2)",
-  "arrow.core.extensions.map.apply.Map.map"
+    "MapK.mapN(arg0, arg1) { _, a, b -> arg2(Tuple2(a, b)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -102,9 +101,8 @@ fun <K, A, B, Z> map(
   arg0: Map<K, A>,
   arg1: Map<K, B>,
   arg2: Function1<Tuple2<A, B>, Z>
-): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .map<A, B, Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arg2) as kotlin.collections.Map<K, Z>
+): Map<K, Z> =
+  MapK.mapN(arg0, arg1) { _, a, b -> arg2(Tuple2(a, b)) }
 
 @JvmName("mapN")
 @Suppress(
@@ -116,8 +114,9 @@ fun <K, A, B, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2)",
-  "arrow.core.extensions.map.apply.Map.mapN"
+    "MapK.mapN(arg0, arg1) { _, a, b -> arg2(Tuple2(a, b)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -126,9 +125,9 @@ fun <K, A, B, Z> mapN(
   arg1: Map<K, B>,
   arg2: Function1<Tuple2<A, B>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .mapN<A, B, Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arg2) as kotlin.collections.Map<K,
-    Z>
+  .apply<K>()
+  .mapN<A, B, Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arg2) as kotlin.collections.Map<K,
+  Z>
 
 @JvmName("map")
 @Suppress(
@@ -140,8 +139,9 @@ fun <K, A, B, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2, arg3)",
-  "arrow.core.extensions.map.apply.Map.map"
+    "MapK.mapN(arg0, arg1, arg2) { _, a, b, c -> arg3(Tuple3(a, b, c)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -151,9 +151,9 @@ fun <K, A, B, C, Z> map(
   arg2: Map<K, C>,
   arg3: Function1<Tuple3<A, B, C>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .map<A, B, C, Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arg3) as
-    kotlin.collections.Map<K, Z>
+  .apply<K>()
+  .map<A, B, C, Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arg3) as
+  kotlin.collections.Map<K, Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -165,8 +165,9 @@ fun <K, A, B, C, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2, arg3)",
-  "arrow.core.extensions.map.apply.Map.mapN"
+    "MapK.mapN(arg0, arg1, arg2) { _, a, b, c -> arg3(Tuple3(a, b, c)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -176,9 +177,9 @@ fun <K, A, B, C, Z> mapN(
   arg2: Map<K, C>,
   arg3: Function1<Tuple3<A, B, C>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .mapN<A, B, C, Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arg3) as
-    kotlin.collections.Map<K, Z>
+  .apply<K>()
+  .mapN<A, B, C, Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arg3) as
+  kotlin.collections.Map<K, Z>
 
 @JvmName("map")
 @Suppress(
@@ -190,8 +191,9 @@ fun <K, A, B, C, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2, arg3, arg4)",
-  "arrow.core.extensions.map.apply.Map.map"
+    "MapK.mapN(arg0, arg1, arg2, arg3) { _, a, b, c, d -> arg4(Tuple4(a, b, c, d)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -202,10 +204,10 @@ fun <K, A, B, C, D, Z> map(
   arg3: Map<K, D>,
   arg4: Function1<Tuple4<A, B, C, D>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .map<A, B, C, D,
+  .apply<K>()
+  .map<A, B, C, D,
     Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arg4)
-    as kotlin.collections.Map<K, Z>
+  as kotlin.collections.Map<K, Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -217,8 +219,9 @@ fun <K, A, B, C, D, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2, arg3, arg4)",
-  "arrow.core.extensions.map.apply.Map.mapN"
+    "MapK.mapN(arg0, arg1, arg2, arg3) { _, a, b, c, d -> arg4(Tuple4(a, b, c, d)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -229,10 +232,10 @@ fun <K, A, B, C, D, Z> mapN(
   arg3: Map<K, D>,
   arg4: Function1<Tuple4<A, B, C, D>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .mapN<A, B, C, D,
+  .apply<K>()
+  .mapN<A, B, C, D,
     Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arg4)
-    as kotlin.collections.Map<K, Z>
+  as kotlin.collections.Map<K, Z>
 
 @JvmName("map")
 @Suppress(
@@ -244,8 +247,9 @@ fun <K, A, B, C, D, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2, arg3, arg4, arg5)",
-  "arrow.core.extensions.map.apply.Map.map"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4) { _, a, b, c, d, e -> arg5(Tuple5(a, b, c, d, e)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -257,10 +261,10 @@ fun <K, A, B, C, D, E, Z> map(
   arg4: Map<K, E>,
   arg5: Function1<Tuple5<A, B, C, D, E>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .map<A, B, C, D, E,
+  .apply<K>()
+  .map<A, B, C, D, E,
     Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arg5)
-    as kotlin.collections.Map<K, Z>
+  as kotlin.collections.Map<K, Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -272,8 +276,9 @@ fun <K, A, B, C, D, E, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2, arg3, arg4, arg5)",
-  "arrow.core.extensions.map.apply.Map.mapN"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4) { _, a, b, c, d, e -> arg5(Tuple5(a, b, c, d, e)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -285,10 +290,10 @@ fun <K, A, B, C, D, E, Z> mapN(
   arg4: Map<K, E>,
   arg5: Function1<Tuple5<A, B, C, D, E>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .mapN<A, B, C, D, E,
+  .apply<K>()
+  .mapN<A, B, C, D, E,
     Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arg5)
-    as kotlin.collections.Map<K, Z>
+  as kotlin.collections.Map<K, Z>
 
 @JvmName("map")
 @Suppress(
@@ -300,8 +305,9 @@ fun <K, A, B, C, D, E, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
-  "arrow.core.extensions.map.apply.Map.map"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5) { _, a, b, c, d, e, f -> arg6(Tuple6(a, b, c, d, e, f)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -314,10 +320,10 @@ fun <K, A, B, C, D, E, FF, Z> map(
   arg5: Map<K, FF>,
   arg6: Function1<Tuple6<A, B, C, D, E, FF>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .map<A, B, C, D, E, FF,
+  .apply<K>()
+  .map<A, B, C, D, E, FF,
     Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arg6)
-    as kotlin.collections.Map<K, Z>
+  as kotlin.collections.Map<K, Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -329,8 +335,9 @@ fun <K, A, B, C, D, E, FF, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
-  "arrow.core.extensions.map.apply.Map.mapN"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5) { _, a, b, c, d, e, f -> arg6(Tuple6(a, b, c, d, e, f)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -343,10 +350,10 @@ fun <K, A, B, C, D, E, FF, Z> mapN(
   arg5: Map<K, FF>,
   arg6: Function1<Tuple6<A, B, C, D, E, FF>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .mapN<A, B, C, D, E, FF,
+  .apply<K>()
+  .mapN<A, B, C, D, E, FF,
     Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arg6)
-    as kotlin.collections.Map<K, Z>
+  as kotlin.collections.Map<K, Z>
 
 @JvmName("map")
 @Suppress(
@@ -358,8 +365,9 @@ fun <K, A, B, C, D, E, FF, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
-  "arrow.core.extensions.map.apply.Map.map"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6) { _, a, b, c, d, e, f, g -> arg7(Tuple7(a, b, c, d, e, f, g)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -373,10 +381,10 @@ fun <K, A, B, C, D, E, FF, G, Z> map(
   arg6: Map<K, G>,
   arg7: Function1<Tuple7<A, B, C, D, E, FF, G>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .map<A, B, C, D, E, FF, G,
+  .apply<K>()
+  .map<A, B, C, D, E, FF, G,
     Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arrow.core.MapK(arg6), arg7)
-    as kotlin.collections.Map<K, Z>
+  as kotlin.collections.Map<K, Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -388,8 +396,9 @@ fun <K, A, B, C, D, E, FF, G, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
-  "arrow.core.extensions.map.apply.Map.mapN"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6) { _, a, b, c, d, e, f, g -> arg7(Tuple7(a, b, c, d, e, f, g)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -403,10 +412,10 @@ fun <K, A, B, C, D, E, FF, G, Z> mapN(
   arg6: Map<K, G>,
   arg7: Function1<Tuple7<A, B, C, D, E, FF, G>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .mapN<A, B, C, D, E, FF, G,
+  .apply<K>()
+  .mapN<A, B, C, D, E, FF, G,
     Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arrow.core.MapK(arg6), arg7)
-    as kotlin.collections.Map<K, Z>
+  as kotlin.collections.Map<K, Z>
 
 @JvmName("map")
 @Suppress(
@@ -418,8 +427,9 @@ fun <K, A, B, C, D, E, FF, G, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
-  "arrow.core.extensions.map.apply.Map.map"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) { _, a, b, c, d, e, f, g, h -> arg8(Tuple8(a, b, c, d, e, f, g, h)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -434,10 +444,10 @@ fun <K, A, B, C, D, E, FF, G, H, Z> map(
   arg7: Map<K, H>,
   arg8: Function1<Tuple8<A, B, C, D, E, FF, G, H>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .map<A, B, C, D, E, FF, G, H,
+  .apply<K>()
+  .map<A, B, C, D, E, FF, G, H,
     Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arrow.core.MapK(arg6), arrow.core.MapK(arg7), arg8)
-    as kotlin.collections.Map<K, Z>
+  as kotlin.collections.Map<K, Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -449,8 +459,9 @@ fun <K, A, B, C, D, E, FF, G, H, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
-  "arrow.core.extensions.map.apply.Map.mapN"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) { _, a, b, c, d, e, f, g, h -> arg8(Tuple8(a, b, c, d, e, f, g, h)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -465,10 +476,10 @@ fun <K, A, B, C, D, E, FF, G, H, Z> mapN(
   arg7: Map<K, H>,
   arg8: Function1<Tuple8<A, B, C, D, E, FF, G, H>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .mapN<A, B, C, D, E, FF, G, H,
+  .apply<K>()
+  .mapN<A, B, C, D, E, FF, G, H,
     Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arrow.core.MapK(arg6), arrow.core.MapK(arg7), arg8)
-    as kotlin.collections.Map<K, Z>
+  as kotlin.collections.Map<K, Z>
 
 @JvmName("map")
 @Suppress(
@@ -480,8 +491,9 @@ fun <K, A, B, C, D, E, FF, G, H, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
-  "arrow.core.extensions.map.apply.Map.map"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) { _, a, b, c, d, e, f, g, h, i -> arg9(Tuple9(a, b, c, d, e, f, g, h, i)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -497,10 +509,10 @@ fun <K, A, B, C, D, E, FF, G, H, I, Z> map(
   arg8: Map<K, I>,
   arg9: Function1<Tuple9<A, B, C, D, E, FF, G, H, I>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .map<A, B, C, D, E, FF, G, H, I,
+  .apply<K>()
+  .map<A, B, C, D, E, FF, G, H, I,
     Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arrow.core.MapK(arg6), arrow.core.MapK(arg7), arrow.core.MapK(arg8), arg9)
-    as kotlin.collections.Map<K, Z>
+  as kotlin.collections.Map<K, Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -512,8 +524,9 @@ fun <K, A, B, C, D, E, FF, G, H, I, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
-  "arrow.core.extensions.map.apply.Map.mapN"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) { _, a, b, c, d, e, f, g, h, i -> arg9(Tuple9(a, b, c, d, e, f, g, h, i)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -529,10 +542,10 @@ fun <K, A, B, C, D, E, FF, G, H, I, Z> mapN(
   arg8: Map<K, I>,
   arg9: Function1<Tuple9<A, B, C, D, E, FF, G, H, I>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .mapN<A, B, C, D, E, FF, G, H, I,
+  .apply<K>()
+  .mapN<A, B, C, D, E, FF, G, H, I,
     Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arrow.core.MapK(arg6), arrow.core.MapK(arg7), arrow.core.MapK(arg8), arg9)
-    as kotlin.collections.Map<K, Z>
+  as kotlin.collections.Map<K, Z>
 
 @JvmName("map")
 @Suppress(
@@ -544,8 +557,9 @@ fun <K, A, B, C, D, E, FF, G, H, I, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)",
-  "arrow.core.extensions.map.apply.Map.map"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) { _, a, b, c, d, e, f, g, h, i, j -> arg10(Tuple10(a, b, c, d, e, f, g, h, i, j)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -562,10 +576,10 @@ fun <K, A, B, C, D, E, FF, G, H, I, J, Z> map(
   arg9: Map<K, J>,
   arg10: Function1<Tuple10<A, B, C, D, E, FF, G, H, I, J>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .map<A, B, C, D, E, FF, G, H, I, J,
+  .apply<K>()
+  .map<A, B, C, D, E, FF, G, H, I, J,
     Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arrow.core.MapK(arg6), arrow.core.MapK(arg7), arrow.core.MapK(arg8), arrow.core.MapK(arg9), arg10)
-    as kotlin.collections.Map<K, Z>
+  as kotlin.collections.Map<K, Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -577,8 +591,9 @@ fun <K, A, B, C, D, E, FF, G, H, I, J, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)",
-  "arrow.core.extensions.map.apply.Map.mapN"
+    "MapK.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) { _, a, b, c, d, e, f, g, h, i, j -> arg10(Tuple10(a, b, c, d, e, f, g, h, i, j)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -595,10 +610,10 @@ fun <K, A, B, C, D, E, FF, G, H, I, J, Z> mapN(
   arg9: Map<K, J>,
   arg10: Function1<Tuple10<A, B, C, D, E, FF, G, H, I, J>, Z>
 ): Map<K, Z> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .mapN<A, B, C, D, E, FF, G, H, I, J,
+  .apply<K>()
+  .mapN<A, B, C, D, E, FF, G, H, I, J,
     Z>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arrow.core.MapK(arg6), arrow.core.MapK(arg7), arrow.core.MapK(arg8), arrow.core.MapK(arg9), arg10)
-    as kotlin.collections.Map<K, Z>
+  as kotlin.collections.Map<K, Z>
 
 @JvmName("map2")
 @Suppress(
@@ -610,16 +625,14 @@ fun <K, A, B, C, D, E, FF, G, H, I, J, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map2(arg1, arg2)",
-  "arrow.core.map2"
+    "MapK.mapN(this, arg1) { _, a, b -> arg2(Tuple2(a, b)) }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B, Z> Map<K, A>.map2(arg1: Map<K, B>, arg2: Function1<Tuple2<A, B>, Z>): Map<K, Z> =
-    arrow.core.extensions.map.apply.Map.apply<K>().run {
-  arrow.core.MapK(this@map2).map2<A, B, Z>(arrow.core.MapK(arg1), arg2) as kotlin.collections.Map<K,
-    Z>
-}
+  MapK.mapN(this, arg1) { _, a, b -> arg2(Tuple2(a, b)) }
 
 @JvmName("product")
 @Suppress(
@@ -631,16 +644,16 @@ fun <K, A, B, Z> Map<K, A>.map2(arg1: Map<K, B>, arg2: Function1<Tuple2<A, B>, Z
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "product(arg1)",
-  "arrow.core.product"
+    "product(arg1)",
+    "arrow.core.product"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Map<K, A>.product(arg1: Map<K, B>): Map<K, Tuple2<A, B>> =
-    arrow.core.extensions.map.apply.Map.apply<K>().run {
-  arrow.core.MapK(this@product).product<A, B>(arrow.core.MapK(arg1)) as kotlin.collections.Map<K,
-    arrow.core.Tuple2<A, B>>
-}
+  arrow.core.extensions.map.apply.Map.apply<K>().run {
+    arrow.core.MapK(this@product).product<A, B>(arrow.core.MapK(arg1)) as kotlin.collections.Map<K,
+      arrow.core.Tuple2<A, B>>
+  }
 
 @JvmName("product1")
 @Suppress(
@@ -652,16 +665,16 @@ fun <K, A, B> Map<K, A>.product(arg1: Map<K, B>): Map<K, Tuple2<A, B>> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "product(arg1)",
-  "arrow.core.product"
+    "product(arg1)",
+    "arrow.core.product"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B, Z> Map<K, Tuple2<A, B>>.product(arg1: Map<K, Z>): Map<K, Tuple3<A, B, Z>> =
-    arrow.core.extensions.map.apply.Map.apply<K>().run {
-  arrow.core.MapK(this@product).product<A, B, Z>(arrow.core.MapK(arg1)) as kotlin.collections.Map<K,
-    arrow.core.Tuple3<A, B, Z>>
-}
+  arrow.core.extensions.map.apply.Map.apply<K>().run {
+    arrow.core.MapK(this@product).product<A, B, Z>(arrow.core.MapK(arg1)) as kotlin.collections.Map<K,
+      arrow.core.Tuple3<A, B, Z>>
+  }
 
 @JvmName("product2")
 @Suppress(
@@ -673,16 +686,16 @@ fun <K, A, B, Z> Map<K, Tuple2<A, B>>.product(arg1: Map<K, Z>): Map<K, Tuple3<A,
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "product(arg1)",
-  "arrow.core.product"
+    "product(arg1)",
+    "arrow.core.product"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B, C, Z> Map<K, Tuple3<A, B, C>>.product(arg1: Map<K, Z>): Map<K, Tuple4<A, B, C, Z>> =
-    arrow.core.extensions.map.apply.Map.apply<K>().run {
-  arrow.core.MapK(this@product).product<A, B, C, Z>(arrow.core.MapK(arg1)) as
-    kotlin.collections.Map<K, arrow.core.Tuple4<A, B, C, Z>>
-}
+  arrow.core.extensions.map.apply.Map.apply<K>().run {
+    arrow.core.MapK(this@product).product<A, B, C, Z>(arrow.core.MapK(arg1)) as
+      kotlin.collections.Map<K, arrow.core.Tuple4<A, B, C, Z>>
+  }
 
 @JvmName("product3")
 @Suppress(
@@ -694,13 +707,13 @@ fun <K, A, B, C, Z> Map<K, Tuple3<A, B, C>>.product(arg1: Map<K, Z>): Map<K, Tup
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "product(arg1)",
-  "arrow.core.product"
+    "product(arg1)",
+    "arrow.core.product"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B, C, D, Z> Map<K, Tuple4<A, B, C, D>>.product(arg1: Map<K, Z>): Map<K, Tuple5<A, B, C,
-    D, Z>> = arrow.core.extensions.map.apply.Map.apply<K>().run {
+  D, Z>> = arrow.core.extensions.map.apply.Map.apply<K>().run {
   arrow.core.MapK(this@product).product<A, B, C, D, Z>(arrow.core.MapK(arg1)) as
     kotlin.collections.Map<K, arrow.core.Tuple5<A, B, C, D, Z>>
 }
@@ -715,13 +728,13 @@ fun <K, A, B, C, D, Z> Map<K, Tuple4<A, B, C, D>>.product(arg1: Map<K, Z>): Map<
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "product(arg1)",
-  "arrow.core.product"
+    "product(arg1)",
+    "arrow.core.product"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B, C, D, E, Z> Map<K, Tuple5<A, B, C, D, E>>.product(arg1: Map<K, Z>): Map<K, Tuple6<A,
-    B, C, D, E, Z>> = arrow.core.extensions.map.apply.Map.apply<K>().run {
+  B, C, D, E, Z>> = arrow.core.extensions.map.apply.Map.apply<K>().run {
   arrow.core.MapK(this@product).product<A, B, C, D, E, Z>(arrow.core.MapK(arg1)) as
     kotlin.collections.Map<K, arrow.core.Tuple6<A, B, C, D, E, Z>>
 }
@@ -736,13 +749,13 @@ fun <K, A, B, C, D, E, Z> Map<K, Tuple5<A, B, C, D, E>>.product(arg1: Map<K, Z>)
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "product(arg1)",
-  "arrow.core.product"
+    "product(arg1)",
+    "arrow.core.product"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B, C, D, E, FF, Z> Map<K, Tuple6<A, B, C, D, E, FF>>.product(arg1: Map<K, Z>): Map<K,
-    Tuple7<A, B, C, D, E, FF, Z>> = arrow.core.extensions.map.apply.Map.apply<K>().run {
+  Tuple7<A, B, C, D, E, FF, Z>> = arrow.core.extensions.map.apply.Map.apply<K>().run {
   arrow.core.MapK(this@product).product<A, B, C, D, E, FF, Z>(arrow.core.MapK(arg1)) as
     kotlin.collections.Map<K, arrow.core.Tuple7<A, B, C, D, E, FF, Z>>
 }
@@ -757,13 +770,13 @@ fun <K, A, B, C, D, E, FF, Z> Map<K, Tuple6<A, B, C, D, E, FF>>.product(arg1: Ma
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "product(arg1)",
-  "arrow.core.product"
+    "product(arg1)",
+    "arrow.core.product"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B, C, D, E, FF, G, Z> Map<K, Tuple7<A, B, C, D, E, FF, G>>.product(arg1: Map<K, Z>):
-    Map<K, Tuple8<A, B, C, D, E, FF, G, Z>> = arrow.core.extensions.map.apply.Map.apply<K>().run {
+  Map<K, Tuple8<A, B, C, D, E, FF, G, Z>> = arrow.core.extensions.map.apply.Map.apply<K>().run {
   arrow.core.MapK(this@product).product<A, B, C, D, E, FF, G, Z>(arrow.core.MapK(arg1)) as
     kotlin.collections.Map<K, arrow.core.Tuple8<A, B, C, D, E, FF, G, Z>>
 }
@@ -778,17 +791,17 @@ fun <K, A, B, C, D, E, FF, G, Z> Map<K, Tuple7<A, B, C, D, E, FF, G>>.product(ar
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "product(arg1)",
-  "arrow.core.product"
+    "product(arg1)",
+    "arrow.core.product"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B, C, D, E, FF, G, H, Z> Map<K, Tuple8<A, B, C, D, E, FF, G, H>>.product(arg1: Map<K,
-    Z>): Map<K, Tuple9<A, B, C, D, E, FF, G, H, Z>> =
-    arrow.core.extensions.map.apply.Map.apply<K>().run {
-  arrow.core.MapK(this@product).product<A, B, C, D, E, FF, G, H, Z>(arrow.core.MapK(arg1)) as
-    kotlin.collections.Map<K, arrow.core.Tuple9<A, B, C, D, E, FF, G, H, Z>>
-}
+  Z>): Map<K, Tuple9<A, B, C, D, E, FF, G, H, Z>> =
+  arrow.core.extensions.map.apply.Map.apply<K>().run {
+    arrow.core.MapK(this@product).product<A, B, C, D, E, FF, G, H, Z>(arrow.core.MapK(arg1)) as
+      kotlin.collections.Map<K, arrow.core.Tuple9<A, B, C, D, E, FF, G, H, Z>>
+  }
 
 @JvmName("product8")
 @Suppress(
@@ -800,17 +813,17 @@ fun <K, A, B, C, D, E, FF, G, H, Z> Map<K, Tuple8<A, B, C, D, E, FF, G, H>>.prod
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "product(arg1)",
-  "arrow.core.product"
+    "product(arg1)",
+    "arrow.core.product"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B, C, D, E, FF, G, H, I, Z> Map<K, Tuple9<A, B, C, D, E, FF, G, H,
-    I>>.product(arg1: Map<K, Z>): Map<K, Tuple10<A, B, C, D, E, FF, G, H, I, Z>> =
-    arrow.core.extensions.map.apply.Map.apply<K>().run {
-  arrow.core.MapK(this@product).product<A, B, C, D, E, FF, G, H, I, Z>(arrow.core.MapK(arg1)) as
-    kotlin.collections.Map<K, arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, Z>>
-}
+  I>>.product(arg1: Map<K, Z>): Map<K, Tuple10<A, B, C, D, E, FF, G, H, I, Z>> =
+  arrow.core.extensions.map.apply.Map.apply<K>().run {
+    arrow.core.MapK(this@product).product<A, B, C, D, E, FF, G, H, I, Z>(arrow.core.MapK(arg1)) as
+      kotlin.collections.Map<K, arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, Z>>
+  }
 
 @JvmName("tupled")
 @Suppress(
@@ -822,16 +835,14 @@ fun <K, A, B, C, D, E, FF, G, H, I, Z> Map<K, Tuple9<A, B, C, D, E, FF, G, H,
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1)",
-  "arrow.core.extensions.map.apply.Map.tupled"
+    "MapK.tupledN(arg0, arg1)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> tupled(arg0: Map<K, A>, arg1: Map<K, B>): Map<K, Tuple2<A, B>> =
-    arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupled<A, B>(arrow.core.MapK(arg0), arrow.core.MapK(arg1)) as kotlin.collections.Map<K,
-    arrow.core.Tuple2<A, B>>
+  MapK.tupledN(arg0, arg1)
 
 @JvmName("tupledN")
 @Suppress(
@@ -843,15 +854,16 @@ fun <K, A, B> tupled(arg0: Map<K, A>, arg1: Map<K, B>): Map<K, Tuple2<A, B>> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1)",
-  "arrow.core.extensions.map.apply.Map.tupledN"
+    "MapK.tupledN(arg0, arg1)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> tupledN(arg0: Map<K, A>, arg1: Map<K, B>): Map<K, Tuple2<A, B>> =
-    arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupledN<A, B>(arrow.core.MapK(arg0), arrow.core.MapK(arg1)) as kotlin.collections.Map<K,
+  arrow.core.extensions.map.apply.Map
+    .apply<K>()
+    .tupledN<A, B>(arrow.core.MapK(arg0), arrow.core.MapK(arg1)) as kotlin.collections.Map<K,
     arrow.core.Tuple2<A, B>>
 
 @JvmName("tupled")
@@ -864,8 +876,9 @@ fun <K, A, B> tupledN(arg0: Map<K, A>, arg1: Map<K, B>): Map<K, Tuple2<A, B>> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1, arg2)",
-  "arrow.core.extensions.map.apply.Map.tupled"
+    "MapK.tupledN(arg0, arg1, arg2)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -874,9 +887,9 @@ fun <K, A, B, C> tupled(
   arg1: Map<K, B>,
   arg2: Map<K, C>
 ): Map<K, Tuple3<A, B, C>> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupled<A, B, C>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2)) as
-    kotlin.collections.Map<K, arrow.core.Tuple3<A, B, C>>
+  .apply<K>()
+  .tupled<A, B, C>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2)) as
+  kotlin.collections.Map<K, arrow.core.Tuple3<A, B, C>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -888,8 +901,9 @@ fun <K, A, B, C> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1, arg2)",
-  "arrow.core.extensions.map.apply.Map.tupledN"
+    "MapK.tupledN(arg0, arg1, arg2)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -898,9 +912,9 @@ fun <K, A, B, C> tupledN(
   arg1: Map<K, B>,
   arg2: Map<K, C>
 ): Map<K, Tuple3<A, B, C>> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupledN<A, B, C>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2)) as
-    kotlin.collections.Map<K, arrow.core.Tuple3<A, B, C>>
+  .apply<K>()
+  .tupledN<A, B, C>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2)) as
+  kotlin.collections.Map<K, arrow.core.Tuple3<A, B, C>>
 
 @JvmName("tupled")
 @Suppress(
@@ -912,8 +926,9 @@ fun <K, A, B, C> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1, arg2, arg3)",
-  "arrow.core.extensions.map.apply.Map.tupled"
+    "MapK.tupledN(arg0, arg1, arg2, arg3)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -923,10 +938,10 @@ fun <K, A, B, C, D> tupled(
   arg2: Map<K, C>,
   arg3: Map<K, D>
 ): Map<K, Tuple4<A, B, C, D>> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupled<A, B, C,
+  .apply<K>()
+  .tupled<A, B, C,
     D>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3))
-    as kotlin.collections.Map<K, arrow.core.Tuple4<A, B, C, D>>
+  as kotlin.collections.Map<K, arrow.core.Tuple4<A, B, C, D>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -938,8 +953,9 @@ fun <K, A, B, C, D> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1, arg2, arg3)",
-  "arrow.core.extensions.map.apply.Map.tupledN"
+    "MapK.tupledN(arg0, arg1, arg2, arg3)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -949,10 +965,10 @@ fun <K, A, B, C, D> tupledN(
   arg2: Map<K, C>,
   arg3: Map<K, D>
 ): Map<K, Tuple4<A, B, C, D>> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupledN<A, B, C,
+  .apply<K>()
+  .tupledN<A, B, C,
     D>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3))
-    as kotlin.collections.Map<K, arrow.core.Tuple4<A, B, C, D>>
+  as kotlin.collections.Map<K, arrow.core.Tuple4<A, B, C, D>>
 
 @JvmName("tupled")
 @Suppress(
@@ -964,8 +980,9 @@ fun <K, A, B, C, D> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1, arg2, arg3, arg4)",
-  "arrow.core.extensions.map.apply.Map.tupled"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -976,10 +993,10 @@ fun <K, A, B, C, D, E> tupled(
   arg3: Map<K, D>,
   arg4: Map<K, E>
 ): Map<K, Tuple5<A, B, C, D, E>> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupled<A, B, C, D,
+  .apply<K>()
+  .tupled<A, B, C, D,
     E>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4))
-    as kotlin.collections.Map<K, arrow.core.Tuple5<A, B, C, D, E>>
+  as kotlin.collections.Map<K, arrow.core.Tuple5<A, B, C, D, E>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -991,8 +1008,9 @@ fun <K, A, B, C, D, E> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1, arg2, arg3, arg4)",
-  "arrow.core.extensions.map.apply.Map.tupledN"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1003,10 +1021,10 @@ fun <K, A, B, C, D, E> tupledN(
   arg3: Map<K, D>,
   arg4: Map<K, E>
 ): Map<K, Tuple5<A, B, C, D, E>> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupledN<A, B, C, D,
+  .apply<K>()
+  .tupledN<A, B, C, D,
     E>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4))
-    as kotlin.collections.Map<K, arrow.core.Tuple5<A, B, C, D, E>>
+  as kotlin.collections.Map<K, arrow.core.Tuple5<A, B, C, D, E>>
 
 @JvmName("tupled")
 @Suppress(
@@ -1018,8 +1036,9 @@ fun <K, A, B, C, D, E> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1, arg2, arg3, arg4, arg5)",
-  "arrow.core.extensions.map.apply.Map.tupled"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1031,10 +1050,10 @@ fun <K, A, B, C, D, E, FF> tupled(
   arg4: Map<K, E>,
   arg5: Map<K, FF>
 ): Map<K, Tuple6<A, B, C, D, E, FF>> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupled<A, B, C, D, E,
+  .apply<K>()
+  .tupled<A, B, C, D, E,
     FF>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5))
-    as kotlin.collections.Map<K, arrow.core.Tuple6<A, B, C, D, E, FF>>
+  as kotlin.collections.Map<K, arrow.core.Tuple6<A, B, C, D, E, FF>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -1046,8 +1065,9 @@ fun <K, A, B, C, D, E, FF> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1, arg2, arg3, arg4, arg5)",
-  "arrow.core.extensions.map.apply.Map.tupledN"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1059,10 +1079,10 @@ fun <K, A, B, C, D, E, FF> tupledN(
   arg4: Map<K, E>,
   arg5: Map<K, FF>
 ): Map<K, Tuple6<A, B, C, D, E, FF>> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupledN<A, B, C, D, E,
+  .apply<K>()
+  .tupledN<A, B, C, D, E,
     FF>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5))
-    as kotlin.collections.Map<K, arrow.core.Tuple6<A, B, C, D, E, FF>>
+  as kotlin.collections.Map<K, arrow.core.Tuple6<A, B, C, D, E, FF>>
 
 @JvmName("tupled")
 @Suppress(
@@ -1074,8 +1094,9 @@ fun <K, A, B, C, D, E, FF> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
-  "arrow.core.extensions.map.apply.Map.tupled"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1088,10 +1109,10 @@ fun <K, A, B, C, D, E, FF, G> tupled(
   arg5: Map<K, FF>,
   arg6: Map<K, G>
 ): Map<K, Tuple7<A, B, C, D, E, FF, G>> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupled<A, B, C, D, E, FF,
+  .apply<K>()
+  .tupled<A, B, C, D, E, FF,
     G>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arrow.core.MapK(arg6))
-    as kotlin.collections.Map<K, arrow.core.Tuple7<A, B, C, D, E, FF, G>>
+  as kotlin.collections.Map<K, arrow.core.Tuple7<A, B, C, D, E, FF, G>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -1103,8 +1124,9 @@ fun <K, A, B, C, D, E, FF, G> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
-  "arrow.core.extensions.map.apply.Map.tupledN"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1117,10 +1139,10 @@ fun <K, A, B, C, D, E, FF, G> tupledN(
   arg5: Map<K, FF>,
   arg6: Map<K, G>
 ): Map<K, Tuple7<A, B, C, D, E, FF, G>> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupledN<A, B, C, D, E, FF,
+  .apply<K>()
+  .tupledN<A, B, C, D, E, FF,
     G>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arrow.core.MapK(arg6))
-    as kotlin.collections.Map<K, arrow.core.Tuple7<A, B, C, D, E, FF, G>>
+  as kotlin.collections.Map<K, arrow.core.Tuple7<A, B, C, D, E, FF, G>>
 
 @JvmName("tupled")
 @Suppress(
@@ -1132,8 +1154,9 @@ fun <K, A, B, C, D, E, FF, G> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
-  "arrow.core.extensions.map.apply.Map.tupled"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1147,10 +1170,10 @@ fun <K, A, B, C, D, E, FF, G, H> tupled(
   arg6: Map<K, G>,
   arg7: Map<K, H>
 ): Map<K, Tuple8<A, B, C, D, E, FF, G, H>> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupled<A, B, C, D, E, FF, G,
+  .apply<K>()
+  .tupled<A, B, C, D, E, FF, G,
     H>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arrow.core.MapK(arg6), arrow.core.MapK(arg7))
-    as kotlin.collections.Map<K, arrow.core.Tuple8<A, B, C, D, E, FF, G, H>>
+  as kotlin.collections.Map<K, arrow.core.Tuple8<A, B, C, D, E, FF, G, H>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -1162,8 +1185,9 @@ fun <K, A, B, C, D, E, FF, G, H> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
-  "arrow.core.extensions.map.apply.Map.tupledN"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1177,10 +1201,10 @@ fun <K, A, B, C, D, E, FF, G, H> tupledN(
   arg6: Map<K, G>,
   arg7: Map<K, H>
 ): Map<K, Tuple8<A, B, C, D, E, FF, G, H>> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupledN<A, B, C, D, E, FF, G,
+  .apply<K>()
+  .tupledN<A, B, C, D, E, FF, G,
     H>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arrow.core.MapK(arg6), arrow.core.MapK(arg7))
-    as kotlin.collections.Map<K, arrow.core.Tuple8<A, B, C, D, E, FF, G, H>>
+  as kotlin.collections.Map<K, arrow.core.Tuple8<A, B, C, D, E, FF, G, H>>
 
 @JvmName("tupled")
 @Suppress(
@@ -1192,8 +1216,9 @@ fun <K, A, B, C, D, E, FF, G, H> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
-  "arrow.core.extensions.map.apply.Map.tupled"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1208,10 +1233,10 @@ fun <K, A, B, C, D, E, FF, G, H, I> tupled(
   arg7: Map<K, H>,
   arg8: Map<K, I>
 ): Map<K, Tuple9<A, B, C, D, E, FF, G, H, I>> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupled<A, B, C, D, E, FF, G, H,
+  .apply<K>()
+  .tupled<A, B, C, D, E, FF, G, H,
     I>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arrow.core.MapK(arg6), arrow.core.MapK(arg7), arrow.core.MapK(arg8))
-    as kotlin.collections.Map<K, arrow.core.Tuple9<A, B, C, D, E, FF, G, H, I>>
+  as kotlin.collections.Map<K, arrow.core.Tuple9<A, B, C, D, E, FF, G, H, I>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -1223,8 +1248,9 @@ fun <K, A, B, C, D, E, FF, G, H, I> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
-  "arrow.core.extensions.map.apply.Map.tupledN"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1239,10 +1265,10 @@ fun <K, A, B, C, D, E, FF, G, H, I> tupledN(
   arg7: Map<K, H>,
   arg8: Map<K, I>
 ): Map<K, Tuple9<A, B, C, D, E, FF, G, H, I>> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupledN<A, B, C, D, E, FF, G, H,
+  .apply<K>()
+  .tupledN<A, B, C, D, E, FF, G, H,
     I>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arrow.core.MapK(arg6), arrow.core.MapK(arg7), arrow.core.MapK(arg8))
-    as kotlin.collections.Map<K, arrow.core.Tuple9<A, B, C, D, E, FF, G, H, I>>
+  as kotlin.collections.Map<K, arrow.core.Tuple9<A, B, C, D, E, FF, G, H, I>>
 
 @JvmName("tupled")
 @Suppress(
@@ -1254,8 +1280,9 @@ fun <K, A, B, C, D, E, FF, G, H, I> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupled(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
-  "arrow.core.extensions.map.apply.Map.tupled"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1271,10 +1298,10 @@ fun <K, A, B, C, D, E, FF, G, H, I, J> tupled(
   arg8: Map<K, I>,
   arg9: Map<K, J>
 ): Map<K, Tuple10<A, B, C, D, E, FF, G, H, I, J>> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupled<A, B, C, D, E, FF, G, H, I,
+  .apply<K>()
+  .tupled<A, B, C, D, E, FF, G, H, I,
     J>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arrow.core.MapK(arg6), arrow.core.MapK(arg7), arrow.core.MapK(arg8), arrow.core.MapK(arg9))
-    as kotlin.collections.Map<K, arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
+  as kotlin.collections.Map<K, arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -1286,8 +1313,9 @@ fun <K, A, B, C, D, E, FF, G, H, I, J> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
-  "arrow.core.extensions.map.apply.Map.tupledN"
+    "MapK.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
+    "arrow.core.tupledN",
+    "arrow.core.MapK"
   ),
   DeprecationLevel.WARNING
 )
@@ -1303,10 +1331,10 @@ fun <K, A, B, C, D, E, FF, G, H, I, J> tupledN(
   arg8: Map<K, I>,
   arg9: Map<K, J>
 ): Map<K, Tuple10<A, B, C, D, E, FF, G, H, I, J>> = arrow.core.extensions.map.apply.Map
-   .apply<K>()
-   .tupledN<A, B, C, D, E, FF, G, H, I,
+  .apply<K>()
+  .tupledN<A, B, C, D, E, FF, G, H, I,
     J>(arrow.core.MapK(arg0), arrow.core.MapK(arg1), arrow.core.MapK(arg2), arrow.core.MapK(arg3), arrow.core.MapK(arg4), arrow.core.MapK(arg5), arrow.core.MapK(arg6), arrow.core.MapK(arg7), arrow.core.MapK(arg8), arrow.core.MapK(arg9))
-    as kotlin.collections.Map<K, arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
+  as kotlin.collections.Map<K, arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
 
 @JvmName("followedBy")
 @Suppress(
@@ -1318,16 +1346,16 @@ fun <K, A, B, C, D, E, FF, G, H, I, J> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "followedBy(arg1)",
-  "arrow.core.followedBy"
+    "flatMap { arg1 }",
+    "arrow.core.flatMap"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Map<K, A>.followedBy(arg1: Map<K, B>): Map<K, B> =
-    arrow.core.extensions.map.apply.Map.apply<K>().run {
-  arrow.core.MapK(this@followedBy).followedBy<A, B>(arrow.core.MapK(arg1)) as
-    kotlin.collections.Map<K, B>
-}
+  arrow.core.extensions.map.apply.Map.apply<K>().run {
+    arrow.core.MapK(this@followedBy).followedBy<A, B>(arrow.core.MapK(arg1)) as
+      kotlin.collections.Map<K, B>
+  }
 
 @JvmName("apTap")
 @Suppress(
@@ -1339,15 +1367,14 @@ fun <K, A, B> Map<K, A>.followedBy(arg1: Map<K, B>): Map<K, B> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "apTap(arg1)",
-  "arrow.core.apTap"
+    "MapK.mapN(this, arg1) { _, left, _ -> left }",
+    "arrow.core.MapK",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
 fun <K, A, B> Map<K, A>.apTap(arg1: Map<K, B>): Map<K, A> =
-    arrow.core.extensions.map.apply.Map.apply<K>().run {
-  arrow.core.MapK(this@apTap).apTap<A, B>(arrow.core.MapK(arg1)) as kotlin.collections.Map<K, A>
-}
+  MapK.mapN(this, arg1) { _, left, _ -> left }
 
 /**
  * cached extension
@@ -1360,4 +1387,6 @@ object Map {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
-  inline fun <K> apply(): MapKApply<K> = apply_singleton as arrow.core.extensions.MapKApply<K>}
+  @Deprecated("Align typeclasses is deprecated. Use concrete methods on Map")
+  inline fun <K> apply(): MapKApply<K> = apply_singleton as arrow.core.extensions.MapKApply<K>
+}
