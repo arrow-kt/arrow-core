@@ -1,26 +1,9 @@
 package arrow.core
 
 import arrow.Kind2
-import arrow.core.extensions.align
-import arrow.core.extensions.eq
-import arrow.core.extensions.foldable
-import arrow.core.extensions.hash
-import arrow.core.extensions.monoid
 import arrow.core.extensions.semialign
-import arrow.core.extensions.show
-import arrow.core.extensions.traverse
-import arrow.core.extensions.unalign
-import arrow.core.extensions.unzip
 import arrow.core.test.UnitSpec
-import arrow.core.test.generators.genK
 import arrow.core.test.generators.sortedMapK
-import arrow.core.test.laws.AlignLaws
-import arrow.core.test.laws.HashLaws
-import arrow.core.test.laws.MonoidLaws
-import arrow.core.test.laws.ShowLaws
-import arrow.core.test.laws.TraverseLaws
-import arrow.core.test.laws.UnalignLaws
-import arrow.core.test.laws.UnzipLaws
 import arrow.typeclasses.Eq
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll

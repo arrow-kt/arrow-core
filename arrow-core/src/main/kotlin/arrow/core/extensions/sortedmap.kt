@@ -18,7 +18,6 @@ import arrow.core.k
 import arrow.core.toOption
 import arrow.core.toT
 import arrow.core.updated
-import arrow.extension
 import arrow.typeclasses.Align
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Eq
@@ -55,7 +54,10 @@ fun <A : Comparable<A>> SortedMapK.Companion.foldable(): SortedMapKFoldable<A> =
   object : SortedMapKFoldable<A> {}
 
 interface SortedMapKTraverse<A : Comparable<A>> : Traverse<SortedMapKPartialOf<A>>, SortedMapKFoldable<A> {
-  override fun <G, B, C> SortedMapKOf<A, B>.traverse(AP: Applicative<G>, f: (B) -> Kind<G, C>): Kind<G, Kind<SortedMapKPartialOf<A>, C>> =
+  override fun <G, B, C> SortedMapKOf<A, B>.traverse(
+    AP: Applicative<G>,
+    f: (B) -> Kind<G, C>
+  ): Kind<G, Kind<SortedMapKPartialOf<A>, C>> =
     fix().traverse(AP, f)
 }
 
@@ -69,7 +71,8 @@ interface SortedMapKSemigroup<A : Comparable<A>, B> : Semigroup<SortedMapK<A, B>
     if (this.fix().size < b.fix().size) this.fix().foldLeft<B>(b.fix()) { my, (k, b) ->
       my.updated(k, SG().run { b.maybeCombine(my[k]) })
     }
-    else b.fix().foldLeft<B>(this.fix()) { my: SortedMapK<A, B>, (k, a) -> my.updated(k, SG().run { a.maybeCombine(my[k]) }) }
+    else b.fix()
+      .foldLeft<B>(this.fix()) { my: SortedMapK<A, B>, (k, a) -> my.updated(k, SG().run { a.maybeCombine(my[k]) }) }
 }
 
 fun <A : Comparable<A>, B> SortedMapK.Companion.semigroup(SB: Semigroup<B>): SortedMapKSemigroup<A, B> =
@@ -98,7 +101,6 @@ fun <A : Comparable<A>, B> SortedMapK.Companion.show(SA: Show<A>, SB: Show<B>): 
     override fun SB(): Show<B> = SB
   }
 
-//@extension
 interface SortedMapKEq<K : Comparable<K>, A> : Eq<SortedMapK<K, A>> {
   fun EQK(): Eq<K>
 
@@ -114,7 +116,6 @@ interface SortedMapKEq<K : Comparable<K>, A> : Eq<SortedMapK<K, A>> {
     } else false
 }
 
-//@extension
 interface SortedMapKHash<K : Comparable<K>, A> : Hash<SortedMapK<K, A>> {
   fun HK(): Hash<K>
   fun HA(): Hash<A>
@@ -154,7 +155,6 @@ interface SortedMapKAlign<K : Comparable<K>> : Align<SortedMapKPartialOf<K>>, So
 fun <K : Comparable<K>> SortedMapK.Companion.align(): SortedMapKAlign<K> =
   object : SortedMapKAlign<K> {}
 
-//@extension
 interface SortedMapKEqK<K : Comparable<K>> : EqK<SortedMapKPartialOf<K>> {
   fun EQK(): Eq<K>
 
@@ -181,7 +181,8 @@ interface SortedMapKZip<K : Comparable<K>> : Zip<SortedMapKPartialOf<K>>, Sorted
     (this.fix() to other.fix()).let { (ls, rs) ->
       val keys = (ls.keys.intersect(rs.keys))
 
-      val values = keys.map { key -> ls.getOption(key).flatMap { l -> rs.getOption(key).map { key to (l toT it) } } }.flattenOption()
+      val values = keys.map { key -> ls.getOption(key).flatMap { l -> rs.getOption(key).map { key to (l toT it) } } }
+        .flattenOption()
 
       return values.toMap().toSortedMap().k()
     }
