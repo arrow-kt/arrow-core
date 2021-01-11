@@ -64,3 +64,4 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun monadFilter(): SequenceKMonadFilter = monadFilter_singleton}
+

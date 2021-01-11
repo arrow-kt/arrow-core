@@ -63,3 +63,4 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun zip(): SequenceKZip = zip_singleton}
+

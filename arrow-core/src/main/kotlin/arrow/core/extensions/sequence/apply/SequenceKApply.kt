@@ -1369,3 +1369,4 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun apply(): SequenceKApply = apply_singleton}
+

@@ -62,3 +62,4 @@ object Set {
   )
   inline fun <A> semigroup(): SetKSemigroup<A> = semigroup_singleton as
       arrow.core.extensions.SetKSemigroup<A>}
+

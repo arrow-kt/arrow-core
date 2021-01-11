@@ -40,3 +40,4 @@ object Set {
     "NOTHING_TO_INLINE"
   )
   inline fun monoidK(): SetKMonoidK = monoidK_singleton}
+

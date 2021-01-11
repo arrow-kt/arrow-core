@@ -200,3 +200,4 @@ object Sequence {
   inline fun <A> order(OA: Order<A>): SequenceKOrder<A> = object :
       arrow.core.extensions.SequenceKOrder<A> { override fun OA(): arrow.typeclasses.Order<A> = OA
       }}
+

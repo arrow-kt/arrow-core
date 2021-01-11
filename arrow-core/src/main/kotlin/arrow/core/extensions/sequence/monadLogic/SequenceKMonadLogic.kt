@@ -150,3 +150,4 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun monadLogic(): SequenceKMonadLogic = monadLogic_singleton}
+

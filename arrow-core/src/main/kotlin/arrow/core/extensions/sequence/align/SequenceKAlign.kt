@@ -38,3 +38,4 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun align(): SequenceKAlign = align_singleton}
+

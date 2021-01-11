@@ -35,3 +35,4 @@ object Set {
   )
   inline fun <A> eq(EQ: Eq<A>): SetKEq<A> = object : arrow.core.extensions.SetKEq<A> { override fun
       EQ(): arrow.typeclasses.Eq<A> = EQ }}
+

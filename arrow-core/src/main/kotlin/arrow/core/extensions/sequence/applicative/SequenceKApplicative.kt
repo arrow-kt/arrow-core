@@ -125,3 +125,4 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun applicative(): SequenceKApplicative = applicative_singleton}
+

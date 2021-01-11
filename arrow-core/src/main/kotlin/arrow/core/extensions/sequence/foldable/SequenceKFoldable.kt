@@ -627,3 +627,4 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun foldable(): SequenceKFoldable = foldable_singleton}
+

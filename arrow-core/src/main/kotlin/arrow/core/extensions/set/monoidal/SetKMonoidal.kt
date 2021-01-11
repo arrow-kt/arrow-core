@@ -38,3 +38,4 @@ object Set {
     "NOTHING_TO_INLINE"
   )
   inline fun monoidal(): SetKMonoidal = monoidal_singleton}
+

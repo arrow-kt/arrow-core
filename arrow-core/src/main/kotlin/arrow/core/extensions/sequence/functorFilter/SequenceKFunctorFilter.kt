@@ -105,3 +105,4 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun functorFilter(): SequenceKFunctorFilter = functorFilter_singleton}
+

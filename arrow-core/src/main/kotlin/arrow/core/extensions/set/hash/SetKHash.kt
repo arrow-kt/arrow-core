@@ -34,3 +34,4 @@ object Set {
   )
   inline fun <A> hash(HA: Hash<A>): SetKHash<A> = object : arrow.core.extensions.SetKHash<A> {
       override fun HA(): arrow.typeclasses.Hash<A> = HA }}
+

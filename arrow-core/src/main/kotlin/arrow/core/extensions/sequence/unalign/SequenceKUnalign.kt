@@ -70,3 +70,4 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun unalign(): SequenceKUnalign = unalign_singleton}
+

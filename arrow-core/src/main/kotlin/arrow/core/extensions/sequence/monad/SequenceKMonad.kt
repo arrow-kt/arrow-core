@@ -412,3 +412,4 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun monad(): SequenceKMonad = monad_singleton}
+

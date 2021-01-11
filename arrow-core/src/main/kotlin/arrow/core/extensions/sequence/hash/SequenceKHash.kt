@@ -35,3 +35,4 @@ object Sequence {
   )
   inline fun <A> hash(HA: Hash<A>): SequenceKHash<A> = object :
       arrow.core.extensions.SequenceKHash<A> { override fun HA(): arrow.typeclasses.Hash<A> = HA }}
+

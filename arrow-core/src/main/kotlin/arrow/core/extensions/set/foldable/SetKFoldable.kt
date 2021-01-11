@@ -577,3 +577,4 @@ object Set {
     "NOTHING_TO_INLINE"
   )
   inline fun foldable(): SetKFoldable = foldable_singleton}
+

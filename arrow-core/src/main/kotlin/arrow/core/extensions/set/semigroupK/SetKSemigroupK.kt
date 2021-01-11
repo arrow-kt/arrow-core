@@ -61,3 +61,4 @@ object Set {
     "NOTHING_TO_INLINE"
   )
   inline fun semigroupK(): SetKSemigroupK = semigroupK_singleton}
+
