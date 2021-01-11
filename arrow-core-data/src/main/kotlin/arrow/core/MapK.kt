@@ -15,6 +15,7 @@ typealias MapKPartialOf<K> = arrow.Kind<ForMapK, K>
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 inline fun <K, A> MapKOf<K, A>.fix(): MapK<K, A> = this as MapK<K, A>
 
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use the provided extension methods for Map instead")
 data class MapK<K, out A>(private val map: Map<K, A>) : MapKOf<K, A>, Map<K, A> by map {
 
   fun <B> map(f: (A) -> B): MapK<K, B> = this.map.map { it.key to f(it.value) }.toMap().k()

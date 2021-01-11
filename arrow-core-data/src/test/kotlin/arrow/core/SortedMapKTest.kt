@@ -8,9 +8,6 @@ import arrow.core.extensions.hash
 import arrow.core.extensions.monoid
 import arrow.core.extensions.semialign
 import arrow.core.extensions.show
-import arrow.core.extensions.sortedmapk.eq.eq
-import arrow.core.extensions.sortedmapk.eqK.eqK
-import arrow.core.extensions.sortedmapk.hash.hash
 import arrow.core.extensions.traverse
 import arrow.core.extensions.unalign
 import arrow.core.extensions.unzip
@@ -36,34 +33,6 @@ class SortedMapKTest : UnitSpec() {
   }
 
   init {
-    testLaws(
-      HashLaws.laws(SortedMapK.hash(String.hash(), Int.hash()), Gen.sortedMapK(Gen.string(), Gen.int()), SortedMapK.eq(String.eq(), Int.eq())),
-      ShowLaws.laws(SortedMapK.show(String.show(), Int.show()), SortedMapK.eq(String.eq(), Int.eq()), Gen.sortedMapK(Gen.string(), Gen.int())),
-      MonoidLaws.laws(SortedMapK.monoid<String, Int>(Int.monoid()), Gen.sortedMapK(Gen.string(), Gen.int()), EQ),
-      TraverseLaws.laws(
-        SortedMapK.traverse<String>(),
-        SortedMapK.genK(Gen.string()),
-        SortedMapK.eqK(String.eq())
-      ),
-      AlignLaws.laws(
-        SortedMapK.align<String>(),
-        SortedMapK.genK(Gen.string()),
-        SortedMapK.eqK(String.eq()),
-        SortedMapK.foldable<String>()
-      ),
-      UnalignLaws.laws(
-        SortedMapK.unalign<String>(),
-        SortedMapK.genK(Gen.string()),
-        SortedMapK.eqK(String.eq()),
-        SortedMapK.foldable<String>()
-      ),
-      UnzipLaws.laws(
-        SortedMapK.unzip<String>(),
-        SortedMapK.genK(Gen.string()),
-        SortedMapK.eqK(String.eq()),
-        SortedMapK.foldable<String>()
-      )
-    )
 
     "can align maps" {
       val gen = Gen.sortedMapK(Gen.string(), Gen.bool())

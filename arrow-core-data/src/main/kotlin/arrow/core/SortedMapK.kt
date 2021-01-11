@@ -7,6 +7,7 @@ import arrow.typeclasses.Show
 import kotlin.collections.flatMap
 
 @higherkind
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use the provided extension methods for Map instead")
 data class SortedMapK<A : Comparable<A>, B>(private val map: SortedMap<A, B>) : SortedMapKOf<A, B>, SortedMapKKindedJ<A, B>, SortedMap<A, B> by map {
 
   fun <C> map(f: (B) -> C): SortedMapK<A, C> =
