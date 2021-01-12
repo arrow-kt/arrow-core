@@ -81,7 +81,7 @@ private object StringOrderInstance : StringOrder
 fun Order.Companion.String(): Order<String> =
   StringOrderInstance
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Show.string()", "arrow.core.Show", "arrow.core.string"))
+@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Order.string()", "arrow.core.Order", "arrow.core.string"))
 fun String.Companion.order(): Order<String> =
   object : StringOrder {}
 
