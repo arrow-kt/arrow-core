@@ -34,7 +34,7 @@ fun <A> List<A>.hashWithSalt(HA: Hash<A>, salt: Int): Int = HA.run {
 
 fun <A> List<A>.compare(OA: Order<A>, b: List<A>): Ordering = OA.run {
   align(b) { ior -> ior.fold({ GT }, { LT }, { a1, a2 -> a1.compare(a2) }) }
-    .fold(Ordering.monoid())
+    .fold(Monoid.ordering())
 }
 
 /**
