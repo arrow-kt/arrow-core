@@ -1431,7 +1431,7 @@ private class ValidatedOrder<L, R>(
 private open class ValidatedSemigroup<A, B>(
   private val SA: Semigroup<A>,
   private val SB: Semigroup<B>
-): Semigroup<Validated<A, B>> {
+) : Semigroup<Validated<A, B>> {
   override fun Validated<A, B>.combine(b: Validated<A, B>): Validated<A, B> =
     combine(SA, SB, b)
 }
@@ -1439,7 +1439,7 @@ private open class ValidatedSemigroup<A, B>(
 private class ValidatedMonoid<A, B>(
   private val SA: Semigroup<A>,
   private val MB: Monoid<B>
-): Monoid<Validated<A, B>>, ValidatedSemigroup<A, B>(SA, MB) {
+) : Monoid<Validated<A, B>>, ValidatedSemigroup<A, B>(SA, MB) {
   private val empty = Valid(MB.empty())
 
   override fun empty(): Validated<A, B> =
