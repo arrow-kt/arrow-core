@@ -62,4 +62,3 @@ object Sequence {
   )
   inline fun <A> semigroup(): SequenceKSemigroup<A> = semigroup_singleton as
       arrow.core.extensions.SequenceKSemigroup<A>}
-

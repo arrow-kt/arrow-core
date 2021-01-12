@@ -319,10 +319,10 @@ fun <A, B> Kind<ForOption, A>.forEffectEval(arg1: Eval<Kind<ForOption, B>>): Opt
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<ForOption, A>.mproduct(arg1: Function1<A, Kind<ForOption, B>>): Option<Tuple2<A, B>>
-    = arrow.core.Option.monad().run {
-  this@mproduct.mproduct<A, B>(arg1) as arrow.core.Option<arrow.core.Tuple2<A, B>>
-}
+fun <A, B> Kind<ForOption, A>.mproduct(arg1: Function1<A, Kind<ForOption, B>>): Option<Tuple2<A, B>> =
+  arrow.core.Option.monad().run {
+    this@mproduct.mproduct<A, B>(arg1) as arrow.core.Option<arrow.core.Tuple2<A, B>>
+  }
 
 @JvmName("ifM")
 @Suppress(
@@ -339,8 +339,10 @@ fun <A, B> Kind<ForOption, A>.mproduct(arg1: Function1<A, Kind<ForOption, B>>): 
   ),
   DeprecationLevel.WARNING
 )
-fun <B> Kind<ForOption, Boolean>.ifM(arg1: Function0<Kind<ForOption, B>>,
-    arg2: Function0<Kind<ForOption, B>>): Option<B> = arrow.core.Option.monad().run {
+fun <B> Kind<ForOption, Boolean>.ifM(
+  arg1: Function0<Kind<ForOption, B>>,
+  arg2: Function0<Kind<ForOption, B>>
+): Option<B> = arrow.core.Option.monad().run {
   this@ifM.ifM<B>(arg1, arg2) as arrow.core.Option<B>
 }
 
@@ -359,10 +361,10 @@ fun <B> Kind<ForOption, Boolean>.ifM(arg1: Function0<Kind<ForOption, B>>,
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<ForOption, Either<A, B>>.selectM(arg1: Kind<ForOption, Function1<A, B>>): Option<B>
-    = arrow.core.Option.monad().run {
-  this@selectM.selectM<A, B>(arg1) as arrow.core.Option<B>
-}
+fun <A, B> Kind<ForOption, Either<A, B>>.selectM(arg1: Kind<ForOption, Function1<A, B>>): Option<B> =
+  arrow.core.Option.monad().run {
+    this@selectM.selectM<A, B>(arg1) as arrow.core.Option<B>
+  }
 
 @JvmName("select")
 @Suppress(

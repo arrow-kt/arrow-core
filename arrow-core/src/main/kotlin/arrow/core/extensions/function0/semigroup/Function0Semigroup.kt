@@ -53,5 +53,4 @@ fun <A> Function0<A>.maybeCombine(SA: Semigroup<A>, arg1: Function0<A>): Functio
   "NOTHING_TO_INLINE"
 )
 inline fun <A> Companion.semigroup(SA: Semigroup<A>): Function0Semigroup<A> = object :
-    arrow.core.extensions.Function0Semigroup<A> { override fun SA(): arrow.typeclasses.Semigroup<A>
-    = SA }
+    arrow.core.extensions.Function0Semigroup<A> { override fun SA(): arrow.typeclasses.Semigroup<A> = SA }

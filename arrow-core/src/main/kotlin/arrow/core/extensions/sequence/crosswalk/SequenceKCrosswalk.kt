@@ -69,4 +69,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun crosswalk(): SequenceKCrosswalk = crosswalk_singleton}
-

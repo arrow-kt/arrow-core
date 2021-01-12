@@ -57,8 +57,10 @@ fun <A> Kind<ForOption, A>.ensure(arg1: Function0<Unit>, arg2: Function1<A, Bool
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<ForOption, A>.redeemWith(arg1: Function1<Unit, Kind<ForOption, B>>,
-    arg2: Function1<A, Kind<ForOption, B>>): Option<B> = arrow.core.Option.monadError().run {
+fun <A, B> Kind<ForOption, A>.redeemWith(
+  arg1: Function1<Unit, Kind<ForOption, B>>,
+  arg2: Function1<A, Kind<ForOption, B>>
+): Option<B> = arrow.core.Option.monadError().run {
   this@redeemWith.redeemWith<A, B>(arg1, arg2) as arrow.core.Option<B>
 }
 

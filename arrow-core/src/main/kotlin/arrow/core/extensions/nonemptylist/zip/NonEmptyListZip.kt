@@ -33,10 +33,10 @@ internal val zip_singleton: NonEmptyListZip = object : arrow.core.extensions.Non
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<ForNonEmptyList, A>.zip(arg1: Kind<ForNonEmptyList, B>): NonEmptyList<Tuple2<A, B>>
-    = arrow.core.NonEmptyList.zip().run {
-  this@zip.zip<A, B>(arg1) as arrow.core.NonEmptyList<arrow.core.Tuple2<A, B>>
-}
+fun <A, B> Kind<ForNonEmptyList, A>.zip(arg1: Kind<ForNonEmptyList, B>): NonEmptyList<Tuple2<A, B>> =
+  arrow.core.NonEmptyList.zip().run {
+    this@zip.zip<A, B>(arg1) as arrow.core.NonEmptyList<arrow.core.Tuple2<A, B>>
+  }
 
 @JvmName("zipWith")
 @Suppress(
@@ -53,8 +53,10 @@ fun <A, B> Kind<ForNonEmptyList, A>.zip(arg1: Kind<ForNonEmptyList, B>): NonEmpt
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C> Kind<ForNonEmptyList, A>.zipWith(arg1: Kind<ForNonEmptyList, B>, arg2: Function2<A, B,
-    C>): NonEmptyList<C> = arrow.core.NonEmptyList.zip().run {
+fun <A, B, C> Kind<ForNonEmptyList, A>.zipWith(
+  arg1: Kind<ForNonEmptyList, B>,
+  arg2: Function2<A, B, C>
+): NonEmptyList<C> = arrow.core.NonEmptyList.zip().run {
   this@zipWith.zipWith<A, B, C>(arg1, arg2) as arrow.core.NonEmptyList<C>
 }
 

@@ -33,8 +33,9 @@ internal val comonad_singleton: Tuple2Comonad<Any?> = object : Tuple2Comonad<Any
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.coflatMap(arg1: Function1<Kind<Kind<ForTuple2, F>, A>,
-    B>): Tuple2<F, B> = arrow.core.Tuple2.comonad<F>().run {
+fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.coflatMap(
+  arg1: Function1<Kind<Kind<ForTuple2, F>, A>, B>
+): Tuple2<F, B> = arrow.core.Tuple2.comonad<F>().run {
   this@coflatMap.coflatMap<A, B>(arg1) as arrow.core.Tuple2<F, B>
 }
 

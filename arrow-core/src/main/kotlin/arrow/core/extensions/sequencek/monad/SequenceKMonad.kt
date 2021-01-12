@@ -340,8 +340,10 @@ fun <A, B> Kind<ForSequenceK, A>.mproduct(arg1: Function1<A, Kind<ForSequenceK, 
   ),
   DeprecationLevel.WARNING
 )
-fun <B> Kind<ForSequenceK, Boolean>.ifM(arg1: Function0<Kind<ForSequenceK, B>>,
-    arg2: Function0<Kind<ForSequenceK, B>>): SequenceK<B> = arrow.core.SequenceK.monad().run {
+fun <B> Kind<ForSequenceK, Boolean>.ifM(
+  arg1: Function0<Kind<ForSequenceK, B>>,
+  arg2: Function0<Kind<ForSequenceK, B>>
+): SequenceK<B> = arrow.core.SequenceK.monad().run {
   this@ifM.ifM<B>(arg1, arg2) as arrow.core.SequenceK<B>
 }
 

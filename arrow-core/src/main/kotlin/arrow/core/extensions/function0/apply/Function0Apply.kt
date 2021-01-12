@@ -82,12 +82,14 @@ fun <A, B> Kind<ForFunction0, A>.apEval(arg1: Eval<Kind<ForFunction0, Function1<
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, Z> Kind<ForFunction0, A>.map2Eval(arg1: Eval<Kind<ForFunction0, B>>,
-    arg2: Function1<Tuple2<A, B>, Z>): Eval<Kind<ForFunction0, Z>> =
-    arrow.core.Function0.apply().run {
-  this@map2Eval.map2Eval<A, B, Z>(arg1, arg2) as arrow.core.Eval<arrow.Kind<arrow.core.ForFunction0,
-    Z>>
-}
+fun <A, B, Z> Kind<ForFunction0, A>.map2Eval(
+  arg1: Eval<Kind<ForFunction0, B>>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): Eval<Kind<ForFunction0, Z>> =
+  arrow.core.Function0.apply().run {
+    this@map2Eval.map2Eval<A, B, Z>(arg1, arg2) as arrow.core.Eval<arrow.Kind<arrow.core.ForFunction0,
+      Z>>
+  }
 
 @JvmName("map")
 @Suppress(
@@ -598,8 +600,10 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> mapN(
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, Z> Kind<ForFunction0, A>.map2(arg1: Kind<ForFunction0, B>, arg2: Function1<Tuple2<A, B>,
-    Z>): Function0<Z> = arrow.core.Function0.apply().run {
+fun <A, B, Z> Kind<ForFunction0, A>.map2(
+  arg1: Kind<ForFunction0, B>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): Function0<Z> = arrow.core.Function0.apply().run {
   this@map2.map2<A, B, Z>(arg1, arg2) as arrow.core.Function0<Z>
 }
 
@@ -699,8 +703,9 @@ fun <A, B, C, D, Z> Kind<ForFunction0, Tuple4<A, B, C, D>>.product(arg1: Kind<Fo
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C, D, E, Z> Kind<ForFunction0, Tuple5<A, B, C, D, E>>.product(arg1: Kind<ForFunction0,
-    Z>): Function0<Tuple6<A, B, C, D, E, Z>> = arrow.core.Function0.apply().run {
+fun <A, B, C, D, E, Z> Kind<ForFunction0, Tuple5<A, B, C, D, E>>.product(
+  arg1: Kind<ForFunction0, Z>
+): Function0<Tuple6<A, B, C, D, E, Z>> = arrow.core.Function0.apply().run {
   this@product.product<A, B, C, D, E, Z>(arg1) as arrow.core.Function0<arrow.core.Tuple6<A, B, C, D,
     E, Z>>
 }
@@ -808,10 +813,10 @@ fun <A, B, C, D, E, FF, G, H, I, Z> Kind<ForFunction0, Tuple9<A, B, C, D, E, FF,
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> tupled(arg0: Kind<ForFunction0, A>, arg1: Kind<ForFunction0, B>): Function0<Tuple2<A, B>>
-    = arrow.core.Function0
-   .apply()
-   .tupled<A, B>(arg0, arg1) as arrow.core.Function0<arrow.core.Tuple2<A, B>>
+fun <A, B> tupled(arg0: Kind<ForFunction0, A>, arg1: Kind<ForFunction0, B>): Function0<Tuple2<A, B>> =
+  arrow.core.Function0
+    .apply()
+    .tupled<A, B>(arg0, arg1) as arrow.core.Function0<arrow.core.Tuple2<A, B>>
 
 @JvmName("tupledN")
 @Suppress(

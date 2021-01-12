@@ -37,7 +37,8 @@ fun <K : Comparable<K>, A> SortedMapK<K, A>.neqv(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-inline fun <K : Comparable<K>, A> Companion.eq(EQK: Eq<K>, EQA: Eq<A>): SortedMapKEq<K, A> = object
-    : arrow.core.extensions.SortedMapKEq<K, A> { override fun EQK(): arrow.typeclasses.Eq<K> = EQK
-
-  override fun EQA(): arrow.typeclasses.Eq<A> = EQA }
+inline fun <K : Comparable<K>, A> Companion.eq(EQK: Eq<K>, EQA: Eq<A>): SortedMapKEq<K, A> =
+  object : arrow.core.extensions.SortedMapKEq<K, A> {
+    override fun EQK(): arrow.typeclasses.Eq<K> = EQK
+    override fun EQA(): arrow.typeclasses.Eq<A> = EQA
+  }

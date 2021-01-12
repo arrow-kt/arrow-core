@@ -79,8 +79,10 @@ fun <O, A, B> Kind<Kind<ForConst, O>, A>.product(MO: Monoid<O>, arg1: Kind<Kind<
   ),
   DeprecationLevel.WARNING
 )
-fun <O, A, B, C> Kind<Kind<ForConst, O>, Tuple2<A, B>>.product(MO: Monoid<O>,
-    arg1: Kind<Kind<ForConst, O>, C>): Const<O, Tuple3<A, B, C>> =
+fun <O, A, B, C> Kind<Kind<ForConst, O>, Tuple2<A, B>>.product(
+  MO: Monoid<O>,
+  arg1: Kind<Kind<ForConst, O>, C>
+): Const<O, Tuple3<A, B, C>> =
     arrow.core.Const.divide<O>(MO).run {
   this@product.product<A, B, C>(arg1) as arrow.core.Const<O, arrow.core.Tuple3<A, B, C>>
 }
@@ -100,9 +102,11 @@ fun <O, A, B, C> Kind<Kind<ForConst, O>, Tuple2<A, B>>.product(MO: Monoid<O>,
   ),
   DeprecationLevel.WARNING
 )
-fun <O, A, B, C, D> Kind<Kind<ForConst, O>, Tuple3<A, B, C>>.product(MO: Monoid<O>,
-    arg1: Kind<Kind<ForConst, O>, D>): Const<O, Tuple4<A, B, C, D>> =
-    arrow.core.Const.divide<O>(MO).run {
+fun <O, A, B, C, D> Kind<Kind<ForConst, O>, Tuple3<A, B, C>>.product(
+  MO: Monoid<O>,
+  arg1: Kind<Kind<ForConst, O>, D>
+): Const<O, Tuple4<A, B, C, D>> =
+  arrow.core.Const.divide<O>(MO).run {
   this@product.product<A, B, C, D>(arg1) as arrow.core.Const<O, arrow.core.Tuple4<A, B, C, D>>
 }
 
@@ -121,8 +125,10 @@ fun <O, A, B, C, D> Kind<Kind<ForConst, O>, Tuple3<A, B, C>>.product(MO: Monoid<
   ),
   DeprecationLevel.WARNING
 )
-fun <O, A, B, C, D, E> Kind<Kind<ForConst, O>, Tuple4<A, B, C, D>>.product(MO: Monoid<O>,
-    arg1: Kind<Kind<ForConst, O>, E>): Const<O, Tuple5<A, B, C, D, E>> =
+fun <O, A, B, C, D, E> Kind<Kind<ForConst, O>, Tuple4<A, B, C, D>>.product(
+  MO: Monoid<O>,
+  arg1: Kind<Kind<ForConst, O>, E>
+): Const<O, Tuple5<A, B, C, D, E>> =
     arrow.core.Const.divide<O>(MO).run {
   this@product.product<A, B, C, D, E>(arg1) as arrow.core.Const<O, arrow.core.Tuple5<A, B, C, D, E>>
 }
@@ -142,8 +148,10 @@ fun <O, A, B, C, D, E> Kind<Kind<ForConst, O>, Tuple4<A, B, C, D>>.product(MO: M
   ),
   DeprecationLevel.WARNING
 )
-fun <O, A, B, C, D, E, FF> Kind<Kind<ForConst, O>, Tuple5<A, B, C, D, E>>.product(MO: Monoid<O>,
-    arg1: Kind<Kind<ForConst, O>, FF>): Const<O, Tuple6<A, B, C, D, E, FF>> =
+fun <O, A, B, C, D, E, FF> Kind<Kind<ForConst, O>, Tuple5<A, B, C, D, E>>.product(
+  MO: Monoid<O>,
+  arg1: Kind<Kind<ForConst, O>, FF>
+): Const<O, Tuple6<A, B, C, D, E, FF>> =
     arrow.core.Const.divide<O>(MO).run {
   this@product.product<A, B, C, D, E, FF>(arg1) as arrow.core.Const<O, arrow.core.Tuple6<A, B, C, D,
     E, FF>>

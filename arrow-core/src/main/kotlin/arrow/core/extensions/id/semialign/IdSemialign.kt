@@ -120,8 +120,10 @@ fun <A, B> Kind<ForId, A>.padZip(arg1: Kind<ForId, B>): Id<Tuple2<Option<A>, Opt
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C> Kind<ForId, A>.padZipWith(arg1: Kind<ForId, B>, arg2: Function2<Option<A>, Option<B>,
-    C>): Id<C> = arrow.core.Id.semialign().run {
+fun <A, B, C> Kind<ForId, A>.padZipWith(
+  arg1: Kind<ForId, B>,
+  arg2: Function2<Option<A>, Option<B>, C>
+): Id<C> = arrow.core.Id.semialign().run {
   this@padZipWith.padZipWith<A, B, C>(arg1, arg2) as arrow.core.Id<C>
 }
 

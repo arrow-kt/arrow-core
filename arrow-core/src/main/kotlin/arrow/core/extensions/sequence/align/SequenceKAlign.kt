@@ -22,9 +22,10 @@ import kotlin.sequences.Sequence
   ),
   DeprecationLevel.WARNING
 )
-fun <A> empty(): Sequence<A> = arrow.core.extensions.sequence.align.Sequence
-   .align()
-   .empty<A>() as kotlin.sequences.Sequence<A>
+fun <A> empty(): Sequence<A> =
+  arrow.core.extensions.sequence.align.Sequence
+    .align()
+    .empty<A>() as kotlin.sequences.Sequence<A>
 
 /**
  * cached extension
@@ -38,4 +39,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun align(): SequenceKAlign = align_singleton}
-

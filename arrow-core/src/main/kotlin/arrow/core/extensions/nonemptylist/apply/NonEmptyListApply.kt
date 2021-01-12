@@ -83,10 +83,12 @@ fun <A, B> Kind<ForNonEmptyList, A>.apEval(arg1: Eval<Kind<ForNonEmptyList, Func
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, Z> Kind<ForNonEmptyList, A>.map2Eval(arg1: Eval<Kind<ForNonEmptyList, B>>,
-    arg2: Function1<Tuple2<A, B>, Z>): Eval<Kind<ForNonEmptyList, Z>> =
-    arrow.core.NonEmptyList.apply().run {
-  this@map2Eval.map2Eval<A, B, Z>(arg1, arg2) as
+fun <A, B, Z> Kind<ForNonEmptyList, A>.map2Eval(
+  arg1: Eval<Kind<ForNonEmptyList, B>>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): Eval<Kind<ForNonEmptyList, Z>> =
+  arrow.core.NonEmptyList.apply().run {
+    this@map2Eval.map2Eval<A, B, Z>(arg1, arg2) as
     arrow.core.Eval<arrow.Kind<arrow.core.ForNonEmptyList, Z>>
 }
 
@@ -603,8 +605,10 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> mapN(
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, Z> Kind<ForNonEmptyList, A>.map2(arg1: Kind<ForNonEmptyList, B>,
-    arg2: Function1<Tuple2<A, B>, Z>): NonEmptyList<Z> = arrow.core.NonEmptyList.apply().run {
+fun <A, B, Z> Kind<ForNonEmptyList, A>.map2(
+  arg1: Kind<ForNonEmptyList, B>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): NonEmptyList<Z> = arrow.core.NonEmptyList.apply().run {
   this@map2.map2<A, B, Z>(arg1, arg2) as arrow.core.NonEmptyList<Z>
 }
 
@@ -683,8 +687,9 @@ fun <A, B, C, Z> Kind<ForNonEmptyList, Tuple3<A, B, C>>.product(arg1: Kind<ForNo
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C, D, Z> Kind<ForNonEmptyList, Tuple4<A, B, C, D>>.product(arg1: Kind<ForNonEmptyList,
-    Z>): NonEmptyList<Tuple5<A, B, C, D, Z>> = arrow.core.NonEmptyList.apply().run {
+fun <A, B, C, D, Z> Kind<ForNonEmptyList, Tuple4<A, B, C, D>>.product(
+  arg1: Kind<ForNonEmptyList, Z>
+): NonEmptyList<Tuple5<A, B, C, D, Z>> = arrow.core.NonEmptyList.apply().run {
   this@product.product<A, B, C, D, Z>(arg1) as arrow.core.NonEmptyList<arrow.core.Tuple5<A, B, C, D,
     Z>>
 }

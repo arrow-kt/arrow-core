@@ -339,8 +339,10 @@ fun <A, B> Sequence<A>.mproduct(arg1: Function1<A, Kind<ForSequenceK, B>>): Sequ
   ),
   DeprecationLevel.WARNING
 )
-fun <B> Sequence<Boolean>.ifM(arg1: Function0<Kind<ForSequenceK, B>>,
-    arg2: Function0<Kind<ForSequenceK, B>>): Sequence<B> =
+fun <B> Sequence<Boolean>.ifM(
+  arg1: Function0<Kind<ForSequenceK, B>>,
+  arg2: Function0<Kind<ForSequenceK, B>>
+): Sequence<B> =
     arrow.core.extensions.sequence.monad.Sequence.monad().run {
   arrow.core.SequenceK(this@ifM).ifM<B>(arg1, arg2) as kotlin.sequences.Sequence<B>
 }
@@ -412,4 +414,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun monad(): SequenceKMonad = monad_singleton}
-

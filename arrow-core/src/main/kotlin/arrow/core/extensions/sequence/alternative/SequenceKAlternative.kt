@@ -190,4 +190,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun alternative(): SequenceKAlternative = alternative_singleton}
-

@@ -341,8 +341,10 @@ fun <A, B> Kind<ForNonEmptyList, A>.mproduct(arg1: Function1<A, Kind<ForNonEmpty
   ),
   DeprecationLevel.WARNING
 )
-fun <B> Kind<ForNonEmptyList, Boolean>.ifM(arg1: Function0<Kind<ForNonEmptyList, B>>,
-    arg2: Function0<Kind<ForNonEmptyList, B>>): NonEmptyList<B> =
+fun <B> Kind<ForNonEmptyList, Boolean>.ifM(
+  arg1: Function0<Kind<ForNonEmptyList, B>>,
+  arg2: Function0<Kind<ForNonEmptyList, B>>
+): NonEmptyList<B> =
     arrow.core.NonEmptyList.monad().run {
   this@ifM.ifM<B>(arg1, arg2) as arrow.core.NonEmptyList<B>
 }
@@ -362,8 +364,9 @@ fun <B> Kind<ForNonEmptyList, Boolean>.ifM(arg1: Function0<Kind<ForNonEmptyList,
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<ForNonEmptyList, Either<A, B>>.selectM(arg1: Kind<ForNonEmptyList, Function1<A,
-    B>>): NonEmptyList<B> = arrow.core.NonEmptyList.monad().run {
+fun <A, B> Kind<ForNonEmptyList, Either<A, B>>.selectM(
+  arg1: Kind<ForNonEmptyList, Function1<A, B>>
+): NonEmptyList<B> = arrow.core.NonEmptyList.monad().run {
   this@selectM.selectM<A, B>(arg1) as arrow.core.NonEmptyList<B>
 }
 

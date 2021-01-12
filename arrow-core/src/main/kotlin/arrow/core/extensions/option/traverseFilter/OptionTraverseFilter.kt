@@ -36,8 +36,10 @@ internal val traverseFilter_singleton: OptionTraverseFilter = object :
   ),
   DeprecationLevel.WARNING
 )
-fun <G, A, B> Kind<ForOption, A>.traverseFilter(arg1: Applicative<G>, arg2: Function1<A, Kind<G,
-    Option<B>>>): Kind<G, Kind<ForOption, B>> = arrow.core.Option.traverseFilter().run {
+fun <G, A, B> Kind<ForOption, A>.traverseFilter(
+  arg1: Applicative<G>,
+  arg2: Function1<A, Kind<G, Option<B>>>
+): Kind<G, Kind<ForOption, B>> = arrow.core.Option.traverseFilter().run {
   this@traverseFilter.traverseFilter<G, A, B>(arg1, arg2) as arrow.Kind<G,
     arrow.Kind<arrow.core.ForOption, B>>
 }

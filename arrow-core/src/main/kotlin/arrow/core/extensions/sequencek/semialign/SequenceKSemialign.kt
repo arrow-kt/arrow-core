@@ -81,10 +81,10 @@ fun <A, B, C> alignWith(
   ),
   DeprecationLevel.WARNING
 )
-fun <A> Kind<ForSequenceK, A>.salign(arg1: Semigroup<A>, arg2: Kind<ForSequenceK, A>): SequenceK<A>
-    = arrow.core.SequenceK.semialign().run {
-  this@salign.salign<A>(arg1, arg2) as arrow.core.SequenceK<A>
-}
+fun <A> Kind<ForSequenceK, A>.salign(arg1: Semigroup<A>, arg2: Kind<ForSequenceK, A>): SequenceK<A> =
+  arrow.core.SequenceK.semialign().run {
+    this@salign.salign<A>(arg1, arg2) as arrow.core.SequenceK<A>
+  }
 
 @JvmName("padZip")
 @Suppress(
@@ -122,8 +122,10 @@ fun <A, B> Kind<ForSequenceK, A>.padZip(arg1: Kind<ForSequenceK, B>): SequenceK<
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C> Kind<ForSequenceK, A>.padZipWith(arg1: Kind<ForSequenceK, B>,
-    arg2: Function2<Option<A>, Option<B>, C>): SequenceK<C> = arrow.core.SequenceK.semialign().run {
+fun <A, B, C> Kind<ForSequenceK, A>.padZipWith(
+  arg1: Kind<ForSequenceK, B>,
+  arg2: Function2<Option<A>, Option<B>, C>
+): SequenceK<C> = arrow.core.SequenceK.semialign().run {
   this@padZipWith.padZipWith<A, B, C>(arg1, arg2) as arrow.core.SequenceK<C>
 }
 

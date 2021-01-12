@@ -160,4 +160,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun semigroupal(): SequenceKSemigroupal = semigroupal_singleton}
-

@@ -62,4 +62,3 @@ object Set {
     "NOTHING_TO_INLINE"
   )
   inline fun <A> monoid(): SetKMonoid<A> = monoid_singleton as arrow.core.extensions.SetKMonoid<A>}
-

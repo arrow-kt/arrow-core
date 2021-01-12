@@ -33,10 +33,10 @@ internal val comonad_singleton: Function0Comonad = object : arrow.core.extension
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<ForFunction0, A>.coflatMap(arg1: Function1<Kind<ForFunction0, A>, B>): Function0<B>
-    = arrow.core.Function0.comonad().run {
-  this@coflatMap.coflatMap<A, B>(arg1) as arrow.core.Function0<B>
-}
+fun <A, B> Kind<ForFunction0, A>.coflatMap(arg1: Function1<Kind<ForFunction0, A>, B>): Function0<B> =
+  arrow.core.Function0.comonad().run {
+    this@coflatMap.coflatMap<A, B>(arg1) as arrow.core.Function0<B>
+  }
 
 @JvmName("extract")
 @Suppress(

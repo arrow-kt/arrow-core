@@ -336,8 +336,10 @@ fun <A, B> Kind<ForEval, A>.mproduct(arg1: Function1<A, Kind<ForEval, B>>): Eval
   ),
   DeprecationLevel.WARNING
 )
-fun <B> Kind<ForEval, Boolean>.ifM(arg1: Function0<Kind<ForEval, B>>, arg2: Function0<Kind<ForEval,
-    B>>): Eval<B> = arrow.core.Eval.monad().run {
+fun <B> Kind<ForEval, Boolean>.ifM(
+  arg1: Function0<Kind<ForEval, B>>,
+  arg2: Function0<Kind<ForEval, B>>
+): Eval<B> = arrow.core.Eval.monad().run {
   this@ifM.ifM<B>(arg1, arg2) as arrow.core.Eval<B>
 }
 

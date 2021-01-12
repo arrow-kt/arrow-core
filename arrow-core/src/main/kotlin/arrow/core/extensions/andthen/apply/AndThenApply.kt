@@ -63,8 +63,8 @@ fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.ap(arg1: Kind<Kind<ForAndThen, X>, Fu
   ),
   DeprecationLevel.WARNING
 )
-fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.apEval(arg1: Eval<Kind<Kind<ForAndThen, X>, Function1<A,
-    B>>>): Eval<Kind<Kind<ForAndThen, X>, B>> = arrow.core.AndThen.apply<X>().run {
+fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.apEval(arg1: Eval<Kind<Kind<ForAndThen, X>, Function1<A, B>>>):
+  Eval<Kind<Kind<ForAndThen, X>, B>> = arrow.core.AndThen.apply<X>().run {
   this@apEval.apEval<A, B>(arg1) as arrow.core.Eval<arrow.Kind<arrow.Kind<arrow.core.ForAndThen, X>,
     B>>
 }
@@ -84,8 +84,10 @@ fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.apEval(arg1: Eval<Kind<Kind<ForAndThe
   ),
   DeprecationLevel.WARNING
 )
-fun <X, A, B, Z> Kind<Kind<ForAndThen, X>, A>.map2Eval(arg1: Eval<Kind<Kind<ForAndThen, X>, B>>,
-    arg2: Function1<Tuple2<A, B>, Z>): Eval<Kind<Kind<ForAndThen, X>, Z>> =
+fun <X, A, B, Z> Kind<Kind<ForAndThen, X>, A>.map2Eval(
+  arg1: Eval<Kind<Kind<ForAndThen, X>, B>>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): Eval<Kind<Kind<ForAndThen, X>, Z>> =
     arrow.core.AndThen.apply<X>().run {
   this@map2Eval.map2Eval<A, B, Z>(arg1, arg2) as
     arrow.core.Eval<arrow.Kind<arrow.Kind<arrow.core.ForAndThen, X>, Z>>
@@ -602,8 +604,10 @@ fun <X, A, B, C, D, E, FF, G, H, I, J, Z> mapN(
   ),
   DeprecationLevel.WARNING
 )
-fun <X, A, B, Z> Kind<Kind<ForAndThen, X>, A>.map2(arg1: Kind<Kind<ForAndThen, X>, B>,
-    arg2: Function1<Tuple2<A, B>, Z>): AndThen<X, Z> = arrow.core.AndThen.apply<X>().run {
+fun <X, A, B, Z> Kind<Kind<ForAndThen, X>, A>.map2(
+  arg1: Kind<Kind<ForAndThen, X>, B>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): AndThen<X, Z> = arrow.core.AndThen.apply<X>().run {
   this@map2.map2<A, B, Z>(arg1, arg2) as arrow.core.AndThen<X, Z>
 }
 
@@ -642,8 +646,9 @@ fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.product(arg1: Kind<Kind<ForAndThen, X
   ),
   DeprecationLevel.WARNING
 )
-fun <X, A, B, Z> Kind<Kind<ForAndThen, X>, Tuple2<A, B>>.product(arg1: Kind<Kind<ForAndThen, X>,
-    Z>): AndThen<X, Tuple3<A, B, Z>> = arrow.core.AndThen.apply<X>().run {
+fun <X, A, B, Z> Kind<Kind<ForAndThen, X>, Tuple2<A, B>>.product(
+  arg1: Kind<Kind<ForAndThen, X>, Z>
+): AndThen<X, Tuple3<A, B, Z>> = arrow.core.AndThen.apply<X>().run {
   this@product.product<A, B, Z>(arg1) as arrow.core.AndThen<X, arrow.core.Tuple3<A, B, Z>>
 }
 
@@ -662,8 +667,9 @@ fun <X, A, B, Z> Kind<Kind<ForAndThen, X>, Tuple2<A, B>>.product(arg1: Kind<Kind
   ),
   DeprecationLevel.WARNING
 )
-fun <X, A, B, C, Z> Kind<Kind<ForAndThen, X>, Tuple3<A, B, C>>.product(arg1: Kind<Kind<ForAndThen,
-    X>, Z>): AndThen<X, Tuple4<A, B, C, Z>> = arrow.core.AndThen.apply<X>().run {
+fun <X, A, B, C, Z> Kind<Kind<ForAndThen, X>, Tuple3<A, B, C>>.product(
+  arg1: Kind<Kind<ForAndThen, X>, Z>
+): AndThen<X, Tuple4<A, B, C, Z>> = arrow.core.AndThen.apply<X>().run {
   this@product.product<A, B, C, Z>(arg1) as arrow.core.AndThen<X, arrow.core.Tuple4<A, B, C, Z>>
 }
 
@@ -771,11 +777,11 @@ fun <X, A, B, C, D, E, FF, G, Z> Kind<Kind<ForAndThen, X>, Tuple7<A, B, C, D, E,
   DeprecationLevel.WARNING
 )
 fun <X, A, B, C, D, E, FF, G, H, Z> Kind<Kind<ForAndThen, X>, Tuple8<A, B, C, D, E, FF, G,
-    H>>.product(arg1: Kind<Kind<ForAndThen, X>, Z>): AndThen<X, Tuple9<A, B, C, D, E, FF, G, H, Z>>
-    = arrow.core.AndThen.apply<X>().run {
-  this@product.product<A, B, C, D, E, FF, G, H, Z>(arg1) as arrow.core.AndThen<X,
-    arrow.core.Tuple9<A, B, C, D, E, FF, G, H, Z>>
-}
+  H>>.product(arg1: Kind<Kind<ForAndThen, X>, Z>): AndThen<X, Tuple9<A, B, C, D, E, FF, G, H, Z>> =
+  arrow.core.AndThen.apply<X>().run {
+    this@product.product<A, B, C, D, E, FF, G, H, Z>(arg1) as arrow.core.AndThen<X,
+      arrow.core.Tuple9<A, B, C, D, E, FF, G, H, Z>>
+  }
 
 @JvmName("product8")
 @Suppress(
@@ -1314,10 +1320,10 @@ fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.followedBy(arg1: Kind<Kind<ForAndThen
   ),
   DeprecationLevel.WARNING
 )
-fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.apTap(arg1: Kind<Kind<ForAndThen, X>, B>): AndThen<X, A>
-    = arrow.core.AndThen.apply<X>().run {
-  this@apTap.apTap<A, B>(arg1) as arrow.core.AndThen<X, A>
-}
+fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.apTap(arg1: Kind<Kind<ForAndThen, X>, B>): AndThen<X, A> =
+  arrow.core.AndThen.apply<X>().run {
+    this@apTap.apTap<A, B>(arg1) as arrow.core.AndThen<X, A>
+  }
 
 @Suppress(
   "UNCHECKED_CAST",

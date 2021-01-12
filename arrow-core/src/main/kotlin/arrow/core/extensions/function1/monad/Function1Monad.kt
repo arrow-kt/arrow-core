@@ -37,8 +37,9 @@ internal val monad_singleton: Function1Monad<Any?> = object : Function1Monad<Any
   ),
   DeprecationLevel.WARNING
 )
-fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.flatMap(arg1: Function1<A, Kind<Kind<ForFunction1, I>,
-    B>>): arrow.core.Function1<I, B> = arrow.core.Function1.monad<I>().run {
+fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.flatMap(
+  arg1: Function1<A, Kind<Kind<ForFunction1, I>, B>>
+): arrow.core.Function1<I, B> = arrow.core.Function1.monad<I>().run {
   this@flatMap.flatMap<A, B>(arg1) as arrow.core.Function1<I, B>
 }
 
@@ -77,10 +78,10 @@ fun <I, A, B> tailRecM(arg0: A, arg1: Function1<A, Kind<Kind<ForFunction1, I>, E
   ),
   DeprecationLevel.WARNING
 )
-fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.map(arg1: Function1<A, B>): arrow.core.Function1<I, B>
-    = arrow.core.Function1.monad<I>().run {
-  this@map.map<A, B>(arg1) as arrow.core.Function1<I, B>
-}
+fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.map(arg1: Function1<A, B>): arrow.core.Function1<I, B> =
+  arrow.core.Function1.monad<I>().run {
+    this@map.map<A, B>(arg1) as arrow.core.Function1<I, B>
+  }
 
 /**
  *  @see [Apply.ap]
@@ -180,8 +181,9 @@ fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.apTap(arg1: Kind<Kind<ForFunction1,
   ),
   DeprecationLevel.WARNING
 )
-fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.followedByEval(arg1: Eval<Kind<Kind<ForFunction1, I>,
-    B>>): arrow.core.Function1<I, B> = arrow.core.Function1.monad<I>().run {
+fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.followedByEval(
+  arg1: Eval<Kind<Kind<ForFunction1, I>, B>>
+): arrow.core.Function1<I, B> = arrow.core.Function1.monad<I>().run {
   this@followedByEval.followedByEval<A, B>(arg1) as arrow.core.Function1<I, B>
 }
 
@@ -200,8 +202,9 @@ fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.followedByEval(arg1: Eval<Kind<Kind
   ),
   DeprecationLevel.WARNING
 )
-fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.effectM(arg1: Function1<A, Kind<Kind<ForFunction1, I>,
-    B>>): arrow.core.Function1<I, A> = arrow.core.Function1.monad<I>().run {
+fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.effectM(
+  arg1: Function1<A, Kind<Kind<ForFunction1, I>, B>>
+): arrow.core.Function1<I, A> = arrow.core.Function1.monad<I>().run {
   this@effectM.effectM<A, B>(arg1) as arrow.core.Function1<I, A>
 }
 
@@ -220,8 +223,9 @@ fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.effectM(arg1: Function1<A, Kind<Kin
   ),
   DeprecationLevel.WARNING
 )
-fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.flatTap(arg1: Function1<A, Kind<Kind<ForFunction1, I>,
-    B>>): arrow.core.Function1<I, A> = arrow.core.Function1.monad<I>().run {
+fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.flatTap(
+  arg1: Function1<A, Kind<Kind<ForFunction1, I>, B>>
+): arrow.core.Function1<I, A> = arrow.core.Function1.monad<I>().run {
   this@flatTap.flatTap<A, B>(arg1) as arrow.core.Function1<I, A>
 }
 
@@ -280,8 +284,9 @@ fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.forEffect(arg1: Kind<Kind<ForFuncti
   ),
   DeprecationLevel.WARNING
 )
-fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.productLEval(arg1: Eval<Kind<Kind<ForFunction1, I>,
-    B>>): arrow.core.Function1<I, A> = arrow.core.Function1.monad<I>().run {
+fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.productLEval(
+  arg1: Eval<Kind<Kind<ForFunction1, I>, B>>
+): arrow.core.Function1<I, A> = arrow.core.Function1.monad<I>().run {
   this@productLEval.productLEval<A, B>(arg1) as arrow.core.Function1<I, A>
 }
 
@@ -300,8 +305,9 @@ fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.productLEval(arg1: Eval<Kind<Kind<F
   ),
   DeprecationLevel.WARNING
 )
-fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.forEffectEval(arg1: Eval<Kind<Kind<ForFunction1, I>,
-    B>>): arrow.core.Function1<I, A> = arrow.core.Function1.monad<I>().run {
+fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.forEffectEval(
+  arg1: Eval<Kind<Kind<ForFunction1, I>, B>>
+): arrow.core.Function1<I, A> = arrow.core.Function1.monad<I>().run {
   this@forEffectEval.forEffectEval<A, B>(arg1) as arrow.core.Function1<I, A>
 }
 
@@ -320,8 +326,9 @@ fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.forEffectEval(arg1: Eval<Kind<Kind<
   ),
   DeprecationLevel.WARNING
 )
-fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.mproduct(arg1: Function1<A, Kind<Kind<ForFunction1, I>,
-    B>>): arrow.core.Function1<I, Tuple2<A, B>> = arrow.core.Function1.monad<I>().run {
+fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.mproduct(
+  arg1: Function1<A, Kind<Kind<ForFunction1, I>, B>>
+): arrow.core.Function1<I, Tuple2<A, B>> = arrow.core.Function1.monad<I>().run {
   this@mproduct.mproduct<A, B>(arg1) as arrow.core.Function1<I, arrow.core.Tuple2<A, B>>
 }
 
@@ -340,11 +347,13 @@ fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.mproduct(arg1: Function1<A, Kind<Ki
   ),
   DeprecationLevel.WARNING
 )
-fun <I, B> Kind<Kind<ForFunction1, I>, Boolean>.ifM(arg1: Function0<Kind<Kind<ForFunction1, I>, B>>,
-    arg2: Function0<Kind<Kind<ForFunction1, I>, B>>): arrow.core.Function1<I, B> =
-    arrow.core.Function1.monad<I>().run {
-  this@ifM.ifM<B>(arg1, arg2) as arrow.core.Function1<I, B>
-}
+fun <I, B> Kind<Kind<ForFunction1, I>, Boolean>.ifM(
+  arg1: Function0<Kind<Kind<ForFunction1, I>, B>>,
+  arg2: Function0<Kind<Kind<ForFunction1, I>, B>>
+): arrow.core.Function1<I, B> =
+  arrow.core.Function1.monad<I>().run {
+    this@ifM.ifM<B>(arg1, arg2) as arrow.core.Function1<I, B>
+  }
 
 @JvmName("selectM")
 @Suppress(
@@ -361,8 +370,9 @@ fun <I, B> Kind<Kind<ForFunction1, I>, Boolean>.ifM(arg1: Function0<Kind<Kind<Fo
   ),
   DeprecationLevel.WARNING
 )
-fun <I, A, B> Kind<Kind<ForFunction1, I>, Either<A, B>>.selectM(arg1: Kind<Kind<ForFunction1, I>,
-    Function1<A, B>>): arrow.core.Function1<I, B> = arrow.core.Function1.monad<I>().run {
+fun <I, A, B> Kind<Kind<ForFunction1, I>, Either<A, B>>.selectM(
+  arg1: Kind<Kind<ForFunction1, I>, Function1<A, B>>
+): arrow.core.Function1<I, B> = arrow.core.Function1.monad<I>().run {
   this@selectM.selectM<A, B>(arg1) as arrow.core.Function1<I, B>
 }
 
@@ -381,8 +391,9 @@ fun <I, A, B> Kind<Kind<ForFunction1, I>, Either<A, B>>.selectM(arg1: Kind<Kind<
   ),
   DeprecationLevel.WARNING
 )
-fun <I, A, B> Kind<Kind<ForFunction1, I>, Either<A, B>>.select(arg1: Kind<Kind<ForFunction1, I>,
-    Function1<A, B>>): arrow.core.Function1<I, B> = arrow.core.Function1.monad<I>().run {
+fun <I, A, B> Kind<Kind<ForFunction1, I>, Either<A, B>>.select(
+  arg1: Kind<Kind<ForFunction1, I>, Function1<A, B>>
+): arrow.core.Function1<I, B> = arrow.core.Function1.monad<I>().run {
   this@select.select<A, B>(arg1) as arrow.core.Function1<I, B>
 }
 

@@ -39,4 +39,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun monoidal(): SequenceKMonoidal = monoidal_singleton}
-

@@ -41,4 +41,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun monoidK(): SequenceKMonoidK = monoidK_singleton}
-

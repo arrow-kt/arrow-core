@@ -56,8 +56,10 @@ fun <A, B> Kind<ForId, Either<A, B>>.select(arg1: Kind<ForId, Function1<A, B>>):
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C> Kind<ForId, Either<A, B>>.branch(arg1: Kind<ForId, Function1<A, C>>, arg2: Kind<ForId,
-    Function1<B, C>>): Id<C> = arrow.core.Id.selective().run {
+fun <A, B, C> Kind<ForId, Either<A, B>>.branch(
+  arg1: Kind<ForId, Function1<A, C>>,
+  arg2: Kind<ForId, Function1<B, C>>
+): Id<C> = arrow.core.Id.selective().run {
   this@branch.branch<A, B, C>(arg1, arg2) as arrow.core.Id<C>
 }
 

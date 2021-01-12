@@ -63,8 +63,10 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.foldLeft(arg1: B, arg2: Function2<B, A
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.foldRight(arg1: Eval<B>, arg2: Function2<A, Eval<B>,
-    Eval<B>>): Eval<B> = arrow.core.Tuple2.foldable<F>().run {
+fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.foldRight(
+  arg1: Eval<B>,
+  arg2: Function2<A, Eval<B>, Eval<B>>
+): Eval<B> = arrow.core.Tuple2.foldable<F>().run {
   this@foldRight.foldRight<A, B>(arg1, arg2) as arrow.core.Eval<B>
 }
 
@@ -103,8 +105,10 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.fold(arg1: Monoid<A>): A =
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.reduceLeftToOption(arg1: Function1<A, B>,
-    arg2: Function2<B, A, B>): Option<B> = arrow.core.Tuple2.foldable<F>().run {
+fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.reduceLeftToOption(
+  arg1: Function1<A, B>,
+  arg2: Function2<B, A, B>
+): Option<B> = arrow.core.Tuple2.foldable<F>().run {
   this@reduceLeftToOption.reduceLeftToOption<A, B>(arg1, arg2) as arrow.core.Option<B>
 }
 
@@ -123,8 +127,10 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.reduceLeftToOption(arg1: Function1<A, 
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.reduceRightToOption(arg1: Function1<A, B>,
-    arg2: Function2<A, Eval<B>, Eval<B>>): Eval<Option<B>> = arrow.core.Tuple2.foldable<F>().run {
+fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.reduceRightToOption(
+  arg1: Function1<A, B>,
+  arg2: Function2<A, Eval<B>, Eval<B>>
+): Eval<Option<B>> = arrow.core.Tuple2.foldable<F>().run {
   this@reduceRightToOption.reduceRightToOption<A, B>(arg1, arg2) as
     arrow.core.Eval<arrow.core.Option<B>>
 }
@@ -244,8 +250,10 @@ fun <F, A> orEmpty(arg0: Applicative<Kind<ForTuple2, F>>, arg1: Monoid<A>): Tupl
   ),
   DeprecationLevel.WARNING
 )
-fun <F, G, A, B> Kind<Kind<ForTuple2, F>, A>.traverse_(arg1: Applicative<G>, arg2: Function1<A,
-    Kind<G, B>>): Kind<G, Unit> = arrow.core.Tuple2.foldable<F>().run {
+fun <F, G, A, B> Kind<Kind<ForTuple2, F>, A>.traverse_(
+  arg1: Applicative<G>,
+  arg2: Function1<A, Kind<G, B>>
+): Kind<G, Unit> = arrow.core.Tuple2.foldable<F>().run {
   this@traverse_.traverse_<G, A, B>(arg1, arg2) as arrow.Kind<G, kotlin.Unit>
 }
 

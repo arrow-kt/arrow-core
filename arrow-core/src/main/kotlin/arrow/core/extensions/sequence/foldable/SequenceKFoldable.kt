@@ -116,8 +116,10 @@ fun <A, B> Sequence<A>.reduceLeftToOption(arg1: Function1<A, B>, arg2: Function2
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Sequence<A>.reduceRightToOption(arg1: Function1<A, B>, arg2: Function2<A, Eval<B>,
-    Eval<B>>): Eval<Option<B>> = arrow.core.extensions.sequence.foldable.Sequence.foldable().run {
+fun <A, B> Sequence<A>.reduceRightToOption(
+  arg1: Function1<A, B>,
+  arg2: Function2<A, Eval<B>, Eval<B>>
+): Eval<Option<B>> = arrow.core.extensions.sequence.foldable.Sequence.foldable().run {
   arrow.core.SequenceK(this@reduceRightToOption).reduceRightToOption<A, B>(arg1, arg2) as
     arrow.core.Eval<arrow.core.Option<B>>
 }
@@ -627,4 +629,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun foldable(): SequenceKFoldable = foldable_singleton}
-

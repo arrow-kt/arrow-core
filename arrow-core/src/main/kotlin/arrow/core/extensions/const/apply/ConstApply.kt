@@ -36,8 +36,10 @@ import kotlin.jvm.JvmName
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<Kind<ForConst, A>, A>.ap(MA: Monoid<A>, arg1: Kind<Kind<ForConst, A>, Function1<A,
-    B>>): Const<A, B> = arrow.core.Const.apply<A>(MA).run {
+fun <A, B> Kind<Kind<ForConst, A>, A>.ap(
+  MA: Monoid<A>,
+  arg1: Kind<Kind<ForConst, A>, Function1<A, B>>
+): Const<A, B> = arrow.core.Const.apply<A>(MA).run {
   this@ap.ap<A, B>(arg1) as arrow.core.Const<A, B>
 }
 
@@ -56,8 +58,10 @@ fun <A, B> Kind<Kind<ForConst, A>, A>.ap(MA: Monoid<A>, arg1: Kind<Kind<ForConst
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<Kind<ForConst, A>, A>.apEval(MA: Monoid<A>, arg1: Eval<Kind<Kind<ForConst, A>,
-    Function1<A, B>>>): Eval<Kind<Kind<ForConst, A>, B>> = arrow.core.Const.apply<A>(MA).run {
+fun <A, B> Kind<Kind<ForConst, A>, A>.apEval(
+  MA: Monoid<A>,
+  arg1: Eval<Kind<Kind<ForConst, A>, Function1<A, B>>>
+): Eval<Kind<Kind<ForConst, A>, B>> = arrow.core.Const.apply<A>(MA).run {
   this@apEval.apEval<A, B>(arg1) as arrow.core.Eval<arrow.Kind<arrow.Kind<arrow.core.ForConst, A>,
     B>>
 }
@@ -656,8 +660,10 @@ fun <A, B> Kind<Kind<ForConst, A>, A>.product(MA: Monoid<A>, arg1: Kind<Kind<For
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, Z> Kind<Kind<ForConst, A>, Tuple2<A, B>>.product(MA: Monoid<A>, arg1: Kind<Kind<ForConst,
-    A>, Z>): Const<A, Tuple3<A, B, Z>> = arrow.core.Const.apply<A>(MA).run {
+fun <A, B, Z> Kind<Kind<ForConst, A>, Tuple2<A, B>>.product(
+  MA: Monoid<A>,
+  arg1: Kind<Kind<ForConst, A>, Z>
+): Const<A, Tuple3<A, B, Z>> = arrow.core.Const.apply<A>(MA).run {
   this@product.product<A, B, Z>(arg1) as arrow.core.Const<A, arrow.core.Tuple3<A, B, Z>>
 }
 
@@ -676,8 +682,10 @@ fun <A, B, Z> Kind<Kind<ForConst, A>, Tuple2<A, B>>.product(MA: Monoid<A>, arg1:
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C, Z> Kind<Kind<ForConst, A>, Tuple3<A, B, C>>.product(MA: Monoid<A>,
-    arg1: Kind<Kind<ForConst, A>, Z>): Const<A, Tuple4<A, B, C, Z>> =
+fun <A, B, C, Z> Kind<Kind<ForConst, A>, Tuple3<A, B, C>>.product(
+  MA: Monoid<A>,
+  arg1: Kind<Kind<ForConst, A>, Z>
+): Const<A, Tuple4<A, B, C, Z>> =
     arrow.core.Const.apply<A>(MA).run {
   this@product.product<A, B, C, Z>(arg1) as arrow.core.Const<A, arrow.core.Tuple4<A, B, C, Z>>
 }
@@ -697,8 +705,10 @@ fun <A, B, C, Z> Kind<Kind<ForConst, A>, Tuple3<A, B, C>>.product(MA: Monoid<A>,
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C, D, Z> Kind<Kind<ForConst, A>, Tuple4<A, B, C, D>>.product(MA: Monoid<A>,
-    arg1: Kind<Kind<ForConst, A>, Z>): Const<A, Tuple5<A, B, C, D, Z>> =
+fun <A, B, C, D, Z> Kind<Kind<ForConst, A>, Tuple4<A, B, C, D>>.product(
+  MA: Monoid<A>,
+  arg1: Kind<Kind<ForConst, A>, Z>
+): Const<A, Tuple5<A, B, C, D, Z>> =
     arrow.core.Const.apply<A>(MA).run {
   this@product.product<A, B, C, D, Z>(arg1) as arrow.core.Const<A, arrow.core.Tuple5<A, B, C, D, Z>>
 }
@@ -718,8 +728,10 @@ fun <A, B, C, D, Z> Kind<Kind<ForConst, A>, Tuple4<A, B, C, D>>.product(MA: Mono
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C, D, E, Z> Kind<Kind<ForConst, A>, Tuple5<A, B, C, D, E>>.product(MA: Monoid<A>,
-    arg1: Kind<Kind<ForConst, A>, Z>): Const<A, Tuple6<A, B, C, D, E, Z>> =
+fun <A, B, C, D, E, Z> Kind<Kind<ForConst, A>, Tuple5<A, B, C, D, E>>.product(
+  MA: Monoid<A>,
+  arg1: Kind<Kind<ForConst, A>, Z>
+): Const<A, Tuple6<A, B, C, D, E, Z>> =
     arrow.core.Const.apply<A>(MA).run {
   this@product.product<A, B, C, D, E, Z>(arg1) as arrow.core.Const<A, arrow.core.Tuple6<A, B, C, D,
     E, Z>>
@@ -740,8 +752,10 @@ fun <A, B, C, D, E, Z> Kind<Kind<ForConst, A>, Tuple5<A, B, C, D, E>>.product(MA
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C, D, E, FF, Z> Kind<Kind<ForConst, A>, Tuple6<A, B, C, D, E, FF>>.product(MA: Monoid<A>,
-    arg1: Kind<Kind<ForConst, A>, Z>): Const<A, Tuple7<A, B, C, D, E, FF, Z>> =
+fun <A, B, C, D, E, FF, Z> Kind<Kind<ForConst, A>, Tuple6<A, B, C, D, E, FF>>.product(
+  MA: Monoid<A>,
+  arg1: Kind<Kind<ForConst, A>, Z>
+): Const<A, Tuple7<A, B, C, D, E, FF, Z>> =
     arrow.core.Const.apply<A>(MA).run {
   this@product.product<A, B, C, D, E, FF, Z>(arg1) as arrow.core.Const<A, arrow.core.Tuple7<A, B, C,
     D, E, FF, Z>>

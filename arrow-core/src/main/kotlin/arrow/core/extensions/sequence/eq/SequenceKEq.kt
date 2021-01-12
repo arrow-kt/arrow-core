@@ -35,4 +35,3 @@ object Sequence {
   )
   inline fun <A> eq(EQ: Eq<A>): SequenceKEq<A> = object : arrow.core.extensions.SequenceKEq<A> {
       override fun EQ(): arrow.typeclasses.Eq<A> = EQ }}
-

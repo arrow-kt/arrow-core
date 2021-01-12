@@ -134,4 +134,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun semialign(): SequenceKSemialign = semialign_singleton}
-

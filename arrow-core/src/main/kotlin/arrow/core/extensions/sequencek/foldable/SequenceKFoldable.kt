@@ -102,8 +102,10 @@ fun <A> Kind<ForSequenceK, A>.fold(arg1: Monoid<A>): A = arrow.core.SequenceK.fo
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<ForSequenceK, A>.reduceLeftToOption(arg1: Function1<A, B>, arg2: Function2<B, A,
-    B>): Option<B> = arrow.core.SequenceK.foldable().run {
+fun <A, B> Kind<ForSequenceK, A>.reduceLeftToOption(
+  arg1: Function1<A, B>,
+  arg2: Function2<B, A, B>
+): Option<B> = arrow.core.SequenceK.foldable().run {
   this@reduceLeftToOption.reduceLeftToOption<A, B>(arg1, arg2) as arrow.core.Option<B>
 }
 
@@ -122,8 +124,10 @@ fun <A, B> Kind<ForSequenceK, A>.reduceLeftToOption(arg1: Function1<A, B>, arg2:
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<ForSequenceK, A>.reduceRightToOption(arg1: Function1<A, B>, arg2: Function2<A,
-    Eval<B>, Eval<B>>): Eval<Option<B>> = arrow.core.SequenceK.foldable().run {
+fun <A, B> Kind<ForSequenceK, A>.reduceRightToOption(
+  arg1: Function1<A, B>,
+  arg2: Function2<A, Eval<B>, Eval<B>>
+): Eval<Option<B>> = arrow.core.SequenceK.foldable().run {
   this@reduceRightToOption.reduceRightToOption<A, B>(arg1, arg2) as
     arrow.core.Eval<arrow.core.Option<B>>
 }

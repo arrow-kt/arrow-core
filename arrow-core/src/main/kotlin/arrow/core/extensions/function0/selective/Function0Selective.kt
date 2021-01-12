@@ -56,11 +56,13 @@ fun <A, B> Kind<ForFunction0, Either<A, B>>.select(arg1: Kind<ForFunction0, Func
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C> Kind<ForFunction0, Either<A, B>>.branch(arg1: Kind<ForFunction0, Function1<A, C>>,
-    arg2: Kind<ForFunction0, Function1<B, C>>): Function0<C> =
-    arrow.core.Function0.selective().run {
-  this@branch.branch<A, B, C>(arg1, arg2) as arrow.core.Function0<C>
-}
+fun <A, B, C> Kind<ForFunction0, Either<A, B>>.branch(
+  arg1: Kind<ForFunction0, Function1<A, C>>,
+  arg2: Kind<ForFunction0, Function1<B, C>>
+): Function0<C> =
+  arrow.core.Function0.selective().run {
+    this@branch.branch<A, B, C>(arg1, arg2) as arrow.core.Function0<C>
+  }
 
 @JvmName("whenS")
 @Suppress(

@@ -62,8 +62,9 @@ fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.ap(arg1: Kind<Kind<ForFunction1, I>
   ),
   DeprecationLevel.WARNING
 )
-fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.apEval(arg1: Eval<Kind<Kind<ForFunction1, I>,
-    Function1<A, B>>>): Eval<Kind<Kind<ForFunction1, I>, B>> = arrow.core.Function1.apply<I>().run {
+fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.apEval(
+  arg1: Eval<Kind<Kind<ForFunction1, I>, Function1<A, B>>>
+): Eval<Kind<Kind<ForFunction1, I>, B>> = arrow.core.Function1.apply<I>().run {
   this@apEval.apEval<A, B>(arg1) as arrow.core.Eval<arrow.Kind<arrow.Kind<arrow.core.ForFunction1,
     I>, B>>
 }
@@ -83,12 +84,14 @@ fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.apEval(arg1: Eval<Kind<Kind<ForFunc
   ),
   DeprecationLevel.WARNING
 )
-fun <I, A, B, Z> Kind<Kind<ForFunction1, I>, A>.map2Eval(arg1: Eval<Kind<Kind<ForFunction1, I>, B>>,
-    arg2: Function1<Tuple2<A, B>, Z>): Eval<Kind<Kind<ForFunction1, I>, Z>> =
-    arrow.core.Function1.apply<I>().run {
-  this@map2Eval.map2Eval<A, B, Z>(arg1, arg2) as
-    arrow.core.Eval<arrow.Kind<arrow.Kind<arrow.core.ForFunction1, I>, Z>>
-}
+fun <I, A, B, Z> Kind<Kind<ForFunction1, I>, A>.map2Eval(
+  arg1: Eval<Kind<Kind<ForFunction1, I>, B>>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): Eval<Kind<Kind<ForFunction1, I>, Z>> =
+  arrow.core.Function1.apply<I>().run {
+    this@map2Eval.map2Eval<A, B, Z>(arg1, arg2) as
+      arrow.core.Eval<arrow.Kind<arrow.Kind<arrow.core.ForFunction1, I>, Z>>
+  }
 
 @JvmName("map")
 @Suppress(
@@ -603,11 +606,13 @@ fun <I, A, B, C, D, E, FF, G, H, J, Z> mapN(
   ),
   DeprecationLevel.WARNING
 )
-fun <I, A, B, Z> Kind<Kind<ForFunction1, I>, A>.map2(arg1: Kind<Kind<ForFunction1, I>, B>,
-    arg2: Function1<Tuple2<A, B>, Z>): arrow.core.Function1<I, Z> =
-    arrow.core.Function1.apply<I>().run {
-  this@map2.map2<A, B, Z>(arg1, arg2) as arrow.core.Function1<I, Z>
-}
+fun <I, A, B, Z> Kind<Kind<ForFunction1, I>, A>.map2(
+  arg1: Kind<Kind<ForFunction1, I>, B>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): arrow.core.Function1<I, Z> =
+  arrow.core.Function1.apply<I>().run {
+    this@map2.map2<A, B, Z>(arg1, arg2) as arrow.core.Function1<I, Z>
+  }
 
 @JvmName("product")
 @Suppress(
@@ -644,8 +649,9 @@ fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.product(arg1: Kind<Kind<ForFunction
   ),
   DeprecationLevel.WARNING
 )
-fun <I, A, B, Z> Kind<Kind<ForFunction1, I>, Tuple2<A, B>>.product(arg1: Kind<Kind<ForFunction1, I>,
-    Z>): arrow.core.Function1<I, Tuple3<A, B, Z>> = arrow.core.Function1.apply<I>().run {
+fun <I, A, B, Z> Kind<Kind<ForFunction1, I>, Tuple2<A, B>>.product(
+  arg1: Kind<Kind<ForFunction1, I>, Z>
+): arrow.core.Function1<I, Tuple3<A, B, Z>> = arrow.core.Function1.apply<I>().run {
   this@product.product<A, B, Z>(arg1) as arrow.core.Function1<I, arrow.core.Tuple3<A, B, Z>>
 }
 

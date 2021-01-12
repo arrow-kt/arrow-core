@@ -62,4 +62,3 @@ object Set {
     "NOTHING_TO_INLINE"
   )
   inline fun eqK(): SetKEqK = eqK_singleton}
-

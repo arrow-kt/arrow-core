@@ -237,10 +237,10 @@ fun <A> orEmpty(arg0: Applicative<ForSetK>, arg1: Monoid<A>): Set<A> =
   ),
   DeprecationLevel.WARNING
 )
-fun <G, A, B> Set<A>.traverse_(arg1: Applicative<G>, arg2: Function1<A, Kind<G, B>>): Kind<G, Unit>
-    = arrow.core.extensions.set.foldable.Set.foldable().run {
-  arrow.core.SetK(this@traverse_).traverse_<G, A, B>(arg1, arg2) as arrow.Kind<G, kotlin.Unit>
-}
+fun <G, A, B> Set<A>.traverse_(arg1: Applicative<G>, arg2: Function1<A, Kind<G, B>>): Kind<G, Unit> =
+  arrow.core.extensions.set.foldable.Set.foldable().run {
+    arrow.core.SetK(this@traverse_).traverse_<G, A, B>(arg1, arg2) as arrow.Kind<G, kotlin.Unit>
+  }
 
 @JvmName("sequence_")
 @Suppress(
@@ -577,4 +577,3 @@ object Set {
     "NOTHING_TO_INLINE"
   )
   inline fun foldable(): SetKFoldable = foldable_singleton}
-

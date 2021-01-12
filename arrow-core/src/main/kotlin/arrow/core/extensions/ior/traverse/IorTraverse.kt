@@ -35,8 +35,10 @@ internal val traverse_singleton: IorTraverse<Any?> = object : IorTraverse<Any?> 
   ),
   DeprecationLevel.WARNING
 )
-fun <L, G, A, B> Kind<Kind<ForIor, L>, A>.traverse(arg1: Applicative<G>, arg2: Function1<A, Kind<G,
-    B>>): Kind<G, Kind<Kind<ForIor, L>, B>> = arrow.core.Ior.traverse<L>().run {
+fun <L, G, A, B> Kind<Kind<ForIor, L>, A>.traverse(
+  arg1: Applicative<G>,
+  arg2: Function1<A, Kind<G, B>>
+): Kind<G, Kind<Kind<ForIor, L>, B>> = arrow.core.Ior.traverse<L>().run {
   this@traverse.traverse<G, A, B>(arg1, arg2) as arrow.Kind<G,
     arrow.Kind<arrow.Kind<arrow.core.ForIor, L>, B>>
 }

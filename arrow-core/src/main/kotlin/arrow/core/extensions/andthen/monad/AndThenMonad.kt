@@ -38,8 +38,9 @@ internal val monad_singleton: AndThenMonad<Any?> = object : AndThenMonad<Any?> {
   ),
   DeprecationLevel.WARNING
 )
-fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.flatMap(arg1: Function1<A, Kind<Kind<ForAndThen, X>,
-    B>>): AndThen<X, B> = arrow.core.AndThen.monad<X>().run {
+fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.flatMap(
+  arg1: Function1<A, Kind<Kind<ForAndThen, X>, B>>
+): AndThen<X, B> = arrow.core.AndThen.monad<X>().run {
   this@flatMap.flatMap<A, B>(arg1) as arrow.core.AndThen<X, B>
 }
 
@@ -161,10 +162,10 @@ fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.followedBy(arg1: Kind<Kind<ForAndThen
   ),
   DeprecationLevel.WARNING
 )
-fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.apTap(arg1: Kind<Kind<ForAndThen, X>, B>): AndThen<X, A>
-    = arrow.core.AndThen.monad<X>().run {
-  this@apTap.apTap<A, B>(arg1) as arrow.core.AndThen<X, A>
-}
+fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.apTap(arg1: Kind<Kind<ForAndThen, X>, B>): AndThen<X, A> =
+  arrow.core.AndThen.monad<X>().run {
+    this@apTap.apTap<A, B>(arg1) as arrow.core.AndThen<X, A>
+  }
 
 @JvmName("followedByEval")
 @Suppress(
@@ -201,8 +202,9 @@ fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.followedByEval(arg1: Eval<Kind<Kind<F
   ),
   DeprecationLevel.WARNING
 )
-fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.effectM(arg1: Function1<A, Kind<Kind<ForAndThen, X>,
-    B>>): AndThen<X, A> = arrow.core.AndThen.monad<X>().run {
+fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.effectM(
+  arg1: Function1<A, Kind<Kind<ForAndThen, X>, B>>
+): AndThen<X, A> = arrow.core.AndThen.monad<X>().run {
   this@effectM.effectM<A, B>(arg1) as arrow.core.AndThen<X, A>
 }
 
@@ -221,8 +223,9 @@ fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.effectM(arg1: Function1<A, Kind<Kind<
   ),
   DeprecationLevel.WARNING
 )
-fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.flatTap(arg1: Function1<A, Kind<Kind<ForAndThen, X>,
-    B>>): AndThen<X, A> = arrow.core.AndThen.monad<X>().run {
+fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.flatTap(
+  arg1: Function1<A, Kind<Kind<ForAndThen, X>, B>>
+): AndThen<X, A> = arrow.core.AndThen.monad<X>().run {
   this@flatTap.flatTap<A, B>(arg1) as arrow.core.AndThen<X, A>
 }
 
@@ -321,8 +324,9 @@ fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.forEffectEval(arg1: Eval<Kind<Kind<Fo
   ),
   DeprecationLevel.WARNING
 )
-fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.mproduct(arg1: Function1<A, Kind<Kind<ForAndThen, X>,
-    B>>): AndThen<X, Tuple2<A, B>> = arrow.core.AndThen.monad<X>().run {
+fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.mproduct(
+  arg1: Function1<A, Kind<Kind<ForAndThen, X>, B>>
+): AndThen<X, Tuple2<A, B>> = arrow.core.AndThen.monad<X>().run {
   this@mproduct.mproduct<A, B>(arg1) as arrow.core.AndThen<X, arrow.core.Tuple2<A, B>>
 }
 
@@ -341,8 +345,10 @@ fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.mproduct(arg1: Function1<A, Kind<Kind
   ),
   DeprecationLevel.WARNING
 )
-fun <X, B> Kind<Kind<ForAndThen, X>, Boolean>.ifM(arg1: Function0<Kind<Kind<ForAndThen, X>, B>>,
-    arg2: Function0<Kind<Kind<ForAndThen, X>, B>>): AndThen<X, B> =
+fun <X, B> Kind<Kind<ForAndThen, X>, Boolean>.ifM(
+  arg1: Function0<Kind<Kind<ForAndThen, X>, B>>,
+  arg2: Function0<Kind<Kind<ForAndThen, X>, B>>
+): AndThen<X, B> =
     arrow.core.AndThen.monad<X>().run {
   this@ifM.ifM<B>(arg1, arg2) as arrow.core.AndThen<X, B>
 }
@@ -362,8 +368,9 @@ fun <X, B> Kind<Kind<ForAndThen, X>, Boolean>.ifM(arg1: Function0<Kind<Kind<ForA
   ),
   DeprecationLevel.WARNING
 )
-fun <X, A, B> Kind<Kind<ForAndThen, X>, Either<A, B>>.selectM(arg1: Kind<Kind<ForAndThen, X>,
-    Function1<A, B>>): AndThen<X, B> = arrow.core.AndThen.monad<X>().run {
+fun <X, A, B> Kind<Kind<ForAndThen, X>, Either<A, B>>.selectM(
+  arg1: Kind<Kind<ForAndThen, X>, Function1<A, B>>
+): AndThen<X, B> = arrow.core.AndThen.monad<X>().run {
   this@selectM.selectM<A, B>(arg1) as arrow.core.AndThen<X, B>
 }
 
@@ -382,8 +389,9 @@ fun <X, A, B> Kind<Kind<ForAndThen, X>, Either<A, B>>.selectM(arg1: Kind<Kind<Fo
   ),
   DeprecationLevel.WARNING
 )
-fun <X, A, B> Kind<Kind<ForAndThen, X>, Either<A, B>>.select(arg1: Kind<Kind<ForAndThen, X>,
-    Function1<A, B>>): AndThen<X, B> = arrow.core.AndThen.monad<X>().run {
+fun <X, A, B> Kind<Kind<ForAndThen, X>, Either<A, B>>.select(
+  arg1: Kind<Kind<ForAndThen, X>, Function1<A, B>>
+): AndThen<X, B> = arrow.core.AndThen.monad<X>().run {
   this@select.select<A, B>(arg1) as arrow.core.AndThen<X, B>
 }
 

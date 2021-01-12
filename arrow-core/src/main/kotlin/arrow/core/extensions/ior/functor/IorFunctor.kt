@@ -55,10 +55,10 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.map(arg1: Function1<A, B>): Ior<L, B> =
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B> Kind<Kind<ForIor, L>, A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>): Ior<L, B>
-    = arrow.core.Ior.functor<L>().run {
-  this@imap.imap<A, B>(arg1, arg2) as arrow.core.Ior<L, B>
-}
+fun <L, A, B> Kind<Kind<ForIor, L>, A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>): Ior<L, B> =
+  arrow.core.Ior.functor<L>().run {
+    this@imap.imap<A, B>(arg1, arg2) as arrow.core.Ior<L, B>
+  }
 
 @JvmName("lift")
 @Suppress(

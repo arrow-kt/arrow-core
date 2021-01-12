@@ -60,4 +60,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun monadPlus(): SequenceKMonadPlus = monadPlus_singleton}
-

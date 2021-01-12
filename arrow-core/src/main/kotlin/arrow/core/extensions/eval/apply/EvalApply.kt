@@ -81,8 +81,10 @@ fun <A, B> Kind<ForEval, A>.apEval(arg1: Eval<Kind<ForEval, Function1<A, B>>>): 
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, Z> Kind<ForEval, A>.map2Eval(arg1: Eval<Kind<ForEval, B>>, arg2: Function1<Tuple2<A, B>,
-    Z>): Eval<Kind<ForEval, Z>> = arrow.core.Eval.apply().run {
+fun <A, B, Z> Kind<ForEval, A>.map2Eval(
+  arg1: Eval<Kind<ForEval, B>>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): Eval<Kind<ForEval, Z>> = arrow.core.Eval.apply().run {
   this@map2Eval.map2Eval<A, B, Z>(arg1, arg2) as arrow.core.Eval<arrow.Kind<arrow.core.ForEval, Z>>
 }
 

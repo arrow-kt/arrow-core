@@ -120,8 +120,10 @@ fun <A, B> Kind<ForOption, A>.reduceLeftToOption(arg1: Function1<A, B>, arg2: Fu
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<ForOption, A>.reduceRightToOption(arg1: Function1<A, B>, arg2: Function2<A, Eval<B>,
-    Eval<B>>): Eval<Option<B>> = arrow.core.Option.foldable().run {
+fun <A, B> Kind<ForOption, A>.reduceRightToOption(
+  arg1: Function1<A, B>,
+  arg2: Function2<A, Eval<B>, Eval<B>>
+): Eval<Option<B>> = arrow.core.Option.foldable().run {
   this@reduceRightToOption.reduceRightToOption<A, B>(arg1, arg2) as
     arrow.core.Eval<arrow.core.Option<B>>
 }
@@ -161,10 +163,10 @@ fun <A> Kind<ForOption, A>.reduceLeftOption(arg1: Function2<A, A, A>): Option<A>
   ),
   DeprecationLevel.WARNING
 )
-fun <A> Kind<ForOption, A>.reduceRightOption(arg1: Function2<A, Eval<A>, Eval<A>>): Eval<Option<A>>
-    = arrow.core.Option.foldable().run {
-  this@reduceRightOption.reduceRightOption<A>(arg1) as arrow.core.Eval<arrow.core.Option<A>>
-}
+fun <A> Kind<ForOption, A>.reduceRightOption(arg1: Function2<A, Eval<A>, Eval<A>>): Eval<Option<A>> =
+  arrow.core.Option.foldable().run {
+    this@reduceRightOption.reduceRightOption<A>(arg1) as arrow.core.Eval<arrow.core.Option<A>>
+  }
 
 @JvmName("combineAll")
 @Suppress(

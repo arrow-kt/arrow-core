@@ -98,8 +98,10 @@ fun <A, B> Kind<ForSequenceK, A>.unweave(arg1: Function1<A, Kind<ForSequenceK, B
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<ForSequenceK, A>.ifThen(arg1: Kind<ForSequenceK, B>, arg2: Function1<A,
-    Kind<ForSequenceK, B>>): SequenceK<B> = arrow.core.SequenceK.monadLogic().run {
+fun <A, B> Kind<ForSequenceK, A>.ifThen(
+  arg1: Kind<ForSequenceK, B>,
+  arg2: Function1<A, Kind<ForSequenceK, B>>
+): SequenceK<B> = arrow.core.SequenceK.monadLogic().run {
   this@ifThen.ifThen<A, B>(arg1, arg2) as arrow.core.SequenceK<B>
 }
 

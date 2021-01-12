@@ -112,4 +112,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun traverse(): SequenceKTraverse = traverse_singleton}
-

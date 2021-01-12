@@ -160,4 +160,3 @@ object Set {
     "NOTHING_TO_INLINE"
   )
   inline fun semigroupal(): SetKSemigroupal = semigroupal_singleton}
-

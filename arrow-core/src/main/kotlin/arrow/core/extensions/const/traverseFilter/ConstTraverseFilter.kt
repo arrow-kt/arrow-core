@@ -38,8 +38,10 @@ internal val traverseFilter_singleton: ConstTraverseFilter<Any?> = object :
   ),
   DeprecationLevel.WARNING
 )
-fun <X, G, A, B> Kind<Kind<ForConst, X>, A>.traverseFilter(arg1: Applicative<G>, arg2: Function1<A,
-    Kind<G, Option<B>>>): Kind<G, Kind<Kind<ForConst, X>, B>> =
+fun <X, G, A, B> Kind<Kind<ForConst, X>, A>.traverseFilter(
+  arg1: Applicative<G>,
+  arg2: Function1<A, Kind<G, Option<B>>>
+): Kind<G, Kind<Kind<ForConst, X>, B>> =
     arrow.core.Const.traverseFilter<X>().run {
   this@traverseFilter.traverseFilter<G, A, B>(arg1, arg2) as arrow.Kind<G,
     arrow.Kind<arrow.Kind<arrow.core.ForConst, X>, B>>
@@ -80,8 +82,10 @@ fun <X, A, B> Kind<Kind<ForConst, X>, A>.filterMap(arg1: Function1<A, Option<B>>
   ),
   DeprecationLevel.WARNING
 )
-fun <X, G, A> Kind<Kind<ForConst, X>, A>.filterA(arg1: Function1<A, Kind<G, Boolean>>,
-    arg2: Applicative<G>): Kind<G, Kind<Kind<ForConst, X>, A>> =
+fun <X, G, A> Kind<Kind<ForConst, X>, A>.filterA(
+  arg1: Function1<A, Kind<G, Boolean>>,
+  arg2: Applicative<G>
+): Kind<G, Kind<Kind<ForConst, X>, A>> =
     arrow.core.Const.traverseFilter<X>().run {
   this@filterA.filterA<G, A>(arg1, arg2) as arrow.Kind<G, arrow.Kind<arrow.Kind<arrow.core.ForConst,
     X>, A>>
@@ -122,8 +126,10 @@ fun <X, A> Kind<Kind<ForConst, X>, A>.filter(arg1: Function1<A, Boolean>): Const
   ),
   DeprecationLevel.WARNING
 )
-fun <X, G, A, B> Kind<Kind<ForConst, X>, A>.traverseFilterIsInstance(arg1: Applicative<G>,
-    arg2: Class<B>): Kind<G, Kind<Kind<ForConst, X>, B>> =
+fun <X, G, A, B> Kind<Kind<ForConst, X>, A>.traverseFilterIsInstance(
+  arg1: Applicative<G>,
+  arg2: Class<B>
+): Kind<G, Kind<Kind<ForConst, X>, B>> =
     arrow.core.Const.traverseFilter<X>().run {
   this@traverseFilterIsInstance.traverseFilterIsInstance<G, A, B>(arg1, arg2) as arrow.Kind<G,
     arrow.Kind<arrow.Kind<arrow.core.ForConst, X>, B>>

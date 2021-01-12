@@ -56,10 +56,10 @@ fun <F, A, B> crosswalk(
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A> sequenceL(arg0: Align<F>, arg1: Kind<ForOption, Kind<F, A>>): Kind<F, Kind<ForOption, A>>
-    = arrow.core.Option
-   .crosswalk()
-   .sequenceL<F, A>(arg0, arg1) as arrow.Kind<F, arrow.Kind<arrow.core.ForOption, A>>
+fun <F, A> sequenceL(arg0: Align<F>, arg1: Kind<ForOption, Kind<F, A>>): Kind<F, Kind<ForOption, A>> =
+  arrow.core.Option
+    .crosswalk()
+    .sequenceL<F, A>(arg0, arg1) as arrow.Kind<F, arrow.Kind<arrow.core.ForOption, A>>
 
 @Suppress(
   "UNCHECKED_CAST",

@@ -339,11 +339,13 @@ fun <A, B> Kind<ForFunction0, A>.mproduct(arg1: Function1<A, Kind<ForFunction0, 
   ),
   DeprecationLevel.WARNING
 )
-fun <B> Kind<ForFunction0, Boolean>.ifM(arg1: kotlin.Function0<Kind<ForFunction0, B>>,
-    arg2: kotlin.Function0<Kind<ForFunction0, B>>): Function0<B> =
-    arrow.core.Function0.monad().run {
-  this@ifM.ifM<B>(arg1, arg2) as arrow.core.Function0<B>
-}
+fun <B> Kind<ForFunction0, Boolean>.ifM(
+  arg1: kotlin.Function0<Kind<ForFunction0, B>>,
+  arg2: kotlin.Function0<Kind<ForFunction0, B>>
+): Function0<B> =
+  arrow.core.Function0.monad().run {
+    this@ifM.ifM<B>(arg1, arg2) as arrow.core.Function0<B>
+  }
 
 @JvmName("selectM")
 @Suppress(

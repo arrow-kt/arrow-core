@@ -27,12 +27,11 @@ import kotlin.sequences.Sequence
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> unalign(arg0: Sequence<Ior<A, B>>): Tuple2<Kind<ForSequenceK, A>, Kind<ForSequenceK, B>>
-    = arrow.core.extensions.sequence.unalign.Sequence
-   .unalign()
-   .unalign<A, B>(arrow.core.SequenceK(arg0)) as
-    arrow.core.Tuple2<arrow.Kind<arrow.core.ForSequenceK, A>, arrow.Kind<arrow.core.ForSequenceK,
-    B>>
+fun <A, B> unalign(arg0: Sequence<Ior<A, B>>): Tuple2<Kind<ForSequenceK, A>, Kind<ForSequenceK, B>> =
+  arrow.core.extensions.sequence.unalign.Sequence
+    .unalign()
+    .unalign<A, B>(arrow.core.SequenceK(arg0)) as
+    arrow.core.Tuple2<arrow.Kind<arrow.core.ForSequenceK, A>, arrow.Kind<arrow.core.ForSequenceK, B>>
 
 @JvmName("unalignWith")
 @Suppress(
@@ -70,4 +69,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun unalign(): SequenceKUnalign = unalign_singleton}
-

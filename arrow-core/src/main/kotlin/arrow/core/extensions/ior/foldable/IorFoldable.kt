@@ -63,8 +63,10 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.foldLeft(arg1: B, arg2: Function2<B, A, B
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B> Kind<Kind<ForIor, L>, A>.foldRight(arg1: Eval<B>, arg2: Function2<A, Eval<B>,
-    Eval<B>>): Eval<B> = arrow.core.Ior.foldable<L>().run {
+fun <L, A, B> Kind<Kind<ForIor, L>, A>.foldRight(
+  arg1: Eval<B>,
+  arg2: Function2<A, Eval<B>, Eval<B>>
+): Eval<B> = arrow.core.Ior.foldable<L>().run {
   this@foldRight.foldRight<A, B>(arg1, arg2) as arrow.core.Eval<B>
 }
 
@@ -102,8 +104,10 @@ fun <L, A> Kind<Kind<ForIor, L>, A>.fold(arg1: Monoid<A>): A = arrow.core.Ior.fo
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B> Kind<Kind<ForIor, L>, A>.reduceLeftToOption(arg1: Function1<A, B>, arg2: Function2<B,
-    A, B>): Option<B> = arrow.core.Ior.foldable<L>().run {
+fun <L, A, B> Kind<Kind<ForIor, L>, A>.reduceLeftToOption(
+  arg1: Function1<A, B>,
+  arg2: Function2<B, A, B>
+): Option<B> = arrow.core.Ior.foldable<L>().run {
   this@reduceLeftToOption.reduceLeftToOption<A, B>(arg1, arg2) as arrow.core.Option<B>
 }
 
@@ -122,8 +126,10 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.reduceLeftToOption(arg1: Function1<A, B>,
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B> Kind<Kind<ForIor, L>, A>.reduceRightToOption(arg1: Function1<A, B>, arg2: Function2<A,
-    Eval<B>, Eval<B>>): Eval<Option<B>> = arrow.core.Ior.foldable<L>().run {
+fun <L, A, B> Kind<Kind<ForIor, L>, A>.reduceRightToOption(
+  arg1: Function1<A, B>,
+  arg2: Function2<A, Eval<B>, Eval<B>>
+): Eval<Option<B>> = arrow.core.Ior.foldable<L>().run {
   this@reduceRightToOption.reduceRightToOption<A, B>(arg1, arg2) as
     arrow.core.Eval<arrow.core.Option<B>>
 }
@@ -242,8 +248,10 @@ fun <L, A> orEmpty(arg0: Applicative<Kind<ForIor, L>>, arg1: Monoid<A>): Ior<L, 
   ),
   DeprecationLevel.WARNING
 )
-fun <L, G, A, B> Kind<Kind<ForIor, L>, A>.traverse_(arg1: Applicative<G>, arg2: Function1<A, Kind<G,
-    B>>): Kind<G, Unit> = arrow.core.Ior.foldable<L>().run {
+fun <L, G, A, B> Kind<Kind<ForIor, L>, A>.traverse_(
+  arg1: Applicative<G>,
+  arg2: Function1<A, Kind<G, B>>
+): Kind<G, Unit> = arrow.core.Ior.foldable<L>().run {
   this@traverse_.traverse_<G, A, B>(arg1, arg2) as arrow.Kind<G, kotlin.Unit>
 }
 

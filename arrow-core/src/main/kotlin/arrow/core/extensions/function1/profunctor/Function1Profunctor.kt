@@ -52,10 +52,10 @@ fun <A, B, C, D> Kind<Kind<ForFunction1, A>, B>.dimap(arg1: Function1<C, A>, arg
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C> Kind<Kind<ForFunction1, A>, B>.lmap(arg1: Function1<C, A>): arrow.core.Function1<C, B>
-    = arrow.core.Function1.profunctor().run {
-  this@lmap.lmap<A, B, C>(arg1) as arrow.core.Function1<C, B>
-}
+fun <A, B, C> Kind<Kind<ForFunction1, A>, B>.lmap(arg1: Function1<C, A>): arrow.core.Function1<C, B> =
+  arrow.core.Function1.profunctor().run {
+    this@lmap.lmap<A, B, C>(arg1) as arrow.core.Function1<C, B>
+  }
 
 @JvmName("rmap")
 @Suppress(
@@ -72,10 +72,10 @@ fun <A, B, C> Kind<Kind<ForFunction1, A>, B>.lmap(arg1: Function1<C, A>): arrow.
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, D> Kind<Kind<ForFunction1, A>, B>.rmap(arg1: Function1<B, D>): arrow.core.Function1<A, D>
-    = arrow.core.Function1.profunctor().run {
-  this@rmap.rmap<A, B, D>(arg1) as arrow.core.Function1<A, D>
-}
+fun <A, B, D> Kind<Kind<ForFunction1, A>, B>.rmap(arg1: Function1<B, D>): arrow.core.Function1<A, D> =
+  arrow.core.Function1.profunctor().run {
+    this@rmap.rmap<A, B, D>(arg1) as arrow.core.Function1<A, D>
+  }
 
 @Suppress(
   "UNCHECKED_CAST",

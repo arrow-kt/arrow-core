@@ -82,8 +82,10 @@ fun <A, B> Kind<ForSequenceK, A>.apEval(arg1: Eval<Kind<ForSequenceK, Function1<
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, Z> Kind<ForSequenceK, A>.map2Eval(arg1: Eval<Kind<ForSequenceK, B>>,
-    arg2: Function1<Tuple2<A, B>, Z>): Eval<Kind<ForSequenceK, Z>> =
+fun <A, B, Z> Kind<ForSequenceK, A>.map2Eval(
+  arg1: Eval<Kind<ForSequenceK, B>>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): Eval<Kind<ForSequenceK, Z>> =
     arrow.core.SequenceK.apply().run {
   this@map2Eval.map2Eval<A, B, Z>(arg1, arg2) as arrow.core.Eval<arrow.Kind<arrow.core.ForSequenceK,
     Z>>
@@ -598,8 +600,10 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> mapN(
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, Z> Kind<ForSequenceK, A>.map2(arg1: Kind<ForSequenceK, B>, arg2: Function1<Tuple2<A, B>,
-    Z>): SequenceK<Z> = arrow.core.SequenceK.apply().run {
+fun <A, B, Z> Kind<ForSequenceK, A>.map2(
+  arg1: Kind<ForSequenceK, B>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): SequenceK<Z> = arrow.core.SequenceK.apply().run {
   this@map2.map2<A, B, Z>(arg1, arg2) as arrow.core.SequenceK<Z>
 }
 
@@ -699,8 +703,9 @@ fun <A, B, C, D, Z> Kind<ForSequenceK, Tuple4<A, B, C, D>>.product(arg1: Kind<Fo
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C, D, E, Z> Kind<ForSequenceK, Tuple5<A, B, C, D, E>>.product(arg1: Kind<ForSequenceK,
-    Z>): SequenceK<Tuple6<A, B, C, D, E, Z>> = arrow.core.SequenceK.apply().run {
+fun <A, B, C, D, E, Z> Kind<ForSequenceK, Tuple5<A, B, C, D, E>>.product(
+  arg1: Kind<ForSequenceK, Z>
+): SequenceK<Tuple6<A, B, C, D, E, Z>> = arrow.core.SequenceK.apply().run {
   this@product.product<A, B, C, D, E, Z>(arg1) as arrow.core.SequenceK<arrow.core.Tuple6<A, B, C, D,
     E, Z>>
 }
@@ -808,10 +813,10 @@ fun <A, B, C, D, E, FF, G, H, I, Z> Kind<ForSequenceK, Tuple9<A, B, C, D, E, FF,
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> tupled(arg0: Kind<ForSequenceK, A>, arg1: Kind<ForSequenceK, B>): SequenceK<Tuple2<A, B>>
-    = arrow.core.SequenceK
-   .apply()
-   .tupled<A, B>(arg0, arg1) as arrow.core.SequenceK<arrow.core.Tuple2<A, B>>
+fun <A, B> tupled(arg0: Kind<ForSequenceK, A>, arg1: Kind<ForSequenceK, B>): SequenceK<Tuple2<A, B>> =
+  arrow.core.SequenceK
+    .apply()
+    .tupled<A, B>(arg0, arg1) as arrow.core.SequenceK<arrow.core.Tuple2<A, B>>
 
 @JvmName("tupledN")
 @Suppress(

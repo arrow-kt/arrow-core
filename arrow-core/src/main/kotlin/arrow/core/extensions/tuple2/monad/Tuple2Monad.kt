@@ -30,8 +30,10 @@ import kotlin.jvm.JvmName
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.flatMap(MF: Monoid<F>, arg1: Function1<A,
-    Kind<Kind<ForTuple2, F>, B>>): Tuple2<F, B> = arrow.core.Tuple2.monad<F>(MF).run {
+fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.flatMap(
+  MF: Monoid<F>,
+  arg1: Function1<A, Kind<Kind<ForTuple2, F>, B>>
+): Tuple2<F, B> = arrow.core.Tuple2.monad<F>(MF).run {
   this@flatMap.flatMap<A, B>(arg1) as arrow.core.Tuple2<F, B>
 }
 
@@ -96,8 +98,10 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.map(MF: Monoid<F>, arg1: Function1<A, 
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.ap(MF: Monoid<F>, arg1: Kind<Kind<ForTuple2, F>,
-    Function1<A, B>>): Tuple2<F, B> = arrow.core.Tuple2.monad<F>(MF).run {
+fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.ap(
+  MF: Monoid<F>,
+  arg1: Kind<Kind<ForTuple2, F>, Function1<A, B>>
+): Tuple2<F, B> = arrow.core.Tuple2.monad<F>(MF).run {
   this@ap.ap<A, B>(arg1) as arrow.core.Tuple2<F, B>
 }
 
@@ -136,8 +140,10 @@ fun <F, A> Kind<Kind<ForTuple2, F>, Kind<Kind<ForTuple2, F>, A>>.flatten(MF: Mon
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.followedBy(MF: Monoid<F>, arg1: Kind<Kind<ForTuple2, F>,
-    B>): Tuple2<F, B> = arrow.core.Tuple2.monad<F>(MF).run {
+fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.followedBy(
+  MF: Monoid<F>,
+  arg1: Kind<Kind<ForTuple2, F>, B>
+): Tuple2<F, B> = arrow.core.Tuple2.monad<F>(MF).run {
   this@followedBy.followedBy<A, B>(arg1) as arrow.core.Tuple2<F, B>
 }
 
@@ -176,8 +182,10 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.apTap(MF: Monoid<F>, arg1: Kind<Kind<F
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.followedByEval(MF: Monoid<F>,
-    arg1: Eval<Kind<Kind<ForTuple2, F>, B>>): Tuple2<F, B> = arrow.core.Tuple2.monad<F>(MF).run {
+fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.followedByEval(
+  MF: Monoid<F>,
+  arg1: Eval<Kind<Kind<ForTuple2, F>, B>>
+): Tuple2<F, B> = arrow.core.Tuple2.monad<F>(MF).run {
   this@followedByEval.followedByEval<A, B>(arg1) as arrow.core.Tuple2<F, B>
 }
 
@@ -196,8 +204,10 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.followedByEval(MF: Monoid<F>,
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.effectM(MF: Monoid<F>, arg1: Function1<A,
-    Kind<Kind<ForTuple2, F>, B>>): Tuple2<F, A> = arrow.core.Tuple2.monad<F>(MF).run {
+fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.effectM(
+  MF: Monoid<F>,
+  arg1: Function1<A, Kind<Kind<ForTuple2, F>, B>>
+): Tuple2<F, A> = arrow.core.Tuple2.monad<F>(MF).run {
   this@effectM.effectM<A, B>(arg1) as arrow.core.Tuple2<F, A>
 }
 
@@ -216,8 +226,10 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.effectM(MF: Monoid<F>, arg1: Function1
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.flatTap(MF: Monoid<F>, arg1: Function1<A,
-    Kind<Kind<ForTuple2, F>, B>>): Tuple2<F, A> = arrow.core.Tuple2.monad<F>(MF).run {
+fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.flatTap(
+  MF: Monoid<F>,
+  arg1: Function1<A, Kind<Kind<ForTuple2, F>, B>>
+): Tuple2<F, A> = arrow.core.Tuple2.monad<F>(MF).run {
   this@flatTap.flatTap<A, B>(arg1) as arrow.core.Tuple2<F, A>
 }
 
@@ -236,8 +248,10 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.flatTap(MF: Monoid<F>, arg1: Function1
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.productL(MF: Monoid<F>, arg1: Kind<Kind<ForTuple2, F>,
-    B>): Tuple2<F, A> = arrow.core.Tuple2.monad<F>(MF).run {
+fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.productL(
+  MF: Monoid<F>,
+  arg1: Kind<Kind<ForTuple2, F>, B>
+): Tuple2<F, A> = arrow.core.Tuple2.monad<F>(MF).run {
   this@productL.productL<A, B>(arg1) as arrow.core.Tuple2<F, A>
 }
 
@@ -256,8 +270,10 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.productL(MF: Monoid<F>, arg1: Kind<Kin
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.forEffect(MF: Monoid<F>, arg1: Kind<Kind<ForTuple2, F>,
-    B>): Tuple2<F, A> = arrow.core.Tuple2.monad<F>(MF).run {
+fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.forEffect(
+  MF: Monoid<F>,
+  arg1: Kind<Kind<ForTuple2, F>, B>
+): Tuple2<F, A> = arrow.core.Tuple2.monad<F>(MF).run {
   this@forEffect.forEffect<A, B>(arg1) as arrow.core.Tuple2<F, A>
 }
 
@@ -276,8 +292,10 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.forEffect(MF: Monoid<F>, arg1: Kind<Ki
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.productLEval(MF: Monoid<F>,
-    arg1: Eval<Kind<Kind<ForTuple2, F>, B>>): Tuple2<F, A> = arrow.core.Tuple2.monad<F>(MF).run {
+fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.productLEval(
+  MF: Monoid<F>,
+  arg1: Eval<Kind<Kind<ForTuple2, F>, B>>
+): Tuple2<F, A> = arrow.core.Tuple2.monad<F>(MF).run {
   this@productLEval.productLEval<A, B>(arg1) as arrow.core.Tuple2<F, A>
 }
 
@@ -296,8 +314,10 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.productLEval(MF: Monoid<F>,
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.forEffectEval(MF: Monoid<F>,
-    arg1: Eval<Kind<Kind<ForTuple2, F>, B>>): Tuple2<F, A> = arrow.core.Tuple2.monad<F>(MF).run {
+fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.forEffectEval(
+  MF: Monoid<F>,
+  arg1: Eval<Kind<Kind<ForTuple2, F>, B>>
+): Tuple2<F, A> = arrow.core.Tuple2.monad<F>(MF).run {
   this@forEffectEval.forEffectEval<A, B>(arg1) as arrow.core.Tuple2<F, A>
 }
 
@@ -316,8 +336,10 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.forEffectEval(MF: Monoid<F>,
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.mproduct(MF: Monoid<F>, arg1: Function1<A,
-    Kind<Kind<ForTuple2, F>, B>>): Tuple2<F, Tuple2<A, B>> = arrow.core.Tuple2.monad<F>(MF).run {
+fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.mproduct(
+  MF: Monoid<F>,
+  arg1: Function1<A, Kind<Kind<ForTuple2, F>, B>>
+): Tuple2<F, Tuple2<A, B>> = arrow.core.Tuple2.monad<F>(MF).run {
   this@mproduct.mproduct<A, B>(arg1) as arrow.core.Tuple2<F, arrow.core.Tuple2<A, B>>
 }
 
@@ -359,8 +381,10 @@ fun <F, B> Kind<Kind<ForTuple2, F>, Boolean>.ifM(
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, Either<A, B>>.selectM(MF: Monoid<F>,
-    arg1: Kind<Kind<ForTuple2, F>, Function1<A, B>>): Tuple2<F, B> =
+fun <F, A, B> Kind<Kind<ForTuple2, F>, Either<A, B>>.selectM(
+  MF: Monoid<F>,
+  arg1: Kind<Kind<ForTuple2, F>, Function1<A, B>>
+): Tuple2<F, B> =
     arrow.core.Tuple2.monad<F>(MF).run {
   this@selectM.selectM<A, B>(arg1) as arrow.core.Tuple2<F, B>
 }
@@ -380,8 +404,10 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, Either<A, B>>.selectM(MF: Monoid<F>,
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, Either<A, B>>.select(MF: Monoid<F>,
-    arg1: Kind<Kind<ForTuple2, F>, Function1<A, B>>): Tuple2<F, B> =
+fun <F, A, B> Kind<Kind<ForTuple2, F>, Either<A, B>>.select(
+  MF: Monoid<F>,
+  arg1: Kind<Kind<ForTuple2, F>, Function1<A, B>>
+): Tuple2<F, B> =
     arrow.core.Tuple2.monad<F>(MF).run {
   this@select.select<A, B>(arg1) as arrow.core.Tuple2<F, B>
 }

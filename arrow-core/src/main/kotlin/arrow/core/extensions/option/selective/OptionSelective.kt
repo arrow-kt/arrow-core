@@ -57,8 +57,10 @@ fun <A, B> Kind<ForOption, Either<A, B>>.select(arg1: Kind<ForOption, Function1<
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C> Kind<ForOption, Either<A, B>>.branch(arg1: Kind<ForOption, Function1<A, C>>,
-    arg2: Kind<ForOption, Function1<B, C>>): Option<C> = arrow.core.Option.selective().run {
+fun <A, B, C> Kind<ForOption, Either<A, B>>.branch(
+  arg1: Kind<ForOption, Function1<A, C>>,
+  arg2: Kind<ForOption, Function1<B, C>>
+): Option<C> = arrow.core.Option.selective().run {
   this@branch.branch<A, B, C>(arg1, arg2) as arrow.core.Option<C>
 }
 
@@ -97,10 +99,10 @@ fun <A> Kind<ForOption, Boolean>.whenS(arg1: Kind<ForOption, Function0<Unit>>): 
   ),
   DeprecationLevel.WARNING
 )
-fun <A> Kind<ForOption, Boolean>.ifS(arg1: Kind<ForOption, A>, arg2: Kind<ForOption, A>): Option<A>
-    = arrow.core.Option.selective().run {
-  this@ifS.ifS<A>(arg1, arg2) as arrow.core.Option<A>
-}
+fun <A> Kind<ForOption, Boolean>.ifS(arg1: Kind<ForOption, A>, arg2: Kind<ForOption, A>): Option<A> =
+  arrow.core.Option.selective().run {
+    this@ifS.ifS<A>(arg1, arg2) as arrow.core.Option<A>
+  }
 
 @JvmName("orS")
 @Suppress(

@@ -35,8 +35,10 @@ internal val traverse_singleton: Tuple2Traverse<Any?> = object : Tuple2Traverse<
   ),
   DeprecationLevel.WARNING
 )
-fun <F, G, A, B> Kind<Kind<ForTuple2, F>, A>.traverse(arg1: Applicative<G>, arg2: Function1<A,
-    Kind<G, B>>): Kind<G, Kind<Kind<ForTuple2, F>, B>> = arrow.core.Tuple2.traverse<F>().run {
+fun <F, G, A, B> Kind<Kind<ForTuple2, F>, A>.traverse(
+  arg1: Applicative<G>,
+  arg2: Function1<A, Kind<G, B>>
+): Kind<G, Kind<Kind<ForTuple2, F>, B>> = arrow.core.Tuple2.traverse<F>().run {
   this@traverse.traverse<G, A, B>(arg1, arg2) as arrow.Kind<G,
     arrow.Kind<arrow.Kind<arrow.core.ForTuple2, F>, B>>
 }

@@ -82,8 +82,10 @@ fun <A, B> Kind<ForOption, A>.apEval(arg1: Eval<Kind<ForOption, Function1<A, B>>
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, Z> Kind<ForOption, A>.map2Eval(arg1: Eval<Kind<ForOption, B>>, arg2: Function1<Tuple2<A,
-    B>, Z>): Eval<Kind<ForOption, Z>> = arrow.core.Option.apply().run {
+fun <A, B, Z> Kind<ForOption, A>.map2Eval(
+  arg1: Eval<Kind<ForOption, B>>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): Eval<Kind<ForOption, Z>> = arrow.core.Option.apply().run {
   this@map2Eval.map2Eval<A, B, Z>(arg1, arg2) as arrow.core.Eval<arrow.Kind<arrow.core.ForOption,
     Z>>
 }
@@ -718,8 +720,9 @@ fun <A, B, C, D, E, Z> Kind<ForOption, Tuple5<A, B, C, D, E>>.product(arg1: Kind
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C, D, E, FF, Z> Kind<ForOption, Tuple6<A, B, C, D, E, FF>>.product(arg1: Kind<ForOption,
-    Z>): Option<Tuple7<A, B, C, D, E, FF, Z>> = arrow.core.Option.apply().run {
+fun <A, B, C, D, E, FF, Z> Kind<ForOption, Tuple6<A, B, C, D, E, FF>>.product(
+  arg1: Kind<ForOption, Z>
+): Option<Tuple7<A, B, C, D, E, FF, Z>> = arrow.core.Option.apply().run {
   this@product.product<A, B, C, D, E, FF, Z>(arg1) as arrow.core.Option<arrow.core.Tuple7<A, B, C,
     D, E, FF, Z>>
 }

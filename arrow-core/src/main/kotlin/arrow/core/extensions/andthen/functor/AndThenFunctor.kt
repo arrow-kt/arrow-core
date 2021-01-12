@@ -183,10 +183,10 @@ fun <X, A> Kind<Kind<ForAndThen, X>, A>.void(): AndThen<X, Unit> =
   ),
   DeprecationLevel.WARNING
 )
-fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.fproduct(arg1: Function1<A, B>): AndThen<X, Tuple2<A, B>>
-    = arrow.core.AndThen.functor<X>().run {
-  this@fproduct.fproduct<A, B>(arg1) as arrow.core.AndThen<X, arrow.core.Tuple2<A, B>>
-}
+fun <X, A, B> Kind<Kind<ForAndThen, X>, A>.fproduct(arg1: Function1<A, B>): AndThen<X, Tuple2<A, B>> =
+  arrow.core.AndThen.functor<X>().run {
+    this@fproduct.fproduct<A, B>(arg1) as arrow.core.AndThen<X, arrow.core.Tuple2<A, B>>
+  }
 
 /**
  *  Replaces [A] inside [F] with [B] resulting in a Kind<F, B>

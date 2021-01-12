@@ -31,8 +31,10 @@ import kotlin.jvm.JvmName
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B> Kind<Kind<ForIor, L>, A>.flatMap(SL: Semigroup<L>, arg1: Function1<A,
-    Kind<Kind<ForIor, L>, B>>): Ior<L, B> = arrow.core.Ior.monad<L>(SL).run {
+fun <L, A, B> Kind<Kind<ForIor, L>, A>.flatMap(
+  SL: Semigroup<L>,
+  arg1: Function1<A, Kind<Kind<ForIor, L>, B>>
+): Ior<L, B> = arrow.core.Ior.monad<L>(SL).run {
   this@flatMap.flatMap<A, B>(arg1) as arrow.core.Ior<L, B>
 }
 
@@ -97,8 +99,10 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.map(SL: Semigroup<L>, arg1: Function1<A, 
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B> Kind<Kind<ForIor, L>, A>.ap(SL: Semigroup<L>, arg1: Kind<Kind<ForIor, L>, Function1<A,
-    B>>): Ior<L, B> = arrow.core.Ior.monad<L>(SL).run {
+fun <L, A, B> Kind<Kind<ForIor, L>, A>.ap(
+  SL: Semigroup<L>,
+  arg1: Kind<Kind<ForIor, L>, Function1<A, B>>
+): Ior<L, B> = arrow.core.Ior.monad<L>(SL).run {
   this@ap.ap<A, B>(arg1) as arrow.core.Ior<L, B>
 }
 
@@ -177,8 +181,10 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.apTap(SL: Semigroup<L>, arg1: Kind<Kind<F
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B> Kind<Kind<ForIor, L>, A>.followedByEval(SL: Semigroup<L>, arg1: Eval<Kind<Kind<ForIor,
-    L>, B>>): Ior<L, B> = arrow.core.Ior.monad<L>(SL).run {
+fun <L, A, B> Kind<Kind<ForIor, L>, A>.followedByEval(
+  SL: Semigroup<L>,
+  arg1: Eval<Kind<Kind<ForIor, L>, B>>
+): Ior<L, B> = arrow.core.Ior.monad<L>(SL).run {
   this@followedByEval.followedByEval<A, B>(arg1) as arrow.core.Ior<L, B>
 }
 
@@ -197,8 +203,10 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.followedByEval(SL: Semigroup<L>, arg1: Ev
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B> Kind<Kind<ForIor, L>, A>.effectM(SL: Semigroup<L>, arg1: Function1<A,
-    Kind<Kind<ForIor, L>, B>>): Ior<L, A> = arrow.core.Ior.monad<L>(SL).run {
+fun <L, A, B> Kind<Kind<ForIor, L>, A>.effectM(
+  SL: Semigroup<L>,
+  arg1: Function1<A, Kind<Kind<ForIor, L>, B>>
+): Ior<L, A> = arrow.core.Ior.monad<L>(SL).run {
   this@effectM.effectM<A, B>(arg1) as arrow.core.Ior<L, A>
 }
 
@@ -217,8 +225,10 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.effectM(SL: Semigroup<L>, arg1: Function1
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B> Kind<Kind<ForIor, L>, A>.flatTap(SL: Semigroup<L>, arg1: Function1<A,
-    Kind<Kind<ForIor, L>, B>>): Ior<L, A> = arrow.core.Ior.monad<L>(SL).run {
+fun <L, A, B> Kind<Kind<ForIor, L>, A>.flatTap(
+  SL: Semigroup<L>,
+  arg1: Function1<A, Kind<Kind<ForIor, L>, B>>
+): Ior<L, A> = arrow.core.Ior.monad<L>(SL).run {
   this@flatTap.flatTap<A, B>(arg1) as arrow.core.Ior<L, A>
 }
 
@@ -277,8 +287,10 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.forEffect(SL: Semigroup<L>, arg1: Kind<Ki
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B> Kind<Kind<ForIor, L>, A>.productLEval(SL: Semigroup<L>, arg1: Eval<Kind<Kind<ForIor,
-    L>, B>>): Ior<L, A> = arrow.core.Ior.monad<L>(SL).run {
+fun <L, A, B> Kind<Kind<ForIor, L>, A>.productLEval(
+  SL: Semigroup<L>,
+  arg1: Eval<Kind<Kind<ForIor, L>, B>>
+): Ior<L, A> = arrow.core.Ior.monad<L>(SL).run {
   this@productLEval.productLEval<A, B>(arg1) as arrow.core.Ior<L, A>
 }
 
@@ -297,8 +309,10 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.productLEval(SL: Semigroup<L>, arg1: Eval
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B> Kind<Kind<ForIor, L>, A>.forEffectEval(SL: Semigroup<L>, arg1: Eval<Kind<Kind<ForIor,
-    L>, B>>): Ior<L, A> = arrow.core.Ior.monad<L>(SL).run {
+fun <L, A, B> Kind<Kind<ForIor, L>, A>.forEffectEval(
+  SL: Semigroup<L>,
+  arg1: Eval<Kind<Kind<ForIor, L>, B>>
+): Ior<L, A> = arrow.core.Ior.monad<L>(SL).run {
   this@forEffectEval.forEffectEval<A, B>(arg1) as arrow.core.Ior<L, A>
 }
 
@@ -317,8 +331,10 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.forEffectEval(SL: Semigroup<L>, arg1: Eva
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B> Kind<Kind<ForIor, L>, A>.mproduct(SL: Semigroup<L>, arg1: Function1<A,
-    Kind<Kind<ForIor, L>, B>>): Ior<L, Tuple2<A, B>> = arrow.core.Ior.monad<L>(SL).run {
+fun <L, A, B> Kind<Kind<ForIor, L>, A>.mproduct(
+  SL: Semigroup<L>,
+  arg1: Function1<A, Kind<Kind<ForIor, L>, B>>
+): Ior<L, Tuple2<A, B>> = arrow.core.Ior.monad<L>(SL).run {
   this@mproduct.mproduct<A, B>(arg1) as arrow.core.Ior<L, arrow.core.Tuple2<A, B>>
 }
 
@@ -360,8 +376,10 @@ fun <L, B> Kind<Kind<ForIor, L>, Boolean>.ifM(
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B> Kind<Kind<ForIor, L>, Either<A, B>>.selectM(SL: Semigroup<L>, arg1: Kind<Kind<ForIor,
-    L>, Function1<A, B>>): Ior<L, B> = arrow.core.Ior.monad<L>(SL).run {
+fun <L, A, B> Kind<Kind<ForIor, L>, Either<A, B>>.selectM(
+  SL: Semigroup<L>,
+  arg1: Kind<Kind<ForIor, L>, Function1<A, B>>
+): Ior<L, B> = arrow.core.Ior.monad<L>(SL).run {
   this@selectM.selectM<A, B>(arg1) as arrow.core.Ior<L, B>
 }
 
@@ -380,8 +398,10 @@ fun <L, A, B> Kind<Kind<ForIor, L>, Either<A, B>>.selectM(SL: Semigroup<L>, arg1
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B> Kind<Kind<ForIor, L>, Either<A, B>>.select(SL: Semigroup<L>, arg1: Kind<Kind<ForIor,
-    L>, Function1<A, B>>): Ior<L, B> = arrow.core.Ior.monad<L>(SL).run {
+fun <L, A, B> Kind<Kind<ForIor, L>, Either<A, B>>.select(
+  SL: Semigroup<L>,
+  arg1: Kind<Kind<ForIor, L>, Function1<A, B>>
+): Ior<L, B> = arrow.core.Ior.monad<L>(SL).run {
   this@select.select<A, B>(arg1) as arrow.core.Ior<L, B>
 }
 

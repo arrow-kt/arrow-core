@@ -64,4 +64,3 @@ object Sequence {
   )
   inline fun <A> monoid(): SequenceKMonoid<A> = monoid_singleton as
       arrow.core.extensions.SequenceKMonoid<A>}
-

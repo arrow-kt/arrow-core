@@ -35,8 +35,10 @@ internal val traverse_singleton: NonEmptyListTraverse = object :
   ),
   DeprecationLevel.WARNING
 )
-fun <G, A, B> Kind<ForNonEmptyList, A>.traverse(arg1: Applicative<G>, arg2: Function1<A, Kind<G,
-    B>>): Kind<G, Kind<ForNonEmptyList, B>> = arrow.core.NonEmptyList.traverse().run {
+fun <G, A, B> Kind<ForNonEmptyList, A>.traverse(
+  arg1: Applicative<G>,
+  arg2: Function1<A, Kind<G, B>>
+): Kind<G, Kind<ForNonEmptyList, B>> = arrow.core.NonEmptyList.traverse().run {
   this@traverse.traverse<G, A, B>(arg1, arg2) as arrow.Kind<G,
     arrow.Kind<arrow.core.ForNonEmptyList, B>>
 }

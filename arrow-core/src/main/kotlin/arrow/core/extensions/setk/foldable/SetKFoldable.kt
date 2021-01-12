@@ -62,10 +62,10 @@ fun <A, B> Kind<ForSetK, A>.foldLeft(arg1: B, arg2: Function2<B, A, B>): B =
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<ForSetK, A>.foldRight(arg1: Eval<B>, arg2: Function2<A, Eval<B>, Eval<B>>): Eval<B>
-    = arrow.core.SetK.foldable().run {
-  this@foldRight.foldRight<A, B>(arg1, arg2) as arrow.core.Eval<B>
-}
+fun <A, B> Kind<ForSetK, A>.foldRight(arg1: Eval<B>, arg2: Function2<A, Eval<B>, Eval<B>>): Eval<B> =
+  arrow.core.SetK.foldable().run {
+    this@foldRight.foldRight<A, B>(arg1, arg2) as arrow.core.Eval<B>
+  }
 
 @JvmName("fold")
 @Suppress(
@@ -121,8 +121,10 @@ fun <A, B> Kind<ForSetK, A>.reduceLeftToOption(arg1: Function1<A, B>, arg2: Func
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<ForSetK, A>.reduceRightToOption(arg1: Function1<A, B>, arg2: Function2<A, Eval<B>,
-    Eval<B>>): Eval<Option<B>> = arrow.core.SetK.foldable().run {
+fun <A, B> Kind<ForSetK, A>.reduceRightToOption(
+  arg1: Function1<A, B>,
+  arg2: Function2<A, Eval<B>, Eval<B>>
+): Eval<Option<B>> = arrow.core.SetK.foldable().run {
   this@reduceRightToOption.reduceRightToOption<A, B>(arg1, arg2) as
     arrow.core.Eval<arrow.core.Option<B>>
 }

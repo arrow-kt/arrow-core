@@ -35,8 +35,10 @@ internal val traverse_singleton: ConstTraverse<Any?> = object : ConstTraverse<An
   ),
   DeprecationLevel.WARNING
 )
-fun <X, G, A, B> Kind<Kind<ForConst, X>, A>.traverse(arg1: Applicative<G>, arg2: Function1<A,
-    Kind<G, B>>): Kind<G, Kind<Kind<ForConst, X>, B>> = arrow.core.Const.traverse<X>().run {
+fun <X, G, A, B> Kind<Kind<ForConst, X>, A>.traverse(
+  arg1: Applicative<G>,
+  arg2: Function1<A, Kind<G, B>>
+): Kind<G, Kind<Kind<ForConst, X>, B>> = arrow.core.Const.traverse<X>().run {
   this@traverse.traverse<G, A, B>(arg1, arg2) as arrow.Kind<G,
     arrow.Kind<arrow.Kind<arrow.core.ForConst, X>, B>>
 }

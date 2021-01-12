@@ -76,8 +76,10 @@ fun <A, B> Sequence<A>.apEval(arg1: Eval<Kind<ForSequenceK, Function1<A, B>>>):
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, Z> Sequence<A>.map2Eval(arg1: Eval<Kind<ForSequenceK, B>>, arg2: Function1<Tuple2<A, B>,
-    Z>): Eval<Kind<ForSequenceK, Z>> = arrow.core.extensions.sequence.apply.Sequence.apply().run {
+fun <A, B, Z> Sequence<A>.map2Eval(
+  arg1: Eval<Kind<ForSequenceK, B>>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): Eval<Kind<ForSequenceK, Z>> = arrow.core.extensions.sequence.apply.Sequence.apply().run {
   arrow.core.SequenceK(this@map2Eval).map2Eval<A, B, Z>(arg1, arg2) as
     arrow.core.Eval<arrow.Kind<arrow.core.ForSequenceK, Z>>
 }
@@ -680,11 +682,11 @@ fun <A, B, Z> Sequence<Tuple2<A, B>>.product(arg1: Sequence<Z>): Sequence<Tuple3
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C, Z> Sequence<Tuple3<A, B, C>>.product(arg1: Sequence<Z>): Sequence<Tuple4<A, B, C, Z>>
-    = arrow.core.extensions.sequence.apply.Sequence.apply().run {
-  arrow.core.SequenceK(this@product).product<A, B, C, Z>(arrow.core.SequenceK(arg1)) as
-    kotlin.sequences.Sequence<arrow.core.Tuple4<A, B, C, Z>>
-}
+fun <A, B, C, Z> Sequence<Tuple3<A, B, C>>.product(arg1: Sequence<Z>): Sequence<Tuple4<A, B, C, Z>> =
+  arrow.core.extensions.sequence.apply.Sequence.apply().run {
+    arrow.core.SequenceK(this@product).product<A, B, C, Z>(arrow.core.SequenceK(arg1)) as
+      kotlin.sequences.Sequence<arrow.core.Tuple4<A, B, C, Z>>
+  }
 
 @JvmName("product3")
 @Suppress(
@@ -1369,4 +1371,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun apply(): SequenceKApply = apply_singleton}
-

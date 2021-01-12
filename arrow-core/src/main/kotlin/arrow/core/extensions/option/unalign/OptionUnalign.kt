@@ -33,10 +33,10 @@ internal val unalign_singleton: OptionUnalign = object : arrow.core.extensions.O
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> unalign(arg0: Kind<ForOption, Ior<A, B>>): Tuple2<Kind<ForOption, A>, Kind<ForOption, B>>
-    = arrow.core.Option
-   .unalign()
-   .unalign<A, B>(arg0) as arrow.core.Tuple2<arrow.Kind<arrow.core.ForOption, A>,
+fun <A, B> unalign(arg0: Kind<ForOption, Ior<A, B>>): Tuple2<Kind<ForOption, A>, Kind<ForOption, B>> =
+  arrow.core.Option
+    .unalign()
+    .unalign<A, B>(arg0) as arrow.core.Tuple2<arrow.Kind<arrow.core.ForOption, A>,
     arrow.Kind<arrow.core.ForOption, B>>
 
 @JvmName("unalignWith")

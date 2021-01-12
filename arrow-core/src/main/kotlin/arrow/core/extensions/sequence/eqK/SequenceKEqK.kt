@@ -62,4 +62,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun eqK(): SequenceKEqK = eqK_singleton}
-

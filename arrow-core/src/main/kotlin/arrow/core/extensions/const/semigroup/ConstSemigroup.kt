@@ -65,8 +65,10 @@ fun <A, T> Kind<Kind<ForConst, A>, T>.plus(SA: Semigroup<A>, arg1: Kind<Kind<For
   ),
   DeprecationLevel.WARNING
 )
-fun <A, T> Kind<Kind<ForConst, A>, T>.maybeCombine(SA: Semigroup<A>, arg1: Kind<Kind<ForConst, A>,
-    T>): Const<A, T> = arrow.core.Const.semigroup<A, T>(SA).run {
+fun <A, T> Kind<Kind<ForConst, A>, T>.maybeCombine(
+  SA: Semigroup<A>,
+  arg1: Kind<Kind<ForConst, A>, T>
+): Const<A, T> = arrow.core.Const.semigroup<A, T>(SA).run {
   this@maybeCombine.maybeCombine(arg1) as arrow.core.Const<A, T>
 }
 

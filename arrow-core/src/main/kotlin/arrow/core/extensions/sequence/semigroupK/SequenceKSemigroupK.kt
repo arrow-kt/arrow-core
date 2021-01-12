@@ -64,4 +64,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun semigroupK(): SequenceKSemigroupK = semigroupK_singleton}
-

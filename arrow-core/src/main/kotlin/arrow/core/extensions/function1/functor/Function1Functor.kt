@@ -55,10 +55,10 @@ internal val functor_singleton: Function1Functor<Any?> = object : Function1Funct
   ),
   DeprecationLevel.WARNING
 )
-fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.map(arg1: Function1<A, B>): arrow.core.Function1<I, B>
-    = arrow.core.Function1.functor<I>().run {
-  this@map.map<A, B>(arg1) as arrow.core.Function1<I, B>
-}
+fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.map(arg1: Function1<A, B>): arrow.core.Function1<I, B> =
+  arrow.core.Function1.functor<I>().run {
+    this@map.map<A, B>(arg1) as arrow.core.Function1<I, B>
+  }
 
 @JvmName("imap")
 @Suppress(

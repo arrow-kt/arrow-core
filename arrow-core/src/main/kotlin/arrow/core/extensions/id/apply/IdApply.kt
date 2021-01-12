@@ -655,10 +655,10 @@ fun <A, B, Z> Kind<ForId, Tuple2<A, B>>.product(arg1: Kind<ForId, Z>): Id<Tuple3
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C, Z> Kind<ForId, Tuple3<A, B, C>>.product(arg1: Kind<ForId, Z>): Id<Tuple4<A, B, C, Z>>
-    = arrow.core.Id.apply().run {
-  this@product.product<A, B, C, Z>(arg1) as arrow.core.Id<arrow.core.Tuple4<A, B, C, Z>>
-}
+fun <A, B, C, Z> Kind<ForId, Tuple3<A, B, C>>.product(arg1: Kind<ForId, Z>): Id<Tuple4<A, B, C, Z>> =
+  arrow.core.Id.apply().run {
+    this@product.product<A, B, C, Z>(arg1) as arrow.core.Id<arrow.core.Tuple4<A, B, C, Z>>
+  }
 
 @JvmName("product3")
 @Suppress(
@@ -736,8 +736,9 @@ fun <A, B, C, D, E, FF, Z> Kind<ForId, Tuple6<A, B, C, D, E, FF>>.product(arg1: 
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C, D, E, FF, G, Z> Kind<ForId, Tuple7<A, B, C, D, E, FF, G>>.product(arg1: Kind<ForId,
-    Z>): Id<Tuple8<A, B, C, D, E, FF, G, Z>> = arrow.core.Id.apply().run {
+fun <A, B, C, D, E, FF, G, Z> Kind<ForId, Tuple7<A, B, C, D, E, FF, G>>.product(
+  arg1: Kind<ForId, Z>
+): Id<Tuple8<A, B, C, D, E, FF, G, Z>> = arrow.core.Id.apply().run {
   this@product.product<A, B, C, D, E, FF, G, Z>(arg1) as arrow.core.Id<arrow.core.Tuple8<A, B, C, D,
     E, FF, G, Z>>
 }

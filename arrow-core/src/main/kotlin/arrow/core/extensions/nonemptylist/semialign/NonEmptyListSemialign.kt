@@ -122,9 +122,11 @@ fun <A, B> Kind<ForNonEmptyList, A>.padZip(arg1: Kind<ForNonEmptyList, B>):
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C> Kind<ForNonEmptyList, A>.padZipWith(arg1: Kind<ForNonEmptyList, B>,
-    arg2: Function2<Option<A>, Option<B>, C>): NonEmptyList<C> =
-    arrow.core.NonEmptyList.semialign().run {
+fun <A, B, C> Kind<ForNonEmptyList, A>.padZipWith(
+  arg1: Kind<ForNonEmptyList, B>,
+  arg2: Function2<Option<A>, Option<B>, C>
+): NonEmptyList<C> =
+  arrow.core.NonEmptyList.semialign().run {
   this@padZipWith.padZipWith<A, B, C>(arg1, arg2) as arrow.core.NonEmptyList<C>
 }
 

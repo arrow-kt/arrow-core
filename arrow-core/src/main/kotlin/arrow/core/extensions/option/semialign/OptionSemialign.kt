@@ -100,11 +100,11 @@ fun <A> Kind<ForOption, A>.salign(arg1: Semigroup<A>, arg2: Kind<ForOption, A>):
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<ForOption, A>.padZip(arg1: Kind<ForOption, B>): Option<Tuple2<Option<A>, Option<B>>>
-    = arrow.core.Option.semialign().run {
-  this@padZip.padZip<A, B>(arg1) as arrow.core.Option<arrow.core.Tuple2<arrow.core.Option<A>,
-    arrow.core.Option<B>>>
-}
+fun <A, B> Kind<ForOption, A>.padZip(arg1: Kind<ForOption, B>): Option<Tuple2<Option<A>, Option<B>>> =
+  arrow.core.Option.semialign().run {
+    this@padZip.padZip<A, B>(arg1) as arrow.core.Option<arrow.core.Tuple2<arrow.core.Option<A>,
+      arrow.core.Option<B>>>
+  }
 
 @JvmName("padZipWith")
 @Suppress(
@@ -121,8 +121,10 @@ fun <A, B> Kind<ForOption, A>.padZip(arg1: Kind<ForOption, B>): Option<Tuple2<Op
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C> Kind<ForOption, A>.padZipWith(arg1: Kind<ForOption, B>, arg2: Function2<Option<A>,
-    Option<B>, C>): Option<C> = arrow.core.Option.semialign().run {
+fun <A, B, C> Kind<ForOption, A>.padZipWith(
+  arg1: Kind<ForOption, B>,
+  arg2: Function2<Option<A>, Option<B>, C>
+): Option<C> = arrow.core.Option.semialign().run {
   this@padZipWith.padZipWith<A, B, C>(arg1, arg2) as arrow.core.Option<C>
 }
 

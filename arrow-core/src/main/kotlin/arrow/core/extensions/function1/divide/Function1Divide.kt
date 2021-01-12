@@ -60,8 +60,10 @@ fun <O, A, B, Z> divide(
   ),
   DeprecationLevel.WARNING
 )
-fun <O, A, B> Kind<Conested<ForFunction1, O>, A>.product(MO: Monoid<O>,
-    arg1: Kind<Conested<ForFunction1, O>, B>): Kind<Conested<ForFunction1, O>, Tuple2<A, B>> =
+fun <O, A, B> Kind<Conested<ForFunction1, O>, A>.product(
+  MO: Monoid<O>,
+  arg1: Kind<Conested<ForFunction1, O>, B>
+): Kind<Conested<ForFunction1, O>, Tuple2<A, B>> =
     arrow.core.Function1.divide<O>(MO).run {
   this@product.product<A, B>(arg1) as arrow.Kind<arrow.typeclasses.Conested<arrow.core.ForFunction1,
     O>, arrow.core.Tuple2<A, B>>
@@ -82,8 +84,10 @@ fun <O, A, B> Kind<Conested<ForFunction1, O>, A>.product(MO: Monoid<O>,
   ),
   DeprecationLevel.WARNING
 )
-fun <O, A, B, C> Kind<Conested<ForFunction1, O>, Tuple2<A, B>>.product(MO: Monoid<O>,
-    arg1: Kind<Conested<ForFunction1, O>, C>): Kind<Conested<ForFunction1, O>, Tuple3<A, B, C>> =
+fun <O, A, B, C> Kind<Conested<ForFunction1, O>, Tuple2<A, B>>.product(
+  MO: Monoid<O>,
+  arg1: Kind<Conested<ForFunction1, O>, C>
+): Kind<Conested<ForFunction1, O>, Tuple3<A, B, C>> =
     arrow.core.Function1.divide<O>(MO).run {
   this@product.product<A, B, C>(arg1) as
     arrow.Kind<arrow.typeclasses.Conested<arrow.core.ForFunction1, O>, arrow.core.Tuple3<A, B, C>>
@@ -104,8 +108,10 @@ fun <O, A, B, C> Kind<Conested<ForFunction1, O>, Tuple2<A, B>>.product(MO: Monoi
   ),
   DeprecationLevel.WARNING
 )
-fun <O, A, B, C, D> Kind<Conested<ForFunction1, O>, Tuple3<A, B, C>>.product(MO: Monoid<O>,
-    arg1: Kind<Conested<ForFunction1, O>, D>): Kind<Conested<ForFunction1, O>, Tuple4<A, B, C, D>> =
+fun <O, A, B, C, D> Kind<Conested<ForFunction1, O>, Tuple3<A, B, C>>.product(
+  MO: Monoid<O>,
+  arg1: Kind<Conested<ForFunction1, O>, D>
+): Kind<Conested<ForFunction1, O>, Tuple4<A, B, C, D>> =
     arrow.core.Function1.divide<O>(MO).run {
   this@product.product<A, B, C, D>(arg1) as
     arrow.Kind<arrow.typeclasses.Conested<arrow.core.ForFunction1, O>, arrow.core.Tuple4<A, B, C,
@@ -127,9 +133,11 @@ fun <O, A, B, C, D> Kind<Conested<ForFunction1, O>, Tuple3<A, B, C>>.product(MO:
   ),
   DeprecationLevel.WARNING
 )
-fun <O, A, B, C, D, E> Kind<Conested<ForFunction1, O>, Tuple4<A, B, C, D>>.product(MO: Monoid<O>,
-    arg1: Kind<Conested<ForFunction1, O>, E>): Kind<Conested<ForFunction1, O>, Tuple5<A, B, C, D,
-    E>> = arrow.core.Function1.divide<O>(MO).run {
+fun <O, A, B, C, D, E> Kind<Conested<ForFunction1, O>, Tuple4<A, B, C, D>>.product(
+  MO: Monoid<O>,
+  arg1: Kind<Conested<ForFunction1, O>, E>
+): Kind<Conested<ForFunction1, O>, Tuple5<A, B, C, D,
+  E>> = arrow.core.Function1.divide<O>(MO).run {
   this@product.product<A, B, C, D, E>(arg1) as
     arrow.Kind<arrow.typeclasses.Conested<arrow.core.ForFunction1, O>, arrow.core.Tuple5<A, B, C, D,
     E>>

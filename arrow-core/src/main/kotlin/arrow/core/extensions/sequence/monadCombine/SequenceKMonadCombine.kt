@@ -68,4 +68,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun monadCombine(): SequenceKMonadCombine = monadCombine_singleton}
-

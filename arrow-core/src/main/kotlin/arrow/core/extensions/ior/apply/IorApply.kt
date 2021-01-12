@@ -36,8 +36,10 @@ import kotlin.jvm.JvmName
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B> Kind<Kind<ForIor, L>, A>.ap(SL: Semigroup<L>, arg1: Kind<Kind<ForIor, L>, Function1<A,
-    B>>): Ior<L, B> = arrow.core.Ior.apply<L>(SL).run {
+fun <L, A, B> Kind<Kind<ForIor, L>, A>.ap(
+  SL: Semigroup<L>,
+  arg1: Kind<Kind<ForIor, L>, Function1<A, B>>
+): Ior<L, B> = arrow.core.Ior.apply<L>(SL).run {
   this@ap.ap<A, B>(arg1) as arrow.core.Ior<L, B>
 }
 
@@ -56,8 +58,10 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.ap(SL: Semigroup<L>, arg1: Kind<Kind<ForI
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B> Kind<Kind<ForIor, L>, A>.apEval(SL: Semigroup<L>, arg1: Eval<Kind<Kind<ForIor, L>,
-    Function1<A, B>>>): Eval<Kind<Kind<ForIor, L>, B>> = arrow.core.Ior.apply<L>(SL).run {
+fun <L, A, B> Kind<Kind<ForIor, L>, A>.apEval(
+  SL: Semigroup<L>,
+  arg1: Eval<Kind<Kind<ForIor, L>, Function1<A, B>>>
+): Eval<Kind<Kind<ForIor, L>, B>> = arrow.core.Ior.apply<L>(SL).run {
   this@apEval.apEval<A, B>(arg1) as arrow.core.Eval<arrow.Kind<arrow.Kind<arrow.core.ForIor, L>, B>>
 }
 
@@ -655,8 +659,10 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.product(SL: Semigroup<L>, arg1: Kind<Kind
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B, Z> Kind<Kind<ForIor, L>, Tuple2<A, B>>.product(SL: Semigroup<L>,
-    arg1: Kind<Kind<ForIor, L>, Z>): Ior<L, Tuple3<A, B, Z>> = arrow.core.Ior.apply<L>(SL).run {
+fun <L, A, B, Z> Kind<Kind<ForIor, L>, Tuple2<A, B>>.product(
+  SL: Semigroup<L>,
+  arg1: Kind<Kind<ForIor, L>, Z>
+): Ior<L, Tuple3<A, B, Z>> = arrow.core.Ior.apply<L>(SL).run {
   this@product.product<A, B, Z>(arg1) as arrow.core.Ior<L, arrow.core.Tuple3<A, B, Z>>
 }
 
@@ -675,8 +681,10 @@ fun <L, A, B, Z> Kind<Kind<ForIor, L>, Tuple2<A, B>>.product(SL: Semigroup<L>,
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B, C, Z> Kind<Kind<ForIor, L>, Tuple3<A, B, C>>.product(SL: Semigroup<L>,
-    arg1: Kind<Kind<ForIor, L>, Z>): Ior<L, Tuple4<A, B, C, Z>> = arrow.core.Ior.apply<L>(SL).run {
+fun <L, A, B, C, Z> Kind<Kind<ForIor, L>, Tuple3<A, B, C>>.product(
+  SL: Semigroup<L>,
+  arg1: Kind<Kind<ForIor, L>, Z>
+): Ior<L, Tuple4<A, B, C, Z>> = arrow.core.Ior.apply<L>(SL).run {
   this@product.product<A, B, C, Z>(arg1) as arrow.core.Ior<L, arrow.core.Tuple4<A, B, C, Z>>
 }
 
@@ -695,8 +703,10 @@ fun <L, A, B, C, Z> Kind<Kind<ForIor, L>, Tuple3<A, B, C>>.product(SL: Semigroup
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B, C, D, Z> Kind<Kind<ForIor, L>, Tuple4<A, B, C, D>>.product(SL: Semigroup<L>,
-    arg1: Kind<Kind<ForIor, L>, Z>): Ior<L, Tuple5<A, B, C, D, Z>> =
+fun <L, A, B, C, D, Z> Kind<Kind<ForIor, L>, Tuple4<A, B, C, D>>.product(
+  SL: Semigroup<L>,
+  arg1: Kind<Kind<ForIor, L>, Z>
+): Ior<L, Tuple5<A, B, C, D, Z>> =
     arrow.core.Ior.apply<L>(SL).run {
   this@product.product<A, B, C, D, Z>(arg1) as arrow.core.Ior<L, arrow.core.Tuple5<A, B, C, D, Z>>
 }
@@ -716,8 +726,10 @@ fun <L, A, B, C, D, Z> Kind<Kind<ForIor, L>, Tuple4<A, B, C, D>>.product(SL: Sem
   ),
   DeprecationLevel.WARNING
 )
-fun <L, A, B, C, D, E, Z> Kind<Kind<ForIor, L>, Tuple5<A, B, C, D, E>>.product(SL: Semigroup<L>,
-    arg1: Kind<Kind<ForIor, L>, Z>): Ior<L, Tuple6<A, B, C, D, E, Z>> =
+fun <L, A, B, C, D, E, Z> Kind<Kind<ForIor, L>, Tuple5<A, B, C, D, E>>.product(
+  SL: Semigroup<L>,
+  arg1: Kind<Kind<ForIor, L>, Z>
+): Ior<L, Tuple6<A, B, C, D, E, Z>> =
     arrow.core.Ior.apply<L>(SL).run {
   this@product.product<A, B, C, D, E, Z>(arg1) as arrow.core.Ior<L, arrow.core.Tuple6<A, B, C, D, E,
     Z>>

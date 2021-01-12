@@ -53,5 +53,4 @@ fun <A, B> AndThen<A, B>.maybeCombine(SB: Semigroup<B>, arg1: AndThen<A, B>): An
   "NOTHING_TO_INLINE"
 )
 inline fun <A, B> Companion.semigroup(SB: Semigroup<B>): AndThenSemigroup<A, B> = object :
-    arrow.core.extensions.AndThenSemigroup<A, B> { override fun SB(): arrow.typeclasses.Semigroup<B>
-    = SB }
+    arrow.core.extensions.AndThenSemigroup<A, B> { override fun SB(): arrow.typeclasses.Semigroup<B> = SB }

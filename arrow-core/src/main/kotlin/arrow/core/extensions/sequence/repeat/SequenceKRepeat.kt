@@ -38,4 +38,3 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   inline fun repeat(): SequenceKRepeat = repeat_singleton}
-
