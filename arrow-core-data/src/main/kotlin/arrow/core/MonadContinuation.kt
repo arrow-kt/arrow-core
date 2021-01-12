@@ -2,7 +2,6 @@ package arrow.core
 
 import arrow.Kind
 import arrow.typeclasses.suspended.BindSyntax
-import arrow.typeclasses.suspended.Invoke
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
