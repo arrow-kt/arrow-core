@@ -36,7 +36,7 @@ object Map {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
-  @Deprecated("@extension projected functions are deprecated", ReplaceWith("mapEq(EQK, EQA)", "arrow.core.mapEq"))
+  @Deprecated("@extension projected functions are deprecated", ReplaceWith("Eq.map(EQK, EQA)", "arrow.core.Eq", "arrow.core.Eq"))
   inline fun <K, A> eq(EQK: Eq<K>, EQA: Eq<A>): MapKEq<K, A> = object :
       arrow.core.extensions.MapKEq<K, A> { override fun EQK(): arrow.typeclasses.Eq<K> = EQK
 

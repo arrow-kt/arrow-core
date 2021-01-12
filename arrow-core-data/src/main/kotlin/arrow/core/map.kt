@@ -6,7 +6,6 @@ import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.defaultSalt
-import kotlin.coroutines.EmptyCoroutineContext.fold
 import kotlin.collections.flatMap as _flatMap
 
 object MapInstances
@@ -22,8 +21,8 @@ fun <K, A, B> Map<K, A>.ap(ff: Map<K, (A) -> B>): Map<K, B> =
   ff.flatMap { (_, f) -> this.mapValues { (_, a) -> f(a) } }
 
 inline fun <K, E, A, B> Map<K, A>.traverseEither(f: (A) -> Either<E, B>): Either<E, Map<K, B>> =
-  foldRight(emptyMap<K, B>().right()) { (k, a): Map.Entry<K, A>, acc: Either<E, Map<K, B>> ->
-    f(a).ap(acc.map { bs -> { b: B -> mapOf(k to b) + bs } })
+  foldRight(emptyMap<K, B>().right()) { (k, a), acc: Either<E, Map<K, B>> ->
+    f(a).ap(acc.map { bs: Map<K, B> -> { b: B -> mapOf(k to b) + bs } })
   }
 
 inline fun <K, E, A, B> Map<K, A>.flatTraverseEither(f: (A) -> Either<E, Map<K, B>>): Either<E, Map<K, B>> =
@@ -314,7 +313,7 @@ fun <K, A> Map<K, A>.eqv(EQK: Eq<K>, EQA: Eq<A>, b: Map<K, A>): Boolean =
 fun <K, A> Map<K, A>.neqv(EQK: Eq<K>, EQA: Eq<A>, b: Map<K, A>): Boolean =
   !eqv(EQK, EQA, b)
 
-fun <K, A> mapEq(EQK: Eq<K>, EQA: Eq<A>): Eq<Map<K, A>> =
+fun <K, A> Eq.Companion.map(EQK: Eq<K>, EQA: Eq<A>): Eq<Map<K, A>> =
   MapEq(EQK, EQA)
 
 private class MapEq<K, A>(
@@ -332,7 +331,7 @@ fun <K, A> Map<K, A>.hashWithSalt(HK: Hash<K>, HA: Hash<A>, salt: Int): Int =
 fun <K, A> Map<K, A>.hash(HK: Hash<K>, HA: Hash<A>): Int =
   hashWithSalt(HK, HA, defaultSalt)
 
-fun <K, A> mapHash(HK: Hash<K>, HA: Hash<A>): Hash<Map<K, A>> =
+fun <K, A> Hash.Companion.map(HK: Hash<K>, HA: Hash<A>): Hash<Map<K, A>> =
   MapHash(HK, HA)
 
 private class MapHash<K, A>(
@@ -349,7 +348,7 @@ fun <A, B> Pair<A, B>.show(SA: Show<A>, SB: Show<B>): String =
 fun <K, A> Map<K, A>.show(SK: Show<K>, SA: Show<A>): String =
   "Map(${toList().k().show(Show { show(SK, SA) })})"
 
-fun <K, A> mapShow(SK: Show<K>, SA: Show<A>): Show<Map<K, A>> =
+fun <K, A> Show.Companion.map(SK: Show<K>, SA: Show<A>): Show<Map<K, A>> =
   MapShow(SK, SA)
 
 private class MapShow<K, A>(
@@ -367,7 +366,7 @@ fun <K, A> Map<K, A>.combine(SG: Semigroup<A>, b: Map<K, A>): Map<K, A> = with(S
 fun <K, A> Iterable<Map<K, A>>.combineAll(SG: Semigroup<A>): Map<K, A> =
   fold(emptyMap()) { acc, map -> acc.combine(SG, map) }
 
-fun <K, A> mapMonoid(SG: Semigroup<A>): Monoid<Map<K, A>> =
+fun <K, A> Monoid.Companion.map(SG: Semigroup<A>): Monoid<Map<K, A>> =
   MapMonoid(SG)
 
 private class MapMonoid<K, A>(private val SG: Semigroup<A>) : Monoid<Map<K, A>> {
