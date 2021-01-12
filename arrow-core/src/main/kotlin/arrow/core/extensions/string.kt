@@ -89,7 +89,7 @@ interface StringHash : Hash<String>, StringEq {
   override fun String.hash(): Int = hashCode()
 }
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Show.string()", "arrow.core.Show", "arrow.core.string"))
+@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Hash.string()", "arrow.core.Hash", "arrow.core.string"))
 fun String.Companion.hash(): Hash<String> =
   object : StringHash {}
 
