@@ -1,15 +1,9 @@
 package generic
 
-import arrow.continuations.generic.ShortCircuit
 import arrow.core.Left
 import arrow.core.Right
 import arrow.core.computations.either
-import arrow.fx.coroutines.ComputationPool
-import arrow.fx.coroutines.ExitCase
-import arrow.fx.coroutines.Promise
-import arrow.fx.coroutines.bracketCase
 import io.kotlintest.fail
-import io.kotlintest.matchers.types.shouldBeInstanceOf
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.kotlintest.specs.StringSpec
@@ -21,6 +15,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.Continuation
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
 import kotlin.coroutines.intrinsics.intercepted
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
@@ -124,26 +119,6 @@ class SuspendingComputationTest : StringSpec({
     } shouldBe Left("test")
   }
 
-  "Short-circuiting cancels Arrow Fx Coroutines" {
-    val exit = Promise<ExitCase>()
-
-    either<String, Int> {
-      val i: Int = bracketCase(
-        acquire = { Unit },
-        use = {
-          Left("hello").invoke()
-        },
-        release = { _, exitCase -> exit.complete(exitCase) }
-      )
-
-      5
-    } shouldBe Left("hello")
-
-    exit.get().shouldBeInstanceOf<ExitCase.Failure> {
-      it.failure.shouldBeInstanceOf<ShortCircuit>()
-    }
-  }
-
   "Short-circuiting cancels KotlinX Coroutines" {
     val scope = CoroutineScope(Dispatchers.Default)
     val latch = CompletableDeferred<Unit>()
@@ -166,7 +141,17 @@ class SuspendingComputationTest : StringSpec({
 
     cancelled.await()
   }
+
+  "Computation blocks run on parent context" {
+    val parentCtx = currentContext()
+    either<String, Unit> {
+      currentContext() shouldBe parentCtx
+    }
+  }
 })
+
+suspend fun currentContext(): CoroutineContext =
+  kotlin.coroutines.coroutineContext
 
 suspend fun completeOnCancellation(latch: CompletableDeferred<Unit>, cancelled: CompletableDeferred<Unit>): Unit =
   suspendCancellableCoroutine { cont ->
@@ -181,7 +166,7 @@ suspend fun completeOnCancellation(latch: CompletableDeferred<Unit>, cancelled: 
 
 internal suspend fun Throwable.suspend(): Nothing =
   suspendCoroutineUninterceptedOrReturn { cont ->
-    suspend { throw this }.startCoroutine(Continuation(ComputationPool) {
+    suspend { throw this }.startCoroutine(Continuation(Dispatchers.Default) {
       cont.intercepted().resumeWith(it)
     })
 
@@ -190,7 +175,7 @@ internal suspend fun Throwable.suspend(): Nothing =
 
 internal suspend fun <A> A.suspend(): A =
   suspendCoroutineUninterceptedOrReturn { cont ->
-    suspend { this }.startCoroutine(Continuation(ComputationPool) {
+    suspend { this }.startCoroutine(Continuation(Dispatchers.Default) {
       cont.intercepted().resumeWith(it)
     })
 
