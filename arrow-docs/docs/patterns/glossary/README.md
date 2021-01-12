@@ -136,8 +136,8 @@ import arrow.core.Option
 import arrow.core.extensions.fx
 
 Option.fx {
-  val (a) = Option(1)
-  val (b) = Option(a + 1)
+  val a = Option(1)()
+  val b = Option(a + 1)()
   a + b
 }
 ```

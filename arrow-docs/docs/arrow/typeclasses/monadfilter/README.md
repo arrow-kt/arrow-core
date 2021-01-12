@@ -29,8 +29,8 @@ import arrow.core.extensions.*
 import arrow.core.extensions.option.monadFilter.*
 
 Option.monadFilter().fx.monadFilter {
-  val (a) = Option(1)
-  val (b) = Option(1)
+  val a = Option(1)()
+  val b = Option(1)()
   val c = a + b
   continueIf(c > 0)
   c
@@ -42,8 +42,8 @@ import arrow.core.*
 import arrow.core.extensions.listk.monadFilter.*
 
 ListK.monadFilter().fx.monadFilter {
-  val (a) = listOf(1).k()
-  val (b) = listOf(1).k()
+  val a = listOf(1).k()()
+  val b = listOf(1).k()
   val c = a + b
   continueIf(c > 0)
   c
@@ -54,8 +54,8 @@ When `continueIf` returns `false`, the computation is interrupted and the `empty
 
 ```kotlin:ank
 Option.monadFilter().fx.monadFilter {
-  val (a) = Option(1)
-  val (b) = Option(1)
+  val a = Option(1)()
+  val b = Option(1)()
   val c = a + b
   continueIf(c < 0)
   c
@@ -64,8 +64,8 @@ Option.monadFilter().fx.monadFilter {
 
 ```kotlin:ank
 ListK.monadFilter().fx.monadFilter {
-  val (a) = listOf(1).k()
-  val (b) = listOf(1).k()
+  val a = listOf(1).k()()
+  val b = listOf(1).k()()
   val c = a + b
   continueIf(c < 0)
   c
@@ -80,7 +80,7 @@ When `bindWithFilter` is satisfied the computation continues.
 
 ```kotlin:ank
 Option.monadFilter().fx.monadFilter {
-  val (a) = Option(1)
+  val a = Option(1)()
   val b = Option(1).bindWithFilter { it == a } //continues
   a + b
 }
@@ -88,7 +88,7 @@ Option.monadFilter().fx.monadFilter {
 
 ```kotlin:ank
 ListK.monadFilter().fx.monadFilter {
-  val (a) = listOf(1).k()
+  val a = listOf(1).k()()
   val b = listOf(1).k().bindWithFilter { it == a } //continues
   a + b
 }
@@ -98,7 +98,7 @@ When `bindWithFilter` returns `false`, the computation short circuits, yielding 
 
 ```kotlin:ank
 Option.monadFilter().fx.monadFilter {
- val (a) = Option(0)
+ val a = Option(0)()
  val b = Option(1).bindWithFilter { it == a } //short circuits because a is 0
  a + b
 }
@@ -106,7 +106,7 @@ Option.monadFilter().fx.monadFilter {
 
 ```kotlin:ank
 ListK.monadFilter().fx.monadFilter {
- val (a) = listOf(0).k()
+ val a = listOf(0).k()()
  val b = listOf(1).k().bindWithFilter { it == a } //short circuits because a is 0
  a + b
 }

@@ -315,9 +315,9 @@ import arrow.typeclasses.Show
  * val value =
  * //sampleStart
  *  Option.fx {
- *  val (a) = Some(1)
- *  val (b) = Some(1 + a)
- *  val (c) = Some(1 + b)
+ *  val a = Some(1)()
+ *  val b = Some(1 + a)()
+ *  val c = Some(1 + b)()
  *  a + b + c
  * }
  * //sampleEnd
@@ -335,9 +335,9 @@ import arrow.typeclasses.Show
  * val value =
  * //sampleStart
  *  Option.fx {
- *    val (x) = none<Int>()
- *    val (y) = Some(1 + x)
- *    val (z) = Some(1 + y)
+ *    val x = none<Int>()()
+ *    val y = Some(1 + x)()
+ *    val z = Some(1 + y)()
  *    x + y + z
  *  }
  * //sampleEnd
