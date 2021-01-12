@@ -37,9 +37,9 @@ Thread all the `G` effects through the `F` structure to invert the structure fro
 
 ```kotlin:ank
 import arrow.core.*
-import arrow.core.extensions.id.applicative.applicative
+import arrow.core.extensions.eval.applicative.applicative
 
-Const<Int, Nothing>(1).sequence<Nothing, Int, ForId>(Id.applicative())
+Const<Int, Nothing>(1).sequence<Nothing, Int, ForEval>(Eval.applicative())
 ```
 
 ### Laws
