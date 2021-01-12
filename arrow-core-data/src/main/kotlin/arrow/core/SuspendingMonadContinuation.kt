@@ -1,7 +1,7 @@
 package arrow.core
 
 import arrow.Kind
-import arrow.typeclasses.suspended.Invoke
+import arrow.typeclasses.suspended.BindSyntax
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.loop
 import kotlin.coroutines.Continuation
@@ -18,7 +18,7 @@ internal const val SUSPENDED = 1
 @Deprecated("SuspendMonadContinuation is replaced by delimited continuations, please use DelimContScope instead")
 internal abstract class SuspendMonadContinuation<F, A>(
   private val parent: Continuation<Kind<F, A>>
-) : Continuation<Kind<F, A>>, Invoke<F> {
+) : Continuation<Kind<F, A>>, BindSyntax<F> {
 
   abstract fun ShortCircuit.recover(): Kind<F, A>
 
