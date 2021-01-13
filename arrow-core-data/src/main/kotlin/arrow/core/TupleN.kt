@@ -1,3 +1,6 @@
+@file:JvmMultifileClass
+@file:JvmName("TupleNKt")
+
 package arrow.core
 
 import java.util.Collections
