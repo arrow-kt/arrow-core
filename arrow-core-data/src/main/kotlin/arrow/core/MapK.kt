@@ -21,7 +21,9 @@ data class MapK<K, out A>(private val map: Map<K, A>) : MapKOf<K, A>, Map<K, A> 
 
   fun <B, Z> map2(fb: MapK<K, B>, f: (A, B) -> Z): MapK<K, Z> =
     if (fb.isEmpty()) emptyMap<K, Z>().k()
-    else mapN(this, fb) { _, a, b -> f(a, b) }.k()
+    else this.map.flatMap { (k, a) ->
+      fb[k]?.let { mapOf(k to f(a, it)) } ?: emptyMap()
+    }.k()
 
   fun <B, Z> map2Eval(fb: Eval<MapK<K, B>>, f: (A, B) -> Z): Eval<MapK<K, Z>> =
     if (fb.value().isEmpty()) Eval.now(emptyMap<K, Z>().k())
