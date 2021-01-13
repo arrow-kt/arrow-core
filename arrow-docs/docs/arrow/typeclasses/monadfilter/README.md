@@ -44,7 +44,7 @@ import arrow.core.extensions.listk.monadFilter.*
 ListK.monadFilter().fx.monadFilter {
   val a = listOf(1).k()()
   val b = listOf(1).k()()
-  val c = (a + b).invoke()
+  val c = a + b
   continueIf(c > 0)
   c
 }
