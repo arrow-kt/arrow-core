@@ -806,6 +806,7 @@ interface Tuple9Show<A, B, C, D, E, F, G, H, I> : Show<Tuple9<A, B, C, D, E, F, 
     show(SA(), SB(), SC(), SD(), SE(), SF(), SG(), SH(), SI())
 }
 
+@extension
 interface Tuple10Eq<A, B, C, D, E, F, G, H, I, J> : Eq<Tuple10<A, B, C, D, E, F, G, H, I, J>> {
 
   fun EQA(): Eq<A>
@@ -832,6 +833,7 @@ interface Tuple10Eq<A, B, C, D, E, F, G, H, I, J> : Eq<Tuple10<A, B, C, D, E, F,
       EQJ().run { j.eqv(b.j) }
 }
 
+@extension
 interface Tuple10Hash<A, B, C, D, E, F, G, H, I, J> : Hash<Tuple10<A, B, C, D, E, F, G, H, I, J>> {
   fun HA(): Hash<A>
   fun HB(): Hash<B>
@@ -878,6 +880,7 @@ interface Tuple10Hash<A, B, C, D, E, F, G, H, I, J> : Hash<Tuple10<A, B, C, D, E
     }
 }
 
+@extension
 interface Tuple10Order<A, B, C, D, E, F, G, H, I, J> : Order<Tuple10<A, B, C, D, E, F, G, H, I, J>> {
   fun OA(): Order<A>
   fun OB(): Order<B>
@@ -904,6 +907,7 @@ interface Tuple10Order<A, B, C, D, E, F, G, H, I, J> : Order<Tuple10<A, B, C, D,
   ).fold(Ordering.monoid())
 }
 
+@extension
 interface Tuple10Show<A, B, C, D, E, F, G, H, I, J> : Show<Tuple10<A, B, C, D, E, F, G, H, I, J>> {
   fun SA(): Show<A>
   fun SB(): Show<B>

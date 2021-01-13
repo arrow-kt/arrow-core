@@ -8,6 +8,7 @@ import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Show
+import arrow.typeclasses.defaultSalt
 
 class ForTuple2 private constructor() {
   companion object
@@ -19,6 +20,7 @@ typealias Tuple2PartialOf<A> = arrow.Kind<ForTuple2, A>
 inline fun <A, B> Tuple2Of<A, B>.fix(): Tuple2<A, B> =
   this as Tuple2<A, B>
 
+@Deprecated("Deprecated in favor of Kotlin's Pair", ReplaceWith("Pair(a, b)"))
 data class Tuple2<out A, out B>(val a: A, val b: B) : Tuple2Of<A, B> {
 
   @Deprecated("Functor hierarchy for Tuple2 is deprecated", ReplaceWith("Tuple2(this.a, f(this.b))", "arrow.core.Tuple2"))
@@ -63,31 +65,101 @@ data class Tuple2<out A, out B>(val a: A, val b: B) : Tuple2Of<A, B> {
   companion object
 }
 
-fun <A, B> Tuple2<A, B>.eqv(
+fun <A, B> Pair<A, B>.show(SA: Show<A>, SB: Show<B>): String =
+  "(${SA.run { first.show() }}, ${SB.run { second.show() }})"
+
+private class PairShow<A, B>(
+  private val SA: Show<A>,
+  private val SB: Show<B>
+) : Show<Pair<A, B>> {
+  override fun Pair<A, B>.show(): String =
+    show(SA, SB)
+}
+
+fun <A, B> Show.Companion.pair(
+  SA: Show<A>,
+  SB: Show<B>
+): Show<Pair<A, B>> =
+  PairShow(SA, SB)
+
+fun <A, B> Pair<A, B>.eqv(
   EQA: Eq<A>,
   EQB: Eq<B>,
-  b: Tuple2<A, B>
+  other: Pair<A, B>
 ): Boolean =
-  EQA.run { a.eqv(b.a) } &&
-    EQB.run { this@eqv.b.eqv(b.b) }
+  EQA.run { first.eqv(other.first) } &&
+    EQB.run { this@eqv.second.eqv(other.second) }
 
-fun <A, B> Tuple2<A, B>.hashWithSalt(
+fun <A, B> Pair<A, B>.neqv(
+  EQA: Eq<A>,
+  EQB: Eq<B>,
+  other: Pair<A, B>
+): Boolean = !eqv(EQA, EQB, other)
+
+private class PairEq<A, B>(
+  private val EQA: Eq<A>,
+  private val EQB: Eq<B>
+) : Eq<Pair<A, B>> {
+  override fun Pair<A, B>.eqv(other: Pair<A, B>): Boolean =
+    eqv(EQA, EQB, other)
+}
+
+fun <A, B> Eq.Companion.pair(
+  EQA: Eq<A>,
+  EQB: Eq<B>
+): Eq<Pair<A, B>> =
+  PairEq(EQA, EQB)
+
+fun <A, B> Pair<A, B>.hashWithSalt(
   HA: Hash<A>,
   HB: Hash<B>,
   salt: Int
 ): Int =
   HA.run {
     HB.run {
-      a.hashWithSalt(
-        b.hashWithSalt(salt))
+      first.hashWithSalt(
+        second.hashWithSalt(salt))
     }
   }
 
-fun <A, B> Tuple2<A, B>.compare(
+fun <A, B> Pair<A, B>.hash(
+  HA: Hash<A>,
+  HB: Hash<B>
+): Int = hashWithSalt(HA, HB, defaultSalt)
+
+private class PairHash<A, B>(
+  private val HA: Hash<A>,
+  private val HB: Hash<B>
+) : Hash<Pair<A, B>> {
+  override fun Pair<A, B>.hashWithSalt(salt: Int): Int =
+    hashWithSalt(HA, HB, salt)
+}
+
+fun <A, B> Hash.Companion.pair(
+  HA: Hash<A>,
+  HB: Hash<B>
+): Hash<Pair<A, B>> =
+  PairHash(HA, HB)
+
+fun <A, B> Pair<A, B>.compare(
   OA: Order<A>,
   OB: Order<B>,
-  other: Tuple2<A, B>
+  other: Pair<A, B>
 ): Ordering = listOf(
-  OA.run { a.compare(other.a) },
-  OB.run { b.compare(other.b) }
+  OA.run { first.compare(other.first) },
+  OB.run { second.compare(other.second) }
 ).fold(Monoid.ordering())
+
+private class PairOrder<A, B>(
+  private val OA: Order<A>,
+  private val OB: Order<B>
+) : Order<Pair<A, B>> {
+  override fun Pair<A, B>.compare(other: Pair<A, B>): Ordering =
+    compare(OA, OB, other)
+}
+
+fun <A, B> Order.Companion.pair(
+  OA: Order<A>,
+  OB: Order<B>
+): Order<Pair<A, B>> =
+  PairOrder(OA, OB)

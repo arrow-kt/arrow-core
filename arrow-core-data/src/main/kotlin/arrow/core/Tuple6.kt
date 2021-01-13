@@ -8,6 +8,7 @@ import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Show
+import arrow.typeclasses.defaultSalt
 
 class ForTuple6 private constructor() {
   companion object
@@ -28,6 +29,28 @@ data class Tuple6<out A, out B, out C, out D, out E, out F>(val a: A, val b: B, 
   companion object
 }
 
+private class Tuple6Show<A, B, C, D, E, F>(
+  private val SA: Show<A>,
+  private val SB: Show<B>,
+  private val SC: Show<C>,
+  private val SD: Show<D>,
+  private val SE: Show<E>,
+  private val SF: Show<F>
+) : Show<Tuple6<A, B, C, D, E, F>> {
+  override fun Tuple6<A, B, C, D, E, F>.show(): String =
+    show(SA, SB, SC, SD, SE, SF)
+}
+
+fun <A, B, C, D, E, F> Show.Companion.tuple6(
+  SA: Show<A>,
+  SB: Show<B>,
+  SC: Show<C>,
+  SD: Show<D>,
+  SE: Show<E>,
+  SF: Show<F>
+): Show<Tuple6<A, B, C, D, E, F>> =
+  Tuple6Show(SA, SB, SC, SD, SE, SF)
+
 fun <A, B, C, D, E, F> Tuple6<A, B, C, D, E, F>.eqv(
   EQA: Eq<A>,
   EQB: Eq<B>,
@@ -35,14 +58,46 @@ fun <A, B, C, D, E, F> Tuple6<A, B, C, D, E, F>.eqv(
   EQD: Eq<D>,
   EQE: Eq<E>,
   EQF: Eq<F>,
-  b: Tuple6<A, B, C, D, E, F>
+  other: Tuple6<A, B, C, D, E, F>
 ): Boolean =
-  EQA.run { a.eqv(b.a) } &&
-    EQB.run { this@eqv.b.eqv(b.b) } &&
-    EQC.run { c.eqv(b.c) } &&
-    EQD.run { d.eqv(b.d) } &&
-    EQE.run { e.eqv(b.e) } &&
-    EQF.run { f.eqv(b.f) }
+  EQA.run { a.eqv(other.a) } &&
+    EQB.run { this@eqv.b.eqv(other.b) } &&
+    EQC.run { c.eqv(other.c) } &&
+    EQD.run { d.eqv(other.d) } &&
+    EQE.run { e.eqv(other.e) } &&
+    EQF.run { f.eqv(other.f) }
+
+fun <A, B, C, D, E, F> Tuple6<A, B, C, D, E, F>.neqv(
+  EQA: Eq<A>,
+  EQB: Eq<B>,
+  EQC: Eq<C>,
+  EQD: Eq<D>,
+  EQE: Eq<E>,
+  EQF: Eq<F>,
+  other: Tuple6<A, B, C, D, E, F>
+): Boolean = !eqv(EQA, EQB, EQC, EQD, EQE, EQF, other)
+
+private class Tuple6Eq<A, B, C, D, E, F>(
+  private val EQA: Eq<A>,
+  private val EQB: Eq<B>,
+  private val EQC: Eq<C>,
+  private val EQD: Eq<D>,
+  private val EQE: Eq<E>,
+  private val EQF: Eq<F>
+) : Eq<Tuple6<A, B, C, D, E, F>> {
+  override fun Tuple6<A, B, C, D, E, F>.eqv(other: Tuple6<A, B, C, D, E, F>): Boolean =
+    eqv(EQA, EQB, EQC, EQD, EQE, EQF, other)
+}
+
+fun <A, B, C, D, E, F> Eq.Companion.tuple6(
+  EQA: Eq<A>,
+  EQB: Eq<B>,
+  EQC: Eq<C>,
+  EQD: Eq<D>,
+  EQE: Eq<E>,
+  EQF: Eq<F>
+): Eq<Tuple6<A, B, C, D, E, F>> =
+  Tuple6Eq(EQA, EQB, EQC, EQD, EQE, EQF)
 
 fun <A, B, C, D, E, F> Tuple6<A, B, C, D, E, F>.hashWithSalt(
   HA: Hash<A>,
@@ -73,6 +128,37 @@ fun <A, B, C, D, E, F> Tuple6<A, B, C, D, E, F>.hashWithSalt(
     }
   }
 
+fun <A, B, C, D, E, F> Tuple6<A, B, C, D, E, F>.hash(
+  HA: Hash<A>,
+  HB: Hash<B>,
+  HC: Hash<C>,
+  HD: Hash<D>,
+  HE: Hash<E>,
+  HF: Hash<F>
+): Int = hashWithSalt(HA, HB, HC, HD, HE, HF, defaultSalt)
+
+private class Tuple6Hash<A, B, C, D, E, F>(
+  private val HA: Hash<A>,
+  private val HB: Hash<B>,
+  private val HC: Hash<C>,
+  private val HD: Hash<D>,
+  private val HE: Hash<E>,
+  private val HF: Hash<F>
+) : Hash<Tuple6<A, B, C, D, E, F>> {
+  override fun Tuple6<A, B, C, D, E, F>.hashWithSalt(salt: Int): Int =
+    hashWithSalt(HA, HB, HC, HD, HE, HF, salt)
+}
+
+fun <A, B, C, D, E, F> Hash.Companion.tuple6(
+  HA: Hash<A>,
+  HB: Hash<B>,
+  HC: Hash<C>,
+  HD: Hash<D>,
+  HE: Hash<E>,
+  HF: Hash<F>
+): Hash<Tuple6<A, B, C, D, E, F>> =
+  Tuple6Hash(HA, HB, HC, HD, HE, HF)
+
 fun <A, B, C, D, E, F> Tuple6<A, B, C, D, E, F>.compare(
   OA: Order<A>,
   OB: Order<B>,
@@ -89,3 +175,25 @@ fun <A, B, C, D, E, F> Tuple6<A, B, C, D, E, F>.compare(
   OE.run { e.compare(other.e) },
   OF.run { f.compare(other.f) }
 ).fold(Monoid.ordering())
+
+private class Tuple6Order<A, B, C, D, E, F>(
+  private val OA: Order<A>,
+  private val OB: Order<B>,
+  private val OC: Order<C>,
+  private val OD: Order<D>,
+  private val OE: Order<E>,
+  private val OF: Order<F>
+) : Order<Tuple6<A, B, C, D, E, F>> {
+  override fun Tuple6<A, B, C, D, E, F>.compare(other: Tuple6<A, B, C, D, E, F>): Ordering =
+    compare(OA, OB, OC, OD, OE, OF, other)
+}
+
+fun <A, B, C, D, E, F> Order.Companion.tuple6(
+  OA: Order<A>,
+  OB: Order<B>,
+  OC: Order<C>,
+  OD: Order<D>,
+  OE: Order<E>,
+  OF: Order<F>
+): Order<Tuple6<A, B, C, D, E, F>> =
+  Tuple6Order(OA, OB, OC, OD, OE, OF)
