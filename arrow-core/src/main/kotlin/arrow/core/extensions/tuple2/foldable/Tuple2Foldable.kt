@@ -37,10 +37,7 @@ internal val foldable_singleton: Tuple2Foldable<Any?> = object : Tuple2Foldable<
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "foldLeft(arg1, arg2)",
-    "arrow.core.foldLeft"
-  ),
+  ReplaceWith("f(arg1, this.b)"),
   DeprecationLevel.WARNING
 )
 fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.foldLeft(arg1: B, arg2: Function2<B, A, B>): B =
@@ -57,10 +54,7 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.foldLeft(arg1: B, arg2: Function2<B, A
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "foldRight(arg1, arg2)",
-    "arrow.core.foldRight"
-  ),
+  ReplaceWith("f(arg1, lb)"),
   DeprecationLevel.WARNING
 )
 fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.foldRight(
@@ -79,10 +73,7 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.foldRight(
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "fold(arg1)",
-    "arrow.core.fold"
-  ),
+  ReplaceWith("this.b"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.fold(arg1: Monoid<A>): A =
@@ -99,10 +90,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.fold(arg1: Monoid<A>): A =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "reduceLeftToOption(arg1, arg2)",
-    "arrow.core.reduceLeftToOption"
-  ),
+  ReplaceWith("Option(arg1(this.b))", "arrow.core.Option"),
   DeprecationLevel.WARNING
 )
 fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.reduceLeftToOption(
@@ -121,10 +109,7 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.reduceLeftToOption(
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "reduceRightToOption(arg1, arg2)",
-    "arrow.core.reduceRightToOption"
-  ),
+  ReplaceWith("Option(arg1(this.b))", "arrow.core.Option"),
   DeprecationLevel.WARNING
 )
 fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.reduceRightToOption(
@@ -144,10 +129,7 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.reduceRightToOption(
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "reduceLeftOption(arg1)",
-    "arrow.core.reduceLeftOption"
-  ),
+  ReplaceWith("Option(arg1(this.b))", "arrow.core.Option"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.reduceLeftOption(arg1: Function2<A, A, A>): Option<A> =
@@ -164,10 +146,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.reduceLeftOption(arg1: Function2<A, A, A>
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "reduceRightOption(arg1)",
-    "arrow.core.reduceRightOption"
-  ),
+  ReplaceWith("Option(arg1(this.b))", "arrow.core.Option"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.reduceRightOption(arg1: Function2<A, Eval<A>, Eval<A>>):
@@ -184,10 +163,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.reduceRightOption(arg1: Function2<A, Eval
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "combineAll(arg1)",
-    "arrow.core.combineAll"
-  ),
+  ReplaceWith("this.b"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.combineAll(arg1: Monoid<A>): A =
@@ -204,10 +180,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.combineAll(arg1: Monoid<A>): A =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "foldMap(arg1, arg2)",
-    "arrow.core.foldMap"
-  ),
+  ReplaceWith("arg2(this.b)"),
   DeprecationLevel.WARNING
 )
 fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.foldMap(arg1: Monoid<B>, arg2: Function1<A, B>): B =
@@ -224,10 +197,7 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.foldMap(arg1: Monoid<B>, arg2: Functio
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "orEmpty(arg0, arg1)",
-    "arrow.core.Tuple2.orEmpty"
-  ),
+  ReplaceWith("arg0.just(arg1.empty())"),
   DeprecationLevel.WARNING
 )
 fun <F, A> orEmpty(arg0: Applicative<Kind<ForTuple2, F>>, arg1: Monoid<A>): Tuple2<F, A> =
@@ -242,14 +212,7 @@ fun <F, A> orEmpty(arg0: Applicative<Kind<ForTuple2, F>>, arg1: Monoid<A>): Tupl
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "traverse_(arg1, arg2)",
-    "arrow.core.traverse_"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Pair")
 fun <F, G, A, B> Kind<Kind<ForTuple2, F>, A>.traverse_(
   arg1: Applicative<G>,
   arg2: Function1<A,
@@ -265,14 +228,7 @@ fun <F, G, A, B> Kind<Kind<ForTuple2, F>, A>.traverse_(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "sequence_(arg1)",
-    "arrow.core.sequence_"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Pair")
 fun <F, G, A> Kind<Kind<ForTuple2, F>, Kind<G, A>>.sequence_(arg1: Applicative<G>): Kind<G, Unit> =
   arrow.core.Tuple2.foldable<F>().run {
     this@sequence_.sequence_<G, A>(arg1) as arrow.Kind<G, kotlin.Unit>
@@ -288,8 +244,8 @@ fun <F, G, A> Kind<Kind<ForTuple2, F>, Kind<G, A>>.sequence_(arg1: Applicative<G
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "find(arg1)",
-    "arrow.core.find"
+    "if(arg2(this.b)) Some(this.b) else None",
+    "arrow.core.Some", "arrow.core.None"
   ),
   DeprecationLevel.WARNING
 )
@@ -307,10 +263,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.find(arg1: Function1<A, Boolean>): Option
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "exists(arg1)",
-    "arrow.core.exists"
-  ),
+  ReplaceWith("arg1(this.b)"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.exists(arg1: Function1<A, Boolean>): Boolean =
@@ -327,10 +280,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.exists(arg1: Function1<A, Boolean>): Bool
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "forAll(arg1)",
-    "arrow.core.forAll"
-  ),
+  ReplaceWith("arg1(this.b)"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.forAll(arg1: Function1<A, Boolean>): Boolean =
@@ -347,10 +297,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.forAll(arg1: Function1<A, Boolean>): Bool
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "all(arg1)",
-    "arrow.core.all"
-  ),
+  ReplaceWith("arg1(this.b)"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.all(arg1: Function1<A, Boolean>): Boolean =
@@ -367,10 +314,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.all(arg1: Function1<A, Boolean>): Boolean
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "isEmpty()",
-    "arrow.core.isEmpty"
-  ),
+  ReplaceWith("false"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.isEmpty(): Boolean = arrow.core.Tuple2.foldable<F>().run {
@@ -386,10 +330,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.isEmpty(): Boolean = arrow.core.Tuple2.fo
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "nonEmpty()",
-    "arrow.core.nonEmpty"
-  ),
+  ReplaceWith("true"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.nonEmpty(): Boolean = arrow.core.Tuple2.foldable<F>().run {
@@ -405,10 +346,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.nonEmpty(): Boolean = arrow.core.Tuple2.f
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "isNotEmpty()",
-    "arrow.core.isNotEmpty"
-  ),
+  ReplaceWith("true"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.isNotEmpty(): Boolean = arrow.core.Tuple2.foldable<F>().run {
@@ -424,10 +362,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.isNotEmpty(): Boolean = arrow.core.Tuple2
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "size(arg1)",
-    "arrow.core.size"
-  ),
+  ReplaceWith("1"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.size(arg1: Monoid<Long>): Long =
@@ -442,14 +377,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.size(arg1: Monoid<Long>): Long =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "foldMapA(arg1, arg2, arg3)",
-    "arrow.core.foldMapA"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Pair")
 fun <F, G, A, B, AP : Applicative<G>, MO : Monoid<B>> Kind<Kind<ForTuple2, F>, A>.foldMapA(
   arg1: AP,
   arg2: MO,
@@ -465,14 +393,7 @@ fun <F, G, A, B, AP : Applicative<G>, MO : Monoid<B>> Kind<Kind<ForTuple2, F>, A
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "foldMapM(arg1, arg2, arg3)",
-    "arrow.core.foldMapM"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Pair")
 fun <F, G, A, B, MA : Monad<G>, MO : Monoid<B>> Kind<Kind<ForTuple2, F>, A>.foldMapM(
   arg1: MA,
   arg2: MO,
@@ -488,14 +409,7 @@ fun <F, G, A, B, MA : Monad<G>, MO : Monoid<B>> Kind<Kind<ForTuple2, F>, A>.fold
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "foldM(arg1, arg2, arg3)",
-    "arrow.core.foldM"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Monad typeclasses is deprecated. Use concrete methods on Pair")
 fun <F, G, A, B> Kind<Kind<ForTuple2, F>, A>.foldM(
   arg1: Monad<G>,
   arg2: B,
@@ -513,10 +427,7 @@ fun <F, G, A, B> Kind<Kind<ForTuple2, F>, A>.foldM(
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "get(arg1)",
-    "arrow.core.get"
-  ),
+  ReplaceWith("if(arg1 == 0L) Some(this.b) else None", "arrow.core.Some", "arrow.core.None"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.get(arg1: Long): Option<A> =
@@ -533,10 +444,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.get(arg1: Long): Option<A> =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "firstOption()",
-    "arrow.core.firstOption"
-  ),
+  ReplaceWith("Some(this.b)", "arrow.core.Some"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.firstOption(): Option<A> =
@@ -553,10 +461,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.firstOption(): Option<A> =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "firstOption(arg1)",
-    "arrow.core.firstOption"
-  ),
+  ReplaceWith("if(arg1(this.b)) Some(this.b) else None", "arrow.core.Some", "arrow.core.None"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.firstOption(arg1: Function1<A, Boolean>): Option<A> =
@@ -573,10 +478,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.firstOption(arg1: Function1<A, Boolean>):
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "firstOrNone()",
-    "arrow.core.firstOrNone"
-  ),
+  ReplaceWith("Some(this.b)", "arrow.core.Some"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.firstOrNone(): Option<A> =
@@ -593,10 +495,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.firstOrNone(): Option<A> =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "firstOrNone(arg1)",
-    "arrow.core.firstOrNone"
-  ),
+  ReplaceWith("if(arg1(this.b)) Some(this.b) else None", "arrow.core.Some", "arrow.core.None"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.firstOrNone(arg1: Function1<A, Boolean>): Option<A> =
@@ -613,10 +512,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.firstOrNone(arg1: Function1<A, Boolean>):
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "toList()",
-    "arrow.core.toList"
-  ),
+  ReplaceWith("listOf(this.b)"),
   DeprecationLevel.WARNING
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.toList(): List<A> = arrow.core.Tuple2.foldable<F>().run {
@@ -627,5 +523,6 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.toList(): List<A> = arrow.core.Tuple2.fol
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Foldable typeclasses is deprecated. Use concrete methods on Pair")
 inline fun <F> Companion.foldable(): Tuple2Foldable<F> = foldable_singleton as
   arrow.core.extensions.Tuple2Foldable<F>
