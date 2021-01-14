@@ -14,7 +14,6 @@ import arrow.core.Tuple7
 import arrow.core.Tuple8
 import arrow.core.Tuple9
 import arrow.core.extensions.Tuple2Apply
-import arrow.core.fix
 import kotlin.Any
 import kotlin.Deprecated
 import kotlin.Function1
