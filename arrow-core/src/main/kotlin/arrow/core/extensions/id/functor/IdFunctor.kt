@@ -1,16 +1,23 @@
-package arrow.core.extensions.sequence.functor
+package arrow.core.extensions.id.functor
 
 import arrow.Kind
-import arrow.core.ForSequenceK
+import arrow.core.ForId
+import arrow.core.Id
+import arrow.core.Id.Companion
 import arrow.core.Tuple2
-import arrow.core.extensions.SequenceKFunctor
+import arrow.core.extensions.IdFunctor
 import kotlin.Deprecated
 import kotlin.Function1
 import kotlin.PublishedApi
 import kotlin.Suppress
 import kotlin.Unit
 import kotlin.jvm.JvmName
-import kotlin.sequences.Sequence
+
+/**
+ * cached extension
+ */
+@PublishedApi()
+internal val functor_singleton: IdFunctor = object : arrow.core.extensions.IdFunctor {}
 
 /**
  *  Transform the [F] wrapped value [A] into [B] preserving the [F] structure
@@ -18,11 +25,11 @@ import kotlin.sequences.Sequence
  *
  *  ```kotlin:ank:playground
  *  import arrow.core.*
- * import arrow.core.extensions.sequencek.functor.*
+ * import arrow.core.extensions.id.functor.*
  * import arrow.core.*
  *
  *
- *  import arrow.core.extensions.sequencek.applicative.just
+ *  import arrow.core.extensions.id.applicative.just
  *
  *  fun main(args: Array<String>) {
  *   val result =
@@ -48,9 +55,8 @@ import kotlin.sequences.Sequence
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Sequence<A>.map(arg1: Function1<A, B>): Sequence<B> =
-    arrow.core.extensions.sequence.functor.Sequence.functor().run {
-  arrow.core.SequenceK(this@map).map<A, B>(arg1) as kotlin.sequences.Sequence<B>
+fun <A, B> Kind<ForId, A>.map(arg1: Function1<A, B>): Id<B> = arrow.core.Id.functor().run {
+  this@map.map<A, B>(arg1) as arrow.core.Id<B>
 }
 
 @JvmName("imap")
@@ -68,9 +74,9 @@ fun <A, B> Sequence<A>.map(arg1: Function1<A, B>): Sequence<B> =
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Sequence<A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>): Sequence<B> =
-    arrow.core.extensions.sequence.functor.Sequence.functor().run {
-  arrow.core.SequenceK(this@imap).imap<A, B>(arg1, arg2) as kotlin.sequences.Sequence<B>
+fun <A, B> Kind<ForId, A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>): Id<B> =
+    arrow.core.Id.functor().run {
+  this@imap.imap<A, B>(arg1, arg2) as arrow.core.Id<B>
 }
 
 /**
@@ -81,11 +87,11 @@ fun <A, B> Sequence<A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>): Seque
  *
  *  ```kotlin:ank:playground
  *  import arrow.core.*
- * import arrow.core.extensions.sequencek.functor.*
+ * import arrow.core.extensions.id.functor.*
  * import arrow.core.*
  *
  *
- *  import arrow.core.extensions.sequencek.applicative.just
+ *  import arrow.core.extensions.id.applicative.just
  *
  *  fun main(args: Array<String>) {
  *   val result =
@@ -107,15 +113,14 @@ fun <A, B> Sequence<A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>): Seque
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
   "lift(arg0)",
-  "arrow.core.extensions.sequence.functor.Sequence.lift"
+  "arrow.core.Id.lift"
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> lift(arg0: Function1<A, B>): Function1<Kind<ForSequenceK, A>, Kind<ForSequenceK, B>> =
-    arrow.core.extensions.sequence.functor.Sequence
+fun <A, B> lift(arg0: Function1<A, B>): Function1<Kind<ForId, A>, Kind<ForId, B>> = arrow.core.Id
    .functor()
-   .lift<A, B>(arg0) as kotlin.Function1<arrow.Kind<arrow.core.ForSequenceK, A>,
-    arrow.Kind<arrow.core.ForSequenceK, B>>
+   .lift<A, B>(arg0) as kotlin.Function1<arrow.Kind<arrow.core.ForId, A>,
+    arrow.Kind<arrow.core.ForId, B>>
 
 @JvmName("void")
 @Suppress(
@@ -132,9 +137,8 @@ fun <A, B> lift(arg0: Function1<A, B>): Function1<Kind<ForSequenceK, A>, Kind<Fo
   ),
   DeprecationLevel.WARNING
 )
-fun <A> Sequence<A>.void(): Sequence<Unit> =
-    arrow.core.extensions.sequence.functor.Sequence.functor().run {
-  arrow.core.SequenceK(this@void).void<A>() as kotlin.sequences.Sequence<kotlin.Unit>
+fun <A> Kind<ForId, A>.void(): Id<Unit> = arrow.core.Id.functor().run {
+  this@void.void<A>() as arrow.core.Id<kotlin.Unit>
 }
 
 /**
@@ -145,11 +149,11 @@ fun <A> Sequence<A>.void(): Sequence<Unit> =
  *
  *  ```kotlin:ank:playground
  *  import arrow.core.*
- * import arrow.core.extensions.sequencek.functor.*
+ * import arrow.core.extensions.id.functor.*
  * import arrow.core.*
  *
  *
- *  import arrow.core.extensions.sequencek.applicative.just
+ *  import arrow.core.extensions.id.applicative.just
  *
  *  fun main(args: Array<String>) {
  *   val result =
@@ -175,10 +179,9 @@ fun <A> Sequence<A>.void(): Sequence<Unit> =
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Sequence<A>.fproduct(arg1: Function1<A, B>): Sequence<Tuple2<A, B>> =
-    arrow.core.extensions.sequence.functor.Sequence.functor().run {
-  arrow.core.SequenceK(this@fproduct).fproduct<A, B>(arg1) as
-    kotlin.sequences.Sequence<arrow.core.Tuple2<A, B>>
+fun <A, B> Kind<ForId, A>.fproduct(arg1: Function1<A, B>): Id<Tuple2<A, B>> =
+    arrow.core.Id.functor().run {
+  this@fproduct.fproduct<A, B>(arg1) as arrow.core.Id<arrow.core.Tuple2<A, B>>
 }
 
 /**
@@ -188,11 +191,11 @@ fun <A, B> Sequence<A>.fproduct(arg1: Function1<A, B>): Sequence<Tuple2<A, B>> =
  *
  *  ```kotlin:ank:playground
  *  import arrow.core.*
- * import arrow.core.extensions.sequencek.functor.*
+ * import arrow.core.extensions.id.functor.*
  * import arrow.core.*
  *
  *
- *  import arrow.core.extensions.sequencek.applicative.just
+ *  import arrow.core.extensions.id.applicative.just
  *
  *  fun main(args: Array<String>) {
  *   val result =
@@ -218,9 +221,8 @@ fun <A, B> Sequence<A>.fproduct(arg1: Function1<A, B>): Sequence<Tuple2<A, B>> =
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Sequence<A>.mapConst(arg1: B): Sequence<B> =
-    arrow.core.extensions.sequence.functor.Sequence.functor().run {
-  arrow.core.SequenceK(this@mapConst).mapConst<A, B>(arg1) as kotlin.sequences.Sequence<B>
+fun <A, B> Kind<ForId, A>.mapConst(arg1: B): Id<B> = arrow.core.Id.functor().run {
+  this@mapConst.mapConst<A, B>(arg1) as arrow.core.Id<B>
 }
 
 /**
@@ -241,9 +243,8 @@ fun <A, B> Sequence<A>.mapConst(arg1: B): Sequence<B> =
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> A.mapConst(arg1: Sequence<B>): Sequence<A> =
-    arrow.core.extensions.sequence.functor.Sequence.functor().run {
-  this@mapConst.mapConst<A, B>(arrow.core.SequenceK(arg1)) as kotlin.sequences.Sequence<A>
+fun <A, B> A.mapConst(arg1: Kind<ForId, B>): Id<A> = arrow.core.Id.functor().run {
+  this@mapConst.mapConst<A, B>(arg1) as arrow.core.Id<A>
 }
 
 /**
@@ -253,11 +254,11 @@ fun <A, B> A.mapConst(arg1: Sequence<B>): Sequence<A> =
  *
  *  ```kotlin:ank:playground
  *  import arrow.core.*
- * import arrow.core.extensions.sequencek.functor.*
+ * import arrow.core.extensions.id.functor.*
  * import arrow.core.*
  *
  *
- *  import arrow.core.extensions.sequencek.applicative.just
+ *  import arrow.core.extensions.id.applicative.just
  *
  *  fun main(args: Array<String>) {
  *   val result =
@@ -283,10 +284,8 @@ fun <A, B> A.mapConst(arg1: Sequence<B>): Sequence<A> =
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Sequence<A>.tupleLeft(arg1: B): Sequence<Tuple2<B, A>> =
-    arrow.core.extensions.sequence.functor.Sequence.functor().run {
-  arrow.core.SequenceK(this@tupleLeft).tupleLeft<A, B>(arg1) as
-    kotlin.sequences.Sequence<arrow.core.Tuple2<B, A>>
+fun <A, B> Kind<ForId, A>.tupleLeft(arg1: B): Id<Tuple2<B, A>> = arrow.core.Id.functor().run {
+  this@tupleLeft.tupleLeft<A, B>(arg1) as arrow.core.Id<arrow.core.Tuple2<B, A>>
 }
 
 /**
@@ -296,11 +295,11 @@ fun <A, B> Sequence<A>.tupleLeft(arg1: B): Sequence<Tuple2<B, A>> =
  *
  *  ```kotlin:ank:playground
  *  import arrow.core.*
- * import arrow.core.extensions.sequencek.functor.*
+ * import arrow.core.extensions.id.functor.*
  * import arrow.core.*
  *
  *
- *  import arrow.core.extensions.sequencek.applicative.just
+ *  import arrow.core.extensions.id.applicative.just
  *
  *  fun main(args: Array<String>) {
  *   val result =
@@ -326,10 +325,8 @@ fun <A, B> Sequence<A>.tupleLeft(arg1: B): Sequence<Tuple2<B, A>> =
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Sequence<A>.tupleRight(arg1: B): Sequence<Tuple2<A, B>> =
-    arrow.core.extensions.sequence.functor.Sequence.functor().run {
-  arrow.core.SequenceK(this@tupleRight).tupleRight<A, B>(arg1) as
-    kotlin.sequences.Sequence<arrow.core.Tuple2<A, B>>
+fun <A, B> Kind<ForId, A>.tupleRight(arg1: B): Id<Tuple2<A, B>> = arrow.core.Id.functor().run {
+  this@tupleRight.tupleRight<A, B>(arg1) as arrow.core.Id<arrow.core.Tuple2<A, B>>
 }
 
 /**
@@ -339,11 +336,11 @@ fun <A, B> Sequence<A>.tupleRight(arg1: B): Sequence<Tuple2<A, B>> =
  *
  *  ```kotlin:ank:playground
  *  import arrow.core.*
- * import arrow.core.extensions.sequencek.functor.*
+ * import arrow.core.extensions.id.functor.*
  * import arrow.core.*
  *
  *
- *  import arrow.core.extensions.sequencek.applicative.just
+ *  import arrow.core.extensions.id.applicative.just
  *  import arrow.Kind
  *
  *  fun main(args: Array<String>) {
@@ -370,85 +367,76 @@ fun <A, B> Sequence<A>.tupleRight(arg1: B): Sequence<Tuple2<A, B>> =
   ),
   DeprecationLevel.WARNING
 )
-fun <B, A : B> Sequence<A>.widen(): Sequence<B> =
-    arrow.core.extensions.sequence.functor.Sequence.functor().run {
-  arrow.core.SequenceK(this@widen).widen<B, A>() as kotlin.sequences.Sequence<B>
+fun <B, A : B> Kind<ForId, A>.widen(): Id<B> = arrow.core.Id.functor().run {
+  this@widen.widen<B, A>() as arrow.core.Id<B>
 }
 
 /**
- * cached extension
+ *  ank_macro_hierarchy(arrow.typeclasses.Functor)
+ *
+ *  The [Functor] type class abstracts the ability to [map] over the computational context of a type constructor.
+ *  Examples of type constructors that can implement instances of the Functor type class include
+ *  [arrow.core.Option], [arrow.core.NonEmptyList], [List] and many other data types that include a [map] function with the shape
+ *  `fun <F, A, B> Kind<F, A>.map(f: (A) -> B): Kind<F, B>` where `F` refers to any type constructor whose contents can be transformed.
+ *
+ *  ```kotlin:ank:playground
+ *  import arrow.core.*
+ * import arrow.core.extensions.id.functor.*
+ * import arrow.core.*
+ *
+ *
+ *
+ *  fun main(args: Array<String>) {
+ *   val result =
+ *   //sampleStart
+ *   Id.functor()
+ *   //sampleEnd
+ *   println(result)
+ *  }
+ *  ```
+ *
+ *  ### Example
+ *
+ *  Oftentimes we find ourselves in situations where we need to transform the contents of some data type.
+ *  [map] allows us to safely compute over values under the assumption that they'll be there returning the
+ *  transformation encapsulated in the same context.
+ *
+ *  Consider [arrow.core.Option] and [arrow.core.Either]:
+ *
+ *  `Option<A>` allows us to model absence and has two possible states, `Some(a: A)` if the value is not absent and `None` to represent an empty case.
+ *  In a similar fashion `Either<L, R>` may have two possible cases `Left(l: L)` and `Right(r: R)`. By convention, `Left` is used to model the exceptional
+ *  case and `Right` for the successful case.
+ *
+ *  Both [arrow.core.Either] and [arrow.core.Option] are examples of data types that can be computed over transforming their inner results.
+ *
+ *  ```kotlin:ank:playground
+ *  import arrow.*
+ *  import arrow.core.*
+ *
+ *  suspend fun main(args: Array<String>) {
+ *   val result =
+ *   //sampleStart
+ * 2 }
+ *   //sampleEnd
+ *   println(result)
+ *  }
+ *  ```
+ *
+ *  ```kotlin:ank:playground
+ *  import arrow.*
+ *  import arrow.core.*
+ *
+ *  fun main(args: Array<String>) {
+ *   val result =
+ *   //sampleStart
+ * 2 }
+ *   //sampleEnd
+ *   println(result)
+ *  }
+ *  ```
  */
-@PublishedApi()
-internal val functor_singleton: SequenceKFunctor = object : arrow.core.extensions.SequenceKFunctor
-    {}
-
-object Sequence {
-  /**
-   *  ank_macro_hierarchy(arrow.typeclasses.Functor)
-   *
-   *  The [Functor] type class abstracts the ability to [map] over the computational context of a type constructor.
-   *  Examples of type constructors that can implement instances of the Functor type class include
-   *  [arrow.core.Option], [arrow.core.NonEmptyList], [List] and many other data types that include a [map] function with the shape
-   *  `fun <F, A, B> Kind<F, A>.map(f: (A) -> B): Kind<F, B>` where `F` refers to any type constructor whose contents can be transformed.
-   *
-   *  ```kotlin:ank:playground
-   *  import arrow.core.*
-   * import arrow.core.extensions.sequencek.functor.*
-   * import arrow.core.*
-   *
-   *
-   *
-   *  fun main(args: Array<String>) {
-   *   val result =
-   *   //sampleStart
-   *   SequenceK.functor()
-   *   //sampleEnd
-   *   println(result)
-   *  }
-   *  ```
-   *
-   *  ### Example
-   *
-   *  Oftentimes we find ourselves in situations where we need to transform the contents of some data type.
-   *  [map] allows us to safely compute over values under the assumption that they'll be there returning the
-   *  transformation encapsulated in the same context.
-   *
-   *  Consider [arrow.core.Option] and [arrow.core.Either]:
-   *
-   *  `Option<A>` allows us to model absence and has two possible states, `Some(a: A)` if the value is not absent and `None` to represent an empty case.
-   *  In a similar fashion `Either<L, R>` may have two possible cases `Left(l: L)` and `Right(r: R)`. By convention, `Left` is used to model the exceptional
-   *  case and `Right` for the successful case.
-   *
-   *  Both [arrow.core.Either] and [arrow.core.Option] are examples of data types that can be computed over transforming their inner results.
-   *
-   *  ```kotlin:ank:playground
-   *  import arrow.*
-   *  import arrow.core.*
-   *
-   *  suspend fun main(args: Array<String>) {
-   *   val result =
-   *   //sampleStart
-   * 2 }
-   *   //sampleEnd
-   *   println(result)
-   *  }
-   *  ```
-   *
-   *  ```kotlin:ank:playground
-   *  import arrow.*
-   *  import arrow.core.*
-   *
-   *  fun main(args: Array<String>) {
-   *   val result =
-   *   //sampleStart
-   * 2 }
-   *   //sampleEnd
-   *   println(result)
-   *  }
-   *  ```
-   */
-  @Suppress(
-    "UNCHECKED_CAST",
-    "NOTHING_TO_INLINE"
-  )
-  inline fun functor(): SequenceKFunctor = functor_singleton}
+@Suppress(
+  "UNCHECKED_CAST",
+  "NOTHING_TO_INLINE"
+)
+inline fun Companion.functor(): IdFunctor = functor_singleton

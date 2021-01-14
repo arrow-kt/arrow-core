@@ -1,10 +1,10 @@
-package arrow.core.extensions.tuple2.functor
+package arrow.core.extensions.function1.functor
 
 import arrow.Kind
-import arrow.core.ForTuple2
+import arrow.core.ForFunction1
+import arrow.core.Function1.Companion
 import arrow.core.Tuple2
-import arrow.core.Tuple2.Companion
-import arrow.core.extensions.Tuple2Functor
+import arrow.core.extensions.Function1Functor
 import kotlin.Any
 import kotlin.Deprecated
 import kotlin.Function1
@@ -17,7 +17,7 @@ import kotlin.jvm.JvmName
  * cached extension
  */
 @PublishedApi()
-internal val functor_singleton: Tuple2Functor<Any?> = object : Tuple2Functor<Any?> {}
+internal val functor_singleton: Function1Functor<Any?> = object : Function1Functor<Any?> {}
 
 /**
  *  Transform the [F] wrapped value [A] into [B] preserving the [F] structure
@@ -25,17 +25,16 @@ internal val functor_singleton: Tuple2Functor<Any?> = object : Tuple2Functor<Any
  *
  *  ```kotlin:ank:playground
  *  import arrow.core.*
- * import arrow.core.extensions.tuple2.functor.*
+ * import arrow.core.extensions.function1.functor.*
  * import arrow.core.*
  *
  *
- *  import arrow.core.extensions.tuple2.applicative.just
- * import arrow.core.extensions.monoid
+ *  import arrow.core.extensions.function1.applicative.just
  *
  *  fun main(args: Array<String>) {
  *   val result =
  *   //sampleStart
- *   "Hello".just<String, String>(String.monoid()).map<String, String, String>({ "$it World" })
+ *   "Hello".just<String, String>().map<String, String, String>({ "$it World" })
  *   //sampleEnd
  *   println(result)
  *  }
@@ -56,10 +55,10 @@ internal val functor_singleton: Tuple2Functor<Any?> = object : Tuple2Functor<Any
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.map(arg1: Function1<A, B>): Tuple2<F, B> =
-    arrow.core.Tuple2.functor<F>().run {
-  this@map.map<A, B>(arg1) as arrow.core.Tuple2<F, B>
-}
+fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.map(arg1: Function1<A, B>): arrow.core.Function1<I, B> =
+  arrow.core.Function1.functor<I>().run {
+    this@map.map<A, B>(arg1) as arrow.core.Function1<I, B>
+  }
 
 @JvmName("imap")
 @Suppress(
@@ -76,9 +75,9 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.map(arg1: Function1<A, B>): Tuple2<F, 
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>):
-    Tuple2<F, B> = arrow.core.Tuple2.functor<F>().run {
-  this@imap.imap<A, B>(arg1, arg2) as arrow.core.Tuple2<F, B>
+fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>):
+    arrow.core.Function1<I, B> = arrow.core.Function1.functor<I>().run {
+  this@imap.imap<A, B>(arg1, arg2) as arrow.core.Function1<I, B>
 }
 
 /**
@@ -89,18 +88,16 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.imap(arg1: Function1<A, B>, arg2: Func
  *
  *  ```kotlin:ank:playground
  *  import arrow.core.*
- * import arrow.core.extensions.tuple2.functor.*
+ * import arrow.core.extensions.function1.functor.*
  * import arrow.core.*
  *
  *
- *  import arrow.core.extensions.tuple2.applicative.just
- * import arrow.core.extensions.monoid
+ *  import arrow.core.extensions.function1.applicative.just
  *
  *  fun main(args: Array<String>) {
  *   val result =
  *   //sampleStart
- *   lift<String, String, String>({ s: CharSequence -> "$s World" })("Hello".just<String,
- * String>(String.monoid()))
+ *   lift<String, String, String>({ s: CharSequence -> "$s World" })("Hello".just<String, String>())
  *   //sampleEnd
  *   println(result)
  *  }
@@ -117,15 +114,15 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.imap(arg1: Function1<A, B>, arg2: Func
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
   "lift(arg0)",
-  "arrow.core.Tuple2.lift"
+  "arrow.core.Function1.lift"
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> lift(arg0: Function1<A, B>): Function1<Kind<Kind<ForTuple2, F>, A>,
-    Kind<Kind<ForTuple2, F>, B>> = arrow.core.Tuple2
-   .functor<F>()
-   .lift<A, B>(arg0) as kotlin.Function1<arrow.Kind<arrow.Kind<arrow.core.ForTuple2, F>, A>,
-    arrow.Kind<arrow.Kind<arrow.core.ForTuple2, F>, B>>
+fun <I, A, B> lift(arg0: Function1<A, B>): Function1<Kind<Kind<ForFunction1, I>, A>,
+    Kind<Kind<ForFunction1, I>, B>> = arrow.core.Function1
+   .functor<I>()
+   .lift<A, B>(arg0) as kotlin.Function1<arrow.Kind<arrow.Kind<arrow.core.ForFunction1, I>, A>,
+    arrow.Kind<arrow.Kind<arrow.core.ForFunction1, I>, B>>
 
 @JvmName("void")
 @Suppress(
@@ -142,9 +139,9 @@ fun <F, A, B> lift(arg0: Function1<A, B>): Function1<Kind<Kind<ForTuple2, F>, A>
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A> Kind<Kind<ForTuple2, F>, A>.void(): Tuple2<F, Unit> =
-    arrow.core.Tuple2.functor<F>().run {
-  this@void.void<A>() as arrow.core.Tuple2<F, kotlin.Unit>
+fun <I, A> Kind<Kind<ForFunction1, I>, A>.void(): arrow.core.Function1<I, Unit> =
+    arrow.core.Function1.functor<I>().run {
+  this@void.void<A>() as arrow.core.Function1<I, kotlin.Unit>
 }
 
 /**
@@ -155,17 +152,16 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.void(): Tuple2<F, Unit> =
  *
  *  ```kotlin:ank:playground
  *  import arrow.core.*
- * import arrow.core.extensions.tuple2.functor.*
+ * import arrow.core.extensions.function1.functor.*
  * import arrow.core.*
  *
  *
- *  import arrow.core.extensions.tuple2.applicative.just
- * import arrow.core.extensions.monoid
+ *  import arrow.core.extensions.function1.applicative.just
  *
  *  fun main(args: Array<String>) {
  *   val result =
  *   //sampleStart
- *   "Hello".just<String, String>(String.monoid()).fproduct<String, String, String>({ "$it World" })
+ *   "Hello".just<String, String>().fproduct<String, String, String>({ "$it World" })
  *   //sampleEnd
  *   println(result)
  *  }
@@ -186,9 +182,9 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.void(): Tuple2<F, Unit> =
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.fproduct(arg1: Function1<A, B>): Tuple2<F, Tuple2<A, B>> =
-    arrow.core.Tuple2.functor<F>().run {
-  this@fproduct.fproduct<A, B>(arg1) as arrow.core.Tuple2<F, arrow.core.Tuple2<A, B>>
+fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.fproduct(arg1: Function1<A, B>):
+    arrow.core.Function1<I, Tuple2<A, B>> = arrow.core.Function1.functor<I>().run {
+  this@fproduct.fproduct<A, B>(arg1) as arrow.core.Function1<I, arrow.core.Tuple2<A, B>>
 }
 
 /**
@@ -198,17 +194,16 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.fproduct(arg1: Function1<A, B>): Tuple
  *
  *  ```kotlin:ank:playground
  *  import arrow.core.*
- * import arrow.core.extensions.tuple2.functor.*
+ * import arrow.core.extensions.function1.functor.*
  * import arrow.core.*
  *
  *
- *  import arrow.core.extensions.tuple2.applicative.just
- * import arrow.core.extensions.monoid
+ *  import arrow.core.extensions.function1.applicative.just
  *
  *  fun main(args: Array<String>) {
  *   val result =
  *   //sampleStart
- *   "Hello World".just<String, String>(String.monoid()).mapConst<String, String, String>("...")
+ *   "Hello World".just<String, String>().mapConst<String, String, String>("...")
  *   //sampleEnd
  *   println(result)
  *  }
@@ -229,9 +224,9 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.fproduct(arg1: Function1<A, B>): Tuple
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.mapConst(arg1: B): Tuple2<F, B> =
-    arrow.core.Tuple2.functor<F>().run {
-  this@mapConst.mapConst<A, B>(arg1) as arrow.core.Tuple2<F, B>
+fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.mapConst(arg1: B): arrow.core.Function1<I, B> =
+    arrow.core.Function1.functor<I>().run {
+  this@mapConst.mapConst<A, B>(arg1) as arrow.core.Function1<I, B>
 }
 
 /**
@@ -252,9 +247,9 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.mapConst(arg1: B): Tuple2<F, B> =
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> A.mapConst(arg1: Kind<Kind<ForTuple2, F>, B>): Tuple2<F, A> =
-    arrow.core.Tuple2.functor<F>().run {
-  this@mapConst.mapConst<A, B>(arg1) as arrow.core.Tuple2<F, A>
+fun <I, A, B> A.mapConst(arg1: Kind<Kind<ForFunction1, I>, B>): arrow.core.Function1<I, A> =
+    arrow.core.Function1.functor<I>().run {
+  this@mapConst.mapConst<A, B>(arg1) as arrow.core.Function1<I, A>
 }
 
 /**
@@ -264,17 +259,16 @@ fun <F, A, B> A.mapConst(arg1: Kind<Kind<ForTuple2, F>, B>): Tuple2<F, A> =
  *
  *  ```kotlin:ank:playground
  *  import arrow.core.*
- * import arrow.core.extensions.tuple2.functor.*
+ * import arrow.core.extensions.function1.functor.*
  * import arrow.core.*
  *
  *
- *  import arrow.core.extensions.tuple2.applicative.just
- * import arrow.core.extensions.monoid
+ *  import arrow.core.extensions.function1.applicative.just
  *
  *  fun main(args: Array<String>) {
  *   val result =
  *   //sampleStart
- *   "Hello".just<String, String>(String.monoid()).tupleLeft<String, String, String>("World")
+ *   "Hello".just<String, String>().tupleLeft<String, String, String>("World")
  *   //sampleEnd
  *   println(result)
  *  }
@@ -295,9 +289,9 @@ fun <F, A, B> A.mapConst(arg1: Kind<Kind<ForTuple2, F>, B>): Tuple2<F, A> =
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.tupleLeft(arg1: B): Tuple2<F, Tuple2<B, A>> =
-    arrow.core.Tuple2.functor<F>().run {
-  this@tupleLeft.tupleLeft<A, B>(arg1) as arrow.core.Tuple2<F, arrow.core.Tuple2<B, A>>
+fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.tupleLeft(arg1: B): arrow.core.Function1<I, Tuple2<B,
+    A>> = arrow.core.Function1.functor<I>().run {
+  this@tupleLeft.tupleLeft<A, B>(arg1) as arrow.core.Function1<I, arrow.core.Tuple2<B, A>>
 }
 
 /**
@@ -307,17 +301,16 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.tupleLeft(arg1: B): Tuple2<F, Tuple2<B
  *
  *  ```kotlin:ank:playground
  *  import arrow.core.*
- * import arrow.core.extensions.tuple2.functor.*
+ * import arrow.core.extensions.function1.functor.*
  * import arrow.core.*
  *
  *
- *  import arrow.core.extensions.tuple2.applicative.just
- * import arrow.core.extensions.monoid
+ *  import arrow.core.extensions.function1.applicative.just
  *
  *  fun main(args: Array<String>) {
  *   val result =
  *   //sampleStart
- *   "Hello".just<String, String>(String.monoid()).tupleRight<String, String, String>("World")
+ *   "Hello".just<String, String>().tupleRight<String, String, String>("World")
  *   //sampleEnd
  *   println(result)
  *  }
@@ -338,9 +331,9 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.tupleLeft(arg1: B): Tuple2<F, Tuple2<B
   ),
   DeprecationLevel.WARNING
 )
-fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.tupleRight(arg1: B): Tuple2<F, Tuple2<A, B>> =
-    arrow.core.Tuple2.functor<F>().run {
-  this@tupleRight.tupleRight<A, B>(arg1) as arrow.core.Tuple2<F, arrow.core.Tuple2<A, B>>
+fun <I, A, B> Kind<Kind<ForFunction1, I>, A>.tupleRight(arg1: B): arrow.core.Function1<I, Tuple2<A,
+    B>> = arrow.core.Function1.functor<I>().run {
+  this@tupleRight.tupleRight<A, B>(arg1) as arrow.core.Function1<I, arrow.core.Tuple2<A, B>>
 }
 
 /**
@@ -350,19 +343,18 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.tupleRight(arg1: B): Tuple2<F, Tuple2<
  *
  *  ```kotlin:ank:playground
  *  import arrow.core.*
- * import arrow.core.extensions.tuple2.functor.*
+ * import arrow.core.extensions.function1.functor.*
  * import arrow.core.*
  *
  *
- *  import arrow.core.extensions.tuple2.applicative.just
- * import arrow.core.extensions.monoid
+ *  import arrow.core.extensions.function1.applicative.just
  *  import arrow.Kind
  *
  *  fun main(args: Array<String>) {
  *   val result: Kind<*, CharSequence> =
  *   //sampleStart
- *   "Hello".just<String, String>(String.monoid()).map<String, String,
- * String>({ "$it World" }).widen<String, String, String>()
+ *   "Hello".just<String, String>().map<String, String, String>({ "$it World" }).widen<String,
+ * String, String>()
  *   //sampleEnd
  *   println(result)
  *  }
@@ -383,9 +375,9 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.tupleRight(arg1: B): Tuple2<F, Tuple2<
   ),
   DeprecationLevel.WARNING
 )
-fun <F, B, A : B> Kind<Kind<ForTuple2, F>, A>.widen(): Tuple2<F, B> =
-    arrow.core.Tuple2.functor<F>().run {
-  this@widen.widen<B, A>() as arrow.core.Tuple2<F, B>
+fun <I, B, A : B> Kind<Kind<ForFunction1, I>, A>.widen(): arrow.core.Function1<I, B> =
+    arrow.core.Function1.functor<I>().run {
+  this@widen.widen<B, A>() as arrow.core.Function1<I, B>
 }
 
 /**
@@ -398,7 +390,7 @@ fun <F, B, A : B> Kind<Kind<ForTuple2, F>, A>.widen(): Tuple2<F, B> =
  *
  *  ```kotlin:ank:playground
  *  import arrow.core.*
- * import arrow.core.extensions.tuple2.functor.*
+ * import arrow.core.extensions.function1.functor.*
  * import arrow.core.*
  *
  *
@@ -406,7 +398,7 @@ fun <F, B, A : B> Kind<Kind<ForTuple2, F>, A>.widen(): Tuple2<F, B> =
  *  fun main(args: Array<String>) {
  *   val result =
  *   //sampleStart
- *   Tuple2.functor<String>()
+ *   Function1.functor<String>()
  *   //sampleEnd
  *   println(result)
  *  }
@@ -456,5 +448,5 @@ fun <F, B, A : B> Kind<Kind<ForTuple2, F>, A>.widen(): Tuple2<F, B> =
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-inline fun <F> Companion.functor(): Tuple2Functor<F> = functor_singleton as
-    arrow.core.extensions.Tuple2Functor<F>
+inline fun <I> Companion.functor(): Function1Functor<I> = functor_singleton as
+    arrow.core.extensions.Function1Functor<I>
