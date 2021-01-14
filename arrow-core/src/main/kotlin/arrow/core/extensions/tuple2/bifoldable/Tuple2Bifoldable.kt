@@ -92,5 +92,5 @@ fun <A, B, C> Kind<Kind<ForTuple2, A>, B>.bifoldMap(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Pair")
+@Deprecated("BiFoldable typeclasses is deprecated. Use concrete methods on Pair")
 inline fun Companion.bifoldable(): Tuple2Bifoldable = bifoldable_singleton
