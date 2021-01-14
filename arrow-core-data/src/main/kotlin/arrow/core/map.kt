@@ -173,7 +173,7 @@ fun <K, A, B> Map<K, A>.align(b: Map<K, B>): Map<K, Ior<A, B>> =
  * fun main(args: Array<String>) {
  *   //sampleStart
  *   val result =
- *    mapOf("1" to 1, "2" to 2).align(mapOf("1" to 1, "2" to 2, "3" to 3)) { _, a ->
+ *    mapOf("1" to 1, "2" to 2).align(mapOf("1" to 1, "2" to 2, "3" to 3)) { (_, a) ->
  *      "$a"
  *    }
  *   //sampleEnd
