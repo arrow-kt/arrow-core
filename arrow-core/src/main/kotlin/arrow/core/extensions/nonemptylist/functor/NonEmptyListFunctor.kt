@@ -145,29 +145,6 @@ fun <A> Kind<ForNonEmptyList, A>.void(): NonEmptyList<Unit> =
   this@void.void<A>() as arrow.core.NonEmptyList<kotlin.Unit>
 }
 
-/**
- *  Applies [f] to an [A] inside [F] and returns the [F] structure with a tuple of the [A] value and the
- *  computed [B] value as result of applying [f]
- *
- *  Kind<F, A> -> Kind<F, Tuple2<A, B>>
- *
- *  ```kotlin:ank:playground
- *  import arrow.core.*
- * import arrow.core.extensions.nonemptylist.functor.*
- * import arrow.core.*
- *
- *
- *  import arrow.core.extensions.nonemptylist.applicative.just
- *
- *  fun main(args: Array<String>) {
- *   val result =
- *   //sampleStart
- *   "Hello".just().fproduct({ "$it World" })
- *   //sampleEnd
- *   println(result)
- *  }
- *  ```
- */
 @JvmName("fproduct")
 @Suppress(
   "UNCHECKED_CAST",
@@ -188,28 +165,6 @@ fun <A, B> Kind<ForNonEmptyList, A>.fproduct(arg1: Function1<A, B>): NonEmptyLis
   this@fproduct.fproduct<A, B>(arg1) as arrow.core.NonEmptyList<arrow.core.Tuple2<A, B>>
 }
 
-/**
- *  Replaces [A] inside [F] with [B] resulting in a Kind<F, B>
- *
- *  Kind<F, A> -> Kind<F, B>
- *
- *  ```kotlin:ank:playground
- *  import arrow.core.*
- * import arrow.core.extensions.nonemptylist.functor.*
- * import arrow.core.*
- *
- *
- *  import arrow.core.extensions.nonemptylist.applicative.just
- *
- *  fun main(args: Array<String>) {
- *   val result =
- *   //sampleStart
- *   "Hello World".just().mapConst("...")
- *   //sampleEnd
- *   println(result)
- *  }
- *  ```
- */
 @JvmName("mapConst")
 @Suppress(
   "UNCHECKED_CAST",
@@ -253,28 +208,6 @@ fun <A, B> A.mapConst(arg1: Kind<ForNonEmptyList, B>): NonEmptyList<A> =
   this@mapConst.mapConst<A, B>(arg1) as arrow.core.NonEmptyList<A>
 }
 
-/**
- *  Pairs [B] with [A] returning a Kind<F, Tuple2<B, A>>
- *
- *  Kind<F, A> -> Kind<F, Tuple2<B, A>>
- *
- *  ```kotlin:ank:playground
- *  import arrow.core.*
- * import arrow.core.extensions.nonemptylist.functor.*
- * import arrow.core.*
- *
- *
- *  import arrow.core.extensions.nonemptylist.applicative.just
- *
- *  fun main(args: Array<String>) {
- *   val result =
- *   //sampleStart
- *   "Hello".just().tupleLeft("World")
- *   //sampleEnd
- *   println(result)
- *  }
- *  ```
- */
 @JvmName("tupleLeft")
 @Suppress(
   "UNCHECKED_CAST",
@@ -295,28 +228,6 @@ fun <A, B> Kind<ForNonEmptyList, A>.tupleLeft(arg1: B): NonEmptyList<Tuple2<B, A
   this@tupleLeft.tupleLeft<A, B>(arg1) as arrow.core.NonEmptyList<arrow.core.Tuple2<B, A>>
 }
 
-/**
- *  Pairs [A] with [B] returning a Kind<F, Tuple2<A, B>>
- *
- *  Kind<F, A> -> Kind<F, Tuple2<A, B>>
- *
- *  ```kotlin:ank:playground
- *  import arrow.core.*
- * import arrow.core.extensions.nonemptylist.functor.*
- * import arrow.core.*
- *
- *
- *  import arrow.core.extensions.nonemptylist.applicative.just
- *
- *  fun main(args: Array<String>) {
- *   val result =
- *   //sampleStart
- *   "Hello".just().tupleRight("World")
- *   //sampleEnd
- *   println(result)
- *  }
- *  ```
- */
 @JvmName("tupleRight")
 @Suppress(
   "UNCHECKED_CAST",
@@ -337,29 +248,6 @@ fun <A, B> Kind<ForNonEmptyList, A>.tupleRight(arg1: B): NonEmptyList<Tuple2<A, 
   this@tupleRight.tupleRight<A, B>(arg1) as arrow.core.NonEmptyList<arrow.core.Tuple2<A, B>>
 }
 
-/**
- *  Given [A] is a sub type of [B], re-type this value from Kind<F, A> to Kind<F, B>
- *
- *  Kind<F, A> -> Kind<F, B>
- *
- *  ```kotlin:ank:playground
- *  import arrow.core.*
- * import arrow.core.extensions.nonemptylist.functor.*
- * import arrow.core.*
- *
- *
- *  import arrow.core.extensions.nonemptylist.applicative.just
- *  import arrow.Kind
- *
- *  fun main(args: Array<String>) {
- *   val result: Kind<*, CharSequence> =
- *   //sampleStart
- *   "Hello".just().map({ "$it World" }).widen()
- *   //sampleEnd
- *   println(result)
- *  }
- *  ```
- */
 @JvmName("widen")
 @Suppress(
   "UNCHECKED_CAST",
