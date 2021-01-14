@@ -37,7 +37,7 @@ internal val foldable_singleton: Tuple2Foldable<Any?> = object : Tuple2Foldable<
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith("f(arg1, this.b)"),
+  ReplaceWith("arg2(arg1, this.b)"),
   DeprecationLevel.WARNING
 )
 fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.foldLeft(arg1: B, arg2: Function2<B, A, B>): B =
@@ -54,7 +54,7 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.foldLeft(arg1: B, arg2: Function2<B, A
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith("f(arg1, lb)"),
+  ReplaceWith("arg2(arg1, lb)"),
   DeprecationLevel.WARNING
 )
 fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.foldRight(
