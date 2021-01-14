@@ -1317,9 +1317,6 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.apTap(arg1: Kind<Kind<ForTuple2, F>, B
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  level = DeprecationLevel.WARNING
-)
+@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Pair")
 inline fun <F> Companion.apply(): Tuple2Apply<F> = apply_singleton as
   arrow.core.extensions.Tuple2Apply<F>
