@@ -8,7 +8,6 @@ import arrow.core.Tuple2
 import arrow.core.extensions.setk.eq.eq
 import arrow.core.fix
 import arrow.core.k
-import arrow.extension
 import arrow.typeclasses.Eq
 import arrow.typeclasses.EqK
 import arrow.typeclasses.Foldable
@@ -23,18 +22,21 @@ import arrow.typeclasses.Show
 import arrow.typeclasses.hashWithSalt
 import arrow.core.combineK as setCombineK
 
-@extension
+@Deprecated(
+  "Typeclass instance have been moved to the companion object of the typeclass.",
+  ReplaceWith("", "", ""),
+  DeprecationLevel.WARNING)
 interface SetKSemigroup<A> : Semigroup<SetK<A>> {
   override fun SetK<A>.combine(b: SetK<A>): SetK<A> =
     this.fix().setCombineK(b)
 }
 
-@extension
+
 interface SetKMonoid<A> : Monoid<SetK<A>>, SetKSemigroup<A> {
   override fun empty(): SetK<A> = emptySet<A>().k()
 }
 
-@extension
+
 interface SetKEq<A> : Eq<SetK<A>> {
 
   fun EQ(): Eq<A>
@@ -48,13 +50,13 @@ interface SetKEq<A> : Eq<SetK<A>> {
     else false
 }
 
-@extension
+
 interface SetKShow<A> : Show<SetK<A>> {
   fun SA(): Show<A>
   override fun SetK<A>.show(): String = show(SA())
 }
 
-@extension
+
 interface SetKFoldable : Foldable<ForSetK> {
   override fun <A, B> Kind<ForSetK, A>.foldLeft(b: B, f: (B, A) -> B): B =
     fix().foldLeft(b, f)
@@ -66,24 +68,24 @@ interface SetKFoldable : Foldable<ForSetK> {
     fix().isEmpty()
 }
 
-@extension
+
 interface SetKSemigroupK : SemigroupK<ForSetK> {
   override fun <A> Kind<ForSetK, A>.combineK(y: Kind<ForSetK, A>): SetK<A> =
     fix().setCombineK(y)
 }
 
-@extension
+
 interface SetKSemigroupal : Semigroupal<ForSetK> {
   override fun <A, B> Kind<ForSetK, A>.product(fb: Kind<ForSetK, B>): Kind<ForSetK, Tuple2<A, B>> =
     fb.fix().flatMap { b -> this.fix().map { a -> Tuple2(a, b) } }.toSet().k()
 }
 
-@extension
+
 interface SetKMonoidal : Monoidal<ForSetK>, SetKSemigroupal {
   override fun <A> identity(): Kind<ForSetK, A> = SetK.empty()
 }
 
-@extension
+
 interface SetKMonoidK : MonoidK<ForSetK> {
   override fun <A> empty(): SetK<A> =
     SetK.empty()
@@ -92,7 +94,7 @@ interface SetKMonoidK : MonoidK<ForSetK> {
     fix().setCombineK(y)
 }
 
-@extension
+
 interface SetKHash<A> : Hash<SetK<A>> {
   fun HA(): Hash<A>
 
@@ -100,7 +102,7 @@ interface SetKHash<A> : Hash<SetK<A>> {
     HA().run { foldLeft(salt) { hash, v -> v.hashWithSalt(hash) } }.hashWithSalt(size)
 }
 
-@extension
+
 interface SetKEqK : EqK<ForSetK> {
   override fun <A> Kind<ForSetK, A>.eqK(other: Kind<ForSetK, A>, EQ: Eq<A>) =
     (this.fix() to other.fix()).let {

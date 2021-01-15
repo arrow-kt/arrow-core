@@ -1,9 +1,14 @@
 package arrow.core
 
-import arrow.higherkind
 import arrow.typeclasses.Show
 
-@higherkind
+class ForSetK private constructor() { companion object }
+typealias SetKOf<A> = arrow.Kind<ForSetK, A>
+
+@Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
+inline fun <A> SetKOf<A>.fix(): SetK<A> =
+  this as SetK<A>
+
 data class SetK<out A>(private val set: Set<A>) : SetKOf<A>, Set<A> by set {
 
   fun <B> foldLeft(b: B, f: (B, A) -> B): B = fold(b, f)
