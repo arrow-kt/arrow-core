@@ -1,9 +1,17 @@
 package arrow.core
 
 import arrow.Kind
-import arrow.higherkind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Show
+
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
+class ForNonEmptyList private constructor() { companion object }
+typealias NonEmptyListOf<A> = arrow.Kind<ForNonEmptyList, A>
+
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
+@Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
+inline fun <A> NonEmptyListOf<A>.fix(): NonEmptyList<A> =
+  this as NonEmptyList<A>
 
 typealias Nel<A> = NonEmptyList<A>
 
@@ -193,7 +201,6 @@ typealias Nel<A> = NonEmptyList<A>
  * ```
  *
  */
-@higherkind
 class NonEmptyList<out A>(
   val head: A,
   val tail: List<A>
