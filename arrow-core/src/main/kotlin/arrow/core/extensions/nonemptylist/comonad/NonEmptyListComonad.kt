@@ -76,4 +76,7 @@ fun <A> Kind<ForNonEmptyList, A>.duplicate(): NonEmptyList<NonEmptyList<A>> =
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated(
+  "Comonad typeclass is deprecated. Use concrete methods on NonEmptyList",
+  level = DeprecationLevel.WARNING)
 inline fun Companion.comonad(): NonEmptyListComonad = comonad_singleton

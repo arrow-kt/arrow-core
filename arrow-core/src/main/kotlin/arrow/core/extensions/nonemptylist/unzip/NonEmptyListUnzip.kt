@@ -66,4 +66,7 @@ fun <A, B, C> Kind<ForNonEmptyList, C>.unzipWith(arg1: Function1<C, Tuple2<A, B>
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated(
+  "Unzip typeclass is deprecated. Use concrete methods on NonEmptyList",
+  level = DeprecationLevel.WARNING)
 inline fun Companion.unzip(): NonEmptyListUnzip = unzip_singleton

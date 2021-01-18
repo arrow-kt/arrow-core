@@ -122,4 +122,7 @@ fun <A> Kind<ForNonEmptyList, A>.replicate(arg1: Int, arg2: Monoid<A>): NonEmpty
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated(
+  "Applicative typeclass is deprecated. Use concrete methods on NonEmptyList",
+  level = DeprecationLevel.WARNING)
 inline fun Companion.applicative(): NonEmptyListApplicative = applicative_singleton
