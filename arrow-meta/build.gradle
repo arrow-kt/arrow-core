@@ -11,7 +11,10 @@ apply from: "$DOC_CREATION"
 
 dependencies {
     api project(':arrow-annotations')
-    api "io.arrow-kt:kotlin-metadata:$KOTLIN_METADATA_VERSION"
+    api("io.arrow-kt:kotlin-metadata:$KOTLIN_METADATA_VERSION") {
+        exclude group: 'org.jetbrains.kotlin'
+    }
+    api "org.jetbrains.kotlin:kotlin-compiler-embeddable:$KOTLIN_VERSION"
     api("com.squareup:kotlinpoet:$KOTLIN_POET_VERSION") {
         exclude group: 'org.jetbrains.kotlin', module: 'kotlin-reflect'
     }
