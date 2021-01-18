@@ -11,7 +11,6 @@ import arrow.typeclasses.Applicative
 import arrow.typeclasses.Monad
 import arrow.typeclasses.Monoid
 import kotlin.Boolean
-import kotlin.Deprecated
 import kotlin.Function1
 import kotlin.Function2
 import kotlin.Long
@@ -38,8 +37,8 @@ internal val foldable_singleton: NonEmptyListFoldable = object :
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "foldLeft(arg1, arg2)",
-  "arrow.core.foldLeft"
+    "this.fix().foldLeft<B>(arg1, arg2)",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -58,10 +57,9 @@ fun <A, B> Kind<ForNonEmptyList, A>.foldLeft(arg1: B, arg2: Function2<B, A, B>):
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "foldRight(arg1, arg2)",
-  "arrow.core.foldRight"
-  ),
-  DeprecationLevel.WARNING
+    "this.fix().foldRight<B>(arg1, arg2)",
+    "arrow.core.fix"
+  )
 )
 fun <A, B> Kind<ForNonEmptyList, A>.foldRight(arg1: Eval<B>, arg2: Function2<A, Eval<B>, Eval<B>>):
     Eval<B> = arrow.core.NonEmptyList.foldable().run {
@@ -78,8 +76,8 @@ fun <A, B> Kind<ForNonEmptyList, A>.foldRight(arg1: Eval<B>, arg2: Function2<A, 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "fold(arg1)",
-  "arrow.core.fold"
+    "this.fix().combineAll<A>(arg1)",
+    "arrow.core.combineAll", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -97,8 +95,8 @@ fun <A> Kind<ForNonEmptyList, A>.fold(arg1: Monoid<A>): A = arrow.core.NonEmptyL
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "reduceLeftToOption(arg1, arg2)",
-  "arrow.core.reduceLeftToOption"
+    "Option.fromNullable(reduceNullable(arg1, arg2))",
+    "arrow.core.Option", "arrow.core.reduceNullable"
   ),
   DeprecationLevel.WARNING
 )
@@ -116,14 +114,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.reduceLeftToOption(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "reduceRightToOption(arg1, arg2)",
-  "arrow.core.reduceRightToOption"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Eval.now(Option.fromNullable(map(arg1).orNull()))", "arrow.core.Option", "arrow.core.Eval"))
 fun <A, B> Kind<ForNonEmptyList, A>.reduceRightToOption(
   arg1: Function1<A, B>,
   arg2: Function2<A, Eval<B>, Eval<B>>
@@ -139,14 +130,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.reduceRightToOption(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "reduceLeftOption(arg1)",
-  "arrow.core.reduceLeftOption"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Option.fromNullable(orNull())", "arrow.core.Option"))
 fun <A> Kind<ForNonEmptyList, A>.reduceLeftOption(arg1: Function2<A, A, A>): Option<A> =
     arrow.core.NonEmptyList.foldable().run {
   this@reduceLeftOption.reduceLeftOption<A>(arg1) as arrow.core.Option<A>
@@ -159,14 +143,7 @@ fun <A> Kind<ForNonEmptyList, A>.reduceLeftOption(arg1: Function2<A, A, A>): Opt
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "reduceRightOption(arg1)",
-  "arrow.core.reduceRightOption"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Eval.now(Option.fromNullable(orNull()))", "arrow.core.Option", "arrow.core.Eval"))
 fun <A> Kind<ForNonEmptyList, A>.reduceRightOption(arg1: Function2<A, Eval<A>, Eval<A>>):
     Eval<Option<A>> = arrow.core.NonEmptyList.foldable().run {
   this@reduceRightOption.reduceRightOption<A>(arg1) as arrow.core.Eval<arrow.core.Option<A>>
@@ -182,8 +159,8 @@ fun <A> Kind<ForNonEmptyList, A>.reduceRightOption(arg1: Function2<A, Eval<A>, E
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "combineAll(arg1)",
-  "arrow.core.combineAll"
+    "this.fix().combineAll<A>(arg1)",
+    "arrow.core.combineAll", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -202,8 +179,8 @@ fun <A> Kind<ForNonEmptyList, A>.combineAll(arg1: Monoid<A>): A =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "foldMap(arg1, arg2)",
-  "arrow.core.foldMap"
+    "this.fix().foldMap<A, B>(arg1, arg2)",
+    "arrow.core.fix", "arrow.core.foldMap"
   ),
   DeprecationLevel.WARNING
 )
@@ -222,8 +199,8 @@ fun <A, B> Kind<ForNonEmptyList, A>.foldMap(arg1: Monoid<B>, arg2: Function1<A, 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "orEmpty(arg0, arg1)",
-  "arrow.core.NonEmptyList.orEmpty"
+    "NonEmptyList.just(arg1.empty())",
+    "arrow.core.NonEmptyList"
   ),
   DeprecationLevel.WARNING
 )
@@ -239,14 +216,7 @@ fun <A> orEmpty(arg0: Applicative<ForNonEmptyList>, arg1: Monoid<A>): NonEmptyLi
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "traverse_(arg1, arg2)",
-  "arrow.core.traverse_"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("@extension kinded projected functions are deprecated. Replace with traverse_ or traverseValidated_ from arrow.core.*")
 fun <G, A, B> Kind<ForNonEmptyList, A>.traverse_(
   arg1: Applicative<G>,
   arg2: Function1<A, Kind<G, B>>
@@ -261,14 +231,7 @@ fun <G, A, B> Kind<ForNonEmptyList, A>.traverse_(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "sequence_(arg1)",
-  "arrow.core.sequence_"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("@extension kinded projected functions are deprecated. Replace with sequence_ or sequenceValidated_ from arrow.core.*")
 fun <G, A> Kind<ForNonEmptyList, Kind<G, A>>.sequence_(arg1: Applicative<G>): Kind<G, Unit> =
     arrow.core.NonEmptyList.foldable().run {
   this@sequence_.sequence_<G, A>(arg1) as arrow.Kind<G, kotlin.Unit>
@@ -284,8 +247,8 @@ fun <G, A> Kind<ForNonEmptyList, Kind<G, A>>.sequence_(arg1: Applicative<G>): Ki
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "find(arg1)",
-  "arrow.core.find"
+    "Option.fromNullable(this.fix().firstOrNull(arg1))",
+    "arrow.core.Option", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -304,8 +267,8 @@ fun <A> Kind<ForNonEmptyList, A>.find(arg1: Function1<A, Boolean>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "exists(arg1)",
-  "arrow.core.exists"
+    "this.fix().any(arg1)",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -324,8 +287,8 @@ fun <A> Kind<ForNonEmptyList, A>.exists(arg1: Function1<A, Boolean>): Boolean =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "forAll(arg1)",
-  "arrow.core.forAll"
+    "this.fix().all(arg1)",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -344,8 +307,8 @@ fun <A> Kind<ForNonEmptyList, A>.forAll(arg1: Function1<A, Boolean>): Boolean =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "all(arg1)",
-  "arrow.core.all"
+    "this.fix().all(arg1)",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -364,8 +327,8 @@ fun <A> Kind<ForNonEmptyList, A>.all(arg1: Function1<A, Boolean>): Boolean =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "isEmpty()",
-  "arrow.core.isEmpty"
+    "this.fix().isEmpty()",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -383,8 +346,8 @@ fun <A> Kind<ForNonEmptyList, A>.isEmpty(): Boolean = arrow.core.NonEmptyList.fo
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "nonEmpty()",
-  "arrow.core.nonEmpty"
+    "this.fix().isNotEmpty()",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -402,8 +365,8 @@ fun <A> Kind<ForNonEmptyList, A>.nonEmpty(): Boolean = arrow.core.NonEmptyList.f
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "isNotEmpty()",
-  "arrow.core.isNotEmpty"
+    "this.fix().isNotEmpty()",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -421,8 +384,8 @@ fun <A> Kind<ForNonEmptyList, A>.isNotEmpty(): Boolean = arrow.core.NonEmptyList
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "size(arg1)",
-  "arrow.core.size"
+    "this.fix().size()",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -438,14 +401,7 @@ fun <A> Kind<ForNonEmptyList, A>.size(arg1: Monoid<Long>): Long =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "foldMapA(arg1, arg2, arg3)",
-  "arrow.core.foldMapA"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on NonEmptyList")
 fun <G, A, B, AP : Applicative<G>, MO : Monoid<B>> Kind<ForNonEmptyList, A>.foldMapA(
   arg1: AP,
   arg2: MO,
@@ -461,14 +417,7 @@ fun <G, A, B, AP : Applicative<G>, MO : Monoid<B>> Kind<ForNonEmptyList, A>.fold
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "foldMapM(arg1, arg2, arg3)",
-  "arrow.core.foldMapM"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on NonEmptyList")
 fun <G, A, B, MA : Monad<G>, MO : Monoid<B>> Kind<ForNonEmptyList, A>.foldMapM(
   arg1: MA,
   arg2: MO,
@@ -484,14 +433,7 @@ fun <G, A, B, MA : Monad<G>, MO : Monoid<B>> Kind<ForNonEmptyList, A>.foldMapM(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "foldM(arg1, arg2, arg3)",
-  "arrow.core.foldM"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on NonEmptyList")
 fun <G, A, B> Kind<ForNonEmptyList, A>.foldM(
   arg1: Monad<G>,
   arg2: B,
@@ -510,8 +452,8 @@ fun <G, A, B> Kind<ForNonEmptyList, A>.foldM(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "get(arg1)",
-  "arrow.core.get"
+    "this.fix()[arg1]",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -530,8 +472,8 @@ fun <A> Kind<ForNonEmptyList, A>.get(arg1: Long): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "firstOption()",
-  "arrow.core.firstOption"
+    "Option.fromNullable(this.fix().firstOrNull())",
+    "arrow.core.Option", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -549,8 +491,8 @@ fun <A> Kind<ForNonEmptyList, A>.firstOption(): Option<A> = arrow.core.NonEmptyL
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "firstOption(arg1)",
-  "arrow.core.firstOption"
+    "Option.fromNullable(this.fix().firstOrNull(arg1))",
+    "arrow.core.Option", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -569,8 +511,8 @@ fun <A> Kind<ForNonEmptyList, A>.firstOption(arg1: Function1<A, Boolean>): Optio
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "firstOrNone()",
-  "arrow.core.firstOrNone"
+    "Option.fromNullable(this.fix().firstOrNull())",
+    "arrow.core.Option", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -588,8 +530,8 @@ fun <A> Kind<ForNonEmptyList, A>.firstOrNone(): Option<A> = arrow.core.NonEmptyL
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "firstOrNone(arg1)",
-  "arrow.core.firstOrNone"
+    "Option.fromNullable(this.fix().firstOrNull(arg1))",
+    "arrow.core.Option", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -608,8 +550,8 @@ fun <A> Kind<ForNonEmptyList, A>.firstOrNone(arg1: Function1<A, Boolean>): Optio
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "toList()",
-  "arrow.core.toList"
+    "this.fix().toList()",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -621,4 +563,5 @@ fun <A> Kind<ForNonEmptyList, A>.toList(): List<A> = arrow.core.NonEmptyList.fol
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Foldable typeclasses is deprecated. Use concrete methods on NonEmptyList")
 inline fun Companion.foldable(): NonEmptyListFoldable = foldable_singleton

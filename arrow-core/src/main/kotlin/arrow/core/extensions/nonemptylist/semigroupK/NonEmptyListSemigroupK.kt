@@ -61,4 +61,5 @@ fun <A> algebra(): Semigroup<Kind<ForNonEmptyList, A>> = arrow.core.NonEmptyList
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 inline fun Companion.semigroupK(): NonEmptyListSemigroupK = semigroupK_singleton

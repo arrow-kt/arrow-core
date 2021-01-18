@@ -2,7 +2,13 @@ package arrow.core
 
 import arrow.Kind
 import arrow.typeclasses.Applicative
+import arrow.typeclasses.Eq
+import arrow.typeclasses.Hash
+import arrow.typeclasses.Monoid
+import arrow.typeclasses.Order
+import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
+import kotlin.Function1
 
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 class ForNonEmptyList private constructor() { companion object }
@@ -226,7 +232,7 @@ class NonEmptyList<out A>(
   inline fun <B> map(f: (A) -> B): NonEmptyList<B> =
     NonEmptyList(f(head), tail.map(f))
 
-  inline fun <B> flatMap(f: (A) -> NonEmptyListOf<B>): NonEmptyList<B> =
+  fun <B> flatMap(f: (A) -> NonEmptyListOf<B>): NonEmptyList<B> =
     f(head).fix() + tail.flatMap { f(it).fix().all }
 
   fun <B> ap(ff: NonEmptyListOf<(A) -> B>): NonEmptyList<B> =
@@ -242,7 +248,7 @@ class NonEmptyList<out A>(
     NonEmptyList(all + a)
 
   inline fun <B> foldLeft(b: B, f: (B, A) -> B): B =
-    this.fix().tail.fold(f(b, this.fix().head), f)
+    this.tail.fold(f(b, this.head), f)
 
   fun <B> foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> =
     all.k().foldRight(lb, f)
@@ -286,6 +292,12 @@ class NonEmptyList<out A>(
   override fun toString(): String =
     show(Show.any())
 
+  fun <B> zip(other: NonEmptyList<B>): NonEmptyList<Tuple2<A, B>> =
+    NonEmptyList(Tuple2(head, other.head), tail.zip(other.tail).map { Tuple2(it.first, it.second) })
+
+  fun <B, C> zipWith(other: NonEmptyList<B>, f: Function2<A, B, C>): NonEmptyList<C> =
+    zip(other).map { f(it.a, it.b) }
+
   companion object {
     operator fun <A> invoke(head: A, vararg t: A): NonEmptyList<A> =
       NonEmptyList(head, t.asList())
@@ -301,6 +313,236 @@ class NonEmptyList<out A>(
 
     fun <A> just(a: A): NonEmptyList<A> =
       of(a)
+
+    val unit: NonEmptyList<Unit> =
+      of(Unit)
+
+    inline fun <B, C, D> mapN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      crossinline map: (B, C) -> D
+    ): NonEmptyList<D> =
+      mapN(b, c, unit, unit, unit, unit, unit, unit, unit, unit) { b, c, _, _, _, _, _, _, _, _ -> map(b, c) }
+
+    inline fun <B, C, D, E> mapN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      d: NonEmptyList<D>,
+      crossinline map: (B, C, D) -> E
+    ): NonEmptyList<E> =
+      mapN(b, c, d, unit, unit, unit, unit, unit, unit, unit) { b, c, d, _, _, _, _, _, _, _ -> map(b, c, d) }
+
+    inline fun <B, C, D, E, F> mapN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      d: NonEmptyList<D>,
+      e: NonEmptyList<E>,
+      crossinline map: (B, C, D, E) -> F
+    ): NonEmptyList<F> =
+      mapN(b, c, d, e, unit, unit, unit, unit, unit, unit) { b, c, d, e, _, _, _, _, _, _ -> map(b, c, d, e) }
+
+    inline fun <B, C, D, E, F, G> mapN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      d: NonEmptyList<D>,
+      e: NonEmptyList<E>,
+      f: NonEmptyList<F>,
+      crossinline map: (B, C, D, E, F) -> G
+    ): NonEmptyList<G> =
+      mapN(b, c, d, e, f, unit, unit, unit, unit, unit) { b, c, d, e, f, _, _, _, _, _ -> map(b, c, d, e, f) }
+
+    inline fun <B, C, D, E, F, G, H> mapN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      d: NonEmptyList<D>,
+      e: NonEmptyList<E>,
+      f: NonEmptyList<F>,
+      g: NonEmptyList<G>,
+      crossinline map: (B, C, D, E, F, G) -> H
+    ): NonEmptyList<H> =
+      mapN(b, c, d, e, f, g, unit, unit, unit, unit) { b, c, d, e, f, g, _, _, _, _ -> map(b, c, d, e, f, g) }
+
+    inline fun <B, C, D, E, F, G, H, I> mapN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      d: NonEmptyList<D>,
+      e: NonEmptyList<E>,
+      f: NonEmptyList<F>,
+      g: NonEmptyList<G>,
+      h: NonEmptyList<H>,
+      crossinline map: (B, C, D, E, F, G, H) -> I
+    ): NonEmptyList<I> =
+      mapN(b, c, d, e, f, g, h, unit, unit, unit) { b, c, d, e, f, g, h, _, _, _ -> map(b, c, d, e, f, g, h) }
+
+    inline fun <B, C, D, E, F, G, H, I, J> mapN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      d: NonEmptyList<D>,
+      e: NonEmptyList<E>,
+      f: NonEmptyList<F>,
+      g: NonEmptyList<G>,
+      h: NonEmptyList<H>,
+      i: NonEmptyList<I>,
+      crossinline map: (B, C, D, E, F, G, H, I) -> J
+    ): NonEmptyList<J> =
+      mapN(b, c, d, e, f, g, h, i, unit, unit) { b, c, d, e, f, g, h, i, _, _ -> map(b, c, d, e, f, g, h, i) }
+
+    inline fun <B, C, D, E, F, G, H, I, J, K> mapN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      d: NonEmptyList<D>,
+      e: NonEmptyList<E>,
+      f: NonEmptyList<F>,
+      g: NonEmptyList<G>,
+      h: NonEmptyList<H>,
+      i: NonEmptyList<I>,
+      j: NonEmptyList<J>,
+      crossinline map: (B, C, D, E, F, G, H, I, J) -> K
+    ): NonEmptyList<K> =
+      mapN(b, c, d, e, f, g, h, i, j, unit) { b, c, d, e, f, g, h, i, j, _ -> map(b, c, d, e, f, g, h, i, j) }
+
+    inline fun <B, C, D, E, F, G, H, I, J, K, L> mapN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      d: NonEmptyList<D>,
+      e: NonEmptyList<E>,
+      f: NonEmptyList<F>,
+      g: NonEmptyList<G>,
+      h: NonEmptyList<H>,
+      i: NonEmptyList<I>,
+      j: NonEmptyList<J>,
+      k: NonEmptyList<K>,
+      crossinline map: (B, C, D, E, F, G, H, I, J, K) -> L
+    ): NonEmptyList<L> =
+      b.flatMap { bb ->
+        c.flatMap { cc ->
+          d.flatMap { dd ->
+            e.flatMap { ee ->
+              f.flatMap { ff ->
+                g.flatMap { gg ->
+                  h.flatMap { hh ->
+                    i.flatMap { ii ->
+                      j.flatMap { jj ->
+                        k.map { kk ->
+                          map(bb, cc, dd, ee, ff, gg, hh, ii, jj, kk)
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+    fun <B, C> tupledN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>
+    ): NonEmptyList<Tuple2<B, C>> =
+      mapN(b, c) { b, c ->
+        Tuple2(b, c)
+      }
+
+    fun <B, C, D> tupledN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      d: NonEmptyList<D>
+    ): NonEmptyList<Tuple3<B, C, D>> =
+      mapN(b, c, d) { b, c, d ->
+        Tuple3(b, c, d)
+      }
+
+    fun <B, C, D, E> tupledN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      d: NonEmptyList<D>,
+      e: NonEmptyList<E>
+    ): NonEmptyList<Tuple4<B, C, D, E>> =
+      mapN(b, c, d, e) { b, c, d, e ->
+        Tuple4(b, c, d, e)
+      }
+
+    fun <B, C, D, E, F> tupledN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      d: NonEmptyList<D>,
+      e: NonEmptyList<E>,
+      f: NonEmptyList<F>
+    ): NonEmptyList<Tuple5<B, C, D, E, F>> =
+      mapN(b, c, d, e, f) { b, c, d, e, f ->
+        Tuple5(b, c, d, e, f)
+      }
+
+    fun <B, C, D, E, F, G> tupledN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      d: NonEmptyList<D>,
+      e: NonEmptyList<E>,
+      f: NonEmptyList<F>,
+      g: NonEmptyList<G>
+    ): NonEmptyList<Tuple6<B, C, D, E, F, G>> =
+      mapN(b, c, d, e, f, g) { b, c, d, e, f, g ->
+        Tuple6(b, c, d, e, f, g)
+      }
+
+    fun <B, C, D, E, F, G, H> tupledN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      d: NonEmptyList<D>,
+      e: NonEmptyList<E>,
+      f: NonEmptyList<F>,
+      g: NonEmptyList<G>,
+      h: NonEmptyList<H>
+    ): NonEmptyList<Tuple7<B, C, D, E, F, G, H>> =
+      mapN(b, c, d, e, f, g, h) { b, c, d, e, f, g, h ->
+        Tuple7(b, c, d, e, f, g, h)
+      }
+
+    fun <B, C, D, E, F, G, H, I> tupledN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      d: NonEmptyList<D>,
+      e: NonEmptyList<E>,
+      f: NonEmptyList<F>,
+      g: NonEmptyList<G>,
+      h: NonEmptyList<H>,
+      i: NonEmptyList<I>
+    ): NonEmptyList<Tuple8<B, C, D, E, F, G, H, I>> =
+      mapN(b, c, d, e, f, g, h, i) { b, c, d, e, f, g, h, i ->
+        Tuple8(b, c, d, e, f, g, h, i)
+      }
+
+    fun <B, C, D, E, F, G, H, I, J> tupledN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      d: NonEmptyList<D>,
+      e: NonEmptyList<E>,
+      f: NonEmptyList<F>,
+      g: NonEmptyList<G>,
+      h: NonEmptyList<H>,
+      i: NonEmptyList<I>,
+      j: NonEmptyList<J>
+    ): NonEmptyList<Tuple9<B, C, D, E, F, G, H, I, J>> =
+      mapN(b, c, d, e, f, g, h, i, j) { b, c, d, e, f, g, h, i, j ->
+        Tuple9(b, c, d, e, f, g, h, i, j)
+      }
+
+    fun <B, C, D, E, F, G, H, I, J, K> tupledN(
+      b: NonEmptyList<B>,
+      c: NonEmptyList<C>,
+      d: NonEmptyList<D>,
+      e: NonEmptyList<E>,
+      f: NonEmptyList<F>,
+      g: NonEmptyList<G>,
+      h: NonEmptyList<H>,
+      i: NonEmptyList<I>,
+      j: NonEmptyList<J>,
+      k: NonEmptyList<K>
+    ): NonEmptyList<Tuple10<B, C, D, E, F, G, H, I, J, K>> =
+      mapN(b, c, d, e, f, g, h, i, j, k) { b, c, d, e, f, g, h, i, j, k ->
+        Tuple10(b, c, d, e, f, g, h, i, j, k)
+      }
 
     @Suppress("UNCHECKED_CAST")
     private tailrec fun <A, B> go(
@@ -338,3 +580,146 @@ fun <A, G> NonEmptyListOf<Kind<G, A>>.sequence(GA: Applicative<G>): Kind<G, NonE
 
 fun <A> NonEmptyListOf<A>.combineK(y: NonEmptyListOf<A>): NonEmptyList<A> =
   fix().plus(y.fix())
+
+fun <A> NonEmptyList<A>.compare(OA: Order<A>, b: NonEmptyList<A>): Ordering = OA.run {
+  align(b) { ior -> ior.fold({ GT }, { LT }, { a1, a2 -> a1.compare(a2) }) }
+    .fold(Monoid.ordering())
+}
+
+fun <A> NonEmptyList<NonEmptyList<A>>.flatten(): NonEmptyList<A> =
+  this.flatMap(::identity)
+
+fun <A, B> NonEmptyList<Either<A, B>>.selectM(f: NonEmptyList<(A) -> B>): NonEmptyList<B> =
+  this.flatMap { it.fold({ a -> f.map { ff -> ff(a) } }, { b -> NonEmptyList.just(b) }) }
+
+fun <A, B> NonEmptyList<Tuple2<A, B>>.unzip(): Tuple2<NonEmptyList<A>, NonEmptyList<B>> =
+  this.unzipWith(::identity)
+
+fun <A, B, C> NonEmptyList<C>.unzipWith(f: Function1<C, Tuple2<A, B>>): Tuple2<NonEmptyList<A>, NonEmptyList<B>> =
+ this.map(f).let { nel ->
+   nel.tail.unzip().bimap(
+     { NonEmptyList(nel.head.a, it) },
+     { NonEmptyList(nel.head.b, it) })
+ }
+
+/**
+ * Check if [this@lt] is `lower than` [b]
+ *
+ * @receiver object to compare with [b]
+ * @param b object to compare with [this@lt]
+ * @returns true if [this@lt] is `lower than` [b] and false otherwise
+ */
+fun <A> NonEmptyList<A>.lt(OA: Order<A>, b: NonEmptyList<A>): Boolean =
+  compare(OA, b) == LT
+
+/**
+ * Check if [this@lte] is `lower than or equal to` [b]
+ *
+ * @receiver object to compare with [b]
+ * @param b object to compare with [this@lte]
+ * @returns true if [this@lte] is `lower than or equal to` [b] and false otherwise
+ */
+fun <A> NonEmptyList<A>.lte(OA: Order<A>, b: NonEmptyList<A>): Boolean =
+  compare(OA, b) != GT
+
+/**
+ * Check if [this@gt] is `greater than` [b]
+ *
+ * @receiver object to compare with [b]
+ * @param b object to compare with [this@gt]
+ * @returns true if [this@gt] is `greater than` [b] and false otherwise
+ */
+fun <A> NonEmptyList<A>.gt(OA: Order<A>, b: NonEmptyList<A>): Boolean =
+  compare(OA, b) == GT
+
+/**
+ * Check if [this@gte] is `greater than or equal to` [b]
+ *
+ * @receiver object to compare with [b]
+ * @param b object to compare with [this@gte]
+ * @returns true if [this@gte] is `greater than or equal to` [b] and false otherwise
+ */
+fun <A> NonEmptyList<A>.gte(OA: Order<A>, b: NonEmptyList<A>): Boolean =
+  compare(OA, b) != LT
+
+/**
+ * Determines the maximum of [this@max] and [b] in terms of order.
+ *
+ * @receiver object to compare with [b]
+ * @param b object to compare with [this@max]
+ * @returns the maximum [this@max] if it is greater than [b] or [b] otherwise
+ */
+fun <A> NonEmptyList<A>.max(OA: Order<A>, b: NonEmptyList<A>): NonEmptyList<A> =
+  if (gt(OA, b)) this else b
+
+/**
+ * Determines the minimum of [this@min] and [b] in terms of order.
+ *
+ * @receiver object to compare with [b]
+ * @param b object to compare with [this@min]
+ * @returns the minimum [this@min] if it is less than [b] or [b] otherwise
+ */
+fun <A> NonEmptyList<A>.min(OA: Order<A>, b: NonEmptyList<A>): NonEmptyList<A> =
+  if (lt(OA, b)) this else b
+
+/**
+ * Sorts [this@sort] and [b] in terms of order.
+ *
+ * @receiver object to compare with [b]
+ * @param b object to compare with [this@sort]
+ * @returns a sorted [Tuple2] of [this@sort] and [b].
+ */
+fun <A> NonEmptyList<A>.sort(OA: Order<A>, b: NonEmptyList<A>): Tuple2<NonEmptyList<A>, NonEmptyList<A>> =
+  if (gte(OA, b)) Tuple2(this, b) else Tuple2(b, this)
+
+/** Construct an [Eq] instance which use [EQA] to compare the elements of the lists **/
+fun <A> Eq.Companion.nonEmptyList(EQA: Eq<A>): Eq<NonEmptyList<A>> =
+  NonEmptyListEq(EQA)
+
+fun <A> Hash.Companion.nonEmptyList(HA: Hash<A>): Hash<NonEmptyList<A>> =
+  NonEmptyListHash(HA)
+
+fun <A> Order.Companion.nonEmptyList(OA: Order<A>): Order<NonEmptyList<A>> =
+  NonEmptyListOrder(OA)
+
+fun <A> Semigroup.Companion.nonEmptyList(SA: Semigroup<A>): Semigroup<NonEmptyList<A>> =
+  NonEmptyListSemigroup(SA)
+
+fun <A> Show.Companion.nonEmptyList(SA: Show<A>): Show<NonEmptyList<A>> =
+  NonEmptyListShow(SA)
+
+private class NonEmptyListEq<A>(
+  private val EQA: Eq<A>,
+) : Eq<NonEmptyList<A>> {
+  override fun NonEmptyList<A>.eqv(b: NonEmptyList<A>): Boolean = eqv(EQA, b)
+}
+
+private class NonEmptyListHash<A>(
+  private val HA: Hash<A>,
+) : Hash<NonEmptyList<A>> {
+  override fun NonEmptyList<A>.hash(): Int = hash(HA)
+
+  override fun NonEmptyList<A>.hashWithSalt(salt: Int): Int = hashWithSalt(HA, salt)
+}
+
+private class NonEmptyListOrder<A>(
+  private val OA: Order<A>
+) : Order<NonEmptyList<A>> {
+  override fun NonEmptyList<A>.compare(b: NonEmptyList<A>): Ordering = compare(OA, b)
+}
+
+private open class NonEmptyListSemigroup<A>(
+  private val SGA: Semigroup<A>
+) : Semigroup<NonEmptyList<A>> {
+  override fun NonEmptyList<A>.combine(b: NonEmptyList<A>): NonEmptyList<A> =
+    combine(b)
+
+  override fun NonEmptyList<A>.maybeCombine(b: NonEmptyList<A>?): NonEmptyList<A> =
+    b?.let { combine(it) } ?: this
+}
+
+private class NonEmptyListShow<A>(
+  private val SA: Show<A>,
+) : Show<NonEmptyList<A>> {
+  override fun NonEmptyList<A>.show(): String = show(SA)
+}

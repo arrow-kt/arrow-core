@@ -6,12 +6,6 @@ import arrow.core.NonEmptyList
 import arrow.core.NonEmptyList.Companion
 import arrow.core.Tuple2
 import arrow.core.extensions.NonEmptyListFunctor
-import kotlin.Deprecated
-import kotlin.Function1
-import kotlin.PublishedApi
-import kotlin.Suppress
-import kotlin.Unit
-import kotlin.jvm.JvmName
 
 /**
  * cached extension
@@ -51,8 +45,8 @@ internal val functor_singleton: NonEmptyListFunctor = object :
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg1)",
-  "arrow.core.map"
+    "this.fix().map<B>(arg1)",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -71,8 +65,8 @@ fun <A, B> Kind<ForNonEmptyList, A>.map(arg1: Function1<A, B>): NonEmptyList<B> 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "imap(arg1, arg2)",
-  "arrow.core.imap"
+    "this.fix().map<B>(arg1)",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -114,8 +108,8 @@ fun <A, B> Kind<ForNonEmptyList, A>.imap(arg1: Function1<A, B>, arg2: Function1<
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "lift(arg0)",
-  "arrow.core.NonEmptyList.lift"
+    "{ nel: NonEmptyList<Int> -> nel.map { arg0 }}",
+    "arrow.core.NonEmptyList"
   ),
   DeprecationLevel.WARNING
 )
@@ -135,8 +129,8 @@ fun <A, B> lift(arg0: Function1<A, B>): Function1<Kind<ForNonEmptyList, A>, Kind
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "void()",
-  "arrow.core.void"
+    "this.fix().void<A>()",
+    "arrow.core.fix", "arrow.core.void"
   ),
   DeprecationLevel.WARNING
 )
@@ -145,6 +139,29 @@ fun <A> Kind<ForNonEmptyList, A>.void(): NonEmptyList<Unit> =
   this@void.void<A>() as arrow.core.NonEmptyList<kotlin.Unit>
 }
 
+/**
+ *  Applies [f] to an [A] inside [F] and returns the [F] structure with a tuple of the [A] value and the
+ *  computed [B] value as result of applying [f]
+ *
+ *  Kind<F, A> -> Kind<F, Tuple2<A, B>>
+ *
+ *  ```kotlin:ank:playground
+ *  import arrow.core.*
+ * import arrow.core.extensions.nonemptylist.functor.*
+ * import arrow.core.*
+ *
+ *
+ *  import arrow.core.extensions.nonemptylist.applicative.just
+ *
+ *  fun main(args: Array<String>) {
+ *   val result =
+ *   //sampleStart
+ *   "Hello".just().fproduct({ "$it World" })
+ *   //sampleEnd
+ *   println(result)
+ *  }
+ *  ```
+ */
 @JvmName("fproduct")
 @Suppress(
   "UNCHECKED_CAST",
@@ -155,8 +172,8 @@ fun <A> Kind<ForNonEmptyList, A>.void(): NonEmptyList<Unit> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "fproduct(arg1)",
-  "arrow.core.fproduct"
+    "this.fix().fproduct<A, B>(arg1)",
+    "arrow.core.fix", "arrow.core.fproduct"
   ),
   DeprecationLevel.WARNING
 )
@@ -165,6 +182,28 @@ fun <A, B> Kind<ForNonEmptyList, A>.fproduct(arg1: Function1<A, B>): NonEmptyLis
   this@fproduct.fproduct<A, B>(arg1) as arrow.core.NonEmptyList<arrow.core.Tuple2<A, B>>
 }
 
+/**
+ *  Replaces [A] inside [F] with [B] resulting in a Kind<F, B>
+ *
+ *  Kind<F, A> -> Kind<F, B>
+ *
+ *  ```kotlin:ank:playground
+ *  import arrow.core.*
+ * import arrow.core.extensions.nonemptylist.functor.*
+ * import arrow.core.*
+ *
+ *
+ *  import arrow.core.extensions.nonemptylist.applicative.just
+ *
+ *  fun main(args: Array<String>) {
+ *   val result =
+ *   //sampleStart
+ *   "Hello World".just().mapConst("...")
+ *   //sampleEnd
+ *   println(result)
+ *  }
+ *  ```
+ */
 @JvmName("mapConst")
 @Suppress(
   "UNCHECKED_CAST",
@@ -175,8 +214,8 @@ fun <A, B> Kind<ForNonEmptyList, A>.fproduct(arg1: Function1<A, B>): NonEmptyLis
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapConst(arg1)",
-  "arrow.core.mapConst"
+    "this.fix().mapConst<A, B>(arg1)",
+    "arrow.core.fix", "arrow.core.mapConst"
   ),
   DeprecationLevel.WARNING
 )
@@ -198,8 +237,8 @@ fun <A, B> Kind<ForNonEmptyList, A>.mapConst(arg1: B): NonEmptyList<B> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapConst(arg1)",
-  "arrow.core.mapConst"
+    "arg1.fix().mapConst<B, A>(this)",
+    "arrow.core.fix", "arrow.core.mapConst"
   ),
   DeprecationLevel.WARNING
 )
@@ -208,6 +247,28 @@ fun <A, B> A.mapConst(arg1: Kind<ForNonEmptyList, B>): NonEmptyList<A> =
   this@mapConst.mapConst<A, B>(arg1) as arrow.core.NonEmptyList<A>
 }
 
+/**
+ *  Pairs [B] with [A] returning a Kind<F, Tuple2<B, A>>
+ *
+ *  Kind<F, A> -> Kind<F, Tuple2<B, A>>
+ *
+ *  ```kotlin:ank:playground
+ *  import arrow.core.*
+ * import arrow.core.extensions.nonemptylist.functor.*
+ * import arrow.core.*
+ *
+ *
+ *  import arrow.core.extensions.nonemptylist.applicative.just
+ *
+ *  fun main(args: Array<String>) {
+ *   val result =
+ *   //sampleStart
+ *   "Hello".just().tupleLeft("World")
+ *   //sampleEnd
+ *   println(result)
+ *  }
+ *  ```
+ */
 @JvmName("tupleLeft")
 @Suppress(
   "UNCHECKED_CAST",
@@ -218,8 +279,8 @@ fun <A, B> A.mapConst(arg1: Kind<ForNonEmptyList, B>): NonEmptyList<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupleLeft(arg1)",
-  "arrow.core.tupleLeft"
+    "this.fix().tupleLeft<A, B>(arg1)",
+    "arrow.core.fix", "arrow.core.tupleLeft"
   ),
   DeprecationLevel.WARNING
 )
@@ -228,6 +289,28 @@ fun <A, B> Kind<ForNonEmptyList, A>.tupleLeft(arg1: B): NonEmptyList<Tuple2<B, A
   this@tupleLeft.tupleLeft<A, B>(arg1) as arrow.core.NonEmptyList<arrow.core.Tuple2<B, A>>
 }
 
+/**
+ *  Pairs [A] with [B] returning a Kind<F, Tuple2<A, B>>
+ *
+ *  Kind<F, A> -> Kind<F, Tuple2<A, B>>
+ *
+ *  ```kotlin:ank:playground
+ *  import arrow.core.*
+ * import arrow.core.extensions.nonemptylist.functor.*
+ * import arrow.core.*
+ *
+ *
+ *  import arrow.core.extensions.nonemptylist.applicative.just
+ *
+ *  fun main(args: Array<String>) {
+ *   val result =
+ *   //sampleStart
+ *   "Hello".just().tupleRight("World")
+ *   //sampleEnd
+ *   println(result)
+ *  }
+ *  ```
+ */
 @JvmName("tupleRight")
 @Suppress(
   "UNCHECKED_CAST",
@@ -238,8 +321,8 @@ fun <A, B> Kind<ForNonEmptyList, A>.tupleLeft(arg1: B): NonEmptyList<Tuple2<B, A
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupleRight(arg1)",
-  "arrow.core.tupleRight"
+    "this.fix().tupleRight<A, B>(arg1)",
+    "arrow.core.fix", "arrow.core.tupleRight"
   ),
   DeprecationLevel.WARNING
 )
@@ -248,6 +331,29 @@ fun <A, B> Kind<ForNonEmptyList, A>.tupleRight(arg1: B): NonEmptyList<Tuple2<A, 
   this@tupleRight.tupleRight<A, B>(arg1) as arrow.core.NonEmptyList<arrow.core.Tuple2<A, B>>
 }
 
+/**
+ *  Given [A] is a sub type of [B], re-type this value from Kind<F, A> to Kind<F, B>
+ *
+ *  Kind<F, A> -> Kind<F, B>
+ *
+ *  ```kotlin:ank:playground
+ *  import arrow.core.*
+ * import arrow.core.extensions.nonemptylist.functor.*
+ * import arrow.core.*
+ *
+ *
+ *  import arrow.core.extensions.nonemptylist.applicative.just
+ *  import arrow.Kind
+ *
+ *  fun main(args: Array<String>) {
+ *   val result: Kind<*, CharSequence> =
+ *   //sampleStart
+ *   "Hello".just().map({ "$it World" }).widen()
+ *   //sampleEnd
+ *   println(result)
+ *  }
+ *  ```
+ */
 @JvmName("widen")
 @Suppress(
   "UNCHECKED_CAST",
@@ -258,8 +364,8 @@ fun <A, B> Kind<ForNonEmptyList, A>.tupleRight(arg1: B): NonEmptyList<Tuple2<A, 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "widen()",
-  "arrow.core.widen"
+    "this.fix().widen<B, A>()",
+    "arrow.core.fix", "arrow.core.widen"
   ),
   DeprecationLevel.WARNING
 )
@@ -268,8 +374,73 @@ fun <B, A : B> Kind<ForNonEmptyList, A>.widen(): NonEmptyList<B> =
   this@widen.widen<B, A>() as arrow.core.NonEmptyList<B>
 }
 
+/**
+ *  ank_macro_hierarchy(arrow.typeclasses.Functor)
+ *
+ *  The [Functor] type class abstracts the ability to [map] over the computational context of a type constructor.
+ *  Examples of type constructors that can implement instances of the Functor type class include
+ *  [arrow.core.Option], [arrow.core.NonEmptyList], [List] and many other data types that include a [map] function with the shape
+ *  `fun <F, A, B> Kind<F, A>.map(f: (A) -> B): Kind<F, B>` where `F` refers to any type constructor whose contents can be transformed.
+ *
+ *  ```kotlin:ank:playground
+ *  import arrow.core.*
+ * import arrow.core.extensions.nonemptylist.functor.*
+ * import arrow.core.*
+ *
+ *
+ *
+ *  fun main(args: Array<String>) {
+ *   val result =
+ *   //sampleStart
+ *   NonEmptyList.functor()
+ *   //sampleEnd
+ *   println(result)
+ *  }
+ *  ```
+ *
+ *  ### Example
+ *
+ *  Oftentimes we find ourselves in situations where we need to transform the contents of some data type.
+ *  [map] allows us to safely compute over values under the assumption that they'll be there returning the
+ *  transformation encapsulated in the same context.
+ *
+ *  Consider [arrow.core.Option] and [arrow.core.Either]:
+ *
+ *  `Option<A>` allows us to model absence and has two possible states, `Some(a: A)` if the value is not absent and `None` to represent an empty case.
+ *  In a similar fashion `Either<L, R>` may have two possible cases `Left(l: L)` and `Right(r: R)`. By convention, `Left` is used to model the exceptional
+ *  case and `Right` for the successful case.
+ *
+ *  Both [arrow.core.Either] and [arrow.core.Option] are examples of data types that can be computed over transforming their inner results.
+ *
+ *  ```kotlin:ank:playground
+ *  import arrow.*
+ *  import arrow.core.*
+ *
+ *  suspend fun main(args: Array<String>) {
+ *   val result =
+ *   //sampleStart
+ * 2 }
+ *   //sampleEnd
+ *   println(result)
+ *  }
+ *  ```
+ *
+ *  ```kotlin:ank:playground
+ *  import arrow.*
+ *  import arrow.core.*
+ *
+ *  fun main(args: Array<String>) {
+ *   val result =
+ *   //sampleStart
+ * 2 }
+ *   //sampleEnd
+ *   println(result)
+ *  }
+ *  ```
+ */
 @Suppress(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-inline fun Companion.functor(): NonEmptyListFunctor = functor_singleton
+@Deprecated("Functor typeclasses is deprecated. Use concrete methods on NonEmptyList")
+inline fun Companion.functor(): NonEmptyListFunctor = functor_singleton as arrow.core.extensions.NonEmptyListFunctor
