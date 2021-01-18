@@ -69,7 +69,7 @@ fun unit(): NonEmptyList<Unit> = arrow.core.NonEmptyList
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith("this.fix().map<B>(arg1)",
+  ReplaceWith("fix().map<B>(arg1)",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -89,7 +89,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.map(arg1: Function1<A, B>): NonEmptyList<B> 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().replicate<A>(arg1)",
+    "fix().replicate<A>(arg1)",
     "arrow.core.fix", "arrow.core.replicate"
   ),
   DeprecationLevel.WARNING
@@ -109,7 +109,7 @@ fun <A> Kind<ForNonEmptyList, A>.replicate(arg1: Int): NonEmptyList<List<A>> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().replicate<A>(arg1, arg2)",
+    "fix().replicate<A>(arg1, arg2)",
     "arrow.core.fix", "arrow.core.replicate"
   )
 )

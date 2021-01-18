@@ -37,7 +37,7 @@ internal val foldable_singleton: NonEmptyListFoldable = object :
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().foldLeft<B>(arg1, arg2)",
+    "fix().foldLeft<B>(arg1, arg2)",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -57,7 +57,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.foldLeft(arg1: B, arg2: Function2<B, A, B>):
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().foldRight<B>(arg1, arg2)",
+    "fix().foldRight<B>(arg1, arg2)",
     "arrow.core.fix"
   )
 )
@@ -76,7 +76,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.foldRight(arg1: Eval<B>, arg2: Function2<A, 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().combineAll<A>(arg1)",
+    "fix().combineAll<A>(arg1)",
     "arrow.core.combineAll", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -159,7 +159,7 @@ fun <A> Kind<ForNonEmptyList, A>.reduceRightOption(arg1: Function2<A, Eval<A>, E
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().combineAll<A>(arg1)",
+    "fix().combineAll<A>(arg1)",
     "arrow.core.combineAll", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -179,7 +179,7 @@ fun <A> Kind<ForNonEmptyList, A>.combineAll(arg1: Monoid<A>): A =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().foldMap<A, B>(arg1, arg2)",
+    "fix().foldMap<A, B>(arg1, arg2)",
     "arrow.core.fix", "arrow.core.foldMap"
   ),
   DeprecationLevel.WARNING
@@ -267,7 +267,7 @@ fun <A> Kind<ForNonEmptyList, A>.find(arg1: Function1<A, Boolean>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().any(arg1)",
+    "fix().any(arg1)",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -287,7 +287,7 @@ fun <A> Kind<ForNonEmptyList, A>.exists(arg1: Function1<A, Boolean>): Boolean =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().all(arg1)",
+    "fix().all(arg1)",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -307,7 +307,7 @@ fun <A> Kind<ForNonEmptyList, A>.forAll(arg1: Function1<A, Boolean>): Boolean =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().all(arg1)",
+    "fix().all(arg1)",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -327,7 +327,7 @@ fun <A> Kind<ForNonEmptyList, A>.all(arg1: Function1<A, Boolean>): Boolean =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().isEmpty()",
+    "fix().isEmpty()",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -346,7 +346,7 @@ fun <A> Kind<ForNonEmptyList, A>.isEmpty(): Boolean = arrow.core.NonEmptyList.fo
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().isNotEmpty()",
+    "fix().isNotEmpty()",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -365,7 +365,7 @@ fun <A> Kind<ForNonEmptyList, A>.nonEmpty(): Boolean = arrow.core.NonEmptyList.f
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().isNotEmpty()",
+    "fix().isNotEmpty()",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -384,7 +384,7 @@ fun <A> Kind<ForNonEmptyList, A>.isNotEmpty(): Boolean = arrow.core.NonEmptyList
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().size()",
+    "fix().size()",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -452,7 +452,7 @@ fun <G, A, B> Kind<ForNonEmptyList, A>.foldM(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix()[arg1]",
+    "fix()[arg1]",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -550,7 +550,7 @@ fun <A> Kind<ForNonEmptyList, A>.firstOrNone(arg1: Function1<A, Boolean>): Optio
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().toList()",
+    "fix().toList()",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING

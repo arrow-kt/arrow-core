@@ -37,7 +37,7 @@ internal val apply_singleton: NonEmptyListApply = object : arrow.core.extensions
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().ap<B>(arg1)",
+    "fix().ap<B>(arg1)",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -77,7 +77,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.apEval(arg1: Eval<Kind<ForNonEmptyList, Func
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.apEval(arg1.map<NonEmptyList<(A) -> B>> { it.fix().map { b -> { a: A -> arg2(Tuple2(a, b)) } } })",
+    "apEval(arg1.map<NonEmptyList<(A) -> B>> { it.fix().map { b -> { a: A -> arg2(Tuple2(a, b)) } } })",
     "arrow.core.map2Eval"
   ),
   DeprecationLevel.WARNING
@@ -576,7 +576,7 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.flatMap<A> { a -> arg1.map<B> { b -> arg2(Tuple2(a, b)) }}",
+    "flatMap<A> { a -> arg1.map<B> { b -> arg2(Tuple2(a, b)) }}",
     "arrow.core.NonEmptyList"
   ),
   DeprecationLevel.WARNING
@@ -598,7 +598,7 @@ fun <A, B, Z> Kind<ForNonEmptyList, A>.map2(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.ap(arg1.map<(A) -> Tuple2<A, B>> { b -> { a -> Tuple2<A, B>(a, b) } })",
+    "ap(arg1.map<(A) -> Tuple2<A, B>> { b -> { a -> Tuple2<A, B>(a, b) } })",
     "arrow.core.Tuple2"
   ),
   DeprecationLevel.WARNING
@@ -618,7 +618,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.product(arg1: Kind<ForNonEmptyList, B>): Non
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.flatMap<Tuple3<A, B, Z>> { a -> arg1.map<Tuple3<A, B, Z>> { z -> Tuple3<A, B, Z>(a.a, a.b, z) }}",
+    "flatMap<Tuple3<A, B, Z>> { a -> arg1.map<Tuple3<A, B, Z>> { z -> Tuple3<A, B, Z>(a.a, a.b, z) }}",
     "arrow.core.Tuple3"
   ),
   DeprecationLevel.WARNING
@@ -638,7 +638,7 @@ fun <A, B, Z> Kind<ForNonEmptyList, Tuple2<A, B>>.product(arg1: Kind<ForNonEmpty
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.flatMap<Tuple4<A, B, C, Z>> { a -> arg1.map<Tuple4<A, B, C, Z>> { z -> Tuple4<A, B, C, Z>(a.a, a.b, a.c, z) }}",
+    "flatMap<Tuple4<A, B, C, Z>> { a -> arg1.map<Tuple4<A, B, C, Z>> { z -> Tuple4<A, B, C, Z>(a.a, a.b, a.c, z) }}",
     "arrow.core.Tuple4"
   ),
   DeprecationLevel.WARNING
@@ -658,7 +658,7 @@ fun <A, B, C, Z> Kind<ForNonEmptyList, Tuple3<A, B, C>>.product(arg1: Kind<ForNo
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.flatMap<Tuple5<A, B, C, D, Z>> { a -> arg1.map<Tuple5<A, B, C, D, Z>> { z -> Tuple5<A, B, C, D, Z>(a.a, a.b, a.c, a.d, z) }}",
+    "flatMap<Tuple5<A, B, C, D, Z>> { a -> arg1.map<Tuple5<A, B, C, D, Z>> { z -> Tuple5<A, B, C, D, Z>(a.a, a.b, a.c, a.d, z) }}",
     "arrow.core.Tuple5"
   ),
   DeprecationLevel.WARNING
@@ -680,7 +680,7 @@ fun <A, B, C, D, Z> Kind<ForNonEmptyList, Tuple4<A, B, C, D>>.product(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.flatMap<Tuple6<A, B, C, D, E, Z>> { a -> arg1.map<Tuple6<A, B, C, D, E, Z>> { z -> Tuple6<A, B, C, D, E, Z>(a.a, a.b, a.c, a.d, a.e, z) }}",
+    "flatMap<Tuple6<A, B, C, D, E, Z>> { a -> arg1.map<Tuple6<A, B, C, D, E, Z>> { z -> Tuple6<A, B, C, D, E, Z>(a.a, a.b, a.c, a.d, a.e, z) }}",
     "arrow.core.Tuple6"
   ),
   DeprecationLevel.WARNING
@@ -702,7 +702,7 @@ fun <A, B, C, D, E, Z> Kind<ForNonEmptyList, Tuple5<A, B, C, D,
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.flatMap<Tuple7<A, B, C, D, E, FF, Z>> { a -> arg1.map<Tuple7<A, B, C, D, E, FF, Z>> { z -> Tuple7<A, B, C, D, E, FF, Z>(a.a, a.b, a.c, a.d, a.e, a.f, z) }}",
+    "flatMap<Tuple7<A, B, C, D, E, FF, Z>> { a -> arg1.map<Tuple7<A, B, C, D, E, FF, Z>> { z -> Tuple7<A, B, C, D, E, FF, Z>(a.a, a.b, a.c, a.d, a.e, a.f, z) }}",
     "arrow.core.Tuple7"
   ),
   DeprecationLevel.WARNING
@@ -724,7 +724,7 @@ fun <A, B, C, D, E, FF, Z> Kind<ForNonEmptyList, Tuple6<A, B, C, D, E,
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.flatMap<Tuple8<A, B, C, D, E, FF, G, Z>> { a -> arg1.map<Tuple8<A, B, C, D, E, FF, G, Z>> { z -> Tuple8<A, B, C, D, E, FF, G, Z>(a.a, a.b, a.c, a.d, a.e, a.f, a.g, z) }}",
+    "flatMap<Tuple8<A, B, C, D, E, FF, G, Z>> { a -> arg1.map<Tuple8<A, B, C, D, E, FF, G, Z>> { z -> Tuple8<A, B, C, D, E, FF, G, Z>(a.a, a.b, a.c, a.d, a.e, a.f, a.g, z) }}",
     "arrow.core.Tuple8"
   ),
   DeprecationLevel.WARNING
@@ -746,7 +746,7 @@ fun <A, B, C, D, E, FF, G, Z> Kind<ForNonEmptyList, Tuple7<A, B, C, D, E, FF,
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.flatMap<Tuple9<A, B, C, D, E, FF, G, H, Z>> { a -> arg1.map<Tuple9<A, B, C, D, E, FF, G, H, Z>> { z -> Tuple9<A, B, C, D, E, FF, G, H, Z>(a.a, a.b, a.c, a.d, a.e, a.f, a.g, a.h, z) }}",
+    "flatMap<Tuple9<A, B, C, D, E, FF, G, H, Z>> { a -> arg1.map<Tuple9<A, B, C, D, E, FF, G, H, Z>> { z -> Tuple9<A, B, C, D, E, FF, G, H, Z>(a.a, a.b, a.c, a.d, a.e, a.f, a.g, a.h, z) }}",
     "arrow.core.Tuple9"
   ),
   DeprecationLevel.WARNING
@@ -768,7 +768,7 @@ fun <A, B, C, D, E, FF, G, H, Z> Kind<ForNonEmptyList, Tuple8<A, B, C, D, E, FF,
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.flatMap<Tuple10<A, B, C, D, E, FF, G, H, I, Z>> { a -> arg1.map<Tuple10<A, B, C, D, E, FF, G, H, I, Z>> { z -> Tuple10<A, B, C, D, E, FF, G, H, I, Z>(a.a, a.b, a.c, a.d, a.e, a.f, a.g, a.h, a.i, z) }}",
+    "flatMap<Tuple10<A, B, C, D, E, FF, G, H, I, Z>> { a -> arg1.map<Tuple10<A, B, C, D, E, FF, G, H, I, Z>> { z -> Tuple10<A, B, C, D, E, FF, G, H, I, Z>(a.a, a.b, a.c, a.d, a.e, a.f, a.g, a.h, a.i, z) }}",
     "arrow.core.Tuple10"
   ),
   DeprecationLevel.WARNING
@@ -1270,7 +1270,7 @@ fun <A, B, C, D, E, FF, G, H, I, J> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.flatMap { arg1 }",
+    "flatMap { arg1 }",
     "arrow.core.flatMap"
   ),
   DeprecationLevel.WARNING

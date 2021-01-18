@@ -15,7 +15,7 @@ import arrow.typeclasses.Hash
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.hash(HA)",
+    "hash(HA)",
     "arrow.core.hash"
   ),
   DeprecationLevel.WARNING

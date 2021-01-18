@@ -18,7 +18,7 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension projected functions are deprecated",
   ReplaceWith(
-    "this.neqv<A>(EQ, arg1)",
+    "neqv<A>(EQ, arg1)",
     "arrow.core.neqv"))
 fun <A> NonEmptyList<A>.neqv(EQ: Eq<A>, arg1: NonEmptyList<A>): Boolean =
     arrow.core.NonEmptyList.eq<A>(EQ).run {

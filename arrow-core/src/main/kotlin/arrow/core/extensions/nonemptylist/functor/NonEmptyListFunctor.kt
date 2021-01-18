@@ -45,7 +45,7 @@ internal val functor_singleton: NonEmptyListFunctor = object :
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().map<B>(arg1)",
+    "fix().map<B>(arg1)",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -65,7 +65,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.map(arg1: Function1<A, B>): NonEmptyList<B> 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().map<B>(arg1)",
+    "fix().map<B>(arg1)",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -129,7 +129,7 @@ fun <A, B> lift(arg0: Function1<A, B>): Function1<Kind<ForNonEmptyList, A>, Kind
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().void<A>()",
+    "fix().void<A>()",
     "arrow.core.fix", "arrow.core.void"
   ),
   DeprecationLevel.WARNING
@@ -172,7 +172,7 @@ fun <A> Kind<ForNonEmptyList, A>.void(): NonEmptyList<Unit> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().fproduct<A, B>(arg1)",
+    "fix().fproduct<A, B>(arg1)",
     "arrow.core.fix", "arrow.core.fproduct"
   ),
   DeprecationLevel.WARNING
@@ -214,7 +214,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.fproduct(arg1: Function1<A, B>): NonEmptyLis
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().mapConst<A, B>(arg1)",
+    "fix().mapConst<A, B>(arg1)",
     "arrow.core.fix", "arrow.core.mapConst"
   ),
   DeprecationLevel.WARNING
@@ -279,7 +279,7 @@ fun <A, B> A.mapConst(arg1: Kind<ForNonEmptyList, B>): NonEmptyList<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().tupleLeft<A, B>(arg1)",
+    "fix().tupleLeft<A, B>(arg1)",
     "arrow.core.fix", "arrow.core.tupleLeft"
   ),
   DeprecationLevel.WARNING
@@ -321,7 +321,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.tupleLeft(arg1: B): NonEmptyList<Tuple2<B, A
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().tupleRight<A, B>(arg1)",
+    "fix().tupleRight<A, B>(arg1)",
     "arrow.core.fix", "arrow.core.tupleRight"
   ),
   DeprecationLevel.WARNING
@@ -364,7 +364,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.tupleRight(arg1: B): NonEmptyList<Tuple2<A, 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().widen<B, A>()",
+    "fix().widen<B, A>()",
     "arrow.core.fix", "arrow.core.widen"
   ),
   DeprecationLevel.WARNING

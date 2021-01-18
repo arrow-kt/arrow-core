@@ -33,7 +33,7 @@ internal val monad_singleton: NonEmptyListMonad = object : arrow.core.extensions
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.fix().flatMap<B>(arg1)",
+  "fix().flatMap<B>(arg1)",
     "arrow.core.fix", "arrow.core.flatMap"
   ),
   DeprecationLevel.WARNING
@@ -73,7 +73,7 @@ fun <A, B> tailRecM(arg0: A, arg1: Function1<A, Kind<ForNonEmptyList, Either<A, 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().map<B>(arg1)",
+    "fix().map<B>(arg1)",
     "arrow.core.fix", "arrow.core.map"
   ),
   DeprecationLevel.WARNING
@@ -96,7 +96,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.map(arg1: Function1<A, B>): NonEmptyList<B> 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().ap<B>(arg1)",
+    "fix().ap<B>(arg1)",
     "arrow.core.fix", "arrow.core.ap"
   ),
   DeprecationLevel.WARNING
@@ -116,7 +116,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.ap(arg1: Kind<ForNonEmptyList, Function1<A, 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.fix<Kind<ForNonEmptyList, A>>().map<NonEmptyList<A>> { it.fix() }.flatten<A>()",
+  "fix<Kind<ForNonEmptyList, A>>().map<NonEmptyList<A>> { it.fix() }.flatten<A>()",
   "arrow.core.fix", "arrow.core.flatten"
   ),
   DeprecationLevel.WARNING
@@ -136,7 +136,7 @@ fun <A> Kind<ForNonEmptyList, Kind<ForNonEmptyList, A>>.flatten(): NonEmptyList<
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.fix().flatMap { arg1 }",
+  "fix().flatMap { arg1 }",
   "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -156,7 +156,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.followedBy(arg1: Kind<ForNonEmptyList, B>): 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().flatMap { a -> arg1.fix().map { a } }",
+    "fix().flatMap { a -> arg1.fix().map { a } }",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -176,7 +176,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.apTap(arg1: Kind<ForNonEmptyList, B>): NonEm
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().flatMap { arg1.value() }",
+    "fix().flatMap { arg1.value() }",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -196,7 +196,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.followedByEval(arg1: Eval<Kind<ForNonEmptyLi
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().flatMap { a -> arg1(a).fix().map { a } }",
+    "fix().flatMap { a -> arg1(a).fix().map { a } }",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -216,7 +216,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.effectM(arg1: Function1<A, Kind<ForNonEmptyL
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().flatMap { a -> arg1(a).fix().map { a } }",
+    "fix().flatMap { a -> arg1(a).fix().map { a } }",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -236,7 +236,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.flatTap(arg1: Function1<A, Kind<ForNonEmptyL
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().flatMap { a -> arg1.fix().map { a } }",
+    "fix().flatMap { a -> arg1.fix().map { a } }",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -256,7 +256,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.productL(arg1: Kind<ForNonEmptyList, B>): No
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().flatMap { a -> arg1.fix().map { a } }",
+    "fix().flatMap { a -> arg1.fix().map { a } }",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -276,7 +276,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.forEffect(arg1: Kind<ForNonEmptyList, B>): N
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().flatMap { a -> arg1.value().fix().map { a } }",
+    "fix().flatMap { a -> arg1.value().fix().map { a } }",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -296,7 +296,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.productLEval(arg1: Eval<Kind<ForNonEmptyList
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().flatMap { a -> arg1.value().fix().map { a } }",
+    "fix().flatMap { a -> arg1.value().fix().map { a } }",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -316,7 +316,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.forEffectEval(arg1: Eval<Kind<ForNonEmptyLis
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().flatMap<Tuple2<A, B>> { a -> arg1(a).fix<B>().map<Tuple2<A, B>> { Tuple2<A, B>(a, it) } }",
+    "fix().flatMap<Tuple2<A, B>> { a -> arg1(a).fix<B>().map<Tuple2<A, B>> { Tuple2<A, B>(a, it) } }",
     "arrow.core.Tuple2", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
@@ -336,7 +336,7 @@ fun <A, B> Kind<ForNonEmptyList, A>.mproduct(arg1: Function1<A, Kind<ForNonEmpty
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.fix().ifM<B>(arg1.fix(), arg2.fix())",
+  "fix().ifM<B>(arg1.fix(), arg2.fix())",
   "arrow.core.fix", "arrow.core.ifM"
   ),
   DeprecationLevel.WARNING
@@ -359,7 +359,7 @@ fun <B> Kind<ForNonEmptyList, Boolean>.ifM(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix<Either<A, B>>().selectM<A, B>(arg1.fix<(A) -> B>())",
+    "fix<Either<A, B>>().selectM<A, B>(arg1.fix<(A) -> B>())",
     "arrow.core.fix", "arrow.core.selectM"
   ),
   DeprecationLevel.WARNING
@@ -380,7 +380,7 @@ fun <A, B> Kind<ForNonEmptyList, Either<A, B>>.selectM(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix<Either<A, B>>().selectM<A, B>(arg1.fix<(A) -> B>())",
+    "fix<Either<A, B>>().selectM<A, B>(arg1.fix<(A) -> B>())",
     "arrow.core.fix", "arrow.core.selectM"
   ),
   DeprecationLevel.WARNING

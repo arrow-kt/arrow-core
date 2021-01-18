@@ -26,7 +26,7 @@ internal val semigroup_singleton: NonEmptyListSemigroup<Any?> = object : NonEmpt
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.plus(arg1)",
+  "plus(arg1)",
   "arrow.core.plus"
   ),
   DeprecationLevel.WARNING

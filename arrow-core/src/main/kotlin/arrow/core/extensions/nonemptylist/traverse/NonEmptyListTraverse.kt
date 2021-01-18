@@ -65,7 +65,7 @@ fun <G, A> Kind<ForNonEmptyList, Kind<G, A>>.sequence(arg1: Applicative<G>): Kin
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.fix().map(arg1)",
+  "fix().map(arg1)",
   "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
