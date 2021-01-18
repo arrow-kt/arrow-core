@@ -182,16 +182,6 @@ typealias Nel<A> = NonEmptyList<A>
  * - `fx { ... } comprehensions` can be __used to imperatively compute__ over multiple `NonEmptyList` values in sequence.
  * - `NonEmptyList.applicative().map { ... }` can be used to compute over multiple `NonEmptyList` values preserving type information and __abstracting over arity__ with `map`
  *
- * ### Supported type classes
- *
- * ```kotlin:ank:replace
- * import arrow.reflect.DataType
- * import arrow.reflect.tcMarkdownList
- * import arrow.core.NonEmptyList
- *
- * DataType(NonEmptyList::class).tcMarkdownList()
- * ```
- *
  */
 @higherkind
 class NonEmptyList<out A>(

@@ -495,16 +495,6 @@ import arrow.core.ValidatedNel
  *
  * One among many other usages of `Catamorphisms` are in [Recursion Schemes]({{ '/recursion/intro/' | relative_url }}).
  *
- * ### Data types
- *
- * ```kotlin:ank:replace
- * import arrow.reflect.TypeClass
- * import arrow.reflect.dtMarkdownList
- * import arrow.typeclasses.Traverse
- *
- * TypeClass(Traverse::class).dtMarkdownList()
- * ```
- *
  * ## Futher Reading
  *
  * - [The Essence of the Iterator Pattern](https://www.cs.ox.ac.uk/jeremy.gibbons/publications/iterator.pdf) - Gibbons, Oliveira. JFP, 2009

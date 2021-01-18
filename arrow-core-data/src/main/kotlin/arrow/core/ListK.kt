@@ -118,16 +118,6 @@ import arrow.typeclasses.Show
  * }
  * ```
  *
- * ### Supported type classes
- *
- * ```kotlin:ank:replace
- * import arrow.reflect.DataType
- * import arrow.reflect.tcMarkdownList
- * import arrow.core.ListK
- *
- * DataType(ListK::class).tcMarkdownList()
- * ```
- *
  */
 @higherkind
 data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list {
