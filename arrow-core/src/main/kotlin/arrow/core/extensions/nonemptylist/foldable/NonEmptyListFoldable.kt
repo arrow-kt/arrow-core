@@ -10,15 +10,6 @@ import arrow.core.extensions.NonEmptyListFoldable
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Monad
 import arrow.typeclasses.Monoid
-import kotlin.Boolean
-import kotlin.Function1
-import kotlin.Function2
-import kotlin.Long
-import kotlin.PublishedApi
-import kotlin.Suppress
-import kotlin.Unit
-import kotlin.collections.List
-import kotlin.jvm.JvmName
 
 /**
  * cached extension

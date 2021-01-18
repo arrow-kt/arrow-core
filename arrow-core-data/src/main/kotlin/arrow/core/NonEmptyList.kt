@@ -292,6 +292,17 @@ class NonEmptyList<out A>(
   override fun toString(): String =
     show(Show.any())
 
+  fun <B> align(b: NonEmptyList<B>): NonEmptyList<Ior<A, B>> =
+    NonEmptyList(Ior.Both(head, b.head), tail.align(b.tail))
+
+  fun salign(SA: Semigroup<@UnsafeVariance A>, b: NonEmptyList<@UnsafeVariance A>): NonEmptyList<A> =
+    SA.run {
+      NonEmptyList(head.combine(b.head), tail.salign(SA, b.tail).toList())
+    }
+
+  fun <B> padZip(other: NonEmptyList<B>): NonEmptyList<Tuple2<A?, B?>> =
+    NonEmptyList(Tuple2(head, other.head), tail.padZip(other.tail))
+
   fun <B> zip(other: NonEmptyList<B>): NonEmptyList<Tuple2<A, B>> =
     NonEmptyList(Tuple2(head, other.head), tail.zip(other.tail).map { Tuple2(it.first, it.second) })
 
@@ -682,8 +693,9 @@ fun <A> Hash.Companion.nonEmptyList(HA: Hash<A>): Hash<NonEmptyList<A>> =
 fun <A> Order.Companion.nonEmptyList(OA: Order<A>): Order<NonEmptyList<A>> =
   NonEmptyListOrder(OA)
 
-fun <A> Semigroup.Companion.nonEmptyList(SA: Semigroup<A>): Semigroup<NonEmptyList<A>> =
-  NonEmptyListSemigroup(SA)
+@Suppress("UNCHECKED_CAST")
+fun <A> Semigroup.Companion.nonEmptyList(): Semigroup<NonEmptyList<A>> =
+  NonEmptyListSemigroup as Semigroup<NonEmptyList<A>>
 
 fun <A> Show.Companion.nonEmptyList(SA: Show<A>): Show<NonEmptyList<A>> =
   NonEmptyListShow(SA)
@@ -708,14 +720,9 @@ private class NonEmptyListOrder<A>(
   override fun NonEmptyList<A>.compare(b: NonEmptyList<A>): Ordering = compare(OA, b)
 }
 
-private open class NonEmptyListSemigroup<A>(
-  private val SGA: Semigroup<A>
-) : Semigroup<NonEmptyList<A>> {
-  override fun NonEmptyList<A>.combine(b: NonEmptyList<A>): NonEmptyList<A> =
-    combine(b)
-
-  override fun NonEmptyList<A>.maybeCombine(b: NonEmptyList<A>?): NonEmptyList<A> =
-    b?.let { combine(it) } ?: this
+object NonEmptyListSemigroup : Semigroup<NonEmptyList<Any?>> {
+  override fun NonEmptyList<Any?>.combine(b: NonEmptyList<Any?>): NonEmptyList<Any?> =
+    NonEmptyList(this.head, this.tail.plus(b))
 }
 
 private class NonEmptyListShow<A>(

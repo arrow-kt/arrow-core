@@ -28,8 +28,8 @@ internal val semigroupK_singleton: NonEmptyListSemigroupK = object :
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "combineK(arg1)",
-  "arrow.core.combineK"
+  "fix().plus(arg1.fix())",
+  "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -48,8 +48,8 @@ fun <A> Kind<ForNonEmptyList, A>.combineK(arg1: Kind<ForNonEmptyList, A>): NonEm
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "algebra()",
-  "arrow.core.NonEmptyList.algebra"
+  "Semigroup.nonEmptyList<A>()",
+  "arrow.core.nonEmptyList", "arrow.typeclasses.Semigroup"
   ),
   DeprecationLevel.WARNING
 )
