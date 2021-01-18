@@ -26,7 +26,7 @@ internal val bitraverse_singleton: Tuple2Bitraverse = object :
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Pair")
+@Deprecated("Applicative typeclass is deprecated. Use concrete methods on Pair")
 fun <G, A, B, C, D> Kind<Kind<ForTuple2, A>, B>.bitraverse(
   arg1: Applicative<G>,
   arg2: Function1<A, Kind<G, C>>,
@@ -43,7 +43,7 @@ fun <G, A, B, C, D> Kind<Kind<ForTuple2, A>, B>.bitraverse(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Pair")
+@Deprecated("Applicative typeclass is deprecated. Use concrete methods on Pair")
 fun <G, A, B> Kind<Kind<ForTuple2, Kind<G, A>>, Kind<G, B>>.bisequence(arg1: Applicative<G>):
     Kind<G, Kind<Kind<ForTuple2, A>, B>> = arrow.core.Tuple2.bitraverse().run {
   this@bisequence.bisequence<G, A, B>(arg1) as arrow.Kind<G,

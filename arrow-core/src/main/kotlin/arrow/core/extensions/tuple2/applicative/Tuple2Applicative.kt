@@ -104,7 +104,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.replicate(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Pair")
+@Deprecated("Applicative typeclass is deprecated. Use concrete methods on Pair")
 inline fun <F> Companion.applicative(MF: Monoid<F>): Tuple2Applicative<F> = object :
   arrow.core.extensions.Tuple2Applicative<F> {
   override fun MF(): arrow.typeclasses.Monoid<F> = MF

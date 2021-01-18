@@ -212,7 +212,7 @@ fun <F, A> orEmpty(arg0: Applicative<Kind<ForTuple2, F>>, arg1: Monoid<A>): Tupl
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Pair")
+@Deprecated("Applicative typeclass is deprecated. Use concrete methods on Pair")
 fun <F, G, A, B> Kind<Kind<ForTuple2, F>, A>.traverse_(
   arg1: Applicative<G>,
   arg2: Function1<A,
@@ -228,7 +228,7 @@ fun <F, G, A, B> Kind<Kind<ForTuple2, F>, A>.traverse_(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Pair")
+@Deprecated("Applicative typeclass is deprecated. Use concrete methods on Pair")
 fun <F, G, A> Kind<Kind<ForTuple2, F>, Kind<G, A>>.sequence_(arg1: Applicative<G>): Kind<G, Unit> =
   arrow.core.Tuple2.foldable<F>().run {
     this@sequence_.sequence_<G, A>(arg1) as arrow.Kind<G, kotlin.Unit>
@@ -377,7 +377,7 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.size(arg1: Monoid<Long>): Long =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Pair")
+@Deprecated("Applicative typeclass is deprecated. Use concrete methods on Pair")
 fun <F, G, A, B, AP : Applicative<G>, MO : Monoid<B>> Kind<Kind<ForTuple2, F>, A>.foldMapA(
   arg1: AP,
   arg2: MO,
@@ -393,7 +393,7 @@ fun <F, G, A, B, AP : Applicative<G>, MO : Monoid<B>> Kind<Kind<ForTuple2, F>, A
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Pair")
+@Deprecated("Applicative typeclass is deprecated. Use concrete methods on Pair")
 fun <F, G, A, B, MA : Monad<G>, MO : Monoid<B>> Kind<Kind<ForTuple2, F>, A>.foldMapM(
   arg1: MA,
   arg2: MO,

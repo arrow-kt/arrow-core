@@ -18,7 +18,7 @@ import kotlin.jvm.JvmName
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Par functionality.",
+  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Pair functionality.",
   ReplaceWith(
     "Pair(this.a, this.b).compare(OA, OB, arg1).toInt()",
     "arrow.core.compare"
@@ -41,7 +41,7 @@ fun <A, B> Tuple2<A, B>.compareTo(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Par functionality.",
+  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Pair functionality.",
   ReplaceWith(
     "Pair(this.a, this.b).compare(OA, OB, arg1) == Ordering.LT",
     "arrow.core.compare",
@@ -65,7 +65,7 @@ fun <A, B> Tuple2<A, B>.eqv(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Par functionality.",
+  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Pair functionality.",
   ReplaceWith(
     "Pair(this.a, this.b).compare(OA, OB, arg1) == Ordering.LT",
     "arrow.core.compare",
@@ -89,7 +89,7 @@ fun <A, B> Tuple2<A, B>.lt(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Par functionality.",
+  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Pair functionality.",
   ReplaceWith(
     "Pair(this.a, this.b).compare(OA, OB, arg1) != Ordering.GT",
     "arrow.core.compare",
@@ -113,7 +113,7 @@ fun <A, B> Tuple2<A, B>.lte(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Par functionality.",
+  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Pair functionality.",
   ReplaceWith(
     "Pair(this.a, this.b).compare(OA, OB, arg1) == Ordering.GT",
     "arrow.core.compare",
@@ -137,7 +137,7 @@ fun <A, B> Tuple2<A, B>.gt(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Par functionality.",
+  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Pair functionality.",
   ReplaceWith(
     "Pair(this.a, this.b).compare(OA, OB, arg1) != Ordering.LT",
     "arrow.core.compare",
@@ -161,7 +161,7 @@ fun <A, B> Tuple2<A, B>.gte(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Par functionality.",
+  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Pair functionality.",
   ReplaceWith(
     "if(Pair(this.a, this.b).compare(OA, OB, arg1) == Ordering.GT) this else arg1",
     "arrow.core.compare",
@@ -185,7 +185,7 @@ fun <A, B> Tuple2<A, B>.max(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Par functionality.",
+  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Pair functionality.",
   ReplaceWith(
     "if(Pair(this.a, this.b).compare(OA, OB, arg1) == Ordering.LT) this else arg1",
     "arrow.core.compare",
@@ -209,7 +209,7 @@ fun <A, B> Tuple2<A, B>.min(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Par functionality.",
+  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Pair functionality.",
   ReplaceWith(
     "if(Pair(this.a, this.b).compare(OA, OB, arg1) != Ordering.LT) Tuple2(this, b) else Tuple2(arg1, this)",
     "arrow.core.compare",
@@ -230,7 +230,7 @@ fun <A, B> Tuple2<A, B>.sort(
   "NOTHING_TO_INLINE"
 )
 @Deprecated(
-  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Par functionality.",
+  "Tuple2 is deprecated in favor of Kotlin's Pair. Use Pair functionality.",
   ReplaceWith(
     "Order.pair(OA, OB)",
     "arrow.core.Order",

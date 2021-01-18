@@ -27,7 +27,7 @@ internal val traverse_singleton: Tuple2Traverse<Any?> = object : Tuple2Traverse<
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Pair")
+@Deprecated("Applicative typeclass is deprecated. Use concrete methods on Pair")
 fun <F, G, A, B> Kind<Kind<ForTuple2, F>, A>.traverse(
   arg1: Applicative<G>,
   arg2: Function1<A,
@@ -44,7 +44,7 @@ fun <F, G, A, B> Kind<Kind<ForTuple2, F>, A>.traverse(
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Pair")
+@Deprecated("Applicative typeclass is deprecated. Use concrete methods on Pair")
 fun <F, G, A> Kind<Kind<ForTuple2, F>, Kind<G, A>>.sequence(arg1: Applicative<G>): Kind<G,
   Kind<Kind<ForTuple2, F>, A>> = arrow.core.Tuple2.traverse<F>().run {
   this@sequence.sequence<G, A>(arg1) as arrow.Kind<G, arrow.Kind<arrow.Kind<arrow.core.ForTuple2,
