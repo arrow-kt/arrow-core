@@ -125,7 +125,7 @@ fun <A, B, C, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2).map(arg3)",
+    "NonEmptyList.mapN(arg0, arg1, arg2) { a, b, c -> arg3(Tuple3(a, b, c)) }",
     "arrow.core.NonEmptyList"
   ),
   DeprecationLevel.WARNING

@@ -293,7 +293,7 @@ class NonEmptyList<out A>(
   fun <B> zip(other: NonEmptyList<B>): NonEmptyList<Tuple2<A, B>> =
     NonEmptyList(Tuple2(head, other.head), tail.zip(other.tail).map { Tuple2(it.first, it.second) })
 
-  fun <B, C> zipWith(other: NonEmptyList<B>, f: Function2<A, B, C>): NonEmptyList<C> =
+  fun <B, C> zip(other: NonEmptyList<B>, f: (A, B) -> C): NonEmptyList<C> =
     zip(other).map { f(it.a, it.b) }
 
   companion object {
@@ -434,113 +434,6 @@ class NonEmptyList<out A>(
         }
       }
 
-    fun <B, C> tupledN(
-      b: NonEmptyList<B>,
-      c: NonEmptyList<C>
-    ): NonEmptyList<Tuple2<B, C>> =
-      mapN(b, c) { b, c ->
-        Tuple2(b, c)
-      }
-
-    fun <B, C, D> tupledN(
-      b: NonEmptyList<B>,
-      c: NonEmptyList<C>,
-      d: NonEmptyList<D>
-    ): NonEmptyList<Tuple3<B, C, D>> =
-      mapN(b, c, d) { b, c, d ->
-        Tuple3(b, c, d)
-      }
-
-    fun <B, C, D, E> tupledN(
-      b: NonEmptyList<B>,
-      c: NonEmptyList<C>,
-      d: NonEmptyList<D>,
-      e: NonEmptyList<E>
-    ): NonEmptyList<Tuple4<B, C, D, E>> =
-      mapN(b, c, d, e) { b, c, d, e ->
-        Tuple4(b, c, d, e)
-      }
-
-    fun <B, C, D, E, F> tupledN(
-      b: NonEmptyList<B>,
-      c: NonEmptyList<C>,
-      d: NonEmptyList<D>,
-      e: NonEmptyList<E>,
-      f: NonEmptyList<F>
-    ): NonEmptyList<Tuple5<B, C, D, E, F>> =
-      mapN(b, c, d, e, f) { b, c, d, e, f ->
-        Tuple5(b, c, d, e, f)
-      }
-
-    fun <B, C, D, E, F, G> tupledN(
-      b: NonEmptyList<B>,
-      c: NonEmptyList<C>,
-      d: NonEmptyList<D>,
-      e: NonEmptyList<E>,
-      f: NonEmptyList<F>,
-      g: NonEmptyList<G>
-    ): NonEmptyList<Tuple6<B, C, D, E, F, G>> =
-      mapN(b, c, d, e, f, g) { b, c, d, e, f, g ->
-        Tuple6(b, c, d, e, f, g)
-      }
-
-    fun <B, C, D, E, F, G, H> tupledN(
-      b: NonEmptyList<B>,
-      c: NonEmptyList<C>,
-      d: NonEmptyList<D>,
-      e: NonEmptyList<E>,
-      f: NonEmptyList<F>,
-      g: NonEmptyList<G>,
-      h: NonEmptyList<H>
-    ): NonEmptyList<Tuple7<B, C, D, E, F, G, H>> =
-      mapN(b, c, d, e, f, g, h) { b, c, d, e, f, g, h ->
-        Tuple7(b, c, d, e, f, g, h)
-      }
-
-    fun <B, C, D, E, F, G, H, I> tupledN(
-      b: NonEmptyList<B>,
-      c: NonEmptyList<C>,
-      d: NonEmptyList<D>,
-      e: NonEmptyList<E>,
-      f: NonEmptyList<F>,
-      g: NonEmptyList<G>,
-      h: NonEmptyList<H>,
-      i: NonEmptyList<I>
-    ): NonEmptyList<Tuple8<B, C, D, E, F, G, H, I>> =
-      mapN(b, c, d, e, f, g, h, i) { b, c, d, e, f, g, h, i ->
-        Tuple8(b, c, d, e, f, g, h, i)
-      }
-
-    fun <B, C, D, E, F, G, H, I, J> tupledN(
-      b: NonEmptyList<B>,
-      c: NonEmptyList<C>,
-      d: NonEmptyList<D>,
-      e: NonEmptyList<E>,
-      f: NonEmptyList<F>,
-      g: NonEmptyList<G>,
-      h: NonEmptyList<H>,
-      i: NonEmptyList<I>,
-      j: NonEmptyList<J>
-    ): NonEmptyList<Tuple9<B, C, D, E, F, G, H, I, J>> =
-      mapN(b, c, d, e, f, g, h, i, j) { b, c, d, e, f, g, h, i, j ->
-        Tuple9(b, c, d, e, f, g, h, i, j)
-      }
-
-    fun <B, C, D, E, F, G, H, I, J, K> tupledN(
-      b: NonEmptyList<B>,
-      c: NonEmptyList<C>,
-      d: NonEmptyList<D>,
-      e: NonEmptyList<E>,
-      f: NonEmptyList<F>,
-      g: NonEmptyList<G>,
-      h: NonEmptyList<H>,
-      i: NonEmptyList<I>,
-      j: NonEmptyList<J>,
-      k: NonEmptyList<K>
-    ): NonEmptyList<Tuple10<B, C, D, E, F, G, H, I, J, K>> =
-      mapN(b, c, d, e, f, g, h, i, j, k) { b, c, d, e, f, g, h, i, j, k ->
-        Tuple10(b, c, d, e, f, g, h, i, j, k)
-      }
 
     @Suppress("UNCHECKED_CAST")
     private tailrec fun <A, B> go(
@@ -593,7 +486,7 @@ fun <A, B> NonEmptyList<Either<A, B>>.selectM(f: NonEmptyList<(A) -> B>): NonEmp
 fun <A, B> NonEmptyList<Tuple2<A, B>>.unzip(): Tuple2<NonEmptyList<A>, NonEmptyList<B>> =
   this.unzipWith(::identity)
 
-fun <A, B, C> NonEmptyList<C>.unzipWith(f: Function1<C, Tuple2<A, B>>): Tuple2<NonEmptyList<A>, NonEmptyList<B>> =
+fun <A, B, C> NonEmptyList<C>.unzipWith(f: (C) -> Tuple2<A, B>): Tuple2<NonEmptyList<A>, NonEmptyList<B>> =
  this.map(f).let { nel ->
    nel.tail.unzip().bimap(
      { NonEmptyList(nel.head.a, it) },

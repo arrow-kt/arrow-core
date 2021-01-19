@@ -33,7 +33,7 @@ internal val applicative_singleton: NonEmptyListApplicative = object :
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "NonEmptyList.just(this)",
-    "arrow.core.NonEmptyList"
+    "arrow.core.NonEmptyList", "arrow.core.just"
   ),
   DeprecationLevel.WARNING
 )
@@ -52,7 +52,7 @@ fun <A> A.just(): NonEmptyList<A> = arrow.core.NonEmptyList.applicative().run {
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "NonEmptyList.just(Unit)",
-    "arrow.core.NonEmptyList"
+    "arrow.core.NonEmptyList", "arrow.core.just"
   ),
   DeprecationLevel.WARNING
 )
