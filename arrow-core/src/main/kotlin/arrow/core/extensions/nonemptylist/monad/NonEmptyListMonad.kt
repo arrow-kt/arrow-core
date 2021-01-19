@@ -405,5 +405,5 @@ fun <A, B> Kind<ForNonEmptyList, Either<A, B>>.select(arg1: Kind<ForNonEmptyList
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated("Monad typeclasses is deprecated. Use concrete methods on NonEmptyList")
+@Deprecated("Monad typeclass is deprecated. Use concrete methods on NonEmptyList")
 inline fun Companion.monad(): NonEmptyListMonad = monad_singleton

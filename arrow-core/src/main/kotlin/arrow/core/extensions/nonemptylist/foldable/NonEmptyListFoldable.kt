@@ -581,5 +581,5 @@ fun <A> Kind<ForNonEmptyList, A>.toList(): List<A> = arrow.core.NonEmptyList.fol
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated("Foldable typeclasses is deprecated. Use concrete methods on NonEmptyList")
+@Deprecated("Foldable typeclass is deprecated. Use concrete methods on NonEmptyList")
 inline fun Companion.foldable(): NonEmptyListFoldable = foldable_singleton

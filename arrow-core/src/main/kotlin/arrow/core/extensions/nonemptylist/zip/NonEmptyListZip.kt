@@ -64,5 +64,5 @@ fun <A, B, C> Kind<ForNonEmptyList, A>.zipWith(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated("Zip typeclasses is deprecated. Use concrete methods on NonEmptyList")
+@Deprecated("Zip typeclass is deprecated. Use concrete methods on NonEmptyList")
 inline fun Companion.zip(): NonEmptyListZip = zip_singleton

@@ -442,5 +442,5 @@ fun <B, A : B> Kind<ForNonEmptyList, A>.widen(): NonEmptyList<B> =
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated("Functor typeclasses is deprecated. Use concrete methods on NonEmptyList")
+@Deprecated("Functor typeclass is deprecated. Use concrete methods on NonEmptyList")
 inline fun Companion.functor(): NonEmptyListFunctor = functor_singleton as arrow.core.extensions.NonEmptyListFunctor

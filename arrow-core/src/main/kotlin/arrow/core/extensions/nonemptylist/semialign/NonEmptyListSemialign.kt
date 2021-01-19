@@ -134,5 +134,5 @@ fun <A, B, C> Kind<ForNonEmptyList, A>.padZipWith(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated("Semialign typeclasses is deprecated. Use concrete methods on NonEmptyList")
+@Deprecated("Semialign typeclass is deprecated. Use concrete methods on NonEmptyList")
 inline fun Companion.semialign(): NonEmptyListSemialign = semialign_singleton

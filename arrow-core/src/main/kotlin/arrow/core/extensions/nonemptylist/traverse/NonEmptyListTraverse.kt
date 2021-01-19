@@ -99,5 +99,5 @@ fun <G, A, B> Kind<ForNonEmptyList, A>.flatTraverse(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated("Traverse typeclasses is deprecated. Use concrete methods on NonEmptyList")
+@Deprecated("Traverse typeclass is deprecated. Use concrete methods on NonEmptyList")
 inline fun Companion.traverse(): NonEmptyListTraverse = traverse_singleton
