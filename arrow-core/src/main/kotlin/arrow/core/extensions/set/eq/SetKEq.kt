@@ -33,5 +33,8 @@ object Set {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
-  inline fun <A> eq(EQ: Eq<A>): SetKEq<A> = object : arrow.core.extensions.SetKEq<A> { override fun
-      EQ(): arrow.typeclasses.Eq<A> = EQ }}
+  inline fun <A> eq(EQ: Eq<A>): SetKEq<A> = object : arrow.core.extensions.SetKEq<A> {
+    override fun EQ(): arrow.typeclasses.Eq<A> =
+      EQ
+  }
+}
