@@ -8,7 +8,6 @@ import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
-import kotlin.Function1
 
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 class ForNonEmptyList private constructor() { companion object }
@@ -433,7 +432,6 @@ class NonEmptyList<out A>(
           }
         }
       }
-
 
     @Suppress("UNCHECKED_CAST")
     private tailrec fun <A, B> go(
