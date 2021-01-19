@@ -218,11 +218,27 @@ class NonEmptyList<out A>(
   inline fun <B> map(f: (A) -> B): NonEmptyList<B> =
     NonEmptyList(f(head), tail.map(f))
 
-  fun <B> flatMap(f: (A) -> NonEmptyListOf<B>): NonEmptyList<B> =
+  @JvmName("flatMapKind")
+  @Deprecated(
+    "Kind is deprecated, and will be removed in 0.13.0. Please the flatMap method defined for NonEmptyList instead",
+    level = DeprecationLevel.WARNING
+  )
+  inline fun <B> flatMap(f: (A) -> NonEmptyListOf<B>): NonEmptyList<B> =
     f(head).fix() + tail.flatMap { f(it).fix().all }
 
+  inline fun <B> flatMap(f: (A) -> NonEmptyList<B>): NonEmptyList<B> =
+    f(head) + tail.flatMap { f(it).all }
+
+  @JvmName("apKind")
+  @Deprecated(
+    "Kind is deprecated, and will be removed in 0.13.0. Please the ap method defined for NonEmptyList instead",
+    level = DeprecationLevel.WARNING
+  )
   fun <B> ap(ff: NonEmptyListOf<(A) -> B>): NonEmptyList<B> =
     fix().flatMap { a -> ff.fix().map { f -> f(a) } }.fix()
+
+  fun <B> ap(ff: NonEmptyList<(A) -> B>): NonEmptyList<B> =
+    flatMap { a -> ff.map { f -> f(a) } }
 
   operator fun plus(l: NonEmptyList<@UnsafeVariance A>): NonEmptyList<A> =
     NonEmptyList(all + l.all)
@@ -242,6 +258,11 @@ class NonEmptyList<out A>(
   fun <G, B> traverse(AG: Applicative<G>, f: (A) -> Kind<G, B>): Kind<G, NonEmptyList<B>> =
     AG.run { all.k().traverse(AG, f).map { Nel.fromListUnsafe(it) } }
 
+  @JvmName("coflatMapKind")
+  @Deprecated(
+    "Kind is deprecated, and will be removed in 0.13.0. Please the coflatMap method defined for NonEmptyList instead",
+    level = DeprecationLevel.WARNING
+  )
   fun <B> coflatMap(f: (NonEmptyListOf<A>) -> B): NonEmptyList<B> {
     val buf = mutableListOf<B>()
     tailrec fun consume(list: List<A>): List<B> =
@@ -255,8 +276,21 @@ class NonEmptyList<out A>(
     return NonEmptyList(f(this), consume(this.fix().tail))
   }
 
+  fun <B> coflatMap(f: (NonEmptyList<A>) -> B): NonEmptyList<B> {
+    val buf = mutableListOf<B>()
+    tailrec fun consume(list: List<A>): List<B> =
+      if (list.isEmpty()) {
+        buf
+      } else {
+        val tail = list.subList(1, list.size)
+        buf += f(NonEmptyList(list[0], tail))
+        consume(tail)
+      }
+    return NonEmptyList(f(this), consume(this.tail))
+  }
+
   fun extract(): A =
-    this.fix().head
+    this.head
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -467,6 +501,14 @@ inline fun <A> A.nel(): NonEmptyList<A> =
 fun <A, G> NonEmptyListOf<Kind<G, A>>.sequence(GA: Applicative<G>): Kind<G, NonEmptyList<A>> =
   fix().traverse(GA, ::identity)
 
+@Deprecated(
+  "Kind is deprecated, and will be removed in 0.13.0. Please the plus method defined for NonEmptyList instead",
+  ReplaceWith(
+    "fix().plus(y.fix())",
+    "arrow.core.fix", "arrow.core.plus"
+  ),
+  DeprecationLevel.WARNING
+)
 fun <A> NonEmptyListOf<A>.combineK(y: NonEmptyListOf<A>): NonEmptyList<A> =
   fix().plus(y.fix())
 
