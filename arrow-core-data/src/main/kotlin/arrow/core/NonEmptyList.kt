@@ -351,7 +351,7 @@ class NonEmptyList<out A>(
     inline fun <B, C, D> mapN(
       b: NonEmptyList<B>,
       c: NonEmptyList<C>,
-      crossinline map: (B, C) -> D
+      map: (B, C) -> D
     ): NonEmptyList<D> =
       mapN(b, c, unit, unit, unit, unit, unit, unit, unit, unit) { b, c, _, _, _, _, _, _, _, _ -> map(b, c) }
 
@@ -359,7 +359,7 @@ class NonEmptyList<out A>(
       b: NonEmptyList<B>,
       c: NonEmptyList<C>,
       d: NonEmptyList<D>,
-      crossinline map: (B, C, D) -> E
+      map: (B, C, D) -> E
     ): NonEmptyList<E> =
       mapN(b, c, d, unit, unit, unit, unit, unit, unit, unit) { b, c, d, _, _, _, _, _, _, _ -> map(b, c, d) }
 
@@ -368,7 +368,7 @@ class NonEmptyList<out A>(
       c: NonEmptyList<C>,
       d: NonEmptyList<D>,
       e: NonEmptyList<E>,
-      crossinline map: (B, C, D, E) -> F
+      map: (B, C, D, E) -> F
     ): NonEmptyList<F> =
       mapN(b, c, d, e, unit, unit, unit, unit, unit, unit) { b, c, d, e, _, _, _, _, _, _ -> map(b, c, d, e) }
 
@@ -378,7 +378,7 @@ class NonEmptyList<out A>(
       d: NonEmptyList<D>,
       e: NonEmptyList<E>,
       f: NonEmptyList<F>,
-      crossinline map: (B, C, D, E, F) -> G
+      map: (B, C, D, E, F) -> G
     ): NonEmptyList<G> =
       mapN(b, c, d, e, f, unit, unit, unit, unit, unit) { b, c, d, e, f, _, _, _, _, _ -> map(b, c, d, e, f) }
 
@@ -389,7 +389,7 @@ class NonEmptyList<out A>(
       e: NonEmptyList<E>,
       f: NonEmptyList<F>,
       g: NonEmptyList<G>,
-      crossinline map: (B, C, D, E, F, G) -> H
+      map: (B, C, D, E, F, G) -> H
     ): NonEmptyList<H> =
       mapN(b, c, d, e, f, g, unit, unit, unit, unit) { b, c, d, e, f, g, _, _, _, _ -> map(b, c, d, e, f, g) }
 
@@ -401,7 +401,7 @@ class NonEmptyList<out A>(
       f: NonEmptyList<F>,
       g: NonEmptyList<G>,
       h: NonEmptyList<H>,
-      crossinline map: (B, C, D, E, F, G, H) -> I
+      map: (B, C, D, E, F, G, H) -> I
     ): NonEmptyList<I> =
       mapN(b, c, d, e, f, g, h, unit, unit, unit) { b, c, d, e, f, g, h, _, _, _ -> map(b, c, d, e, f, g, h) }
 
@@ -428,7 +428,7 @@ class NonEmptyList<out A>(
       h: NonEmptyList<H>,
       i: NonEmptyList<I>,
       j: NonEmptyList<J>,
-      crossinline map: (B, C, D, E, F, G, H, I, J) -> K
+      map: (B, C, D, E, F, G, H, I, J) -> K
     ): NonEmptyList<K> =
       mapN(b, c, d, e, f, g, h, i, j, unit) { b, c, d, e, f, g, h, i, j, _ -> map(b, c, d, e, f, g, h, i, j) }
 
@@ -443,19 +443,22 @@ class NonEmptyList<out A>(
       i: NonEmptyList<I>,
       j: NonEmptyList<J>,
       k: NonEmptyList<K>,
-      crossinline map: (B, C, D, E, F, G, H, I, J, K) -> L
+      map: (B, C, D, E, F, G, H, I, J, K) -> L
     ): NonEmptyList<L> =
-      b.flatMap { bb ->
-        c.flatMap { cc ->
-          d.flatMap { dd ->
-            e.flatMap { ee ->
-              f.flatMap { ff ->
-                g.flatMap { gg ->
-                  h.flatMap { hh ->
-                    i.flatMap { ii ->
-                      j.flatMap { jj ->
-                        k.map { kk ->
-                          map(bb, cc, dd, ee, ff, gg, hh, ii, jj, kk)
+      NonEmptyList(
+        map(b.head, c.head, d.head, e.head, f.head, g.head, h.head, i.head, j.head, k.head),
+        b.tail.flatMap { bb ->
+          c.tail.flatMap { cc ->
+            d.tail.flatMap { dd ->
+              e.tail.flatMap { ee ->
+                f.tail.flatMap { ff ->
+                  g.tail.flatMap { gg ->
+                    h.tail.flatMap { hh ->
+                      i.tail.flatMap { ii ->
+                        j.tail.flatMap { jj ->
+                          k.tail.map { kk ->
+                            map(bb, cc, dd, ee, ff, gg, hh, ii, jj, kk)
+                          }
                         }
                       }
                     }
@@ -465,7 +468,7 @@ class NonEmptyList<out A>(
             }
           }
         }
-      }
+      )
 
     @Suppress("UNCHECKED_CAST")
     private tailrec fun <A, B> go(
