@@ -21,6 +21,4 @@ interface MonoidK<F> : SemigroupK<F> {
 
     override fun Kind<F, A>.combine(b: Kind<F, A>): Kind<F, A> = this.combineK(b)
   }
-
-  companion object
 }

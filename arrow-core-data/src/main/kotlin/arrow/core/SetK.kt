@@ -2,10 +2,14 @@ package arrow.core
 
 import arrow.typeclasses.Show
 
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 class ForSetK private constructor() { companion object }
+
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 typealias SetKOf<A> = arrow.Kind<ForSetK, A>
 
 @Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 inline fun <A> SetKOf<A>.fix(): SetK<A> =
   this as SetK<A>
 

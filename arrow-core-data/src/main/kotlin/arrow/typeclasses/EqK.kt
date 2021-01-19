@@ -51,6 +51,4 @@ interface EqK<F> {
     Eq { a, b ->
       this@EqK.run { a.eqK(b, EQ) }
     }
-
-  companion object
 }

@@ -103,6 +103,4 @@ interface Semigroupal<F> {
    */
   operator fun <A, B> Kind<F, A>.times(fb: Kind<F, B>): Kind<F, Tuple2<A, B>> =
     this.product(fb)
-
-  companion object
 }
