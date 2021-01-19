@@ -14,8 +14,6 @@ import arrow.typeclasses.internal.fix
 import arrow.typeclasses.internal.idApplicative
 
 /**
- * ank_macro_hierarchy(arrow.typeclasses.Traverse)
- *
  * In functional programming it is very common to encode "behaviors" as data types - common behaviors include [Option] for possibly missing values, [Either] and [Validated] for possible errors, and [Ref]({{ '/effects/ref/' | relative_url }}) for asynchronous and concurrent access and modification of its content.
  *
  * These behaviors tend to show up in functions working on a single piece of data - for instance parsing a single [String] into an [Int], validating a login, or asynchronously fetching website information for a user.
@@ -384,16 +382,6 @@ import arrow.typeclasses.internal.idApplicative
  * - the `reduce` method
  *
  * One among many other usages of `Catamorphisms` are in [Recursion Schemes]({{ '/recursion/intro/' | relative_url }}).
- *
- * ### Data types
- *
- * ```kotlin:ank:replace
- * import arrow.reflect.TypeClass
- * import arrow.reflect.dtMarkdownList
- * import arrow.typeclasses.Traverse
- *
- * TypeClass(Traverse::class).dtMarkdownList()
- * ```
  *
  * ## Futher Reading
  *
