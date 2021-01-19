@@ -91,6 +91,29 @@ fun <A, B, Z> Kind<ForNonEmptyList, A>.map2Eval(
       arrow.core.Eval<arrow.Kind<arrow.core.ForNonEmptyList, Z>>
   }
 
+@JvmName("map")
+@Suppress(
+  "UNCHECKED_CAST",
+  "USELESS_CAST",
+  "EXTENSION_SHADOWED_BY_MEMBER",
+  "UNUSED_PARAMETER"
+)
+@Deprecated(
+  "@extension kinded projected functions are deprecated",
+  ReplaceWith(
+  "NonEmptyList.mapN(arg0.fix(), arg1.fix()) { a, b -> arg2(Tuple2(a, b)) }",
+  "arrow.core.NonEmptyList", "arrow.core.fix"
+  ),
+  DeprecationLevel.WARNING
+)
+fun <A, B, Z> map(
+  arg0: Kind<ForNonEmptyList, A>,
+  arg1: Kind<ForNonEmptyList, B>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): NonEmptyList<Z> = arrow.core.NonEmptyList
+   .apply()
+   .map<A, B, Z>(arg0, arg1, arg2) as arrow.core.NonEmptyList<Z>
+
 @JvmName("mapN")
 @Suppress(
   "UNCHECKED_CAST",
@@ -101,8 +124,55 @@ fun <A, B, Z> Kind<ForNonEmptyList, A>.map2Eval(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2).map(arg3)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix()) { a, b -> arg2(Tuple2(a, b)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
+  ),
+  DeprecationLevel.WARNING
+)
+fun <A, B, Z> mapN(
+  arg0: Kind<ForNonEmptyList, A>,
+  arg1: Kind<ForNonEmptyList, B>,
+  arg2: Function1<Tuple2<A, B>, Z>
+): NonEmptyList<Z> = arrow.core.NonEmptyList
+   .apply()
+   .mapN<A, B, Z>(arg0, arg1, arg2) as arrow.core.NonEmptyList<Z>
+
+@JvmName("map")
+@Suppress(
+  "UNCHECKED_CAST",
+  "USELESS_CAST",
+  "EXTENSION_SHADOWED_BY_MEMBER",
+  "UNUSED_PARAMETER"
+)
+@Deprecated(
+  "@extension kinded projected functions are deprecated",
+  ReplaceWith(
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix(), arg2.fix()) { a, b, c -> arg3(Tuple3(a, b, c)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
+  ),
+  DeprecationLevel.WARNING
+)
+fun <A, B, C, Z> map(
+  arg0: Kind<ForNonEmptyList, A>,
+  arg1: Kind<ForNonEmptyList, B>,
+  arg2: Kind<ForNonEmptyList, C>,
+  arg3: Function1<Tuple3<A, B, C>, Z>
+): NonEmptyList<Z> = arrow.core.NonEmptyList
+   .apply()
+   .map<A, B, C, Z>(arg0, arg1, arg2, arg3) as arrow.core.NonEmptyList<Z>
+
+@JvmName("mapN")
+@Suppress(
+  "UNCHECKED_CAST",
+  "USELESS_CAST",
+  "EXTENSION_SHADOWED_BY_MEMBER",
+  "UNUSED_PARAMETER"
+)
+@Deprecated(
+  "@extension kinded projected functions are deprecated",
+  ReplaceWith(
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix(), arg2.fix()) { a, b, c -> arg3(Tuple3(a, b, c)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -125,32 +195,8 @@ fun <A, B, C, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.mapN(arg0, arg1, arg2) { a, b, c -> arg3(Tuple3(a, b, c)) }",
-    "arrow.core.NonEmptyList"
-  ),
-  DeprecationLevel.WARNING
-)
-fun <A, B, C, Z> map(
-  arg0: Kind<ForNonEmptyList, A>,
-  arg1: Kind<ForNonEmptyList, B>,
-  arg2: Kind<ForNonEmptyList, C>,
-  arg3: Function1<Tuple3<A, B, C>, Z>
-): NonEmptyList<Z> = arrow.core.NonEmptyList
-  .apply()
-  .map<A, B, C, Z>(arg0, arg1, arg2, arg3) as arrow.core.NonEmptyList<Z>
-
-@JvmName("map")
-@Suppress(
-  "UNCHECKED_CAST",
-  "USELESS_CAST",
-  "EXTENSION_SHADOWED_BY_MEMBER",
-  "UNUSED_PARAMETER"
-)
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3).map(arg4)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix()) { a, b, c, d -> arg4(Tuple4(a, b, c, d)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -164,29 +210,6 @@ fun <A, B, C, D, Z> map(
    .apply()
    .map<A, B, C, D, Z>(arg0, arg1, arg2, arg3, arg4) as arrow.core.NonEmptyList<Z>
 
-@JvmName("map")
-@Suppress(
-  "UNCHECKED_CAST",
-  "USELESS_CAST",
-  "EXTENSION_SHADOWED_BY_MEMBER",
-  "UNUSED_PARAMETER"
-)
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1).map(arg2)",
-    "arrow.core.NonEmptyList"
-  ),
-  DeprecationLevel.WARNING
-)
-fun <A, B, Z> map(
-  arg0: Kind<ForNonEmptyList, A>,
-  arg1: Kind<ForNonEmptyList, B>,
-  arg2: Function1<Tuple2<A, B>, Z>
-): NonEmptyList<Z> = arrow.core.NonEmptyList
-  .apply()
-  .map<A, B, Z>(arg0, arg1, arg2) as arrow.core.NonEmptyList<Z>
-
 @JvmName("mapN")
 @Suppress(
   "UNCHECKED_CAST",
@@ -197,8 +220,8 @@ fun <A, B, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3).map(arg4)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix()) { a, b, c, d -> arg4(Tuple4(a, b, c, d)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -222,8 +245,8 @@ fun <A, B, C, D, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4).map(arg5)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix()) { a, b, c, d, e -> arg5(Tuple5(a, b, c, d, e)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -248,8 +271,8 @@ fun <A, B, C, D, E, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4).map(arg5)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix()) { a, b, c, d, e -> arg5(Tuple5(a, b, c, d, e)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -274,8 +297,8 @@ fun <A, B, C, D, E, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5).map(arg6)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix()) { a, b, c, d, e, f -> arg6(Tuple6(a, b, c, d, e, f)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -302,8 +325,8 @@ fun <A, B, C, D, E, FF, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5).map(arg6)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix()) { a, b, c, d, e, f -> arg6(Tuple6(a, b, c, d, e, f)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -330,8 +353,8 @@ fun <A, B, C, D, E, FF, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6).map(arg7)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix(), arg6.fix()) { a, b, c, d, e, f, g -> arg7(Tuple7(a, b, c, d, e, f, g)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -359,8 +382,8 @@ fun <A, B, C, D, E, FF, G, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6).map(arg7)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix(), arg6.fix()) { a, b, c, d, e, f, g -> arg7(Tuple7(a, b, c, d, e, f, g)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -388,8 +411,8 @@ fun <A, B, C, D, E, FF, G, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7).map(arg8)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix(), arg6.fix(), arg7.fix()) { a, b, c, d, e, f, g, h -> arg8(Tuple8(a, b, c, d, e, f, g, h)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -418,8 +441,8 @@ fun <A, B, C, D, E, FF, G, H, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7).map(arg8)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix(), arg6.fix(), arg7.fix()) { a, b, c, d, e, f, g, h -> arg8(Tuple8(a, b, c, d, e, f, g, h)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -448,8 +471,8 @@ fun <A, B, C, D, E, FF, G, H, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8).map(arg9)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix(), arg6.fix(), arg7.fix(), arg8.fix()) { a, b, c, d, e, f, g, h, i -> arg9(Tuple9(a, b, c, d, e, f, g, h, i)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -479,8 +502,8 @@ fun <A, B, C, D, E, FF, G, H, I, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8).map(arg9)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix(), arg6.fix(), arg7.fix(), arg8.fix()) { a, b, c, d, e, f, g, h, i -> arg9(Tuple9(a, b, c, d, e, f, g, h, i)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -510,8 +533,8 @@ fun <A, B, C, D, E, FF, G, H, I, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9).map(arg10)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix(), arg6.fix(), arg7.fix(), arg8.fix(), arg9.fix()) { a, b, c, d, e, f, g, h, i, j -> arg10(Tuple10(a, b, c, d, e, f, g, h, i, j)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -543,8 +566,8 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> map(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9).map(arg10)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix(), arg6.fix(), arg7.fix(), arg8.fix(), arg9.fix()) { a, b, c, d, e, f, g, h, i, j -> arg10(Tuple10(a, b, c, d, e, f, g, h, i, j)) }",
+    "arrow.core.NonEmptyList", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -790,8 +813,8 @@ fun <A, B, C, D, E, FF, G, H, I, Z> Kind<ForNonEmptyList, Tuple9<A, B, C, D, E, 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, Tuple2<A, B>>(arg0.fix(), arg1.fix()) { a, b -> Tuple2(a, b) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple2", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -810,8 +833,8 @@ fun <A, B> tupled(arg0: Kind<ForNonEmptyList, A>, arg1: Kind<ForNonEmptyList, B>
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, Tuple2<A, B>>(arg0.fix(), arg1.fix()) { a, b -> Tuple2(a, b) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple2", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -830,8 +853,8 @@ fun <A, B> tupledN(arg0: Kind<ForNonEmptyList, A>, arg1: Kind<ForNonEmptyList, B
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, C, Tuple3<A, B, C>>(arg0.fix(), arg1.fix(), arg2.fix()) { a, b, c -> Tuple3(a, b, c) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple3", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -853,8 +876,8 @@ fun <A, B, C> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, C, Tuple3<A, B, C>>(arg0.fix(), arg1.fix(), arg2.fix()) { a, b, c -> Tuple3(a, b, c) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple3", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -876,8 +899,8 @@ fun <A, B, C> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, C, D, Tuple4<A, B, C, D>>(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix()) { a, b, c, d -> Tuple4(a, b, c, d) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple4", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -901,8 +924,8 @@ fun <A, B, C, D> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, C, D, Tuple4<A, B, C, D>>(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix()) { a, b, c, d -> Tuple4(a, b, c, d) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple4", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -926,8 +949,8 @@ fun <A, B, C, D> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, C, D, E, Tuple5<A, B, C, D, E>>(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix()) { a, b, c, d, e -> Tuple5(a, b, c, d, e) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple5", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -952,8 +975,8 @@ fun <A, B, C, D, E> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, C, D, E, Tuple5<A, B, C, D, E>>(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix()) { a, b, c, d, e -> Tuple5(a, b, c, d, e) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple5", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -978,8 +1001,8 @@ fun <A, B, C, D, E> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, C, D, E, FF, Tuple6<A, B, C, D, E, FF>>(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix()) { a, b, c, d, e, f -> Tuple6(a, b, c, d, e, f) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple6", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -1005,8 +1028,8 @@ fun <A, B, C, D, E, FF> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, C, D, E, FF, Tuple6<A, B, C, D, E, FF>>(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix()) { a, b, c, d, e, f -> Tuple6(a, b, c, d, e, f) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple6", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -1032,8 +1055,8 @@ fun <A, B, C, D, E, FF> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, C, D, E, FF, G, Tuple7<A, B, C, D, E, FF, G>>(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix(), arg6.fix()) { a, b, c, d, e, f, g -> Tuple7(a, b, c, d, e, f, g) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple7", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -1060,8 +1083,8 @@ fun <A, B, C, D, E, FF, G> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, C, D, E, FF, G, Tuple7<A, B, C, D, E, FF, G>>(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix(), arg6.fix()) { a, b, c, d, e, f, g -> Tuple7(a, b, c, d, e, f, g) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple7", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -1088,8 +1111,8 @@ fun <A, B, C, D, E, FF, G> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, C, D, E, FF, G, H, Tuple8<A, B, C, D, E, FF, G, H>>(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix(), arg6.fix(), arg7.fix()) { a, b, c, d, e, f, g, h -> Tuple8(a, b, c, d, e, f, g, h) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple8", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -1117,8 +1140,8 @@ fun <A, B, C, D, E, FF, G, H> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, C, D, E, FF, G, H, Tuple8<A, B, C, D, E, FF, G, H>>(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix(), arg6.fix(), arg7.fix()) { a, b, c, d, e, f, g, h -> Tuple8(a, b, c, d, e, f, g, h) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple8", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -1146,8 +1169,8 @@ fun <A, B, C, D, E, FF, G, H> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, C, D, E, FF, G, H, I, Tuple9<A, B, C, D, E, FF, G, H, I>>(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix(), arg6.fix(), arg7.fix(), arg8.fix()) { a, b, c, d, e, f, g, h, i -> Tuple9(a, b, c, d, e, f, g, h, i) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple9", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -1176,8 +1199,8 @@ fun <A, B, C, D, E, FF, G, H, I> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, C, D, E, FF, G, H, I, Tuple9<A, B, C, D, E, FF, G, H, I>>(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix(), arg6.fix(), arg7.fix(), arg8.fix()) { a, b, c, d, e, f, g, h, i -> Tuple9(a, b, c, d, e, f, g, h, i) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple9", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -1206,8 +1229,8 @@ fun <A, B, C, D, E, FF, G, H, I> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, C, D, E, FF, G, H, I, J, Tuple10<A, B, C, D, E, FF, G, H, I, J>>(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix(), arg6.fix(), arg7.fix(), arg8.fix(), arg9.fix()) { a, b, c, d, e, f, g, h, i, j -> Tuple10(a, b, c, d, e, f, g, h, i, j) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple10", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -1238,8 +1261,8 @@ fun <A, B, C, D, E, FF, G, H, I, J> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "NonEmptyList.tupledN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
-    "arrow.core.NonEmptyList"
+    "NonEmptyList.mapN<A, B, C, D, E, FF, G, H, I, J, Tuple10<A, B, C, D, E, FF, G, H, I, J>>(arg0.fix(), arg1.fix(), arg2.fix(), arg3.fix(), arg4.fix(), arg5.fix(), arg6.fix(), arg7.fix(), arg8.fix(), arg9.fix()) { a, b, c, d, e, f, g, h, i, j -> Tuple10(a, b, c, d, e, f, g, h, i, j) }",
+    "arrow.core.NonEmptyList", "arrow.core.Tuple10", "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
