@@ -70,7 +70,6 @@ interface StringHash : Hash<String>, StringEq {
 fun String.Companion.hash(): Hash<String> =
   object : StringHash {}
 
-
 @Deprecated("ForString extensions has been deprecated. Use concrete methods on String")
 object StringContext : StringShow, StringOrder, StringMonoid
 
