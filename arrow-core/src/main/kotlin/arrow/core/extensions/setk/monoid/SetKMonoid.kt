@@ -27,8 +27,8 @@ internal val monoid_singleton: SetKMonoid<Any?> = object : SetKMonoid<Any?> {}
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "combineAll()",
-    "arrow.core.combineAll"
+    "combineAll(Monoid.set<A>())",
+    "arrow.core.combineAll", "arrow.typeclasses.Monoid", "arrow.core.set"
   ),
   DeprecationLevel.WARNING
 )
@@ -46,8 +46,8 @@ fun <A> Collection<SetK<A>>.combineAll(): SetK<A> = arrow.core.SetK.monoid<A>().
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "combineAll(arg0)",
-    "arrow.core.SetK.combineAll"
+    "arg0.combineAll(Monoid.set<A>())",
+    "arrow.core.combineAll", "arrow.typeclasses.Monoid", "arrow.core.set"
   ),
   DeprecationLevel.WARNING
 )

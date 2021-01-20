@@ -17,10 +17,7 @@ import kotlin.jvm.JvmName
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "plus(arg1)",
-    "arrow.core.plus"
-  ),
+  ReplaceWith("this + arg1"),
   DeprecationLevel.WARNING
 )
 operator fun <A> Set<A>.plus(arg1: Set<A>): Set<A> =
@@ -37,10 +34,7 @@ operator fun <A> Set<A>.plus(arg1: Set<A>): Set<A> =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "maybeCombine(arg1)",
-    "arrow.core.maybeCombine"
-  ),
+  ReplaceWith("arg1?.plus(this)"),
   DeprecationLevel.WARNING
 )
 fun <A> Set<A>.maybeCombine(arg1: Set<A>): Set<A> =

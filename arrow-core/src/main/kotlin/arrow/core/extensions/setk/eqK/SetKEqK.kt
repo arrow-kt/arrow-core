@@ -27,8 +27,8 @@ internal val eqK_singleton: SetKEqK = object : arrow.core.extensions.SetKEqK {}
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "eqK(arg1, arg2)",
-    "arrow.core.eqK"
+    "eqv(arg2, arg1)",
+    "arrow.core.eqv"
   ),
   DeprecationLevel.WARNING
 )
@@ -44,14 +44,7 @@ fun <A> Kind<ForSetK, A>.eqK(arg1: Kind<ForSetK, A>, arg2: Eq<A>): Boolean =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "liftEq(arg0)",
-    "arrow.core.SetK.liftEq"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 fun <A> liftEq(arg0: Eq<A>): Eq<Kind<ForSetK, A>> = arrow.core.SetK
   .eqK()
   .liftEq<A>(arg0) as arrow.typeclasses.Eq<arrow.Kind<arrow.core.ForSetK, A>>
@@ -60,13 +53,5 @@ fun <A> liftEq(arg0: Eq<A>): Eq<Kind<ForSetK, A>> = arrow.core.SetK
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "Eq.set()",
-    "arrow.core.set",
-    "arrow.typeclasses.Eq"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 inline fun Companion.eqK(): SetKEqK = eqK_singleton

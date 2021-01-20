@@ -20,15 +20,15 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "combineK(arg1)",
-  "arrow.core.combineK"
+    "combineK(arg1)",
+    "arrow.core.combineK"
   ),
   DeprecationLevel.WARNING
 )
 fun <A> Set<A>.combineK(arg1: Set<A>): Set<A> =
-    arrow.core.extensions.set.semigroupK.Set.semigroupK().run {
-  arrow.core.SetK(this@combineK).combineK<A>(arrow.core.SetK(arg1)) as kotlin.collections.Set<A>
-}
+  arrow.core.extensions.set.semigroupK.Set.semigroupK().run {
+    arrow.core.SetK(this@combineK).combineK<A>(arrow.core.SetK(arg1)) as kotlin.collections.Set<A>
+  }
 
 @JvmName("algebra")
 @Suppress(
@@ -37,17 +37,10 @@ fun <A> Set<A>.combineK(arg1: Set<A>): Set<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "algebra()",
-  "arrow.core.extensions.set.semigroupK.Set.algebra"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 fun <A> algebra(): Semigroup<Kind<ForSetK, A>> = arrow.core.extensions.set.semigroupK.Set
-   .semigroupK()
-   .algebra<A>() as arrow.typeclasses.Semigroup<arrow.Kind<arrow.core.ForSetK, A>>
+  .semigroupK()
+  .algebra<A>() as arrow.typeclasses.Semigroup<arrow.Kind<arrow.core.ForSetK, A>>
 
 /**
  * cached extension
@@ -60,13 +53,6 @@ object Set {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
-  @Deprecated(
-    "@extension kinded projected functions are deprecated",
-    ReplaceWith(
-      "Semigroup.set()",
-      "arrow.core.set",
-      "arrow.typeclasses.Semigroup"
-    ),
-    DeprecationLevel.WARNING
-  )
-  inline fun semigroupK(): SetKSemigroupK = semigroupK_singleton}
+  @Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
+  inline fun semigroupK(): SetKSemigroupK = semigroupK_singleton
+}

@@ -23,6 +23,8 @@ fun <A> Set<A>.hashWithSalt(HA: Hash<A>, salt: Int): Int = HA.run {
   fold(salt) { hash, v -> v.hashWithSalt(hash) }
 }.hashWithSalt(size)
 
+fun <A, B> Set<A>.zip(other: Set<B>): Set<Pair<A, B>> = emptySet()
+
 fun <A> Semigroup.Companion.set(): Semigroup<Set<A>> = object : Semigroup<Set<A>> {
   override fun Set<A>.combine(b: Set<A>): Set<A> =
     this + b

@@ -18,8 +18,9 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "hash(HA)",
-    "arrow.core.hash"
+    "Hash.set(HA).run { this.hash() }",
+    "arrow.core.set",
+    "arrow.typeclasses.Hash"
   ),
   DeprecationLevel.WARNING
 )
@@ -35,7 +36,7 @@ object Set {
   @Deprecated(
     "@extension kinded projected functions are deprecated",
     ReplaceWith(
-      "Hash.set(HA)",
+      "Hash.set<A>(HA)",
       "arrow.core.set",
       "arrow.typeclasses.Hash"
     ),

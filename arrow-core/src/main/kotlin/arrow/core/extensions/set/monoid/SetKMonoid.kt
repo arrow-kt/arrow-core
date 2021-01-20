@@ -21,8 +21,8 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "combineAll()",
-    "arrow.core.combineAll"
+    "combineAll(Monoid.set<A>())",
+    "arrow.core.combineAll", "arrow.typeclasses.Monoid", "arrow.core.set"
   ),
   DeprecationLevel.WARNING
 )
@@ -41,8 +41,8 @@ fun <A> Collection<SetK<A>>.combineAll(): Set<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "combineAll(arg0)",
-    "arrow.core.extensions.set.monoid.Set.combineAll"
+    "arg0.combineAll(Monoid.set<A>())",
+    "arrow.core.combineAll", "arrow.typeclasses.Monoid", "arrow.core.set"
   ),
   DeprecationLevel.WARNING
 )

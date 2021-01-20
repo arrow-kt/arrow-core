@@ -44,14 +44,7 @@ fun <A> Kind<ForSetK, A>.combineK(arg1: Kind<ForSetK, A>): SetK<A> =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "algebra()",
-    "arrow.core.SetK.algebra"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 fun <A> algebra(): Semigroup<Kind<ForSetK, A>> = arrow.core.SetK
   .semigroupK()
   .algebra<A>() as arrow.typeclasses.Semigroup<arrow.Kind<arrow.core.ForSetK, A>>
@@ -60,13 +53,5 @@ fun <A> algebra(): Semigroup<Kind<ForSetK, A>> = arrow.core.SetK
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "Semigroup.set()",
-    "arrow.core.set",
-    "arrow.typeclasses.Semigroup"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 inline fun Companion.semigroupK(): SetKSemigroupK = semigroupK_singleton

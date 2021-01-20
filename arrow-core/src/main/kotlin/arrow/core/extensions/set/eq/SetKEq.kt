@@ -18,8 +18,8 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "neqv(EQ, arg1)",
-    "arrow.core.neqv"
+    "!eqv(EQ, arg1)",
+    "arrow.core.eqv"
   ),
   DeprecationLevel.WARNING
 )

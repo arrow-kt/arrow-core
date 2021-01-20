@@ -52,10 +52,7 @@ fun <A, B> Kind<ForSetK, A>.product(arg1: Kind<ForSetK, B>): SetK<Tuple2<A, B>> 
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "times(arg1)",
-    "arrow.core.times"
-  ),
+  ReplaceWith("this + arg1"),
   DeprecationLevel.WARNING
 )
 operator fun <A, B> Kind<ForSetK, A>.times(arg1: Kind<ForSetK, B>): SetK<Tuple2<A, B>> =
@@ -156,13 +153,5 @@ operator fun <A, B> Kind<ForSetK, A>.times(arg1: Kind<ForSetK, B>): SetK<Tuple2<
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "Semigroupal.set()",
-    "arrow.core.set",
-    "arrow.typeclasses.Semigroupal"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 inline fun Companion.semigroupal(): SetKSemigroupal = semigroupal_singleton
