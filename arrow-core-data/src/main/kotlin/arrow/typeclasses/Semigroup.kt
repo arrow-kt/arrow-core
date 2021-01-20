@@ -2,7 +2,7 @@ package arrow.typeclasses
 
 import arrow.core.Option
 
-fun interface Semigroup<A> {
+interface Semigroup<A> {
   /**
    * Combine two [A] values.
    */

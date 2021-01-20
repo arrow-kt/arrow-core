@@ -23,10 +23,10 @@ fun <A> Set<A>.hashWithSalt(HA: Hash<A>, salt: Int): Int = HA.run {
   fold(salt) { hash, v -> v.hashWithSalt(hash) }
 }.hashWithSalt(size)
 
-fun <A> Semigroup.Companion.set(): Semigroup<Set<A>> =
-  Semigroup<Set<A>> { b: Set<A> ->
+fun <A> Semigroup.Companion.set(): Semigroup<Set<A>> = object : Semigroup<Set<A>> {
+  override fun Set<A>.combine(b: Set<A>): Set<A> =
     this + b
-  }
+}
 
 fun <A> Monoid.Companion.set(): Monoid<Set<A>> = object : Monoid<Set<A>> {
   override fun empty(): Set<A> =
