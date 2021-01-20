@@ -27,15 +27,15 @@ internal val eqK_singleton: SetKEqK = object : arrow.core.extensions.SetKEqK {}
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "eqK(arg1, arg2)",
-  "arrow.core.eqK"
+    "eqK(arg1, arg2)",
+    "arrow.core.eqK"
   ),
   DeprecationLevel.WARNING
 )
 fun <A> Kind<ForSetK, A>.eqK(arg1: Kind<ForSetK, A>, arg2: Eq<A>): Boolean =
-    arrow.core.SetK.eqK().run {
-  this@eqK.eqK<A>(arg1, arg2) as kotlin.Boolean
-}
+  arrow.core.SetK.eqK().run {
+    this@eqK.eqK<A>(arg1, arg2) as kotlin.Boolean
+  }
 
 @JvmName("liftEq")
 @Suppress(
@@ -47,17 +47,26 @@ fun <A> Kind<ForSetK, A>.eqK(arg1: Kind<ForSetK, A>, arg2: Eq<A>): Boolean =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "liftEq(arg0)",
-  "arrow.core.SetK.liftEq"
+    "liftEq(arg0)",
+    "arrow.core.SetK.liftEq"
   ),
   DeprecationLevel.WARNING
 )
 fun <A> liftEq(arg0: Eq<A>): Eq<Kind<ForSetK, A>> = arrow.core.SetK
-   .eqK()
-   .liftEq<A>(arg0) as arrow.typeclasses.Eq<arrow.Kind<arrow.core.ForSetK, A>>
+  .eqK()
+  .liftEq<A>(arg0) as arrow.typeclasses.Eq<arrow.Kind<arrow.core.ForSetK, A>>
 
 @Suppress(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
+)
+@Deprecated(
+  "@extension kinded projected functions are deprecated",
+  ReplaceWith(
+    "Eq.set()",
+    "arrow.core.set",
+    "arrow.typeclasses.Eq"
+  ),
+  DeprecationLevel.WARNING
 )
 inline fun Companion.eqK(): SetKEqK = eqK_singleton

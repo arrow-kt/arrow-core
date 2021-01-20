@@ -19,8 +19,8 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "hash(HA)",
-  "arrow.core.hash"
+    "hash(HA)",
+    "arrow.core.hash"
   ),
   DeprecationLevel.WARNING
 )
@@ -32,5 +32,15 @@ fun <A> SetK<A>.hash(HA: Hash<A>): Int = arrow.core.SetK.hash<A>(HA).run {
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-inline fun <A> Companion.hash(HA: Hash<A>): SetKHash<A> = object : arrow.core.extensions.SetKHash<A>
-    { override fun HA(): arrow.typeclasses.Hash<A> = HA }
+@Deprecated(
+  "@extension kinded projected functions are deprecated",
+  ReplaceWith(
+    "Hash.set<A>(HA)",
+    "arrow.core.set",
+    "arrow.typeclasses.Hash"
+  ),
+  DeprecationLevel.WARNING
+)
+inline fun <A> Companion.hash(HA: Hash<A>): SetKHash<A> = object : arrow.core.extensions.SetKHash<A> {
+  override fun HA(): arrow.typeclasses.Hash<A> = HA
+}

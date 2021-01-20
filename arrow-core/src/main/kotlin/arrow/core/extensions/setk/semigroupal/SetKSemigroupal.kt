@@ -15,8 +15,7 @@ import kotlin.jvm.JvmName
  * cached extension
  */
 @PublishedApi()
-internal val semigroupal_singleton: SetKSemigroupal = object : arrow.core.extensions.SetKSemigroupal
-    {}
+internal val semigroupal_singleton: SetKSemigroupal = object : arrow.core.extensions.SetKSemigroupal {}
 
 /**
  *  Multiplicatively combine F<A> and F<B> into F<Tuple2<A, B>>
@@ -31,15 +30,15 @@ internal val semigroupal_singleton: SetKSemigroupal = object : arrow.core.extens
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "product(arg1)",
-  "arrow.core.product"
+    "product(arg1)",
+    "arrow.core.product"
   ),
   DeprecationLevel.WARNING
 )
 fun <A, B> Kind<ForSetK, A>.product(arg1: Kind<ForSetK, B>): SetK<Tuple2<A, B>> =
-    arrow.core.SetK.semigroupal().run {
-  this@product.product<A, B>(arg1) as arrow.core.SetK<arrow.core.Tuple2<A, B>>
-}
+  arrow.core.SetK.semigroupal().run {
+    this@product.product<A, B>(arg1) as arrow.core.SetK<arrow.core.Tuple2<A, B>>
+  }
 
 /**
  * syntax
@@ -54,15 +53,15 @@ fun <A, B> Kind<ForSetK, A>.product(arg1: Kind<ForSetK, B>): SetK<Tuple2<A, B>> 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "times(arg1)",
-  "arrow.core.times"
+    "times(arg1)",
+    "arrow.core.times"
   ),
   DeprecationLevel.WARNING
 )
 operator fun <A, B> Kind<ForSetK, A>.times(arg1: Kind<ForSetK, B>): SetK<Tuple2<A, B>> =
-    arrow.core.SetK.semigroupal().run {
-  this@times.times<A, B>(arg1) as arrow.core.SetK<arrow.core.Tuple2<A, B>>
-}
+  arrow.core.SetK.semigroupal().run {
+    this@times.times<A, B>(arg1) as arrow.core.SetK<arrow.core.Tuple2<A, B>>
+  }
 
 /**
  *  The [Semigroupal] type class for a given type `F` can be seen as an abstraction over the [cartesian product](https://en.wikipedia.org/wiki/Cartesian_product).
@@ -156,5 +155,14 @@ operator fun <A, B> Kind<ForSetK, A>.times(arg1: Kind<ForSetK, B>): SetK<Tuple2<
 @Suppress(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
+)
+@Deprecated(
+  "@extension kinded projected functions are deprecated",
+  ReplaceWith(
+    "Semigroupal.set()",
+    "arrow.core.set",
+    "arrow.typeclasses.Semigroupal"
+  ),
+  DeprecationLevel.WARNING
 )
 inline fun Companion.semigroupal(): SetKSemigroupal = semigroupal_singleton

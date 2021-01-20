@@ -46,6 +46,8 @@ data class SetK<out A>(private val set: Set<A>) : SetKOf<A>, Set<A> by set {
   }
 }
 
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 fun <A> SetKOf<A>.combineK(y: SetKOf<A>): SetK<A> = (fix() + y.fix()).k()
 
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 fun <A> Set<A>.k(): SetK<A> = SetK(this)

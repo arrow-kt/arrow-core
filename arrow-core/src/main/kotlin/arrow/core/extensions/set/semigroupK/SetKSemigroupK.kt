@@ -60,4 +60,13 @@ object Set {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
+  @Deprecated(
+    "@extension kinded projected functions are deprecated",
+    ReplaceWith(
+      "Semigroup.set()",
+      "arrow.core.set",
+      "arrow.typeclasses.Semigroup"
+    ),
+    DeprecationLevel.WARNING
+  )
   inline fun semigroupK(): SetKSemigroupK = semigroupK_singleton}
