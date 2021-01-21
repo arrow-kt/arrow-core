@@ -991,6 +991,15 @@ fun <A, B> Option<Validated<A, B>>.sequenceValidated(): Validated<A, Option<B>> 
 fun <A, B> Option<Validated<A, B>>.sequenceValidated_(): Validated<A, Unit> =
   traverseValidated_(::identity)
 
+fun <A, B> Option<Pair<A, B>>.unzip(): Pair<Option<A>, Option<B>> =
+  unzip(::identity)
+
+fun <A, B, C> Option<C>.unzip(f: (C) -> Pair<A, B>): Pair<Option<A>, Option<B>> =
+  fold (
+    { Option.empty<A>() to Option.empty() },
+    { f(it).let { pair -> Some(pair.first) to Some(pair.second) }}
+  )
+
 /**
  *  Given [A] is a sub type of [B], re-type this value from Option<A> to Option<B>
  *
