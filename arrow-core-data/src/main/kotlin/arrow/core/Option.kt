@@ -991,6 +991,19 @@ fun <A, B> Option<Validated<A, B>>.sequenceValidated(): Validated<A, Option<B>> 
 fun <A, B> Option<Validated<A, B>>.sequenceValidated_(): Validated<A, Unit> =
   traverseValidated_(::identity)
 
+fun <A, B> Option<Ior<A, B>>.unalign(): Pair<Option<A>, Option<B>> =
+  unalign(::identity)
+
+fun <A, B, C> Option<C>.unalign(f: (C) -> Ior<A, B>): Pair<Option<A>, Option<B>> =
+  when (val option = this.map(f)) {
+    is None -> None to None
+    is Some -> when (val v = option.t) {
+      is Ior.Left -> Some(v.value) to None
+      is Ior.Right -> None to Some(v.value)
+      is Ior.Both -> Some(v.leftValue) to Some(v.rightValue)
+    }
+  }
+
 fun <A, B> Option<Pair<A, B>>.unzip(): Pair<Option<A>, Option<B>> =
   unzip(::identity)
 
