@@ -705,6 +705,15 @@ sealed class Option<out A> : OptionOf<A> {
    */
   fun exists(predicate: Predicate<A>): Boolean = fold({ false }, predicate)
 
+  fun filterA(predicate: (A) -> Iterable<Boolean>): Iterable<Option<A>> =
+    traverseFilter { a -> predicate(a).map { if (it) Some(a) else None } }
+
+  fun <AA> filterAEither(predicate: (A) -> Either<AA, Boolean>): Either<AA, Option<A>> =
+    traverseFilterEither { a -> predicate(a).map { if (it) Some(a) else None } }
+
+  fun <AA> filterAValidated(predicate: (A) -> Validated<AA, Boolean>): Validated<AA, Option<A>> =
+    traverseFilterValidated { a -> predicate(a).map { if (it) Some(a) else None } }
+
   /**
    * Returns true if this option is empty '''or''' the predicate
    * $p returns true when applied to this $option's value.
@@ -838,6 +847,15 @@ sealed class Option<out A> : OptionOf<A> {
 
   inline fun <AA, B> traverseValidated_(fa: (A) -> Validated<AA, B>): Validated<AA, Unit> =
     fold({ Valid(Unit) }, { fa(it).void() })
+
+  inline fun <B> traverseFilter(f: (A) -> Iterable<Option<B>>): List<Option<B>> =
+    this.fold({ emptyList() }, { f(it).toList() })
+
+  inline fun <AA, B> traverseFilterEither(f: (A) -> Either<AA, Option<B>>): Either<AA, Option<B>> =
+    this.fold({ Right(empty()) }, f)
+
+  inline fun <AA, B> traverseFilterValidated(f: (A) -> Validated<AA, Option<B>>): Validated<AA, Option<B>> =
+    this.fold({ Valid(empty()) }, f)
 
   fun <L> toEither(ifEmpty: () -> L): Either<L, A> =
     fold({ ifEmpty().left() }, { it.right() })
@@ -983,6 +1001,15 @@ inline fun <reified B> Option<*>.filterIsInstance(): Option<B> {
   val f: (Any?) -> B? = { it as? B }
   return this.filterMap(f)
 }
+
+inline fun <reified B> Option<*>.traverseFilterIsInstance(): List<Option<B>> =
+  filterA { a -> listOf(a is B) }.map { it.map { a -> a as B } }
+
+inline fun <E, reified B> Option<*>.traverseFilterIsInstanceEither(): Either<E, Option<B>> =
+  filterAEither { a -> Right(a is B) }.map { it.map { a -> a as B } }
+
+inline fun <E, reified B> Option<*>.traverseFilterIsInstanceValidated(): Validated<E, Option<B>> =
+  filterAValidated { a -> Valid(a is B) }.map { it.map { a -> a as B } }
 
 fun <A> Option<Option<A>>.flatten(): Option<A> =
   flatMap(::identity)

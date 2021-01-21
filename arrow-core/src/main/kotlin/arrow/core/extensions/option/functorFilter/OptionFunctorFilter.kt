@@ -62,7 +62,7 @@ fun <A> Kind<ForOption, Option<A>>.flattenOption(): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "filter(arg1)"
+    "filter(arg1)"
   ),
   DeprecationLevel.WARNING
 )
