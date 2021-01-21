@@ -96,8 +96,8 @@ fun <A> Kind<ForSetK, A>.fold(arg1: Monoid<A>): A = arrow.core.SetK.foldable().r
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "Option.fromNullable(reduceNullable(arg1, arg2))",
-    "arrow.core.reduceNullable",
+    "Option.fromNullable(reduceOrNull(arg1, arg2))",
+    "arrow.core.reduceOrNull",
     "arrow.core.Option"
   ),
   DeprecationLevel.WARNING
@@ -117,8 +117,8 @@ fun <A, B> Kind<ForSetK, A>.reduceLeftToOption(arg1: Function1<A, B>, arg2: Func
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "reduceRightNullable(arg1, arg2).map { Option.fromNullable(it) }",
-    "arrow.core.reduceRightNullable",
+    "reduceRightOrNull(arg1, arg2).map { Option.fromNullable(it) }",
+    "arrow.core.reduceRightOrNull",
     "arrow.core.Option"
   ),
   DeprecationLevel.WARNING
@@ -141,8 +141,8 @@ fun <A, B> Kind<ForSetK, A>.reduceRightToOption(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "Option.fromNullable(reduceNullable({ it }, arg1))",
-    "arrow.core.reduceNullable",
+    "Option.fromNullable(reduceOrNull({ it }, arg1))",
+    "arrow.core.reduceOrNull",
     "arrow.core.Option"
   ),
   DeprecationLevel.WARNING
@@ -162,8 +162,8 @@ fun <A> Kind<ForSetK, A>.reduceLeftOption(arg1: Function2<A, A, A>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "reduceRightOption({ it }, arg2).map { Option.fromNullable(it) }",
-    "arrow.core.reduceRightNullable",
+    "reduceRightEvalOrNull({ it }, arg1).map { Option.fromNullable(it) }",
+    "arrow.core.reduceOrNull",
     "arrow.core.Option"
   ),
   DeprecationLevel.WARNING
@@ -300,10 +300,7 @@ fun <A> Kind<ForSetK, A>.exists(arg1: Function1<A, Boolean>): Boolean =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "all(arg1)",
-    "arrow.core.all"
-  ),
+  ReplaceWith("all(arg1)"),
   DeprecationLevel.WARNING
 )
 fun <A> Kind<ForSetK, A>.forAll(arg1: Function1<A, Boolean>): Boolean =
@@ -320,10 +317,7 @@ fun <A> Kind<ForSetK, A>.forAll(arg1: Function1<A, Boolean>): Boolean =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "all(arg1)",
-    "arrow.core.all"
-  ),
+  ReplaceWith("all(arg1)"),
   DeprecationLevel.WARNING
 )
 fun <A> Kind<ForSetK, A>.all(arg1: Function1<A, Boolean>): Boolean =
@@ -340,10 +334,7 @@ fun <A> Kind<ForSetK, A>.all(arg1: Function1<A, Boolean>): Boolean =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "isEmpty()",
-    "arrow.core.isEmpty"
-  ),
+  ReplaceWith("isEmpty()"),
   DeprecationLevel.WARNING
 )
 fun <A> Kind<ForSetK, A>.isEmpty(): Boolean = arrow.core.SetK.foldable().run {
@@ -359,10 +350,7 @@ fun <A> Kind<ForSetK, A>.isEmpty(): Boolean = arrow.core.SetK.foldable().run {
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "isNotEmpty()",
-    "arrow.core.isNotEmpty"
-  ),
+  ReplaceWith("isNotEmpty()"),
   DeprecationLevel.WARNING
 )
 fun <A> Kind<ForSetK, A>.nonEmpty(): Boolean = arrow.core.SetK.foldable().run {
@@ -378,10 +366,7 @@ fun <A> Kind<ForSetK, A>.nonEmpty(): Boolean = arrow.core.SetK.foldable().run {
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "isNotEmpty()",
-    "arrow.core.isNotEmpty"
-  ),
+  ReplaceWith("isNotEmpty()"),
   DeprecationLevel.WARNING
 )
 fun <A> Kind<ForSetK, A>.isNotEmpty(): Boolean = arrow.core.SetK.foldable().run {

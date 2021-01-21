@@ -17,8 +17,8 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension projected functions are deprecated",
   ReplaceWith(
-    "zip(arg1)",
-    "arrow.core.zip"
+    "this.zip(arg1, ::Tuple2)",
+    "arrow.core.zip", "arrow.core.Tuple2"
   ),
   DeprecationLevel.WARNING
 )
@@ -35,9 +35,8 @@ fun <A, B> Set<A>.zip(arg1: Set<B>): Set<Tuple2<A, B>> =
 @Deprecated(
   "@extension projected functions are deprecated",
   ReplaceWith(
-    "this.zip(arg1, ::Tuple2)",
-    "arrow.core.zip",
-    "arrow.core.Tuple2"
+    "this.zip(arg1, arg2)",
+    "arrow.core.zip"
   ),
   DeprecationLevel.WARNING
 )

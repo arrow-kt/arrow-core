@@ -53,5 +53,13 @@ fun <A> algebra(): Semigroup<Kind<ForSetK, A>> = arrow.core.SetK
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
+@Deprecated(
+  "@extension kinded projected functions are deprecated",
+  ReplaceWith(
+    "Semigroup.set<A>()",
+    "arrow.core.set",
+    "arrow.typeclasses.Semigroup"
+  ),
+  DeprecationLevel.WARNING
+)
 inline fun Companion.semigroupK(): SetKSemigroupK = semigroupK_singleton

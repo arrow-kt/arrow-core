@@ -19,10 +19,7 @@ import kotlin.jvm.JvmName
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "combineK(arg1)",
-    "arrow.core.combineK"
-  ),
+  ReplaceWith("this + arg1"),
   DeprecationLevel.WARNING
 )
 fun <A> Set<A>.combineK(arg1: Set<A>): Set<A> =
@@ -53,6 +50,14 @@ object Set {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
-  @Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
+  @Deprecated(
+    "@extension kinded projected functions are deprecated",
+    ReplaceWith(
+      "Semigroup.set<A>()",
+      "arrow.core.set",
+      "arrow.typeclasses.Semigroup"
+    ),
+    DeprecationLevel.WARNING
+  )
   inline fun semigroupK(): SetKSemigroupK = semigroupK_singleton
 }
