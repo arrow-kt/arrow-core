@@ -3,8 +3,10 @@ package arrow.core
 import arrow.Kind
 import arrow.core.Either.Right
 import arrow.typeclasses.Eq
+import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Show
+import arrow.typeclasses.hashWithSalt
 
 class ForOption private constructor() { companion object }
 typealias OptionOf<A> = arrow.Kind<ForOption, A>
@@ -647,6 +649,15 @@ sealed class Option<out A> : OptionOf<A> {
   inline fun <B> fproduct(f: (A) -> B): Option<Pair<A, B>> =
     map { a -> Pair(a, f(a)) }
 
+  fun hash(HA: Hash<A>): Int =
+    fold(
+      { hashWithSalt(HA, 0) },
+      { HA.run { it.hashWithSalt(1) } }
+    )
+
+  fun hashWithSalt(HA: Hash<A>, salt: Int): Int =
+    fold({ salt.hashWithSalt(0) }, { v -> HA.run { v.hashWithSalt(salt.hashWithSalt(1)) } })
+
   fun <B> reduceOrNull(initial: (A) -> B, operation: (acc: B, A) -> B): B? =
     when (this) {
       is None -> null
@@ -893,8 +904,21 @@ fun <A> Option<A>.neqv(EQA: Eq<A>, other: Option<A>): Boolean =
 fun <A> Eq.Companion.option(EQA: Eq<A>): Eq<Option<A>> =
   OptionEq(EQA)
 
+fun <A> Hash.Companion.option(HA: Hash<A>): Hash<Option<A>> =
+  OptionHash(HA)
+
 private class OptionEq<A>(
   private val EQA: Eq<A>,
 ) : Eq<Option<A>> {
   override fun Option<A>.eqv(b: Option<A>): Boolean = eqv(EQA, b)
+}
+
+private class OptionHash<A>(
+  private val HA: Hash<A>
+) : Hash<Option<A>> {
+  override fun Option<A>.hash(): Int =
+    hash(HA)
+
+  override fun Option<A>.hashWithSalt(salt: Int): Int =
+    hashWithSalt(HA, salt)
 }
