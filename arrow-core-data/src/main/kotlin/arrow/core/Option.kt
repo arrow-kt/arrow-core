@@ -1,7 +1,6 @@
 package arrow.core
 
 import arrow.Kind
-import arrow.core.Either.Left
 import arrow.core.Either.Right
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Monoid
@@ -475,8 +474,20 @@ sealed class Option<out A> : OptionOf<A> {
   fun <B, R> map2(fb: Option<B>, f: (Pair<A, B>) -> R): Option<R> =
     flatMap { a: A -> fb.map { b -> f(a to b) } }
 
+  @JvmName("filterMapOption")
+  @Deprecated(
+    "Use the filterMap method that receives a function from A to nullable instead",
+    ReplaceWith(
+      "this.filterMap(f.andThen { it.orNull() })",
+      "arrow.core.andThen"
+    ),
+    level = DeprecationLevel.WARNING
+  )
   fun <B> filterMap(f: (A) -> Option<B>): Option<B> =
-    flatMap { a -> f(a).fold({ empty<B>() }, { just(it) }) }
+    flatMap(f)
+
+  fun <B> filterMap(f: (A) -> B?): Option<B> =
+    flatMap { fromNullable(f(it)) }
 
   inline fun <R> fold(ifEmpty: () -> R, ifSome: (A) -> R): R = when (this) {
     is None -> ifEmpty()
@@ -541,7 +552,7 @@ sealed class Option<out A> : OptionOf<A> {
    *
    *  @param predicate the predicate used for testing.
    */
-  fun filter(predicate: Predicate<A>): Option<A> =
+  fun filter(predicate: (A) -> Boolean): Option<A> =
     flatMap { a -> if (predicate(a)) Some(a) else None }
 
   /**
@@ -550,7 +561,7 @@ sealed class Option<out A> : OptionOf<A> {
    *
    * @param predicate the predicate used for testing.
    */
-  fun filterNot(predicate: Predicate<A>): Option<A> =
+  fun filterNot(predicate: (A) -> Boolean): Option<A> =
     flatMap { a -> if (!predicate(a)) Some(a) else None }
 
   /**
@@ -808,6 +819,17 @@ fun <A, B> Option<Either<A, B>>.select(f: OptionOf<(A) -> B>): Option<B> =
 
 fun <A> Option<A>.combineAll(MA: Monoid<A>): A = MA.run {
   foldLeft(empty()) { acc, a -> acc.combine(a) } }
+
+/**
+ * Returns an Option containing all elements that are instances of specified type parameter R.
+ */
+inline fun <reified B> Option<*>.filterIsInstance(): Option<B> {
+  val f: (Any?) -> B? = { it as? B }
+  return this.filterMap(f)
+}
+
+fun <A> Option<Option<A>>.flatten(): Option<A> =
+  flatMap(::identity)
 
 fun <A> Option<A>.replicate(n: Int, MA: Monoid<A>): Option<A> = MA.run {
   if (n <= 0) Some(empty())
