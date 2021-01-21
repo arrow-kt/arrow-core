@@ -1855,11 +1855,23 @@ fun <A, C, B : C> Either<A, B>.widen(): Either<A, C> =
 fun <AA, A : AA, B> Either<A, B>.leftWiden(): Either<AA, B> =
   this
 
+@Deprecated(
+  "Instead of product, please use zip",
+  ReplaceWith(
+    "zip(fb)"
+  )
+)
 fun <A, B, C> Either<A, B>.product(fb: Either<A, C>): Either<A, Tuple2<B, C>> =
   flatMap { a ->
     fb.map { b -> Tuple2(a, b) }
   }
 
+@Deprecated(
+  "Instead of map2, please use zip",
+  ReplaceWith(
+    "zip(fb, f)"
+  )
+)
 fun <A, B, C, D> Either<A, B>.map2(fb: Either<A, C>, f: (Tuple2<B, C>) -> D): Either<A, D> =
   product(fb).map(f)
 

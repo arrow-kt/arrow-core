@@ -1111,9 +1111,21 @@ fun <E, A> Validated<E, A>.replicate(SE: Semigroup<E>, n: Int, MA: Monoid<A>): V
   if (n <= 0) MA.empty().valid()
   else Validated.mapN(SE, this@replicate, replicate(SE, n - 1, MA)) { a, xs -> MA.run { a + xs } }
 
+@Deprecated(
+  "Instead of product, please use zip",
+  ReplaceWith(
+    "zip(SE, fb)"
+  )
+)
 fun <E, A, B> Validated<E, A>.product(SE: Semigroup<E>, fb: Validated<E, B>): Validated<E, Tuple2<A, B>> =
   ap(SE, fb.map { b: B -> { a: A -> Tuple2(a, b) } })
 
+@Deprecated(
+  "Instead of map2, please use zip",
+  ReplaceWith(
+    "zip(SE, fb, f)"
+  )
+)
 fun <E, A, B, Z> Validated<E, A>.map2(SE: Semigroup<E>, fb: Validated<E, B>, f: (Tuple2<A, B>) -> Z): Validated<E, Z> =
   product(SE, fb).map(f)
 
