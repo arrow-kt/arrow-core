@@ -733,6 +733,24 @@ sealed class Option<out A> : OptionOf<A> {
       is None -> null
     }
 
+  inline fun <B> flatTraverse(f: (A) -> Iterable<Option<B>>): List<Option<B>> =
+    fold(
+      { emptyList() },
+      { f(it).toList() }
+    )
+
+  inline fun <E, B> flatTraverseEither(f: (A) -> Either<E, Option<B>>): Either<E, Option<B>> =
+    fold(
+      { Right(empty()) },
+      { f(it) }
+    )
+
+  inline fun <E, B> flatTraverseValidated(f: (A) -> Validated<E, Option<B>>): Validated<E, Option<B>> =
+    fold(
+      { Valid(empty()) },
+      { f(it) }
+    )
+
   fun <B> foldMap(MB: Monoid<B>, f: (A) -> B): B = MB.run {
     foldLeft(empty()) { b, a -> b.combine(f(a)) }
   }
