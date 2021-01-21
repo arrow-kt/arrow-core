@@ -68,7 +68,7 @@ fun <E> Iterable<Validated<E, *>>.sequenceValidated_(semigroup: Semigroup<E>): V
   traverseValidated_(semigroup, ::identity)
 
 @Deprecated(
-  "Instead of map2, please use zip",
+  "In favor of zip from Kotlin std, please use zip instead of map2",
   ReplaceWith(
     "zip(fb, f)"
   )
@@ -79,6 +79,26 @@ inline fun <A, B, Z> Iterable<A>.map2(fb: Iterable<B>, f: (Tuple2<A, B>) -> Z): 
       f(Tuple2(a, b))
     }
   }
+
+@Deprecated(
+  "In favor of zip from Kotlin std, please use zip instead of product",
+  ReplaceWith(
+    "zip(fb)"
+  )
+)
+fun <A, B> Iterable<A>.product(fb: Iterable<B>): List<Tuple2<A, B>> =
+  fb.ap(map { a: A -> { b: B -> Tuple2(a, b) } })
+
+
+inline fun <A, B, Z> Iterable<A>.zip(fb: Iterable<B>, f: (A, B) -> Z): List<Z> =
+  flatMap { a ->
+    fb.map { b ->
+      f(a, b)
+    }
+  }
+
+fun <A, B> Iterable<A>.zip(fb: Iterable<B>): List<Pair<A, B>> =
+  fb.ap(map { a: A -> { b: B -> Pair(a, b) } })
 
 fun <A, B> Iterable<A>.mapConst(b: B): List<B> =
   map { b }
@@ -455,15 +475,6 @@ fun <A, B> Iterable<Ior<A, B>>.unalign(): Tuple2<List<A>, List<B>> =
  */
 inline fun <A, B, C> Iterable<C>.unalign(fa: (C) -> Ior<A, B>): Tuple2<List<A>, List<B>> =
   map(fa).unalign()
-
-@Deprecated(
-  "Instead of product, please use zip",
-  ReplaceWith(
-    "zip(fb)"
-  )
-)
-fun <A, B> Iterable<A>.product(fb: Iterable<B>): List<Tuple2<A, B>> =
-  fb.ap(map { a: A -> { b: B -> Tuple2(a, b) } })
 
 fun <A> Iterable<A>.combineAll(MA: Monoid<A>): A = MA.run {
   this@combineAll.fold(empty()) { acc, a ->

@@ -1856,7 +1856,16 @@ fun <AA, A : AA, B> Either<A, B>.leftWiden(): Either<AA, B> =
   this
 
 @Deprecated(
-  "Instead of product, please use zip",
+  "In favor of zip from Kotlin std, please use zip instead of map2",
+  ReplaceWith(
+    "zip(fb, f)"
+  )
+)
+fun <A, B, C, D> Either<A, B>.map2(fb: Either<A, C>, f: (Tuple2<B, C>) -> D): Either<A, D> =
+  product(fb).map(f)
+
+@Deprecated(
+  "In favor of zip from Kotlin std, please use zip instead of product",
   ReplaceWith(
     "zip(fb)"
   )
@@ -1866,14 +1875,13 @@ fun <A, B, C> Either<A, B>.product(fb: Either<A, C>): Either<A, Tuple2<B, C>> =
     fb.map { b -> Tuple2(a, b) }
   }
 
-@Deprecated(
-  "Instead of map2, please use zip",
-  ReplaceWith(
-    "zip(fb, f)"
-  )
-)
-fun <A, B, C, D> Either<A, B>.map2(fb: Either<A, C>, f: (Tuple2<B, C>) -> D): Either<A, D> =
-  product(fb).map(f)
+fun <A, B, C, D> Either<A, B>.zip(fb: Either<A, C>, f: (B, C) -> D): Either<A, D> =
+  zip(fb).map(f)
+
+fun <A, B, C> Either<A, B>.zip(fb: Either<A, C>): Either<A, Pair<B, C>> =
+  flatMap { a ->
+    fb.map { b -> Pair(a, b) }
+  }
 
 @JvmName("product3")
 fun <A, B, C, D> Either<A, Tuple2<B, C>>.product(
