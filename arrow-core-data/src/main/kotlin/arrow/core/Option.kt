@@ -1,6 +1,10 @@
 package arrow.core
 
 import arrow.Kind
+import arrow.core.Either.Left
+import arrow.core.Either.Right
+import arrow.typeclasses.Eq
+import arrow.typeclasses.Monoid
 import arrow.typeclasses.Show
 
 class ForOption private constructor() { companion object }
@@ -408,6 +412,8 @@ sealed class Option<out A> : OptionOf<A> {
    */
   abstract fun isEmpty(): Boolean
 
+  fun isNotEmpty(): Boolean = !isEmpty()
+
   /**
    * alias for [isDefined]
    */
@@ -431,11 +437,43 @@ sealed class Option<out A> : OptionOf<A> {
    * @param f the function to apply
    * @see flatMap
    */
-  fun <B> map(f: (A) -> B): Option<B> =
+  inline fun <B> map(f: (A) -> B): Option<B> =
     flatMap { a -> Some(f(a)) }
 
+  /**
+   *  Replaces [A] inside [Option] with [B] resulting in an Option<B>
+   *
+   *  Option<A> -> Option<B>
+   *
+   *  ```kotlin:ank:playground
+   *  import arrow.core.some
+   *
+   *  fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   "Hello World".some().mapConst("...")
+   *   //sampleEnd
+   *   println(result)
+   *  }
+   *  ```
+   */
+  fun <B> mapConst(b: B): Option<B> =
+    map { b }
+
+  @JvmName("map2Kind")
+  @Deprecated(
+    "",
+    ReplaceWith(
+      "map2<B, R>(fb.fix()) { pair: Pair<A, B> -> f(Tuple2<A, B>(pair.first, pair.second))}",
+       "arrow.core.Tuple2", "arrow.core.fix"
+    ),
+    DeprecationLevel.WARNING
+  )
   fun <B, R> map2(fb: Kind<ForOption, B>, f: (Tuple2<A, B>) -> R): Option<R> =
     flatMap { a: A -> fb.fix().map { b -> f(a toT b) } }
+
+  fun <B, R> map2(fb: Option<B>, f: (Pair<A, B>) -> R): Option<R> =
+    flatMap { a: A -> fb.map { b -> f(a to b) } }
 
   fun <B> filterMap(f: (A) -> Option<B>): Option<B> =
     flatMap { a -> f(a).fold({ empty<B>() }, { just(it) }) }
@@ -467,14 +505,35 @@ sealed class Option<out A> : OptionOf<A> {
    * @param f the function to apply
    * @see map
    */
-  fun <B> flatMap(f: (A) -> OptionOf<B>): Option<B> =
+  inline fun <B> flatMap(f: (A) -> OptionOf<B>): Option<B> =
     when (this) {
       is None -> this
       is Some -> f(t).fix()
     }
 
+  inline fun all(predicate: (A) -> Boolean): Boolean =
+    fold({ true }, predicate)
+
   fun <B> ap(ff: OptionOf<(A) -> B>): Option<B> =
     ff.fix().flatMap { this.fix().map(it) }
+
+  fun <B> crosswalk(f: (A) -> Option<B>): Option<Option<B>> =
+    when (this) {
+      is None -> empty<B>().map { empty() }
+      is Some -> f(t).map { just(it) }
+    }
+
+  fun <K, V> crosswalkMap(f: (A) -> Map<K, V>): Map<K, Option<V>> =
+    when (this) {
+      is None -> emptyMap()
+      is Some -> f(t).mapValues { just(it.value) }
+    }
+
+  fun <B> crosswalkNull(f: (A) -> B?): Option<B>? =
+    when (this) {
+      is None -> null
+      is Some -> f(t)?.let { just(it) }
+    }
 
   /**
    * Returns this $option if it is nonempty '''and''' applying the predicate $p to
@@ -499,9 +558,18 @@ sealed class Option<out A> : OptionOf<A> {
    * $p returns true when applied to this $option's value.
    * Otherwise, returns false.
    *
+   * Example:
+   * ```
+   * Some(12).exists { it > 10 } // Result: true
+   * Some(7).exists { it > 10 }  // Result: false
+   *
+   * val none: Option<Int> = None
+   * none.exists { it > 10 }      // Result: false
+   * ```
+   *
    * @param predicate the predicate to test
    */
-  fun exists(predicate: Predicate<A>): Boolean = fold({ false }, { a -> predicate(a) })
+  fun exists(predicate: Predicate<A>): Boolean = fold({ false }, predicate)
 
   /**
    * Returns true if this option is empty '''or''' the predicate
@@ -511,26 +579,152 @@ sealed class Option<out A> : OptionOf<A> {
    */
   fun forall(p: Predicate<A>): Boolean = fold({ true }, p)
 
+  /**
+   * Returns the $option's value if this option is nonempty '''and''' the predicate
+   * $p returns true when applied to this $option's value.
+   * Otherwise, returns null.
+   *
+   * Example:
+   * ```
+   * Some(12).exists { it > 10 } // Result: 12
+   * Some(7).exists { it > 10 }  // Result: null
+   *
+   * val none: Option<Int> = None
+   * none.exists { it > 10 }      // Result: null
+   * ```
+   */
+  inline fun findOrNull(predicate: (A) -> Boolean): A? =
+    when (this) {
+      is Some -> if (predicate(t)) t else null
+      is None -> null
+    }
+
+  fun <B> foldMap(MB: Monoid<B>, f: (A) -> B): B = MB.run {
+    foldLeft(empty()) { b, a -> b.combine(f(a)) }
+  }
+
   fun <B> foldLeft(initial: B, operation: (B, A) -> B): B =
-    fix().let { option ->
-      when (option) {
-        is Some -> operation(initial, option.t)
-        is None -> initial
-      }
+    when (this) {
+      is Some -> operation(initial, t)
+      is None -> initial
     }
 
   fun <B> foldRight(initial: Eval<B>, operation: (A, Eval<B>) -> Eval<B>): Eval<B> =
-    fix().let { option ->
-      when (option) {
-        is Some -> Eval.defer { operation(option.t, initial) }
-        is None -> initial
-      }
+    when (this) {
+      is Some -> Eval.defer { operation(t, initial) }
+      is None -> initial
     }
+
+  /**
+   *  Applies [f] to an [A] inside [Option] and returns the [Option] structure with a pair of the [A] value and the
+   *  computed [B] value as result of applying [f]
+   *
+   *  Option<A> -> Option<Pair<A, B>>
+   *
+   *  ```kotlin:ank:playground
+   *  import arrow.core.some
+   *
+   *  fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   "Hello".some().fproduct({ "$it World" })
+   *   //sampleEnd
+   *   println(result)
+   *  }
+   *  ```
+   */
+  inline fun <B> fproduct(f: (A) -> B): Option<Pair<A, B>> =
+    map { a -> Pair(a, f(a)) }
+
+  fun <B> reduceOrNull(initial: (A) -> B, operation: (acc: B, A) -> B): B? =
+    when (this) {
+      is None -> null
+      is Some -> operation(initial(t), t)
+    }
+
+  inline fun <B> reduceRightEvalOrNull(
+    initial: (A) -> B,
+    operation: (A, acc: Eval<B>) -> Eval<B>
+  ): Eval<B?> =
+    when (this) {
+      is None -> Eval.now(null)
+      is Some -> operation(t, Eval.now(initial(t)))
+    }
+
+  fun replicate(n: Int): Option<List<A>> =
+    if (n <= 0) Some(emptyList()) else map { a -> List(n) { a } }
+
+  inline fun <B> traverse(fa: (A) -> Iterable<B>): List<Option<B>> =
+    fold({ emptyList() }, { a -> fa(a).map { Some(it) } })
+
+  inline fun <B> traverse_(fa: (A) -> Iterable<B>): List<Unit> =
+    fold({ emptyList() }, { fa(it).void() })
+
+  inline fun <AA, B> traverseEither(fa: (A) -> Either<AA, B>): Either<AA, Option<B>> =
+    when (this) {
+      is Some -> fa(t).map { Some(it) }
+      is None -> Right(this)
+    }
+
+  inline fun <AA, B> traverseEither_(fa: (A) -> Either<AA, B>): Either<AA, Unit> =
+    fold({ Right(Unit) }, { fa(it).void() })
+
+  inline fun <AA, B> traverseValidated(fa: (A) -> Validated<AA, B>): Validated<AA, Option<B>> =
+    when (this) {
+      is Some -> fa(t).map { Some(it) }
+      is None -> Valid(this)
+    }
+
+  inline fun <AA, B> traverseValidated_(fa: (A) -> Validated<AA, B>): Validated<AA, Unit> =
+    fold({ Valid(Unit) }, { fa(it).void() })
 
   fun <L> toEither(ifEmpty: () -> L): Either<L, A> =
     fold({ ifEmpty().left() }, { it.right() })
 
   fun toList(): List<A> = fold(::emptyList) { listOf(it) }
+
+  /**
+   *  Pairs [B] with [A] returning an Option<Pair<B, A>>
+   *
+   *  Option<A> -> Option<Pair<B, A>>
+   *
+   *  ```kotlin:ank:playground
+   *  import arrow.core.some
+   *
+   *  fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   "Hello".some().tupleLeft("World")
+   *   //sampleEnd
+   *   println(result)
+   *  }
+   *  ```
+   */
+  fun <B> tupleLeft(b: B): Option<Pair<B, A>> =
+    map { a -> Pair(b, a) }
+
+  /**
+   *  Pairs [A] with [B] returning an Option<Pair<A, B>>
+   *
+   *  Option<A> -> Option<Pair<A, B>>
+   *
+   *  ```kotlin:ank:playground
+   *  import arrow.core.some
+   *
+   *  fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   "Hello".some().tupleRight("World")
+   *   //sampleEnd
+   *   println(result)
+   *  }
+   *  ```
+   */
+  fun <B> tupleRight(b: B): Option<Pair<A, B>> =
+    map { a -> Pair(a, b) }
+
+  fun void(): Option<Unit> =
+    mapConst(Unit)
 
   infix fun <X> and(value: Option<X>): Option<X> = if (isEmpty()) {
     None
@@ -611,3 +805,74 @@ fun <T> Iterable<T>.elementAtOrNone(index: Int): Option<T> = this.elementAtOrNul
 
 fun <A, B> Option<Either<A, B>>.select(f: OptionOf<(A) -> B>): Option<B> =
   flatMap { it.fold({ l -> Option.just(l).ap(f) }, { r -> Option.just(r) }) }
+
+fun <A> Option<A>.combineAll(MA: Monoid<A>): A = MA.run {
+  foldLeft(empty()) { acc, a -> acc.combine(a) } }
+
+fun <A> Option<A>.replicate(n: Int, MA: Monoid<A>): Option<A> = MA.run {
+  if (n <= 0) Some(empty())
+  else map { a -> List(n) { a }.fold(empty()) { acc, v -> acc + v } }}
+
+fun <A> Option<Iterable<A>>.sequence(): List<Option<A>> =
+  traverse(::identity)
+
+fun <A> Option<Iterable<A>>.sequence_(): List<Unit> =
+  traverse_(::identity)
+
+fun <A, B> Option<Either<A, B>>.sequenceEither(): Either<A, Option<B>> =
+  traverseEither(::identity)
+
+fun <A, B> Option<Either<A, B>>.sequenceEither_(): Either<A, Unit> =
+  traverseEither_(::identity)
+
+fun <A, B> Option<Validated<A, B>>.sequenceValidated(): Validated<A, Option<B>> =
+  traverseValidated(::identity)
+
+fun <A, B> Option<Validated<A, B>>.sequenceValidated_(): Validated<A, Unit> =
+  traverseValidated_(::identity)
+
+/**
+ *  Given [A] is a sub type of [B], re-type this value from Option<A> to Option<B>
+ *
+ *  Option<A> -> Option<B>
+ *
+ *  ```kotlin:ank:playground
+ *  import arrow.core.Option
+ *  import arrow.core.some
+ *  import arrow.core.widen
+ *
+ *  fun main(args: Array<String>) {
+ *   val result: Option<CharSequence> =
+ *   //sampleStart
+ *   "Hello".some().map({ "$it World" }).widen()
+ *   //sampleEnd
+ *   println(result)
+ *  }
+ *  ```
+ */
+fun <B, A : B> Option<A>.widen(): Option<B> =
+  this
+
+fun <A> Option<A>.eqv(EQA: Eq<A>, other: Option<A>): Boolean = when (this) {
+  is Some -> when (other) {
+    None -> false
+    is Some -> EQA.run { t.eqv(other.t) }
+  }
+  None -> when (other) {
+    None -> true
+    is Some -> false
+  }
+}
+
+fun <A> Option<A>.neqv(EQA: Eq<A>, other: Option<A>): Boolean =
+  !eqv(EQA, other)
+
+/** Construct an [Eq] instance which use [EQA] to compare the element of the option **/
+fun <A> Eq.Companion.option(EQA: Eq<A>): Eq<Option<A>> =
+  OptionEq(EQA)
+
+private class OptionEq<A>(
+  private val EQA: Eq<A>,
+) : Eq<Option<A>> {
+  override fun Option<A>.eqv(b: Option<A>): Boolean = eqv(EQA, b)
+}
