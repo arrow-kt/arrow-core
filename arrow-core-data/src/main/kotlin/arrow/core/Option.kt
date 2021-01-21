@@ -1043,6 +1043,9 @@ fun <A> Eq.Companion.option(EQA: Eq<A>): Eq<Option<A>> =
 fun <A> Hash.Companion.option(HA: Hash<A>): Hash<Option<A>> =
   OptionHash(HA)
 
+fun <A> Show.Companion.option(SA: Show<A>): Show<Option<A>> =
+  OptionShow(SA)
+
 private class OptionEq<A>(
   private val EQA: Eq<A>,
 ) : Eq<Option<A>> {
@@ -1057,4 +1060,10 @@ private class OptionHash<A>(
 
   override fun Option<A>.hashWithSalt(salt: Int): Int =
     hashWithSalt(HA, salt)
+}
+
+private class OptionShow<A>(
+  private val SA: Show<A>,
+) : Show<Option<A>> {
+  override fun Option<A>.show(): String = show(SA)
 }
