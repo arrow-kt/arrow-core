@@ -5,6 +5,7 @@ import arrow.core.Either.Right
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
+import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.hashWithSalt
 
@@ -645,6 +646,12 @@ sealed class Option<out A> : OptionOf<A> {
       is Some -> f(t).fix()
     }
 
+  fun <B> align(b: Option<B>): Option<Ior<A, B>> =
+    Ior.fromOptions(this, b)
+
+  fun <B, C> align(b: Option<B>, f: (Ior<A, B>) -> C): Option<C> =
+    Ior.fromOptions(this, b).map(f)
+
   inline fun all(predicate: (A) -> Boolean): Boolean =
     fold({ true }, predicate)
 
@@ -805,6 +812,24 @@ sealed class Option<out A> : OptionOf<A> {
 
   fun hashWithSalt(HA: Hash<A>, salt: Int): Int =
     fold({ salt.hashWithSalt(0) }, { v -> HA.run { v.hashWithSalt(salt.hashWithSalt(1)) } })
+
+  fun <B> padZip(other: Option<B>): Option<Pair<A?, B?>> =
+    align(other) { ior ->
+      ior.fold(
+        { it to null },
+        { null to it },
+        { a, b -> a to b }
+      )
+    }
+
+  fun <B, C> padZip(other: Option<B>, f: (A?, B?) -> C): Option<C> =
+    align(other) { ior ->
+      ior.fold(
+        { f(it, null) },
+        { f(null, it) },
+        { a, b -> f(a, b) }
+      )
+    }
 
   fun <B> reduceOrNull(initial: (A) -> B, operation: (acc: B, A) -> B): B? =
     when (this) {
@@ -1017,6 +1042,11 @@ fun <A> Option<Option<A>>.flatten(): Option<A> =
 fun <A> Option<A>.replicate(n: Int, MA: Monoid<A>): Option<A> = MA.run {
   if (n <= 0) Some(empty())
   else map { a -> List(n) { a }.fold(empty()) { acc, v -> acc + v } }}
+
+fun <A> Option<A>.salign(SA: Semigroup<A>, b: Option<A>): Option<A> =
+  align(b) { it.fold(::identity, ::identity) { a, b ->
+    SA.run { a.combine(b) }
+  }}
 
 fun <A> Option<Iterable<A>>.sequence(): List<Option<A>> =
   traverse(::identity)
