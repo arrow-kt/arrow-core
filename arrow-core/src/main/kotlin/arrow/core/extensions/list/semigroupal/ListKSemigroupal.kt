@@ -1,12 +1,8 @@
 package arrow.core.extensions.list.semigroupal
 
-import arrow.core.Tuple2
 import arrow.core.extensions.ListKSemigroupal
-import arrow.core.product as _product
 import kotlin.PublishedApi
 import kotlin.Suppress
-import kotlin.collections.List
-import kotlin.jvm.JvmName
 
 /**
  * cached extension
