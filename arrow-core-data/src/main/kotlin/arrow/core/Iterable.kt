@@ -744,8 +744,8 @@ internal val unit: List<Unit> =
   listOf(Unit)
 
 @JvmName("product3")
-fun <A, B, C> Iterable<Tuple2<A, B>>.product(other: Iterable<C>): List<Tuple3<A, B, C>> =
-  map2(other) { (ab, c) -> Tuple3(ab.a, ab.b, c) }
+fun <A, B, C> Iterable<Pair<A, B>>.product(other: Iterable<C>): List<Triple<A, B, C>> =
+  _zip(other) { ab: Pair<A, B>, c: C -> Triple(ab.first, ab.second, c) }
 
 @JvmName("product4")
 fun <A, B, C, D> Iterable<Tuple3<A, B, C>>.product(other: Iterable<D>): List<Tuple4<A, B, C, D>> =

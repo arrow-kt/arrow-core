@@ -291,29 +291,11 @@ interface Apply<F> : Functor<F> {
     a.product(b).product(c).product(d).product(e).product(f)
       .product(g).product(h).product(i).product(j).map(lbd)
 
-  @Deprecated(
-    "In favor of zip from Kotlin std, please use zip instead of map2",
-    ReplaceWith(
-      "zip(fb, f)"
-    )
-  )
   fun <A, B, Z> Kind<F, A>.map2(fb: Kind<F, B>, f: (Tuple2<A, B>) -> Z): Kind<F, Z> =
     product(fb).map(f)
 
-  @Deprecated(
-    "In favor of zip from Kotlin std, please use zip instead of product",
-    ReplaceWith(
-      "zip(fb, f)"
-    )
-  )
   fun <A, B> Kind<F, A>.product(fb: Kind<F, B>): Kind<F, Tuple2<A, B>> =
     ap(fb.map { b: B -> { a: A -> Tuple2(a, b) } })
-
-  fun <A, B, C> Kind<F, A>.zip(fb: Kind<F, B>, f: (A, B) -> C): Kind<F, C> =
-    zip(fb).map(f)
-
-  fun <A, B> Kind<F, A>.zip(fb: Kind<F, B>): Kind<F, Pair<A, B>> =
-    ap(fb.map { b: B -> { a: A -> Pair(a, b) } })
 
   fun <A, B, Z> Kind<F, Tuple2<A, B>>.product(
     other: Kind<F, Z>,
