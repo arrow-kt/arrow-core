@@ -3,6 +3,36 @@ package arrow.core.extensions.list.semigroupal
 import arrow.core.extensions.ListKSemigroupal
 import kotlin.PublishedApi
 import kotlin.Suppress
+import kotlin.collections.List
+import kotlin.jvm.JvmName
+
+/**
+ *  Multiplicatively combine F<A> and F<B> into F<Tuple2<A, B>>
+ */
+@JvmName("product")
+@Suppress(
+  "UNCHECKED_CAST",
+  "USELESS_CAST",
+  "EXTENSION_SHADOWED_BY_MEMBER",
+  "UNUSED_PARAMETER"
+)
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("zip(arg1, ::Tuple2)", "arrow.core.Tuple2", "kotlin.collections.zip"))
+fun <A, B> List<A>.product(arg1: List<B>): List<Tuple2<A, B>> =
+  zip(arg1, ::Tuple2)
+
+/**
+ * syntax
+ */
+@JvmName("times")
+@Suppress(
+  "UNCHECKED_CAST",
+  "USELESS_CAST",
+  "EXTENSION_SHADOWED_BY_MEMBER",
+  "UNUSED_PARAMETER"
+)
+@Deprecated("@extension projected functions are deprecated", ReplaceWith("zip(arg1, ::Tuple2)", "arrow.core.Tuple2", "kotlin.collections.zip"))
+operator fun <A, B> List<A>.times(arg1: List<B>): List<Tuple2<A, B>> =
+  zip(arg1, ::Tuple2)
 
 /**
  * cached extension
