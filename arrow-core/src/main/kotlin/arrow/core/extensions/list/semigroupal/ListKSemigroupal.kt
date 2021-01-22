@@ -1,5 +1,6 @@
 package arrow.core.extensions.list.semigroupal
 
+import arrow.core.Tuple2
 import arrow.core.extensions.ListKSemigroupal
 import kotlin.PublishedApi
 import kotlin.Suppress
