@@ -1773,9 +1773,6 @@ fun <A, B, C> Either<A, B>.product(fb: Either<A, C>): Either<A, Tuple2<B, C>> =
     fb.map { b -> Tuple2(a, b) }
   }
 
-fun <A, B, C, D> Either<A, B>.map2(fb: Either<A, C>, f: (Tuple2<B, C>) -> D): Either<A, D> =
-  product(fb).map(f)
-
 fun <A, B, C, D> Either<A, B>.zip(fb: Either<A, C>, f: (B, C) -> D): Either<A, D> =
   flatMap { b ->
     fb.map { c -> f(b, c) }
