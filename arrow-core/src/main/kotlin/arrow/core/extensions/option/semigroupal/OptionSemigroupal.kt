@@ -6,10 +6,6 @@ import arrow.core.Option
 import arrow.core.Option.Companion
 import arrow.core.Tuple2
 import arrow.core.extensions.OptionSemigroupal
-import kotlin.Deprecated
-import kotlin.PublishedApi
-import kotlin.Suppress
-import kotlin.jvm.JvmName
 
 /**
  * cached extension
@@ -31,8 +27,8 @@ internal val semigroupal_singleton: OptionSemigroupal = object :
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "product(arg1)",
-  "arrow.core.product"
+    "this.zip<B>(arg1.fix())",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -54,8 +50,8 @@ fun <A, B> Kind<ForOption, A>.product(arg1: Kind<ForOption, B>): Option<Tuple2<A
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "times(arg1)",
-  "arrow.core.times"
+    "this.zip<B>(arg1.fix())",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -156,5 +152,9 @@ operator fun <A, B> Kind<ForOption, A>.times(arg1: Kind<ForOption, B>): Option<T
 @Suppress(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
+)
+@Deprecated(
+  "Semigroupal typeclass is deprecated. Use concrete methods on Option",
+  level = DeprecationLevel.WARNING
 )
 inline fun Companion.semigroupal(): OptionSemigroupal = semigroupal_singleton
