@@ -805,6 +805,9 @@ sealed class Option<out A> : OptionOf<A> {
   inline fun <B> fproduct(f: (A) -> B): Option<Pair<A, B>> =
     map { a -> Pair(a, f(a)) }
 
+  inline fun <A> Option<A>.handleErrorWith(f: (Unit) -> Option<A>): Option<A> =
+    if (isEmpty()) f(Unit) else this
+
   fun hash(HA: Hash<A>): Int =
     fold(
       { hashWithSalt(HA, 0) },
@@ -928,6 +931,8 @@ sealed class Option<out A> : OptionOf<A> {
   fun <B> tupleRight(b: B): Option<Pair<A, B>> =
     map { a -> Pair(a, b) }
 
+  fun raiseError(e: Unit): Option<A> = None
+
   fun void(): Option<Unit> =
     mapConst(Unit)
 
@@ -1025,6 +1030,12 @@ fun <A, B> Option<Either<A, B>>.select(f: OptionOf<(A) -> B>): Option<B> =
 fun <A> Option<A>.combineAll(MA: Monoid<A>): A = MA.run {
   foldLeft(empty()) { acc, a -> acc.combine(a) } }
 
+inline fun <A> Option<A>.ensure(error: () -> Unit, predicate: (A) -> Boolean): Option<A> =
+  when (this) {
+    is Some -> if (predicate(t)) this else raiseError(error())
+    is None -> this
+  }
+
 /**
  * Returns an Option containing all elements that are instances of specified type parameter R.
  */
@@ -1059,9 +1070,15 @@ fun <A, B> Option<Either<A, B>>.selectM(f: Option<(A) -> B>): Option<B> =
     { b -> Some(b) }
   )}
 
+fun <A, B> Option<A>.redeemWith(fe: (Unit) -> Option<B>, fb: (A) -> Option<B>): Option<B> =
+  flatMap(fb).handleErrorWith(fe)
+
 fun <A> Option<A>.replicate(n: Int, MA: Monoid<A>): Option<A> = MA.run {
   if (n <= 0) Some(empty())
   else map { a -> List(n) { a }.fold(empty()) { acc, v -> acc + v } }}
+
+fun <A> Option<Either<Unit, A>>.rethrow(): Option<A> =
+  flatMap { it.fold({ None }, { a -> Option.just(a) }) }
 
 fun <A> Option<A>.salign(SA: Semigroup<A>, b: Option<A>): Option<A> =
   align(b) { it.fold(::identity, ::identity) { a, b ->
