@@ -1154,6 +1154,15 @@ fun <A> Option<A>.min(OA: Order<A>, b: Option<A>): Option<A> =
 fun <A> Option<A>.sort(OA: Order<A>, b: Option<A>): Pair<Option<A>, Option<A>> =
   if (gte(OA, b)) this to b else b to this
 
+fun <A> Option<A>.combine(SGA: Semigroup<A>, b: Option<A>): Option<A> =
+  when (this) {
+    is Some -> when (b) {
+      is Some -> Some(SGA.run { t.combine(b.t) })
+      None -> this
+    }
+    None -> b
+  }
+
 /** Construct an [Eq] instance which use [EQA] to compare the element of the option **/
 fun <A> Eq.Companion.option(EQA: Eq<A>): Eq<Option<A>> =
   OptionEq(EQA)
@@ -1163,6 +1172,9 @@ fun <A> Hash.Companion.option(HA: Hash<A>): Hash<Option<A>> =
 
 fun <A> Order.Companion.option(OA: Order<A>): Order<Option<A>> =
   OptionOrder(OA)
+
+fun <A> Semigroup.Companion.option(SGA: Semigroup<A>): Semigroup<Option<A>> =
+  OptionSemigroup(SGA)
 
 fun <A> Show.Companion.option(SA: Show<A>): Show<Option<A>> =
   OptionShow(SA)
@@ -1188,6 +1200,17 @@ private class OptionOrder<A>(
 ) : Order<Option<A>> {
   override fun Option<A>.compare(b: Option<A>): Ordering =
     compare(OA, b)
+}
+
+private class OptionSemigroup<A>(
+  private val SGA: Semigroup<A>
+) : Semigroup<Option<A>> {
+
+  override fun Option<A>.combine(b: Option<A>): Option<A> =
+    combine(SGA, b)
+
+  override fun Option<A>.maybeCombine(b: Option<A>?): Option<A> =
+    b?.let { combine(SGA, it) } ?: this
 }
 
 private class OptionShow<A>(
