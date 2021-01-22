@@ -7,6 +7,7 @@ import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import kotlin.collections.foldRight as _foldRight
+import kotlin.collections.zip as _zip
 
 inline fun <A, B> Iterable<A>.foldRight(initial: B, operation: (A, acc: B) -> B): B =
   when (this) {
@@ -89,16 +90,11 @@ inline fun <A, B, Z> Iterable<A>.map2(fb: Iterable<B>, f: (Tuple2<A, B>) -> Z): 
 fun <A, B> Iterable<A>.product(fb: Iterable<B>): List<Tuple2<A, B>> =
   fb.ap(map { a: A -> { b: B -> Tuple2(a, b) } })
 
-
 inline fun <A, B, Z> Iterable<A>.zip(fb: Iterable<B>, f: (A, B) -> Z): List<Z> =
-  flatMap { a ->
-    fb.map { b ->
-      f(a, b)
-    }
-  }
+  _zip(fb, f)
 
 fun <A, B> Iterable<A>.zip(fb: Iterable<B>): List<Pair<A, B>> =
-  fb.ap(map { a: A -> { b: B -> Pair(a, b) } })
+  _zip(fb)
 
 fun <A, B> Iterable<A>.mapConst(b: B): List<B> =
   map { b }
