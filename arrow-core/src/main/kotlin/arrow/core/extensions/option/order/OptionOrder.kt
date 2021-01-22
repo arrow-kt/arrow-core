@@ -5,11 +5,6 @@ import arrow.core.Option.Companion
 import arrow.core.Tuple2
 import arrow.core.extensions.OptionOrder
 import arrow.typeclasses.Order
-import kotlin.Boolean
-import kotlin.Deprecated
-import kotlin.Int
-import kotlin.Suppress
-import kotlin.jvm.JvmName
 
 @JvmName("compareTo")
 @Suppress(
@@ -41,8 +36,8 @@ fun <A> Option<A>.compareTo(OA: Order<A>, arg1: Option<A>): Int =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "eqv(OA, arg1)",
-  "arrow.core.eqv"
+  "compare(OA, arg1) == EQ",
+  "arrow.core.EQ", "arrow.core.compare"
   ),
   DeprecationLevel.WARNING
 )
@@ -189,6 +184,14 @@ fun <A> Option<A>.sort(OA: Order<A>, arg1: Option<A>): Tuple2<Option<A>, Option<
 @Suppress(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
+)
+@Deprecated(
+  "@extension projected functions are deprecated",
+  ReplaceWith(
+    "Order.option<A>(EQ)",
+    "arrow.core.option", "arrow.typeclasses.Order"
+  ),
+  DeprecationLevel.WARNING
 )
 inline fun <A> Companion.order(OA: Order<A>): OptionOrder<A> = object :
     arrow.core.extensions.OptionOrder<A> { override fun OA(): arrow.typeclasses.Order<A> = OA }
