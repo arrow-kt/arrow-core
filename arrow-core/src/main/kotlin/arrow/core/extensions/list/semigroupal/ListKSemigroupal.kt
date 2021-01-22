@@ -9,34 +9,6 @@ import kotlin.collections.List
 import kotlin.jvm.JvmName
 
 /**
- *  Multiplicatively combine F<A> and F<B> into F<Tuple2<A, B>>
- */
-@JvmName("product")
-@Suppress(
-  "UNCHECKED_CAST",
-  "USELESS_CAST",
-  "EXTENSION_SHADOWED_BY_MEMBER",
-  "UNUSED_PARAMETER"
-)
-@Deprecated("@extension projected functions are deprecated", ReplaceWith("product(arg1)", "arrow.core.product"))
-fun <A, B> List<A>.product(arg1: List<B>): List<Tuple2<A, B>> =
-  _product(arg1)
-
-/**
- * syntax
- */
-@JvmName("times")
-@Suppress(
-  "UNCHECKED_CAST",
-  "USELESS_CAST",
-  "EXTENSION_SHADOWED_BY_MEMBER",
-  "UNUSED_PARAMETER"
-)
-@Deprecated("@extension projected functions are deprecated", ReplaceWith("product(arg1)", "arrow.core.product"))
-operator fun <A, B> List<A>.times(arg1: List<B>): List<Tuple2<A, B>> =
-  _product(arg1)
-
-/**
  * cached extension
  */
 @PublishedApi()

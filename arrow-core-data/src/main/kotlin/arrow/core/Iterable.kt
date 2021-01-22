@@ -7,7 +7,6 @@ import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import kotlin.collections.foldRight as _foldRight
-import kotlin.collections.zip as _zip
 
 inline fun <A, B> Iterable<A>.foldRight(initial: B, operation: (A, acc: B) -> B): B =
   when (this) {
@@ -67,34 +66,6 @@ fun <E, A> Iterable<Validated<E, Iterable<A>>>.flatSequenceValidated(semigroup: 
 
 fun <E> Iterable<Validated<E, *>>.sequenceValidated_(semigroup: Semigroup<E>): Validated<E, Unit> =
   traverseValidated_(semigroup, ::identity)
-
-@Deprecated(
-  "In favor of zip from Kotlin std, please use zip instead of map2",
-  ReplaceWith(
-    "zip(fb, f)"
-  )
-)
-inline fun <A, B, Z> Iterable<A>.map2(fb: Iterable<B>, f: (Tuple2<A, B>) -> Z): List<Z> =
-  flatMap { a ->
-    fb.map { b ->
-      f(Tuple2(a, b))
-    }
-  }
-
-@Deprecated(
-  "In favor of zip from Kotlin std, please use zip instead of product",
-  ReplaceWith(
-    "zip(fb)"
-  )
-)
-fun <A, B> Iterable<A>.product(fb: Iterable<B>): List<Tuple2<A, B>> =
-  fb.ap(map { a: A -> { b: B -> Tuple2(a, b) } })
-
-inline fun <A, B, Z> Iterable<A>.zip(fb: Iterable<B>, f: (A, B) -> Z): List<Z> =
-  _zip(fb, f)
-
-fun <A, B> Iterable<A>.zip(fb: Iterable<B>): List<Pair<A, B>> =
-  _zip(fb)
 
 fun <A, B> Iterable<A>.mapConst(b: B): List<B> =
   map { b }
@@ -745,43 +716,43 @@ internal val unit: List<Unit> =
 
 @JvmName("product3")
 fun <A, B, C> Iterable<Pair<A, B>>.product(other: Iterable<C>): List<Triple<A, B, C>> =
-  _zip(other) { ab: Pair<A, B>, c: C -> Triple(ab.first, ab.second, c) }
+  zip(other) { ab: Pair<A, B>, c: C -> Triple(ab.first, ab.second, c) }
 
 @JvmName("product4")
 fun <A, B, C, D> Iterable<Tuple3<A, B, C>>.product(other: Iterable<D>): List<Tuple4<A, B, C, D>> =
-  map2(other) { (abc, d) -> Tuple4(abc.a, abc.b, abc.c, d) }
+  zip(other) { (abc: Tuple3<A, B, C>, d: D) -> Tuple4(abc.a, abc.b, abc.c, d) }
 
 @JvmName("product5")
 fun <A, B, C, D, EE> Iterable<Tuple4<A, B, C, D>>.product(other: Iterable<EE>): List<Tuple5<A, B, C, D, EE>> =
-  map2(other) { (abcd, e) -> Tuple5(abcd.a, abcd.b, abcd.c, abcd.d, e) }
+  zip(other) { (abcd, e) -> Tuple5(abcd.a, abcd.b, abcd.c, abcd.d, e) }
 
 @JvmName("product6")
 fun <A, B, C, D, EE, F> Iterable<Tuple5<A, B, C, D, EE>>.product(other: Iterable<F>): List<Tuple6<A, B, C, D, EE, F>> =
-  map2(other) { (abcde, f) -> Tuple6(abcde.a, abcde.b, abcde.c, abcde.d, abcde.e, f) }
+  zip(other) { (abcde, f) -> Tuple6(abcde.a, abcde.b, abcde.c, abcde.d, abcde.e, f) }
 
 @JvmName("product7")
 fun <A, B, C, D, EE, F, G> Iterable<Tuple6<A, B, C, D, EE, F>>.product(
   other: Iterable<G>
 ): List<Tuple7<A, B, C, D, EE, F, G>> =
-  map2(other) { (abcdef, g) -> Tuple7(abcdef.a, abcdef.b, abcdef.c, abcdef.d, abcdef.e, abcdef.f, g) }
+  zip(other) { (abcdef, g) -> Tuple7(abcdef.a, abcdef.b, abcdef.c, abcdef.d, abcdef.e, abcdef.f, g) }
 
 @JvmName("product8")
 fun <A, B, C, D, EE, F, G, H> Iterable<Tuple7<A, B, C, D, EE, F, G>>.product(
   other: Iterable<H>
 ): List<Tuple8<A, B, C, D, EE, F, G, H>> =
-  map2(other) { (abcdefg, h) -> Tuple8(abcdefg.a, abcdefg.b, abcdefg.c, abcdefg.d, abcdefg.e, abcdefg.f, abcdefg.g, h) }
+  zip(other) { (abcdefg, h) -> Tuple8(abcdefg.a, abcdefg.b, abcdefg.c, abcdefg.d, abcdefg.e, abcdefg.f, abcdefg.g, h) }
 
 @JvmName("product9")
 fun <A, B, C, D, EE, F, G, H, I> Iterable<Tuple8<A, B, C, D, EE, F, G, H>>.product(
   other: Iterable<I>
 ): List<Tuple9<A, B, C, D, EE, F, G, H, I>> =
-  map2(other) { (abcdefgh, i) -> Tuple9(abcdefgh.a, abcdefgh.b, abcdefgh.c, abcdefgh.d, abcdefgh.e, abcdefgh.f, abcdefgh.g, abcdefgh.h, i) }
+  zip(other) { (abcdefgh, i) -> Tuple9(abcdefgh.a, abcdefgh.b, abcdefgh.c, abcdefgh.d, abcdefgh.e, abcdefgh.f, abcdefgh.g, abcdefgh.h, i) }
 
 @JvmName("product10")
 fun <A, B, C, D, EE, F, G, H, I, J> Iterable<Tuple9<A, B, C, D, EE, F, G, H, I>>.product(
   other: Iterable<J>
 ): List<Tuple10<A, B, C, D, EE, F, G, H, I, J>> =
-  map2(other) { (abcdefghi, j) -> Tuple10(abcdefghi.a, abcdefghi.b, abcdefghi.c, abcdefghi.d, abcdefghi.e, abcdefghi.f, abcdefghi.g, abcdefghi.h, abcdefghi.i, j) }
+  zip(other) { (abcdefghi, j) -> Tuple10(abcdefghi.a, abcdefghi.b, abcdefghi.c, abcdefghi.d, abcdefghi.e, abcdefghi.f, abcdefghi.g, abcdefghi.h, abcdefghi.i, j) }
 
 fun <A> Iterable<A>.replicate(n: Int): List<List<A>> =
   if (n <= 0) emptyList()
