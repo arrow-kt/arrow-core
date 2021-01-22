@@ -8,13 +8,6 @@ import arrow.core.Option
 import arrow.core.Option.Companion
 import arrow.core.Tuple2
 import arrow.core.extensions.OptionMonad
-import kotlin.Boolean
-import kotlin.Deprecated
-import kotlin.Function0
-import kotlin.Function1
-import kotlin.PublishedApi
-import kotlin.Suppress
-import kotlin.jvm.JvmName
 
 /**
  * cached extension
@@ -32,8 +25,8 @@ internal val monad_singleton: OptionMonad = object : arrow.core.extensions.Optio
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "flatMap(arg1)",
-  "arrow.core.flatMap"
+    "fix().flatMap(arg1)",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -52,8 +45,8 @@ fun <A, B> Kind<ForOption, A>.flatMap(arg1: Function1<A, Kind<ForOption, B>>): O
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tailRecM(arg0, arg1)",
-  "arrow.core.Option.tailRecM"
+  "Option.tailRecM(arg0, arg1)",
+  "arrow.core.Option"
   ),
   DeprecationLevel.WARNING
 )
@@ -72,8 +65,8 @@ fun <A, B> tailRecM(arg0: A, arg1: Function1<A, Kind<ForOption, Either<A, B>>>):
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg1)",
-  "arrow.core.map"
+    "fix().map(arg1)",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -95,8 +88,8 @@ fun <A, B> Kind<ForOption, A>.map(arg1: Function1<A, B>): Option<B> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "ap(arg1)",
-  "arrow.core.ap"
+  "fix().ap(arg1)",
+  "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -115,8 +108,8 @@ fun <A, B> Kind<ForOption, A>.ap(arg1: Kind<ForOption, Function1<A, B>>): Option
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "flatten()",
-  "arrow.core.flatten"
+  "fix().flatten()",
+    "arrow.core.fix", "arrow.core.flatten"
   ),
   DeprecationLevel.WARNING
 )
@@ -134,8 +127,8 @@ fun <A> Kind<ForOption, Kind<ForOption, A>>.flatten(): Option<A> = arrow.core.Op
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "followedBy(arg1)",
-  "arrow.core.followedBy"
+    "fix().flatMap { arg1 }",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -154,8 +147,8 @@ fun <A, B> Kind<ForOption, A>.followedBy(arg1: Kind<ForOption, B>): Option<B> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "apTap(arg1)",
-  "arrow.core.apTap"
+    "fix().flatMap { a -> arg1.fix().map { a } }",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -174,8 +167,8 @@ fun <A, B> Kind<ForOption, A>.apTap(arg1: Kind<ForOption, B>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "followedByEval(arg1)",
-  "arrow.core.followedByEval"
+    "fix().flatMap { arg1.value() }",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -194,8 +187,8 @@ fun <A, B> Kind<ForOption, A>.followedByEval(arg1: Eval<Kind<ForOption, B>>): Op
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "effectM(arg1)",
-  "arrow.core.effectM"
+    "fix().flatMap { a -> arg1(a).fix().map { a } }",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -214,8 +207,8 @@ fun <A, B> Kind<ForOption, A>.effectM(arg1: Function1<A, Kind<ForOption, B>>): O
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "flatTap(arg1)",
-  "arrow.core.flatTap"
+    "fix().flatMap { a -> arg1(a).fix().map { a } }",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -234,8 +227,8 @@ fun <A, B> Kind<ForOption, A>.flatTap(arg1: Function1<A, Kind<ForOption, B>>): O
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "productL(arg1)",
-  "arrow.core.productL"
+    "fix().flatMap { a -> arg1.fix().map { a } }",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -254,8 +247,8 @@ fun <A, B> Kind<ForOption, A>.productL(arg1: Kind<ForOption, B>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "forEffect(arg1)",
-  "arrow.core.forEffect"
+    "fix().flatMap { a -> arg1.fix().map { a } }",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -274,8 +267,8 @@ fun <A, B> Kind<ForOption, A>.forEffect(arg1: Kind<ForOption, B>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "productLEval(arg1)",
-  "arrow.core.productLEval"
+    "fix().flatMap { a -> arg1.value().fix().map { a } }",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -294,8 +287,8 @@ fun <A, B> Kind<ForOption, A>.productLEval(arg1: Eval<Kind<ForOption, B>>): Opti
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "forEffectEval(arg1)",
-  "arrow.core.forEffectEval"
+    "fix().flatMap { a -> arg1.value().fix().map { a } }",
+    "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
@@ -314,8 +307,8 @@ fun <A, B> Kind<ForOption, A>.forEffectEval(arg1: Eval<Kind<ForOption, B>>): Opt
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mproduct(arg1)",
-  "arrow.core.mproduct"
+    "fix().mproduct(arg1)",
+    "arrow.core.fix", "arrow.core.mproduct"
   ),
   DeprecationLevel.WARNING
 )
@@ -334,8 +327,8 @@ fun <A, B> Kind<ForOption, A>.mproduct(arg1: Function1<A, Kind<ForOption, B>>): 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "ifM(arg1, arg2)",
-  "arrow.core.ifM"
+  "fix().ifM(arg1, arg2)",
+    "arrow.core.fix", "arrow.core.ifM"
   ),
   DeprecationLevel.WARNING
 )
@@ -356,8 +349,8 @@ fun <B> Kind<ForOption, Boolean>.ifM(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "selectM(arg1)",
-  "arrow.core.selectM"
+  "fix().selectM(arg1)",
+    "arrow.core.fix", "arrow.core.selectM"
   ),
   DeprecationLevel.WARNING
 )
@@ -376,8 +369,8 @@ fun <A, B> Kind<ForOption, Either<A, B>>.selectM(arg1: Kind<ForOption, Function1
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "select(arg1)",
-  "arrow.core.select"
+    "fix().selectM(arg1)",
+    "arrow.core.fix", "arrow.core.selectM"
   ),
   DeprecationLevel.WARNING
 )
@@ -400,5 +393,9 @@ fun <A, B> Kind<ForOption, Either<A, B>>.select(arg1: Kind<ForOption, Function1<
 @Suppress(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
+)
+@Deprecated(
+  "Monad typeclass is deprecated. Use concrete methods on Option",
+  level = DeprecationLevel.WARNING
 )
 inline fun Companion.monad(): OptionMonad = monad_singleton

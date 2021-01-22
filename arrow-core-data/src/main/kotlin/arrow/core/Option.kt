@@ -1040,6 +1040,20 @@ inline fun <E, reified B> Option<*>.traverseFilterIsInstanceValidated(): Validat
 fun <A> Option<Option<A>>.flatten(): Option<A> =
   flatMap(::identity)
 
+inline fun <A, B> Option<A>.mproduct(f: (A) -> Option<B>): Option<Pair<A, B>> =
+  flatMap { a ->
+    f(a).map { b -> a to b }
+  }
+
+inline fun <A> Option<Boolean>.ifM(ifTrue: () -> Option<A>, ifFalse: () -> Option<A>): Option<A> =
+  flatMap { if (it) ifTrue() else ifFalse() }
+
+fun <A, B> Option<Either<A, B>>.selectM(f: Option<(A) -> B>): Option<B> =
+  flatMap { it.fold(
+    { a -> Some(a).ap(f) },
+    { b -> Some(b) }
+  )}
+
 fun <A> Option<A>.replicate(n: Int, MA: Monoid<A>): Option<A> = MA.run {
   if (n <= 0) Some(empty())
   else map { a -> List(n) { a }.fold(empty()) { acc, v -> acc + v } }}
