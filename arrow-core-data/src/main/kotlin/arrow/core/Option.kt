@@ -430,6 +430,14 @@ sealed class Option<out A> : OptionOf<A> {
   fun <B> map(f: (A) -> B): Option<B> =
     flatMap { a -> Some(f(a)) }
 
+  @Deprecated(
+    "In favor of zip from Kotlin std, please use zip instead of map2",
+    ReplaceWith(
+      "zip(fb) { b, c -> f(Tuple2(b, c)) }",
+      "arrow.core.Tuple2",
+      "arrow.core.zip"
+    )
+  )
   fun <B, R> map2(fb: Kind<ForOption, B>, f: (Tuple2<A, B>) -> R): Option<R> =
     flatMap { a: A -> fb.fix().map { b -> f(a toT b) } }
 
