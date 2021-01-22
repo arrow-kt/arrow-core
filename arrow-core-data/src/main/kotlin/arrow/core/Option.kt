@@ -1063,6 +1063,30 @@ fun <A> Option<A>.salign(SA: Semigroup<A>, b: Option<A>): Option<A> =
     SA.run { a.combine(b) }
   }}
 
+/**
+ * Separate the inner [Either] value into the [Either.Left] and [Either.Right].
+ *
+ * @receiver Option of Either
+ * @return a tuple containing Option of [Either.Left] and another Option of its [Either.Right] value.
+ */
+fun <A, B> Option<Either<A, B>>.separateEither(): Pair<Option<A>, Option<B>> {
+  val asep = flatMap { gab -> gab.fold({ Some(it) }, { None }) }
+  val bsep = flatMap { gab -> gab.fold({ None }, { Some(it) }) }
+  return asep to bsep
+}
+
+/**
+ * Separate the inner [Validated] value into the [Validated.Invalid] and [Validated.Valid].
+ *
+ * @receiver Option of Either
+ * @return a tuple containing Option of [Validated.Invalid] and another Option of its [Validated.Valid] value.
+ */
+fun <A, B> Option<Validated<A, B>>.separateValidated(): Pair<Option<A>, Option<B>> {
+  val asep = flatMap { gab -> gab.fold({ Some(it) }, { None }) }
+  val bsep = flatMap { gab -> gab.fold({ None }, { Some(it) }) }
+  return asep to bsep
+}
+
 fun <A> Option<Iterable<A>>.sequence(): List<Option<A>> =
   traverse(::identity)
 
@@ -1092,6 +1116,21 @@ fun <A, B, C> Option<C>.unalign(f: (C) -> Ior<A, B>): Pair<Option<A>, Option<B>>
       is Ior.Right -> None to Some(v.value)
       is Ior.Both -> Some(v.leftValue) to Some(v.rightValue)
     }
+  }
+
+fun <A> Option<Iterable<A>>.unite(MA: Monoid<A>): Option<A> =
+  map { iterable ->
+    iterable.fold(MA)
+  }
+
+fun <A, B> Option<Either<A, B>>.uniteEither(): Option<B> =
+  flatMap { either ->
+    either.fold({ None }, { b -> Some(b) })
+  }
+
+fun <A, B> Option<Validated<A, B>>.uniteValidated(): Option<B> =
+  flatMap { validated ->
+    validated.fold({ None }, { b -> Some(b) })
   }
 
 fun <A, B> Option<Pair<A, B>>.unzip(): Pair<Option<A>, Option<B>> =
