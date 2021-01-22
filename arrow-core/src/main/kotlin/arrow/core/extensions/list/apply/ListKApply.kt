@@ -3,8 +3,6 @@ package arrow.core.extensions.list.apply
 import arrow.Kind
 import arrow.core.Eval
 import arrow.core.ap as _ap
-import arrow.core.map2 as _map2
-import arrow.core.product as _product
 import kotlin.collections.flatMap as _flatMap
 import arrow.core.ForListK
 import arrow.core.ListK

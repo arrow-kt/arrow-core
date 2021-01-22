@@ -432,7 +432,7 @@ fun <L, A, B> Kind<Kind<ForEither, L>, A>.product(arg1: Kind<Kind<ForEither, L>,
 )
 @Deprecated("@extension kinded projected functions are deprecated", ReplaceWith("Either.mapN(fix(), arg1.fix()) { (a, b), z -> Tuple3(a, b, z) }", "arrow.core.Either", "arrow.core.Tuple3"))
 fun <L, A, B, Z> Kind<Kind<ForEither, L>, Tuple2<A, B>>.product(arg1: Kind<Kind<ForEither, L>, Z>):
-  Either<L, Tuple3<A, B, Z>> = 
+  Either<L, Tuple3<A, B, Z>> =
   Either.mapN(fix(), arg1.fix()) { (a, b), z -> Tuple3(a, b, z) }
 
 @JvmName("product2")
