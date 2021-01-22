@@ -607,3 +607,9 @@ fun <T> Iterable<T>.elementAtOrNone(index: Int): Option<T> = this.elementAtOrNul
 
 fun <A, B> Option<Either<A, B>>.select(f: OptionOf<(A) -> B>): Option<B> =
   flatMap { it.fold({ l -> Option.just(l).ap(f) }, { r -> Option.just(r) }) }
+
+fun <A, B, Z> Option<A>.zip(fb: Option<B>, f: (A, B) -> Z): Option<Z> =
+  TODO()
+
+fun <A, B, Z> Option<A>.zip(fb: Option<B>): Option<Pair<A, B>> =
+  TODO()

@@ -48,8 +48,8 @@ fun <A, B> Kind<ForOption, A>.zip(arg1: Kind<ForOption, B>): Option<Tuple2<A, B>
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "zipWith(arg1, arg2)",
-    "arrow.core.zipWith"
+    "zip(arg1, arg2)",
+    "arrow.core.zip"
   ),
   DeprecationLevel.WARNING
 )
