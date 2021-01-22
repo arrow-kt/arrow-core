@@ -1000,6 +1000,11 @@ fun <A> A.some(): Option<A> = Some(this)
 
 fun <A> none(): Option<A> = None
 
+fun <A> Iterable<Option<A>>.combineAll(MA: Monoid<A>): Option<A> =
+  fold(Option.just(MA.empty())) { acc, a ->
+    acc.combine(MA, a)
+  }
+
 fun <T> Iterable<T>.firstOrNone(): Option<T> = this.firstOrNull().toOption()
 
 fun <T> Iterable<T>.firstOrNone(predicate: (T) -> Boolean): Option<T> = this.firstOrNull(predicate).toOption()

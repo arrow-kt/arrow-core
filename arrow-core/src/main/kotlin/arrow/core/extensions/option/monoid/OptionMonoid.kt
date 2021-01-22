@@ -4,11 +4,6 @@ import arrow.core.Option
 import arrow.core.Option.Companion
 import arrow.core.extensions.OptionMonoid
 import arrow.typeclasses.Semigroup
-import kotlin.Deprecated
-import kotlin.Suppress
-import kotlin.collections.Collection
-import kotlin.collections.List
-import kotlin.jvm.JvmName
 
 @JvmName("combineAll")
 @Suppress(
@@ -20,7 +15,7 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "combineAll(SG)",
+  "this.combineAll(SG)",
   "arrow.core.combineAll"
   ),
   DeprecationLevel.WARNING
@@ -40,8 +35,8 @@ fun <A> Collection<Option<A>>.combineAll(SG: Semigroup<A>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "combineAll(SG, arg0)",
-  "arrow.core.Option.combineAll"
+  "arg0.combineAll(SG)",
+  "arrow.core.combineAll"
   ),
   DeprecationLevel.WARNING
 )
@@ -52,6 +47,10 @@ fun <A> combineAll(SG: Semigroup<A>, arg0: List<Option<A>>): Option<A> = arrow.c
 @Suppress(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
+)
+@Deprecated(
+  "Monoid typeclass is deprecated. Use concrete methods on Option",
+  level = DeprecationLevel.WARNING
 )
 inline fun <A> Companion.monoid(SG: Semigroup<A>): OptionMonoid<A> = object :
     arrow.core.extensions.OptionMonoid<A> { override fun SG(): arrow.typeclasses.Semigroup<A> = SG }
