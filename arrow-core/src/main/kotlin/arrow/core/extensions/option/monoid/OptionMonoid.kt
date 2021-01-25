@@ -49,8 +49,12 @@ fun <A> combineAll(SG: Semigroup<A>, arg0: List<Option<A>>): Option<A> = arrow.c
   "NOTHING_TO_INLINE"
 )
 @Deprecated(
-  "Monoid typeclass is deprecated. Use concrete methods on Option",
-  level = DeprecationLevel.WARNING
+  "@extension projected functions are deprecated",
+  ReplaceWith(
+    "Monoid.option<A>(SG)",
+    "arrow.core.option", "arrow.typeclasses.Monoid"
+  ),
+  DeprecationLevel.WARNING
 )
 inline fun <A> Companion.monoid(SG: Semigroup<A>): OptionMonoid<A> = object :
     arrow.core.extensions.OptionMonoid<A> { override fun SG(): arrow.typeclasses.Semigroup<A> = SG }

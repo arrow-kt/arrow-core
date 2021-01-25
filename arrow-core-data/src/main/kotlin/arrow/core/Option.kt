@@ -1273,6 +1273,9 @@ fun <A> Eq.Companion.option(EQA: Eq<A>): Eq<Option<A>> =
 fun <A> Hash.Companion.option(HA: Hash<A>): Hash<Option<A>> =
   OptionHash(HA)
 
+fun <A> Monoid.Companion.option(MA: Monoid<A>): Monoid<Option<A>> =
+  OptionMonoid(MA)
+
 fun <A> Order.Companion.option(OA: Order<A>): Order<Option<A>> =
   OptionOrder(OA)
 
@@ -1296,6 +1299,19 @@ private class OptionHash<A>(
 
   override fun Option<A>.hashWithSalt(salt: Int): Int =
     hashWithSalt(HA, salt)
+}
+
+private class OptionMonoid<A>(
+  private val MA: Monoid<A>
+) : Monoid<Option<A>> {
+
+  override fun Option<A>.combine(b: Option<A>): Option<A> =
+    combine(MA, b)
+
+  override fun Option<A>.maybeCombine(b: Option<A>?): Option<A> =
+    b?.let { combine(MA, it) } ?: this
+
+  override fun empty(): Option<A> = None
 }
 
 private class OptionOrder<A>(
