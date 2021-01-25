@@ -10,10 +10,22 @@ import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.hashWithSalt
 
+@Deprecated(
+  "Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead",
+  level = DeprecationLevel.WARNING
+)
 class ForOption private constructor() { companion object }
+@Deprecated(
+  "Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead",
+  level = DeprecationLevel.WARNING
+)
 typealias OptionOf<A> = arrow.Kind<ForOption, A>
 
 @Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
+@Deprecated(
+  "Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead",
+  level = DeprecationLevel.WARNING
+)
 inline fun <A> OptionOf<A>.fix(): Option<A> = this as Option<A>
 
 /**
@@ -1187,7 +1199,7 @@ fun <A, B> Option<Pair<A, B>>.unzip(): Pair<Option<A>, Option<B>> =
   unzip(::identity)
 
 fun <A, B, C> Option<C>.unzip(f: (C) -> Pair<A, B>): Pair<Option<A>, Option<B>> =
-  fold (
+  fold(
     { Option.empty<A>() to Option.empty() },
     { f(it).let { pair -> Some(pair.first) to Some(pair.second) }}
   )
