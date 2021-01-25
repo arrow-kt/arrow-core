@@ -619,5 +619,5 @@ fun <A, B> Option<Either<A, B>>.select(f: OptionOf<(A) -> B>): Option<B> =
 fun <A, B, Z> Option<A>.zip(fb: Option<B>, f: (A, B) -> Z): Option<Z> =
   flatMap { a: A -> fb.map { b -> f(a, b) } }
 
-fun <A, B, Z> Option<A>.zip(fb: Option<B>): Option<Pair<A, B>> =
+fun <A, B> Option<A>.zip(fb: Option<B>): Option<Pair<A, B>> =
   flatMap { a: A -> fb.map { b -> Pair(a, b) } }
