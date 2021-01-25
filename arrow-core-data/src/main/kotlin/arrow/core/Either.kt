@@ -1750,7 +1750,7 @@ fun <AA, A : AA, B> Either<A, B>.leftWiden(): Either<AA, B> =
   this
 
 @Deprecated(
-  "In favor of zip from Kotlin std, please use zip instead of map2",
+  "map2 will be renamed to zip to be consistent with Kotlin Std's naming, please use zip instead of map2",
   ReplaceWith(
     "zip(fb) { b, c -> f(Tuple2(b, c)) }",
     "arrow.core.Tuple2",
@@ -1761,7 +1761,7 @@ fun <A, B, C, D> Either<A, B>.map2(fb: Either<A, C>, f: (Tuple2<B, C>) -> D): Ei
   product(fb).map(f)
 
 @Deprecated(
-  "In favor of zip from Kotlin std, please use zip instead of product",
+  "product will be renamed to zip to be consistent with Kotlin Std's naming, please use zip instead of product",
   ReplaceWith(
     "zip(fb) { a, b -> Tuple2(a, b) }",
     "arrow.core.Tuple2",
