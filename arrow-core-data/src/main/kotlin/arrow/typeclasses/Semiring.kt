@@ -3,8 +3,6 @@ package arrow.typeclasses
 import arrow.documented
 
 /**
- * ank_macro_hierarchy(arrow.typeclasses.Semiring)
- *
  * The [Semiring] type class for a given type `A` combines both a commutative additive [Monoid] and a multiplicative [Monoid].
  *  It requires the multiplicative [Monoid] to distribute over the additive one. The operations of the multiplicative [Monoid] have been renamed to
  *  [one] and [combineMultiplicate] for easier use.
@@ -123,4 +121,6 @@ interface Semiring<A> {
   fun A?.maybeCombineMultiplicate(b: A?): A =
     if (this == null) one()
     else b?.let { combineMultiplicate(it) } ?: this
+
+  companion object
 }

@@ -3,9 +3,6 @@ package arrow.typeclasses
 import arrow.Kind
 import arrow.KindDeprecation
 
-/**
- * ank_macro_hierarchy(arrow.typeclasses.SemigroupK)
- */
 @Deprecated(KindDeprecation)
 interface SemigroupK<F> {
 

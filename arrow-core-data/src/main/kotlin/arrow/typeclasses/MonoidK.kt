@@ -5,8 +5,6 @@ import arrow.KindDeprecation
 
 @Deprecated(KindDeprecation)
 /**
- * ank_macro_hierarchy(arrow.typeclasses.MonoidK)
- *
  * MonoidK is a universal monoid which operates on kinds.
  *
  * MonoidK<F> allows two F<A> values to be combined, for any A. It also means that for any A, there

@@ -2,9 +2,6 @@ package arrow.typeclasses
 
 import arrow.core.Option
 
-/**
- * ank_macro_hierarchy(arrow.typeclasses.Semigroup)
- */
 interface Semigroup<A> {
   /**
    * Combine two [A] values.
@@ -15,4 +12,6 @@ interface Semigroup<A> {
     this.combine(b)
 
   fun A.maybeCombine(b: A?): A = Option.fromNullable(b).fold({ this }, { combine(it) })
+
+  companion object
 }

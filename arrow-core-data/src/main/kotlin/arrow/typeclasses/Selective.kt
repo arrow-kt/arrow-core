@@ -10,9 +10,6 @@ import arrow.core.left
 import arrow.core.right
 
 @Deprecated(KindDeprecation)
-/**
- * ank_macro_hierarchy(arrow.typeclasses.Selective)
- */
 interface Selective<F> : Applicative<F> {
   fun <A, B> Kind<F, Either<A, B>>.select(f: Kind<F, (A) -> B>): Kind<F, B>
 

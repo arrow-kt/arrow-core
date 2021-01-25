@@ -50,8 +50,6 @@ import arrow.core.toT
  *   println(result)
  * }
  * ```
- *
- * ank_macro_hierarchy(arrow.typeclasses.Divide)
  */
 interface Divide<F> : Contravariant<F> {
 
