@@ -6,9 +6,6 @@ import arrow.Kind
 import arrow.KindDeprecation
 
 @Deprecated(KindDeprecation)
-/**
- * ank_macro_hierarchy(arrow.typeclasses.Applicative)
- */
 interface Applicative<F> : Apply<F> {
 
   fun <A> just(a: A): Kind<F, A>

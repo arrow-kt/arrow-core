@@ -4,9 +4,6 @@ import arrow.Kind2
 import arrow.KindDeprecation
 
 @Deprecated(KindDeprecation)
-/**
- * ank_macro_hierarchy(arrow.typeclasses.Category)
- */
 interface Category<F> {
 
   fun <A> id(): Kind2<F, A, A>

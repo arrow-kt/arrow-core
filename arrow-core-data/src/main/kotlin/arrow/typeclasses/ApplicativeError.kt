@@ -11,9 +11,6 @@ import arrow.core.identity
 import arrow.core.nonFatalOrThrow
 
 @Deprecated(KindDeprecation)
-/**
- * ank_macro_hierarchy(arrow.typeclasses.ApplicativeError)
- */
 interface ApplicativeError<F, E> : Applicative<F> {
 
   fun <A> raiseError(e: E): Kind<F, A>

@@ -2,9 +2,6 @@ package arrow.typeclasses
 
 import arrow.Kind
 import arrow.KindDeprecation
-import arrow.core.ForId
-import arrow.core.Id
-import arrow.core.IdOf
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some

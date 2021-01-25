@@ -5,9 +5,6 @@ import arrow.KindDeprecation
 import arrow.core.Eval
 
 @Deprecated(KindDeprecation)
-/**
- * ank_macro_hierarchy(arrow.typeclasses.Bifoldable)
- */
 interface Bifoldable<F> {
 
   fun <A, B, C> Kind2<F, A, B>.bifoldLeft(c: C, f: (C, A) -> C, g: (C, B) -> C): C
