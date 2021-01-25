@@ -1023,7 +1023,28 @@ fun <T> Iterable<T>.lastOrNone(predicate: (T) -> Boolean): Option<T> = this.last
 fun <T> Iterable<T>.elementAtOrNone(index: Int): Option<T> = this.elementAtOrNull(index).toOption()
 
 fun <A, B> Option<Either<A, B>>.select(f: OptionOf<(A) -> B>): Option<B> =
-  flatMap { it.fold({ l -> Option.just(l).ap(f) }, { r -> Option.just(r) }) }
+  branch(f.fix(), Some(::identity))
+
+fun <A, B, C> Option<Either<A, B>>.branch(fa: Option<(A) -> C>, fb: Option<(B) -> C>): Option<C> =
+  flatMap { it.fold(
+    { a -> Some(a).ap(fa) },
+    { b -> Some(b).ap(fb) }
+  )}
+
+private fun Option<Boolean>.selector(): Option<Either<Unit, Unit>> =
+  map { bool -> if (bool) Either.right(Unit) else Either.left(Unit) }
+
+fun <A> Option<Boolean>.whenS(x: Option<() -> Unit>): Option<Unit> =
+  selector().select(x.map { f -> { _: Unit -> f() } })
+
+fun <A> Option<Boolean>.ifS(fl: Option<A>, fr: Option<A>): Option<A> =
+  selector().branch(fl.map { { _: Unit -> it } }, fr.map { { _: Unit -> it } })
+
+fun Option<Boolean>.orS(f: Option<Boolean>): Option<Boolean> =
+  ifS(Option.just(true), f)
+
+fun Option<Boolean>.andS(f: Option<Boolean>): Option<Boolean> =
+  ifS(f, Option.just(false))
 
 fun <A> Option<A>.combineAll(MA: Monoid<A>): A = MA.run {
   foldLeft(empty()) { acc, a -> acc.combine(a) } }
