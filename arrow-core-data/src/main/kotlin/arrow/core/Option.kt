@@ -593,20 +593,8 @@ sealed class Option<out A> : OptionOf<A> {
   fun <B> mapConst(b: B): Option<B> =
     map { b }
 
-  @JvmName("map2Kind")
-  @Deprecated(
-    "",
-    ReplaceWith(
-      "map2<B, R>(fb.fix()) { pair: Pair<A, B> -> f(Tuple2<A, B>(pair.first, pair.second))}",
-       "arrow.core.Tuple2", "arrow.core.fix"
-    ),
-    DeprecationLevel.WARNING
-  )
   fun <B, R> map2(fb: Kind<ForOption, B>, f: (Tuple2<A, B>) -> R): Option<R> =
     flatMap { a: A -> fb.fix().map { b -> f(a toT b) } }
-
-  fun <B, R> map2(fb: Option<B>, f: (Pair<A, B>) -> R): Option<R> =
-    flatMap { a: A -> fb.map { b -> f(a to b) } }
 
   @JvmName("filterMapOption")
   @Deprecated(
@@ -667,6 +655,9 @@ sealed class Option<out A> : OptionOf<A> {
 
   fun <B> ap(ff: OptionOf<(A) -> B>): Option<B> =
     ff.fix().flatMap { this.fix().map(it) }
+
+  fun <B> apEval(ff: Eval<Option<(A) -> B>>): Eval<Option<B>> =
+    ff.map { ap(it) }
 
   fun <B> crosswalk(f: (A) -> Option<B>): Option<Option<B>> =
     when (this) {
@@ -945,6 +936,9 @@ sealed class Option<out A> : OptionOf<A> {
 
   fun <B, C> zip(other: Option<B>, f: (A, B) -> C): Option<C> =
     zip(other).map { a -> f(a.first, a.second)}
+
+  fun <B, C> zipEval(other: Eval<Option<B>>, f: (A, B) -> C): Eval<Option<C>> =
+    other.map {zip(it).map { a -> f(a.first, a.second) }}
 
   infix fun <X> and(value: Option<X>): Option<X> = if (isEmpty()) {
     None
