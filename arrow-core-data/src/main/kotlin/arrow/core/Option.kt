@@ -406,7 +406,16 @@ sealed class Option<out A> : OptionOf<A> {
 
     operator fun <A> invoke(a: A): Option<A> = Some(a)
 
+    inline fun <A> catch(recover: (Throwable) -> Unit, f: () -> A): Option<A> =
+      try {
+        just(f())
+      } catch (t: Throwable) {
+        raiseError(recover(t.nonFatalOrThrow()))
+      }
+
     fun <A> empty(): Option<A> = None
+
+    fun <A> raiseError(e: Unit): Option<A> = None
 
     val unit: Option<Unit> = Some(Unit)
 
@@ -805,9 +814,6 @@ sealed class Option<out A> : OptionOf<A> {
   inline fun <B> fproduct(f: (A) -> B): Option<Pair<A, B>> =
     map { a -> Pair(a, f(a)) }
 
-  inline fun <A> Option<A>.handleErrorWith(f: (Unit) -> Option<A>): Option<A> =
-    if (isEmpty()) f(Unit) else this
-
   fun hash(HA: Hash<A>): Int =
     fold(
       { hashWithSalt(HA, 0) },
@@ -931,8 +937,6 @@ sealed class Option<out A> : OptionOf<A> {
   fun <B> tupleRight(b: B): Option<Pair<A, B>> =
     map { a -> Pair(a, b) }
 
-  fun raiseError(e: Unit): Option<A> = None
-
   fun void(): Option<Unit> =
     mapConst(Unit)
 
@@ -1032,7 +1036,7 @@ fun <A> Option<A>.combineAll(MA: Monoid<A>): A = MA.run {
 
 inline fun <A> Option<A>.ensure(error: () -> Unit, predicate: (A) -> Boolean): Option<A> =
   when (this) {
-    is Some -> if (predicate(t)) this else raiseError(error())
+    is Some -> if (predicate(t)) this else Option.raiseError(error())
     is None -> this
   }
 
@@ -1043,6 +1047,12 @@ inline fun <reified B> Option<*>.filterIsInstance(): Option<B> {
   val f: (Any?) -> B? = { it as? B }
   return this.filterMap(f)
 }
+
+inline fun <A> Option<A>.handleError(f: (Unit) -> A): Option<A> =
+  handleErrorWith { Option.just(f(Unit)) }
+
+inline fun <A> Option<A>.handleErrorWith(f: (Unit) -> Option<A>): Option<A> =
+  if (isEmpty()) f(Unit) else this
 
 inline fun <reified B> Option<*>.traverseFilterIsInstance(): List<Option<B>> =
   filterA { a -> listOf(a is B) }.map { it.map { a -> a as B } }
@@ -1070,7 +1080,10 @@ fun <A, B> Option<Either<A, B>>.selectM(f: Option<(A) -> B>): Option<B> =
     { b -> Some(b) }
   )}
 
-fun <A, B> Option<A>.redeemWith(fe: (Unit) -> Option<B>, fb: (A) -> Option<B>): Option<B> =
+inline fun <A, B> Option<A>.redeem(fe: (Unit) -> B, fb: (A) -> B): Option<B> =
+  map(fb).handleError(fe)
+
+inline fun <A, B> Option<A>.redeemWith(fe: (Unit) -> Option<B>, fb: (A) -> Option<B>): Option<B> =
   flatMap(fb).handleErrorWith(fe)
 
 fun <A> Option<A>.replicate(n: Int, MA: Monoid<A>): Option<A> = MA.run {
@@ -1078,7 +1091,7 @@ fun <A> Option<A>.replicate(n: Int, MA: Monoid<A>): Option<A> = MA.run {
   else map { a -> List(n) { a }.fold(empty()) { acc, v -> acc + v } }}
 
 fun <A> Option<Either<Unit, A>>.rethrow(): Option<A> =
-  flatMap { it.fold({ None }, { a -> Option.just(a) }) }
+  flatMap { it.fold({ Option.raiseError(Unit) }, { a -> Option.just(a) }) }
 
 fun <A> Option<A>.salign(SA: Semigroup<A>, b: Option<A>): Option<A> =
   align(b) { it.fold(::identity, ::identity) { a, b ->
