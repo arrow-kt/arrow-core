@@ -487,7 +487,7 @@ fun <A> A.leftIor(): Ior<A, Nothing> = Ior.Left(this)
 fun <A> A.rightIor(): Ior<Nothing, A> = Ior.Right(this)
 
 fun <E, A, B, Z> Ior<E, A>.zip(SE: Semigroup<E>, fb: Ior<E, B>, f: (A, B) -> Z): Ior<E, Z> =
-  zip(SE, fb).map { ab: Pair<A, B> -> f(ab.first, ab.second) }
+  ap(SE, fb.map { b: B -> { a: A -> f(a, b) } })
 
 fun <E, A, B> Ior<E, A>.zip(SE: Semigroup<E>, fb: Ior<E, B>): Ior<E, Pair<A, B>> =
-  ap(SE, fb.map { b: B -> { a: A -> Pair(a, b) } })
+  zip(SE, fb, ::Pair)

@@ -699,7 +699,7 @@ private class NonEmptyListShow<A>(
 }
 
 fun <A, B, Z> NonEmptyList<A>.zip(fb: NonEmptyList<B>, f: (A, B) -> Z): NonEmptyList<Z> =
-  zip(fb).map { ab: Pair<A, B> -> f(ab.first, ab.second) }
+  NonEmptyList(f(head, fb.head), tail.zip(fb.tail, f))
 
 fun <A, B> NonEmptyList<A>.zip(fb: NonEmptyList<B>): NonEmptyList<Pair<A, B>> =
-  NonEmptyList(Pair(head, fb.head), tail.zip(fb.tail).map { Pair(it.first, it.second) })
+  zip(fb, ::Pair)
