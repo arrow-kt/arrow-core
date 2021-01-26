@@ -32,19 +32,16 @@ import arrow.typeclasses.TraverseFilter
 import arrow.core.ap as constAp
 import arrow.core.combine as combineAp
 
-@extension
 interface ConstInvariant<A> : Invariant<ConstPartialOf<A>> {
   override fun <T, U> ConstOf<A, T>.imap(f: (T) -> U, g: (U) -> T): Const<A, U> =
     fix().retag()
 }
 
-@extension
 interface ConstContravariant<A> : Contravariant<ConstPartialOf<A>> {
   override fun <T, U> ConstOf<A, T>.contramap(f: (U) -> T): Const<A, U> =
     fix().retag()
 }
 
-@extension
 interface ConstDivideInstance<O> : Divide<ConstPartialOf<O>>, ConstContravariant<O> {
   fun MO(): Monoid<O>
   override fun <A, B, Z> divide(fa: Kind<ConstPartialOf<O>, A>, fb: Kind<ConstPartialOf<O>, B>, f: (Z) -> Tuple2<A, B>): Kind<ConstPartialOf<O>, Z> =
@@ -53,7 +50,6 @@ interface ConstDivideInstance<O> : Divide<ConstPartialOf<O>>, ConstContravariant
     )
 }
 
-@extension
 interface ConstDivisibleInstance<O> : Divisible<ConstPartialOf<O>>, ConstDivideInstance<O> {
   fun MOO(): Monoid<O>
   override fun MO(): Monoid<O> = MOO()
@@ -62,13 +58,11 @@ interface ConstDivisibleInstance<O> : Divisible<ConstPartialOf<O>>, ConstDivideI
     Const(MOO().empty())
 }
 
-@extension
 interface ConstFunctor<A> : Functor<ConstPartialOf<A>> {
   override fun <T, U> ConstOf<A, T>.map(f: (T) -> U): Const<A, U> =
     fix().retag()
 }
 
-@extension
 interface ConstApply<A> : Apply<ConstPartialOf<A>> {
 
   fun MA(): Monoid<A>
@@ -79,7 +73,6 @@ interface ConstApply<A> : Apply<ConstPartialOf<A>> {
     constAp(MA(), ff)
 }
 
-@extension
 interface ConstApplicative<A> : Applicative<ConstPartialOf<A>> {
 
   fun MA(): Monoid<A>
@@ -95,7 +88,6 @@ interface ConstApplicative<A> : Applicative<ConstPartialOf<A>> {
     constAp(MA(), ff)
 }
 
-@extension
 interface ConstFoldable<A> : Foldable<ConstPartialOf<A>> {
 
   override fun <T, U> ConstOf<A, T>.foldLeft(b: U, f: (U, T) -> U): U = b
@@ -103,7 +95,6 @@ interface ConstFoldable<A> : Foldable<ConstPartialOf<A>> {
   override fun <T, U> ConstOf<A, T>.foldRight(lb: Eval<U>, f: (T, Eval<U>) -> Eval<U>): Eval<U> = lb
 }
 
-@extension
 interface ConstTraverse<X> : Traverse<ConstPartialOf<X>>, ConstFoldable<X> {
 
   override fun <T, U> ConstOf<X, T>.map(f: (T) -> U): Const<X, U> = fix().retag()
@@ -112,7 +103,6 @@ interface ConstTraverse<X> : Traverse<ConstPartialOf<X>>, ConstFoldable<X> {
     fix().traverse(AP, f)
 }
 
-@extension
 interface ConstTraverseFilter<X> : TraverseFilter<ConstPartialOf<X>>, ConstTraverse<X> {
 
   override fun <T, U> Kind<ConstPartialOf<X>, T>.map(f: (T) -> U): Const<X, U> = fix().retag()
@@ -121,7 +111,6 @@ interface ConstTraverseFilter<X> : TraverseFilter<ConstPartialOf<X>>, ConstTrave
     fix().traverseFilter(AP, f)
 }
 
-@extension
 interface ConstSemigroup<A, T> : Semigroup<ConstOf<A, T>> {
 
   fun SA(): Semigroup<A>
@@ -130,7 +119,6 @@ interface ConstSemigroup<A, T> : Semigroup<ConstOf<A, T>> {
     combineAp(SA(), b)
 }
 
-@extension
 interface ConstMonoid<A, T> : Monoid<ConstOf<A, T>>, ConstSemigroup<A, T> {
 
   fun MA(): Monoid<A>
@@ -140,7 +128,6 @@ interface ConstMonoid<A, T> : Monoid<ConstOf<A, T>>, ConstSemigroup<A, T> {
   override fun empty(): Const<A, T> = Const(MA().empty())
 }
 
-@extension
 interface ConstEq<A, T> : Eq<Const<A, T>> {
 
   fun EQ(): Eq<A>
@@ -149,14 +136,12 @@ interface ConstEq<A, T> : Eq<Const<A, T>> {
     EQ().run { value().eqv(b.value()) }
 }
 
-@extension
 interface ConstOrder<A, T> : Order<Const<A, T>> {
   fun ORD(): Order<A>
   override fun Const<A, T>.compare(b: Const<A, T>): Ordering =
     ORD().run { value().compare(b.value()) }
 }
 
-@extension
 interface ConstEqK<A> : EqK<ConstPartialOf<A>> {
 
   fun EQA(): Eq<A>
@@ -170,13 +155,11 @@ interface ConstEqK<A> : EqK<ConstPartialOf<A>> {
     }
 }
 
-@extension
 interface ConstShow<A, T> : Show<Const<A, T>> {
   fun SA(): Show<A>
   override fun Const<A, T>.show(): String = show(SA())
 }
 
-@extension
 interface ConstHash<A, T> : Hash<Const<A, T>> {
   fun HA(): Hash<A>
 
