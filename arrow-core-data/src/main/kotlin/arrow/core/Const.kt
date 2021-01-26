@@ -17,7 +17,6 @@ typealias ConstPartialOf<A> = arrow.Kind<ForConst, A>
 inline fun <A, T> ConstOf<A, T>.fix(): Const<A, T> =
   this as Const<A, T>
 
-
 fun <A, T> ConstOf<A, T>.value(): A = this.fix().value()
 
 data class Const<A, out T>(private val value: A) : ConstOf<A, T> {

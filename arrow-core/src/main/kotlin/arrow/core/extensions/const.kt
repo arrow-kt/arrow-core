@@ -11,7 +11,6 @@ import arrow.core.Tuple2
 import arrow.core.extensions.const.eq.eq
 import arrow.core.fix
 import arrow.core.value
-import arrow.extension
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Apply
 import arrow.typeclasses.Contravariant
