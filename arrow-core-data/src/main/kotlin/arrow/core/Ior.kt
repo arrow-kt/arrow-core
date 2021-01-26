@@ -2,6 +2,7 @@ package arrow.core
 
 import arrow.Kind
 import arrow.typeclasses.Applicative
+import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 
@@ -144,6 +145,10 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
     fun <A, B> leftNel(a: A): IorNel<A, B> = Left(NonEmptyList.of(a))
 
     fun <A, B> bothNel(a: A, b: B): IorNel<A, B> = Both(NonEmptyList.of(a), b)
+
+    val unit: Ior<Nothing, Unit> = Right(Unit)
+
+    fun <L> unit(): Ior<L, Unit> = unit
   }
 
   /**
@@ -495,6 +500,28 @@ fun <A, B> Tuple2<A, B>.bothIor(): Ior<A, B> = Ior.Both(this.a, this.b)
 fun <A> A.leftIor(): Ior<A, Nothing> = Ior.Left(this)
 
 fun <A> A.rightIor(): Ior<Nothing, A> = Ior.Right(this)
+
+fun <A, B> Ior<A, B>.replicate(SA: Semigroup<A>, n: Int): Ior<A, List<B>> =
+  if (n <= 0) Ior.Right(emptyList())
+  else when (this) {
+    is Ior.Right -> Ior.Right(List(n) { value })
+    is Ior.Left -> this
+    is Ior.Both -> bimap(
+      { List(n - 1) { leftValue}.fold(leftValue, { acc, a -> SA.run { acc + a }}) },
+      { List(n) { rightValue } }
+    )
+  }
+
+fun <A, B> Ior<A, B>.replicate(SA: Semigroup<A>, n: Int, MB: Monoid<B>): Ior<A, B> =
+  if (n <= 0) Ior.Right(MB.empty())
+  else when (this) {
+    is Ior.Right -> Ior.Right(MB.run { List(n) { value }.combineAll() })
+    is Ior.Left -> this
+    is Ior.Both -> bimap(
+      { List(n - 1) { leftValue}.fold(leftValue, { acc, a -> SA.run { acc + a }}) },
+      { MB.run { List(n) { rightValue }.combineAll() } }
+    )
+  }
 
 fun <E, A, B, Z> Ior<E, A>.zip(SE: Semigroup<E>, fb: Ior<E, B>, f: (A, B) -> Z): Ior<E, Z> =
   ap(SE, fb.map { b: B -> { a: A -> f(a, b) } })
