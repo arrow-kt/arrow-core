@@ -1,7 +1,18 @@
 package arrow.core
 
-import arrow.higherkind
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
+class ForEval private constructor() {
+  companion object
+}
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
+typealias EvalOf<A> = arrow.Kind<ForEval, A>
+
+@Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
+inline fun <A> EvalOf<A>.fix(): Eval<A> =
+  this as Eval<A>
 
 fun <A> EvalOf<A>.value(): A = this.fix().value()
 
@@ -57,7 +68,6 @@ fun <A> EvalOf<A>.value(): A = this.fix().value()
  * ```
  *
  */
-@higherkind
 sealed class Eval<out A> : EvalOf<A> {
 
   companion object {
@@ -254,6 +264,7 @@ sealed class Eval<out A> : EvalOf<A> {
     when (this) {
       is FlatMap<A> -> object : FlatMap<B>() {
         override fun <S> start(): Eval<S> = (this@Eval).start()
+
         @IgnoreJRERequirement
         override fun <S> run(s: S): Eval<B> =
           object : FlatMap<B>() {

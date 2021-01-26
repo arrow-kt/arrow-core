@@ -5,7 +5,6 @@ import arrow.core.Eval
 import arrow.core.EvalOf
 import arrow.core.ForEval
 import arrow.core.extensions.eval.monad.monad
-import arrow.extension
 import arrow.core.fix
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Apply
@@ -16,13 +15,11 @@ import arrow.typeclasses.Monad
 import arrow.typeclasses.MonadSyntax
 import arrow.typeclasses.MonadFx
 
-@extension
 interface EvalFunctor : Functor<ForEval> {
   override fun <A, B> EvalOf<A>.map(f: (A) -> B): Eval<B> =
     fix().map(f)
 }
 
-@extension
 interface EvalApply : Apply<ForEval> {
   override fun <A, B> EvalOf<A>.ap(ff: EvalOf<(A) -> B>): Eval<B> =
     fix().ap(ff)
@@ -31,7 +28,6 @@ interface EvalApply : Apply<ForEval> {
     fix().map(f)
 }
 
-@extension
 interface EvalApplicative : Applicative<ForEval> {
   override fun <A, B> EvalOf<A>.ap(ff: EvalOf<(A) -> B>): Eval<B> =
     fix().ap(ff)
@@ -43,7 +39,6 @@ interface EvalApplicative : Applicative<ForEval> {
     Eval.just(a)
 }
 
-@extension
 interface EvalMonad : Monad<ForEval> {
   override fun <A, B> EvalOf<A>.ap(ff: EvalOf<(A) -> B>): Eval<B> =
     fix().ap(ff)
@@ -70,7 +65,6 @@ internal object EvalFxMonad : MonadFx<ForEval> {
     super.monad(c).fix()
 }
 
-@extension
 interface EvalComonad : Comonad<ForEval> {
   override fun <A, B> EvalOf<A>.coflatMap(f: (EvalOf<A>) -> B): Eval<B> =
     fix().coflatMap(f)
@@ -82,7 +76,6 @@ interface EvalComonad : Comonad<ForEval> {
     fix().map(f)
 }
 
-@extension
 interface EvalBimonad : Bimonad<ForEval> {
   override fun <A, B> EvalOf<A>.ap(ff: EvalOf<(A) -> B>): Eval<B> =
     fix().ap(ff)
