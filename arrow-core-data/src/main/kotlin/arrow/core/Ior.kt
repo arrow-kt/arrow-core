@@ -603,6 +603,27 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
     },
     { a, b -> "Both(${SL.run { a.show() }}, ${SR.run { b.show() }})" }
   )
+
+  inline fun <C> traverse(fa: (B) -> Iterable<C>): List<Ior<A, C>> =
+    fold(
+      { a -> listOf(Left(a)) },
+      { b -> fa(b).map { Right(it) } },
+      { a, b -> fa(b).map { Both(a, it) }}
+    )
+
+  inline fun <AA, C> traverseEither(fa: (B) -> Either<AA, C>): Either<AA, Ior<A, C>> =
+    fold(
+      { a -> Either.right(Left(a)) },
+      { b -> fa(b).map { Right(it) } },
+      { a, b -> fa(b).map { Both(a, it) }}
+    )
+
+  inline fun <AA, C> traverseValidated(fa: (B) -> Validated<AA, C>): Validated<AA, Ior<A, C>> =
+    fold(
+      { a -> Valid(Left(a)) },
+      { b -> fa(b).map { Right(it) } },
+      { a, b -> fa(b).map { Both(a, it) }}
+    )
 }
 
 /**
@@ -650,6 +671,27 @@ fun <A> A.leftIor(): Ior<A, Nothing> = Ior.Left(this)
 
 fun <A> A.rightIor(): Ior<Nothing, A> = Ior.Right(this)
 
+inline fun <A, B, C> Ior<A, B>.flatTraverse(f: (B) -> Iterable<Ior<A, C>>): List<Ior<A, C>> =
+  fold(
+    { a -> listOf(Ior.Left(a)) },
+    { b -> f(b).toList() },
+    { _, b -> f(b).toList() }
+  )
+
+inline fun <A, B, C, E> Ior<A, B>.flatTraverseEither(f: (B) -> Either<E, Ior<A, C>>): Either<E, Ior<A, C>> =
+  fold(
+    { a -> Either.right(Ior.Left(a)) },
+    { b -> f(b) },
+    { _, b -> f(b) }
+  )
+
+inline fun <A, B, C, E> Ior<A, B>.flatTraverseValidated(f: (B) -> Validated<E, Ior<A, C>>): Validated<E, Ior<A, C>> =
+  fold(
+    { a -> Valid(Ior.Left(a)) },
+    { b -> f(b) },
+    { _, b -> f(b) }
+  )
+
 fun <A, B> Ior<A, B>.replicate(SA: Semigroup<A>, n: Int): Ior<A, List<B>> =
   if (n <= 0) Ior.Right(emptyList())
   else when (this) {
@@ -671,6 +713,15 @@ fun <A, B> Ior<A, B>.replicate(SA: Semigroup<A>, n: Int, MB: Monoid<B>): Ior<A, 
       { MB.run { List(n) { rightValue }.combineAll() } }
     )
   }
+
+fun <A, B> Ior<A, Iterable<B>>.sequence(): List<Ior<A, B>> =
+  traverse(::identity)
+
+fun <A, B, C> Ior<A, Either<B, C>>.sequenceEither(): Either<B, Ior<A, C>> =
+  traverseEither(::identity)
+
+fun <A, B, C> Ior<A, Validated<B, C>>.sequenceValidated(): Validated<B, Ior<A, C>> =
+  traverseValidated(::identity)
 
 fun <A, B, C, Z> Ior<A, B>.zip(SA: Semigroup<A>, fb: Ior<A, C>, f: (B, C) -> Z): Ior<A, Z> =
   ap(SA, fb.map { c: C -> { b: B -> f(b, c) } })
