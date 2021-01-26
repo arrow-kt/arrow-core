@@ -2,11 +2,14 @@ package arrow.core
 
 import arrow.Kind
 import arrow.typeclasses.Applicative
+import arrow.typeclasses.Eq
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
-class ForConst private constructor() { companion object }
+class ForConst private constructor() {
+  companion object
+}
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 typealias ConstOf<A, T> = arrow.Kind2<ForConst, A, T>
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
@@ -77,3 +80,21 @@ fun <T, A, G> ConstOf<A, Kind<G, T>>.sequence(GA: Applicative<G>): Kind<G, Const
 
 inline fun <A> A.const(): Const<A, Nothing> =
   Const(this)
+
+fun <A, T, U> Const<A, T>.map(f: (T) -> U): Const<A, U> = retag()
+
+fun <A, T, U> Const<A, T>.contramap(f: (U) -> T): Const<A, U> = retag()
+
+fun <A, T> Const<A, T>.eqv(EQ: Eq<Const<A, T>>, b: Const<A, T>): Boolean =
+  EQ.run { eqv(b) }
+
+fun <A, T> Eq.Companion.const(EQ: Eq<Const<A, T>>): Eq<Const<A, T>> = object : Eq<Const<A, T>> {
+  override fun Const<A, T>.eqv(b: Const<A, T>): Boolean =
+    eqv(EQ, b)
+}
+
+fun <A, T, U> Const<A, T>.foldLeft(b: U, f: (U, T) -> U): U =
+  b
+
+fun <A, T, U> Const<A, T>.foldRight(lb: Eval<U>, f: (T, Eval<U>) -> Eval<U>): Eval<U> =
+  lb

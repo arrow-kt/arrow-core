@@ -31,6 +31,10 @@ fun <O, A> conquer(MOO: Monoid<O>): Const<O, A> = arrow.core.Const
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated(
+  "Divisible typeclass is deprecated. Use concrete methods on Const",
+  level = DeprecationLevel.WARNING
+)
 inline fun <O> Companion.divisible(MOO: Monoid<O>): ConstDivisibleInstance<O> = object :
     arrow.core.extensions.ConstDivisibleInstance<O> { override fun MOO():
     arrow.typeclasses.Monoid<O> = MOO }

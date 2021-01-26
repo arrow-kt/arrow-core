@@ -32,7 +32,7 @@ import kotlin.jvm.JvmName
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "ap(MA, arg1)",
-    "arrow.core.Const.ap"
+    "arrow.core.ap"
   ),
   DeprecationLevel.WARNING
 )

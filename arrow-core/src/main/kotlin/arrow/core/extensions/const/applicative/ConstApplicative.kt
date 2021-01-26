@@ -25,7 +25,7 @@ import kotlin.jvm.JvmName
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "just(a)",
-    "arrow.core.Const.just"
+    "arrow.core.just"
   ),
   DeprecationLevel.WARNING
 )
@@ -45,7 +45,7 @@ fun <A> A.just(MA: Monoid<A>): Const<A, A> =
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "unit(MA)",
-    "arrow.core.Const.unit"
+    "arrow.core.unit"
   ),
   DeprecationLevel.WARNING
 )
