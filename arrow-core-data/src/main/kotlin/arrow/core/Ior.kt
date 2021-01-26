@@ -2,9 +2,11 @@ package arrow.core
 
 import arrow.Kind
 import arrow.typeclasses.Applicative
+import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
+import arrow.typeclasses.hashWithSalt
 
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 class ForIor private constructor() { companion object }
@@ -251,28 +253,28 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
       j: Ior<A, J>,
       k: Ior<A, K>,
       map: (B, C, D, E, F, G, H, I, J, K) -> L
-    ): Ior<A, L> =
-      b.flatMap(SA) { bb ->
-        c.flatMap(SA) { cc ->
-          d.flatMap(SA) { dd ->
-            e.flatMap(SA) { ee ->
-              f.flatMap(SA) { ff ->
-                g.flatMap(SA) { gg ->
-                  h.flatMap(SA) { hh ->
-                    i.flatMap(SA) { ii ->
-                      j.flatMap(SA) { jj ->
-                        k.map { kk ->
-                          map(bb, cc, dd, ee, ff, gg, hh, ii, jj, kk)
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+    ): Ior<A, L> = TODO()
+//      b.flatMap(SA) { bb ->
+//        c.flatMap(SA) { cc ->
+//          d.flatMap(SA) { dd ->
+//            e.flatMap(SA) { ee ->
+//              f.flatMap(SA) { ff ->
+//                g.flatMap(SA) { gg ->
+//                  h.flatMap(SA) { hh ->
+//                    i.flatMap(SA) { ii ->
+//                      j.flatMap(SA) { jj ->
+//                        k.map { kk ->
+//                          map(bb, cc, dd, ee, ff, gg, hh, ii, jj, kk)
+//                        }
+//                      }
+//                    }
+//                  }
+//                }
+//              }
+//            }
+//          }
+//        }
+//      }
 
     val unit: Ior<Nothing, Unit> = Right(Unit)
 
@@ -576,6 +578,22 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
     override fun toString(): String = show(Show.any(), Show.any())
   }
 
+  fun hash(HA: Hash<A>, HB: Hash<B>): Int =
+    fold(
+      { HA.run { it.hashWithSalt(0) } },
+      { HB.run { it.hashWithSalt(1) } },
+      { a, b -> HA.run { a.hashWithSalt(2) } + HB.run { b.hashWithSalt(2) } }
+    )
+
+  fun hashWithSalt(HA: Hash<A>, HB: Hash<B>, salt: Int): Int =
+    fold(
+      { HA.run { it.hashWithSalt(salt.hashWithSalt(0)) } },
+      { HB.run { it.hashWithSalt(salt.hashWithSalt(1)) } },
+      { a, b ->
+        HA.run { a.hashWithSalt(salt.hashWithSalt(2)) } +
+          HB.run { b.hashWithSalt(salt.hashWithSalt(2)) } }
+    )
+
   fun show(SL: Show<A>, SR: Show<B>): String = fold(
     {
       "Left(${SL.run { it.show() }})"
@@ -663,8 +681,22 @@ fun <A, B, C> Ior<A, B>.zip(SA: Semigroup<A>, fb: Ior<A, C>): Ior<A, Pair<B, C>>
 fun <A, B, C, Z> Ior<A, B>.zipEval(SA: Semigroup<A>, other: Eval<Ior<A, C>>, f: (B, C) -> Z): Eval<Ior<A, Z>> =
   other.map {zip(SA, it).map { a -> f(a.first, a.second) }}
 
+fun <A, B> Hash.Companion.ior(HA: Hash<A>, HB: Hash<B>): Hash<Ior<A, B>> =
+  IorHash(HA, HB)
+
 fun <A, B> Show.Companion.ior(SA: Show<A>, SB: Show<B>): Show<Ior<A, B>> =
   IorShow(SA, SB)
+
+private class IorHash<A, B>(
+  private val HA: Hash<A>,
+  private val HB: Hash<B>
+) : Hash<Ior<A, B>> {
+  override fun Ior<A, B>.hash(): Int =
+    hash(HA, HB)
+
+  override fun Ior<A, B>.hashWithSalt(salt: Int): Int =
+    hashWithSalt(HA, HB, salt)
+}
 
 private class IorShow<A, B>(
   private val SA: Show<A>,

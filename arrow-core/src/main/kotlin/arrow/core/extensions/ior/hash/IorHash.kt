@@ -4,10 +4,6 @@ import arrow.core.Ior
 import arrow.core.Ior.Companion
 import arrow.core.extensions.IorHash
 import arrow.typeclasses.Hash
-import kotlin.Deprecated
-import kotlin.Int
-import kotlin.Suppress
-import kotlin.jvm.JvmName
 
 @JvmName("hash")
 @Suppress(
@@ -19,7 +15,7 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "hash(HL, HR)",
+  "this.hash(HL, HR)",
   "arrow.core.hash"
   ),
   DeprecationLevel.WARNING
@@ -31,6 +27,14 @@ fun <L, R> Ior<L, R>.hash(HL: Hash<L>, HR: Hash<R>): Int = arrow.core.Ior.hash<L
 @Suppress(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
+)
+@Deprecated(
+  "@extension kinded projected functions are deprecated",
+  ReplaceWith(
+    "Hash.ior(HL, HR)",
+    "arrow.core.ior", "arrow.typeclasses.Hash"
+  ),
+  DeprecationLevel.WARNING
 )
 inline fun <L, R> Companion.hash(HL: Hash<L>, HR: Hash<R>): IorHash<L, R> = object :
     arrow.core.extensions.IorHash<L, R> { override fun HL(): arrow.typeclasses.Hash<L> = HL
