@@ -146,6 +146,134 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
 
     fun <A, B> bothNel(a: A, b: B): IorNel<A, B> = Both(NonEmptyList.of(a), b)
 
+    inline fun <A, B, C, D> mapN(
+      SA: Semigroup<A>,
+      b: Ior<A, B>,
+      c: Ior<A, C>,
+      map: (B, C) -> D
+    ): Ior<A, D> =
+      mapN(SA, b, c, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit) { b, c, _, _, _, _, _, _, _, _ -> map(b, c) }
+
+    inline fun <A, B, C, D, E> mapN(
+      SA: Semigroup<A>,
+      b: Ior<A, B>,
+      c: Ior<A, C>,
+      d: Ior<A, D>,
+      map: (B, C, D) -> E
+    ): Ior<A, E> =
+      mapN(SA, b, c, d, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit) { b, c, d, _, _, _, _, _, _, _ -> map(b, c, d) }
+
+    inline fun <A, B, C, D, E, F> mapN(
+      SA: Semigroup<A>,
+      b: Ior<A, B>,
+      c: Ior<A, C>,
+      d: Ior<A, D>,
+      e: Ior<A, E>,
+      map: (B, C, D, E) -> F
+    ): Ior<A, F> =
+      mapN(SA, b, c, d, e, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit) { b, c, d, e, _, _, _, _, _, _ -> map(b, c, d, e) }
+
+    inline fun <A, B, C, D, E, F, G> mapN(
+      SA: Semigroup<A>,
+      b: Ior<A, B>,
+      c: Ior<A, C>,
+      d: Ior<A, D>,
+      e: Ior<A, E>,
+      f: Ior<A, F>,
+      map: (B, C, D, E, F) -> G
+    ): Ior<A, G> =
+      mapN(SA, b, c, d, e, f, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit) { b, c, d, e, f, _, _, _, _, _ -> map(b, c, d, e, f) }
+
+    inline fun <A, B, C, D, E, F, G, H> mapN(
+      SA: Semigroup<A>,
+      b: Ior<A, B>,
+      c: Ior<A, C>,
+      d: Ior<A, D>,
+      e: Ior<A, E>,
+      f: Ior<A, F>,
+      g: Ior<A, G>,
+      map: (B, C, D, E, F, G) -> H
+    ): Ior<A, H> =
+      mapN(SA, b, c, d, e, f, g, Ior.unit, Ior.unit, Ior.unit, Ior.unit) { b, c, d, e, f, g, _, _, _, _ -> map(b, c, d, e, f, g) }
+
+    inline fun <A, B, C, D, E, F, G, H, I> mapN(
+      SA: Semigroup<A>,
+      b: Ior<A, B>,
+      c: Ior<A, C>,
+      d: Ior<A, D>,
+      e: Ior<A, E>,
+      f: Ior<A, F>,
+      g: Ior<A, G>,
+      h: Ior<A, H>,
+      map: (B, C, D, E, F, G, H) -> I
+    ): Ior<A, I> =
+      mapN(SA, b, c, d, e, f, g, h, Ior.unit, Ior.unit, Ior.unit) { b, c, d, e, f, g, h, _, _, _ -> map(b, c, d, e, f, g, h) }
+
+    inline fun <A, B, C, D, E, F, G, H, I, J> mapN(
+      SA: Semigroup<A>,
+      b: Ior<A, B>,
+      c: Ior<A, C>,
+      d: Ior<A, D>,
+      e: Ior<A, E>,
+      f: Ior<A, F>,
+      g: Ior<A, G>,
+      h: Ior<A, H>,
+      i: Ior<A, I>,
+      map: (B, C, D, E, F, G, H, I) -> J
+    ): Ior<A, J> =
+      mapN(SA, b, c, d, e, f, g, h, i, Ior.unit, Ior.unit) { b, c, d, e, f, g, h, i, _, _ -> map(b, c, d, e, f, g, h, i) }
+
+    inline fun <A, B, C, D, E, F, G, H, I, J, K> mapN(
+      SA: Semigroup<A>,
+      b: Ior<A, B>,
+      c: Ior<A, C>,
+      d: Ior<A, D>,
+      e: Ior<A, E>,
+      f: Ior<A, F>,
+      g: Ior<A, G>,
+      h: Ior<A, H>,
+      i: Ior<A, I>,
+      j: Ior<A, J>,
+      map: (B, C, D, E, F, G, H, I, J) -> K
+    ): Ior<A, K> =
+      mapN(SA, b, c, d, e, f, g, h, i, j, Ior.unit) { b, c, d, e, f, g, h, i, j, _ -> map(b, c, d, e, f, g, h, i, j) }
+
+    inline fun <A, B, C, D, E, F, G, H, I, J, K, L> mapN(
+      SA: Semigroup<A>,
+      b: Ior<A, B>,
+      c: Ior<A, C>,
+      d: Ior<A, D>,
+      e: Ior<A, E>,
+      f: Ior<A, F>,
+      g: Ior<A, G>,
+      h: Ior<A, H>,
+      i: Ior<A, I>,
+      j: Ior<A, J>,
+      k: Ior<A, K>,
+      map: (B, C, D, E, F, G, H, I, J, K) -> L
+    ): Ior<A, L> =
+      b.flatMap(SA) { bb ->
+        c.flatMap(SA) { cc ->
+          d.flatMap(SA) { dd ->
+            e.flatMap(SA) { ee ->
+              f.flatMap(SA) { ff ->
+                g.flatMap(SA) { gg ->
+                  h.flatMap(SA) { hh ->
+                    i.flatMap(SA) { ii ->
+                      j.flatMap(SA) { jj ->
+                        k.map { kk ->
+                          map(bb, cc, dd, ee, ff, gg, hh, ii, jj, kk)
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
     val unit: Ior<Nothing, Unit> = Right(Unit)
 
     fun <L> unit(): Ior<L, Unit> = unit
@@ -487,6 +615,9 @@ inline fun <A, B, D> Ior<A, B>.flatMap(SG: Semigroup<A>, f: (B) -> Ior<A, D>): I
 fun <A, B, D> Ior<A, B>.ap(SG: Semigroup<A>, ff: IorOf<A, (B) -> D>): Ior<A, D> =
   flatMap(SG) { a -> ff.fix().map { f -> f(a) } }
 
+fun <A, B, D> Ior<A, B>.ap(SG: Semigroup<A>, ff: Eval<Ior<A, (B) -> D>>): Eval<Ior<A, D>> =
+  ff.map { ap(SG, it) }
+
 inline fun <A, B> Ior<A, B>.getOrElse(default: () -> B): B =
   fold({ default() }, ::identity, { _, b -> b })
 
@@ -523,8 +654,11 @@ fun <A, B> Ior<A, B>.replicate(SA: Semigroup<A>, n: Int, MB: Monoid<B>): Ior<A, 
     )
   }
 
-fun <E, A, B, Z> Ior<E, A>.zip(SE: Semigroup<E>, fb: Ior<E, B>, f: (A, B) -> Z): Ior<E, Z> =
-  ap(SE, fb.map { b: B -> { a: A -> f(a, b) } })
+fun <A, B, C, Z> Ior<A, B>.zip(SA: Semigroup<A>, fb: Ior<A, C>, f: (B, C) -> Z): Ior<A, Z> =
+  ap(SA, fb.map { c: C -> { b: B -> f(b, c) } })
 
-fun <E, A, B> Ior<E, A>.zip(SE: Semigroup<E>, fb: Ior<E, B>): Ior<E, Pair<A, B>> =
-  zip(SE, fb, ::Pair)
+fun <A, B, C> Ior<A, B>.zip(SA: Semigroup<A>, fb: Ior<A, C>): Ior<A, Pair<B, C>> =
+  zip(SA, fb, ::Pair)
+
+fun <A, B, C, Z> Ior<A, B>.zipEval(SA: Semigroup<A>, other: Eval<Ior<A, C>>, f: (B, C) -> Z): Eval<Ior<A, Z>> =
+  other.map {zip(SA, it).map { a -> f(a.first, a.second) }}
