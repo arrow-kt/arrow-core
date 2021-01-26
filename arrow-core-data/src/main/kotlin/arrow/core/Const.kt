@@ -48,12 +48,30 @@ data class Const<A, out T>(private val value: A) : ConstOf<A, T> {
     show(Show.any())
 }
 
+@Deprecated(
+  "Kind is deprecated, and will be removed in 0.13.0. Please use the combine method defined for Const instead",
+  level = DeprecationLevel.WARNING
+)
 fun <A, T> ConstOf<A, T>.combine(SG: Semigroup<A>, that: ConstOf<A, T>): Const<A, T> =
   Const(SG.run { value().combine(that.value()) })
 
+fun <A, T> Const<A, T>.combine(SG: Semigroup<A>, that: Const<A, T>): Const<A, T> =
+  Const(SG.run { value().combine(that.value()) })
+
+@Deprecated(
+  "Kind is deprecated, and will be removed in 0.13.0. Please use the ap method defined for Const instead",
+  level = DeprecationLevel.WARNING
+)
 fun <A, T, U> ConstOf<A, T>.ap(SG: Semigroup<A>, ff: ConstOf<A, (T) -> U>): Const<A, U> =
   fix().retag<U>().combine(SG, ff.fix().retag())
 
+fun <A, T, U> Const<A, T>.ap(SG: Semigroup<A>, ff: Const<A, (T) -> U>): Const<A, U> =
+  retag<U>().combine(SG, ff.retag())
+
+@Deprecated(
+  "Kind is deprecated, and will be removed in 0.13.0. Replace with sequence or sequenceValidated from arrow.core.*",
+  level = DeprecationLevel.WARNING
+)
 fun <T, A, G> ConstOf<A, Kind<G, T>>.sequence(GA: Applicative<G>): Kind<G, Const<A, T>> =
   fix().traverse(GA, ::identity)
 
