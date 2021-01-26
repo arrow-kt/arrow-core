@@ -1,10 +1,21 @@
 package arrow.core
 
 import arrow.Kind
-import arrow.higherkind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
+
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
+class ForIor private constructor() { companion object }
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
+typealias IorOf<A, B> = arrow.Kind2<ForIor, A, B>
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
+typealias IorPartialOf<A> = arrow.Kind<ForIor, A>
+
+@Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
+inline fun <A, B> IorOf<A, B>.fix(): Ior<A, B> =
+  this as Ior<A, B>
 
 typealias IorNel<A, B> = Ior<Nel<A>, B>
 
@@ -27,7 +38,6 @@ typealias IorNel<A, B> = Ior<Nel<A>, B>
  * values, regardless of whether the `B` values appear in a [Ior.Right] or a [Ior.Both].
  * The isomorphic Either form can be accessed via the [unwrap] method.
  */
-@higherkind
 sealed class Ior<out A, out B> : IorOf<A, B> {
 
   /**
