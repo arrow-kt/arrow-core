@@ -27,8 +27,7 @@ internal val semigroupal_singleton: OptionSemigroupal = object :
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.zip<B>(arg1.fix())",
-    "arrow.core.fix"
+    "zip<B>(arg1)"
   ),
   DeprecationLevel.WARNING
 )
@@ -50,8 +49,7 @@ fun <A, B> Kind<ForOption, A>.product(arg1: Kind<ForOption, B>): Option<Tuple2<A
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.zip<B>(arg1.fix())",
-    "arrow.core.fix"
+    "zip<B>(arg1)"
   ),
   DeprecationLevel.WARNING
 )

@@ -43,7 +43,7 @@ fun <A, B> Kind<ForOption, Tuple2<A, B>>.unzip(): Tuple2<Kind<ForOption, A>, Kin
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.unzip(arg1)",
+    "unzip(arg1)",
     "arrow.core.unzip"
   ),
   DeprecationLevel.WARNING

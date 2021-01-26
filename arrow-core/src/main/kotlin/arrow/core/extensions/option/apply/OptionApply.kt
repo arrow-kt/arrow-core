@@ -32,8 +32,7 @@ internal val apply_singleton: OptionApply = object : arrow.core.extensions.Optio
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.fix().ap(arg1)",
-  "arrow.core.fix"
+  "ap(arg1)"
   ),
   DeprecationLevel.WARNING
 )
@@ -52,8 +51,7 @@ fun <A, B> Kind<ForOption, A>.ap(arg1: Kind<ForOption, Function1<A, B>>): Option
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.fix().apEval(arg1)",
-    "arrow.core.fix"
+    "apEval(arg1)"
   ),
   DeprecationLevel.WARNING
 )
@@ -72,8 +70,8 @@ fun <A, B> Kind<ForOption, A>.apEval(arg1: Eval<Kind<ForOption, Function1<A, B>>
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fix().zipEval(arg1) { b, c -> arg2(Tuple2(b, c)) }",
-    "arrow.core.Tuple2", "arrow.core.fix", "arrow.core.zipEval"
+    "zipEval(arg1) { b, c -> arg2(Tuple2(b, c)) }",
+    "arrow.core.Tuple2", "arrow.core.zipEval"
   ),
   DeprecationLevel.WARNING
 )
@@ -589,8 +587,8 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "fix().zip(arg1) { a, b -> arg2(Tuple2(a, b)) }",
-    "arrow.core.Tuple2", "arrow.core.fix"
+  "zip(arg1) { a, b -> arg2(Tuple2(a, b)) }",
+    "arrow.core.Tuple2"
   ),
   DeprecationLevel.WARNING
 )
@@ -609,8 +607,8 @@ fun <A, B, Z> Kind<ForOption, A>.map2(arg1: Kind<ForOption, B>, arg2: Function1<
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fix().zip(arg1) { a, b -> Tuple2(a, b) }",
-    "arrow.core.Tuple2", "arrow.core.fix"
+    "zip(arg1) { a, b -> Tuple2(a, b) }",
+    "arrow.core.Tuple2"
   ),
   DeprecationLevel.WARNING
 )
@@ -629,8 +627,8 @@ fun <A, B> Kind<ForOption, A>.product(arg1: Kind<ForOption, B>): Option<Tuple2<A
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fix().zip(arg1) { tuple, b -> Tuple3(tuple.a, tuple.b, b) }",
-    "arrow.core.Tuple3", "arrow.core.fix"
+    "zip(arg1) { tuple, b -> Tuple3(tuple.a, tuple.b, b) }",
+    "arrow.core.Tuple3"
   ),
   DeprecationLevel.WARNING
 )
@@ -649,8 +647,8 @@ fun <A, B, Z> Kind<ForOption, Tuple2<A, B>>.product(arg1: Kind<ForOption, Z>): O
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fix().zip(arg1) { tuple, b -> Tuple4(tuple.a, tuple.b, tuple.c, b) }",
-    "arrow.core.Tuple4", "arrow.core.fix"
+    "zip(arg1) { tuple, b -> Tuple4(tuple.a, tuple.b, tuple.c, b) }",
+    "arrow.core.Tuple4"
   ),
   DeprecationLevel.WARNING
 )
@@ -669,8 +667,8 @@ fun <A, B, C, Z> Kind<ForOption, Tuple3<A, B, C>>.product(arg1: Kind<ForOption, 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fix().zip(arg1) { tuple, b -> Tuple5(tuple.a, tuple.b, tuple.c, tuple.d, b) }",
-    "arrow.core.Tuple5", "arrow.core.fix"
+    "zip(arg1) { tuple, b -> Tuple5(tuple.a, tuple.b, tuple.c, tuple.d, b) }",
+    "arrow.core.Tuple5"
   ),
   DeprecationLevel.WARNING
 )
@@ -689,8 +687,8 @@ fun <A, B, C, D, Z> Kind<ForOption, Tuple4<A, B, C, D>>.product(arg1: Kind<ForOp
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fix().zip(arg1) { tuple, b -> Tuple6(tuple.a, tuple.b, tuple.c, tuple.d, tuple.e, b) }",
-    "arrow.core.Tuple6", "arrow.core.fix"
+    "zip(arg1) { tuple, b -> Tuple6(tuple.a, tuple.b, tuple.c, tuple.d, tuple.e, b) }",
+    "arrow.core.Tuple6"
   ),
   DeprecationLevel.WARNING
 )
@@ -710,8 +708,8 @@ fun <A, B, C, D, E, Z> Kind<ForOption, Tuple5<A, B, C, D, E>>.product(arg1: Kind
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fix().zip(arg1) { tuple, b -> Tuple7(tuple.a, tuple.b, tuple.c, tuple.d, tuple.e, tuple.f, b) }",
-    "arrow.core.Tuple7", "arrow.core.fix"
+    "zip(arg1) { tuple, b -> Tuple7(tuple.a, tuple.b, tuple.c, tuple.d, tuple.e, tuple.f, b) }",
+    "arrow.core.Tuple7"
   ),
   DeprecationLevel.WARNING
 )
@@ -732,8 +730,8 @@ fun <A, B, C, D, E, FF, Z> Kind<ForOption, Tuple6<A, B, C, D, E, FF>>.product(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fix().zip(arg1) { tuple, b -> Tuple8(tuple.a, tuple.b, tuple.c, tuple.d, tuple.e, tuple.f, tuple.g, b) }",
-    "arrow.core.Tuple8", "arrow.core.fix"
+    "zip(arg1) { tuple, b -> Tuple8(tuple.a, tuple.b, tuple.c, tuple.d, tuple.e, tuple.f, tuple.g, b) }",
+    "arrow.core.Tuple8"
   ),
   DeprecationLevel.WARNING
 )
@@ -754,8 +752,8 @@ fun <A, B, C, D, E, FF, G, Z> Kind<ForOption, Tuple7<A, B, C, D, E, FF,
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fix().zip(arg1) { tuple, b -> Tuple9(tuple.a, tuple.b, tuple.c, tuple.d, tuple.e, tuple.f, tuple.g, tuple.h, b) }",
-    "arrow.core.Tuple9", "arrow.core.fix"
+    "zip(arg1) { tuple, b -> Tuple9(tuple.a, tuple.b, tuple.c, tuple.d, tuple.e, tuple.f, tuple.g, tuple.h, b) }",
+    "arrow.core.Tuple9"
   ),
   DeprecationLevel.WARNING
 )
@@ -776,8 +774,8 @@ fun <A, B, C, D, E, FF, G, H, Z> Kind<ForOption, Tuple8<A, B, C, D, E, FF, G,
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fix().zip(arg1) { tuple, b -> Tuple10(tuple.a, tuple.b, tuple.c, tuple.d, tuple.e, tuple.f, tuple.g, tuple.h, tuple.i, b) }",
-    "arrow.core.Tuple10", "arrow.core.fix"
+    "zip(arg1) { tuple, b -> Tuple10(tuple.a, tuple.b, tuple.c, tuple.d, tuple.e, tuple.f, tuple.g, tuple.h, tuple.i, b) }",
+    "arrow.core.Tuple10"
   ),
   DeprecationLevel.WARNING
 )
@@ -1276,8 +1274,7 @@ fun <A, B, C, D, E, FF, G, H, I, J> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "fix().flatMap { arg1 }",
-  "arrow.core.fix"
+  "flatMap { arg1 }"
   ),
   DeprecationLevel.WARNING
 )
@@ -1296,8 +1293,7 @@ fun <A, B> Kind<ForOption, A>.followedBy(arg1: Kind<ForOption, B>): Option<B> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fix().flatMap { a -> arg1.fix().map { a } }",
-    "arrow.core.fix"
+    "flatMap { a -> arg1.map { a } }"
   ),
   DeprecationLevel.WARNING
 )

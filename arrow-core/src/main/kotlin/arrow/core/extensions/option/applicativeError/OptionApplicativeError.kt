@@ -25,8 +25,8 @@ internal val applicativeError_singleton: OptionApplicativeError = object :
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fix().handleErrorWith(arg1)",
-    "arrow.core.fix", "arrow.core.handleErrorWith"
+    "handleErrorWith(arg1)",
+    "arrow.core.handleErrorWith"
   ),
   DeprecationLevel.WARNING
 )
@@ -64,8 +64,8 @@ fun <A> Unit.raiseError(): Option<A> = arrow.core.Option.applicativeError().run 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "fix().fold<Option<A>>({ Option.raiseError(arg1()) }, { Option.just(it) })",
-  "arrow.core.Option", "arrow.core.fix", "arrow.core.just", "arrow.core.raiseError"
+  "fold<Option<A>>({ Option.raiseError(arg1()) }, { Option.just(it) })",
+  "arrow.core.Option", "arrow.core.just", "arrow.core.raiseError"
   ),
   DeprecationLevel.WARNING
 )
@@ -104,8 +104,8 @@ fun <A, EE> Either<EE, A>.fromEither(arg1: Function1<EE, Unit>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "fix().handleError(arg1)",
-    "arrow.core.fix", "arrow.core.handleError"
+  "handleError(arg1)",
+    "arrow.core.handleError"
   ),
   DeprecationLevel.WARNING
 )
@@ -124,8 +124,8 @@ fun <A> Kind<ForOption, A>.handleError(arg1: Function1<Unit, A>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fix().redeem(arg1, arg2)",
-    "arrow.core.fix", "arrow.core.redeem"
+    "redeem(arg1, arg2)",
+    "arrow.core.redeem"
   ),
   DeprecationLevel.WARNING
 )
@@ -144,8 +144,8 @@ fun <A, B> Kind<ForOption, A>.redeem(arg1: Function1<Unit, B>, arg2: Function1<A
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "fix().map<Either<Unit, A>> { Right(it) }.handleError<Either<Unit, A>> { Left(it) }",
-  "arrow.core.Left", "arrow.core.Right", "arrow.core.fix", "arrow.core.handleError"
+  "map<Either<Unit, A>> { Right(it) }.handleError<Either<Unit, A>> { Left(it) }",
+  "arrow.core.Left", "arrow.core.Right", "arrow.core.handleError"
   ),
   DeprecationLevel.WARNING
 )

@@ -24,8 +24,8 @@ internal val semigroupK_singleton: OptionSemigroupK = object :
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.orElse { arg1.fix() }",
-    "arrow.core.fix", "arrow.core.orElse"
+    "orElse { arg1 }",
+    "arrow.core.orElse"
   ),
   DeprecationLevel.WARNING
 )

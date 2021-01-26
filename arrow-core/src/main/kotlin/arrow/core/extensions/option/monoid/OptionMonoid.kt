@@ -15,7 +15,7 @@ import arrow.typeclasses.Semigroup
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.combineAll(SG)",
+  "combineAll(SG)",
   "arrow.core.combineAll"
   ),
   DeprecationLevel.WARNING

@@ -42,7 +42,7 @@ fun <A> zeroM(): Option<A> = arrow.core.Option
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.orElse { arg1 }",
+  "orElse { arg1 }",
   "arrow.core.Option", "arrow.core.orElse"
   ),
   DeprecationLevel.WARNING

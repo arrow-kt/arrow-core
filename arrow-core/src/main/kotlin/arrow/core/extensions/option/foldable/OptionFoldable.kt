@@ -103,7 +103,7 @@ fun <A, B> Kind<ForOption, A>.reduceLeftToOption(arg1: Function1<A, B>, arg2: Fu
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.reduceRightEvalOrNull(arg1, arg2).map { Option.fromNullable(it) }",
+    "reduceRightEvalOrNull(arg1, arg2).map { Option.fromNullable(it) }",
     "arrow.core.Option"
   ),
   DeprecationLevel.WARNING
@@ -146,7 +146,7 @@ fun <A> Kind<ForOption, A>.reduceLeftOption(arg1: Function2<A, A, A>): Option<A>
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.reduceRightEvalOrNull<A, A>(::identity, arg1).map<Option<A>> { Option.fromNullable<A>(it) }",
+    "reduceRightEvalOrNull<A, A>(::identity, arg1).map<Option<A>> { Option.fromNullable<A>(it) }",
     "arrow.core.Option", "arrow.core.identity", "arrow.core.reduceRightEvalOrNull"
   ),
   DeprecationLevel.WARNING
@@ -294,7 +294,7 @@ fun <A> Kind<ForOption, A>.exists(arg1: Function1<A, Boolean>): Boolean =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.all(arg1)"
+  "all(arg1)"
   ),
   DeprecationLevel.WARNING
 )
@@ -313,7 +313,7 @@ fun <A> Kind<ForOption, A>.forAll(arg1: Function1<A, Boolean>): Boolean =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.all(arg1)"
+  "all(arg1)"
   ),
   DeprecationLevel.WARNING
 )
@@ -350,7 +350,7 @@ fun <A> Kind<ForOption, A>.isEmpty(): Boolean = arrow.core.Option.foldable().run
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.isNotEmpty()"
+  "isNotEmpty()"
   ),
   DeprecationLevel.WARNING
 )
@@ -368,7 +368,7 @@ fun <A> Kind<ForOption, A>.nonEmpty(): Boolean = arrow.core.Option.foldable().ru
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.isNotEmpty()"
+    "isNotEmpty()"
   ),
   DeprecationLevel.WARNING
 )
@@ -386,7 +386,7 @@ fun <A> Kind<ForOption, A>.isNotEmpty(): Boolean = arrow.core.Option.foldable().
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.fold({ 0 }, { 1 })"
+  "fold({ 0 }, { 1 })"
   ),
   DeprecationLevel.WARNING
 )

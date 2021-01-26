@@ -42,7 +42,7 @@ fun <A, B> Kind<ForOption, A>.filterMap(arg1: Function1<A, Option<B>>): Option<B
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.flatten()",
+    "flatten()",
     "arrow.core.flatten"
   ),
   DeprecationLevel.WARNING
@@ -81,7 +81,7 @@ fun <A> Kind<ForOption, A>.filter(arg1: Function1<A, Boolean>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.filterIsInstance<B>()",
+  "filterIsInstance<B>()",
   "arrow.core.filterIsInstance"
   ),
   DeprecationLevel.WARNING

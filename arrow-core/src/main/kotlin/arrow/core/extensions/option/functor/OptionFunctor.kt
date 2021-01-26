@@ -40,8 +40,7 @@ internal val functor_singleton: OptionFunctor = object : arrow.core.extensions.O
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "fix().map<B>(arg1)",
-  "arrow.core.fix"
+  "map<B>(arg1)"
   ),
   DeprecationLevel.WARNING
 )
@@ -60,8 +59,7 @@ fun <A, B> Kind<ForOption, A>.map(arg1: Function1<A, B>): Option<B> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fix().map<B>(arg1)",
-    "arrow.core.fix"
+    "map<B>(arg1)"
   ),
   DeprecationLevel.WARNING
 )
@@ -326,8 +324,8 @@ fun <A, B> Kind<ForOption, A>.tupleRight(arg1: B): Option<Tuple2<A, B>> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fix().widen()",
-    "arrow.core.fix", "arrow.core.widen"
+    "widen()",
+    "arrow.core.widen"
   ),
   DeprecationLevel.WARNING
 )

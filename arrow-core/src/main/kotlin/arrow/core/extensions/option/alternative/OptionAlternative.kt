@@ -54,7 +54,7 @@ fun <A> Kind<ForOption, A>.many(): Option<SequenceK<A>> = arrow.core.Option.alte
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.orElse { arg1 }",
+  "orElse { arg1 }",
   "arrow.core.orElse"
   ),
   DeprecationLevel.WARNING
@@ -74,7 +74,7 @@ infix fun <A> Kind<ForOption, A>.alt(arg1: Kind<ForOption, A>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.orElse { arg1 }",
+    "orElse { arg1 }",
     "arrow.core.orElse"
   ),
   DeprecationLevel.WARNING
@@ -94,7 +94,7 @@ fun <A> Kind<ForOption, A>.orElse(arg1: Kind<ForOption, A>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.orElse { arg1 }",
+    "orElse { arg1 }",
     "arrow.core.orElse"
   ),
   DeprecationLevel.WARNING
@@ -114,8 +114,8 @@ fun <A> Kind<ForOption, A>.combineK(arg1: Kind<ForOption, A>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.fix().map<Option<A>>(::Some).orElse { Option.just(None) }",
-  "arrow.core.None", "arrow.core.Option", "arrow.core.Some", "arrow.core.fix", "arrow.core.orElse"
+  "map<Option<A>>(::Some).orElse { Option.just(None) }",
+  "arrow.core.None", "arrow.core.Option", "arrow.core.Some", "arrow.core.orElse"
   ),
   DeprecationLevel.WARNING
 )
@@ -152,7 +152,7 @@ fun guard(arg0: Boolean): Option<Unit> = arrow.core.Option
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "this.orElse { arg1() }",
+    "orElse { arg1() }",
     "arrow.core.orElse"
   ),
   DeprecationLevel.WARNING

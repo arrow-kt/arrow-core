@@ -62,8 +62,7 @@ fun unit(): Option<Unit> = arrow.core.Option
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "fix().map(arg1)",
-  "arrow.core.fix"
+  "map(arg1)"
   ),
   DeprecationLevel.WARNING
 )
@@ -82,8 +81,7 @@ fun <A, B> Kind<ForOption, A>.map(arg1: Function1<A, B>): Option<B> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "fix().replicate(arg1)",
-  "arrow.core.fix"
+  "replicate(arg1)"
   ),
   DeprecationLevel.WARNING
 )
@@ -102,8 +100,7 @@ fun <A> Kind<ForOption, A>.replicate(arg1: Int): Option<List<A>> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "fix().replicate(arg1, arg2)",
-  "arrow.core.fix"
+  "replicate(arg1, arg2)"
   ),
   DeprecationLevel.WARNING
 )
