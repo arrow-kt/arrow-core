@@ -671,26 +671,26 @@ fun <A> A.leftIor(): Ior<A, Nothing> = Ior.Left(this)
 
 fun <A> A.rightIor(): Ior<Nothing, A> = Ior.Right(this)
 
-inline fun <A, B, C> Ior<A, B>.flatTraverse(f: (B) -> Iterable<Ior<A, C>>): List<Ior<A, C>> =
-  fold(
-    { a -> listOf(Ior.Left(a)) },
-    { b -> f(b).toList() },
-    { _, b -> f(b).toList() }
-  )
+@Suppress("NOTHING_TO_INLINE")
+inline fun <A, B> Ior<A, Ior<A, B>>.flatten(SA: Semigroup<A>): Ior<A, B> =
+  flatMap(SA, ::identity)
 
-inline fun <A, B, C, E> Ior<A, B>.flatTraverseEither(f: (B) -> Either<E, Ior<A, C>>): Either<E, Ior<A, C>> =
-  fold(
-    { a -> Either.right(Ior.Left(a)) },
-    { b -> f(b) },
-    { _, b -> f(b) }
-  )
+inline fun <A, B, C> Ior<A, B>.flatTraverse(SA: Semigroup<A>, f: (B) -> Iterable<Ior<A, C>>): List<Ior<A, C>> =
+  traverse(f).map { it.flatten(SA) }
 
-inline fun <A, B, C, E> Ior<A, B>.flatTraverseValidated(f: (B) -> Validated<E, Ior<A, C>>): Validated<E, Ior<A, C>> =
-  fold(
-    { a -> Valid(Ior.Left(a)) },
-    { b -> f(b) },
-    { _, b -> f(b) }
-  )
+inline fun <A, B, C, E> Ior<A, B>.flatTraverseEither(SA: Semigroup<A>, f: (B) -> Either<E, Ior<A, C>>): Either<E, Ior<A, C>> =
+  traverseEither(f).map { it.flatten(SA) }
+
+inline fun <A, B, C, E> Ior<A, B>.flatTraverseValidated(SA: Semigroup<A>, f: (B) -> Validated<E, Ior<A, C>>): Validated<E, Ior<A, C>> =
+  traverseValidated(f).map { it.flatten(SA) }
+
+inline fun <A, B> Ior<A, Boolean>.ifM(SA: Semigroup<A>, ifTrue: () -> Ior<A, B>, ifFalse: () -> Ior<A, B>): Ior<A, B> =
+  flatMap(SA) { if (it) ifTrue() else ifFalse() }
+
+inline fun <A, B, C> Ior<A, B>.mproduct(SA: Semigroup<A>, f: (B) -> Ior<A, C>): Ior<A, Pair<B, C>> =
+  flatMap(SA) { a ->
+    f(a).map { b -> a to b }
+  }
 
 fun <A, B> Ior<A, B>.replicate(SA: Semigroup<A>, n: Int): Ior<A, List<B>> =
   if (n <= 0) Ior.Right(emptyList())
@@ -711,6 +711,14 @@ fun <A, B> Ior<A, B>.replicate(SA: Semigroup<A>, n: Int, MB: Monoid<B>): Ior<A, 
     is Ior.Both -> bimap(
       { List(n - 1) { leftValue}.fold(leftValue, { acc, a -> SA.run { acc + a }}) },
       { MB.run { List(n) { rightValue }.combineAll() } }
+    )
+  }
+
+fun <A, B, C> Ior<A, Either<B, C>>.selectM(SA: Semigroup<A>, f: Ior<A, (B) -> C>): Ior<A, C> =
+  flatMap(SA) {
+    it.fold(
+      { b -> f.map { ff -> ff(b) } },
+      { c -> Ior.Right(c) }
     )
   }
 
