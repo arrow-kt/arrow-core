@@ -9,6 +9,14 @@ import kotlin.Suppress
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated(
+  "@extension kinded projected functions are deprecated",
+  ReplaceWith(
+    "Show.ior(HL, HR)",
+    "arrow.core.ior", "arrow.typeclasses.Show"
+  ),
+  DeprecationLevel.WARNING
+)
 inline fun <L, R> Companion.show(SL: Show<L>, SR: Show<R>): IorShow<L, R> = object :
     arrow.core.extensions.IorShow<L, R> { override fun SL(): arrow.typeclasses.Show<L> = SL
 

@@ -662,3 +662,14 @@ fun <A, B, C> Ior<A, B>.zip(SA: Semigroup<A>, fb: Ior<A, C>): Ior<A, Pair<B, C>>
 
 fun <A, B, C, Z> Ior<A, B>.zipEval(SA: Semigroup<A>, other: Eval<Ior<A, C>>, f: (B, C) -> Z): Eval<Ior<A, Z>> =
   other.map {zip(SA, it).map { a -> f(a.first, a.second) }}
+
+fun <A, B> Show.Companion.ior(SA: Show<A>, SB: Show<B>): Show<Ior<A, B>> =
+  IorShow(SA, SB)
+
+private class IorShow<A, B>(
+  private val SA: Show<A>,
+  private val SB: Show<B>
+) : Show<Ior<A, B>> {
+  override fun Ior<A, B>.show(): String =
+    show(SA, SB)
+}
