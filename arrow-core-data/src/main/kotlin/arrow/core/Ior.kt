@@ -616,7 +616,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
     fb: (B) -> Iterable<D>
   ): List<Ior<C, D>> =
     fold(
-      { a  -> fa(a).map { it.leftIor() } },
+      { a -> fa(a).map { it.leftIor() } },
       { b -> fb(b).map { it.rightIor() } },
       { a, b -> fa(a).align(fb(b)) }
   )
