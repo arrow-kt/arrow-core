@@ -20,6 +20,7 @@ typealias ConstPartialOf<A> = arrow.Kind<ForConst, A>
 inline fun <A, T> ConstOf<A, T>.fix(): Const<A, T> =
   this as Const<A, T>
 
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 fun <A, T> ConstOf<A, T>.value(): A = this.fix().value()
 
 data class Const<A, out T>(private val value: A) : ConstOf<A, T> {
@@ -29,10 +30,12 @@ data class Const<A, out T>(private val value: A) : ConstOf<A, T> {
     this as Const<A, U>
 
   @Suppress("UNUSED_PARAMETER")
+  @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
   fun <G, U> traverse(GA: Applicative<G>, f: (T) -> Kind<G, U>): Kind<G, Const<A, U>> =
     GA.just(retag())
 
   @Suppress("UNUSED_PARAMETER")
+  @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
   fun <G, U> traverseFilter(GA: Applicative<G>, f: (T) -> Kind<G, Option<U>>): Kind<G, Const<A, U>> =
     GA.just(retag())
 
@@ -71,10 +74,7 @@ fun <A, T, U> ConstOf<A, T>.ap(SG: Semigroup<A>, ff: ConstOf<A, (T) -> U>): Cons
 fun <A, T, U> Const<A, T>.ap(SG: Semigroup<A>, ff: Const<A, (T) -> U>): Const<A, U> =
   retag<U>().combine(SG, ff.retag())
 
-@Deprecated(
-  "Kind is deprecated, and will be removed in 0.13.0. Replace with sequence or sequenceValidated from arrow.core.*",
-  level = DeprecationLevel.WARNING
-)
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 fun <T, A, G> ConstOf<A, Kind<G, T>>.sequence(GA: Applicative<G>): Kind<G, Const<A, T>> =
   fix().traverse(GA, ::identity)
 
@@ -98,3 +98,9 @@ fun <A, T, U> Const<A, T>.foldLeft(b: U, f: (U, T) -> U): U =
 
 fun <A, T, U> Const<A, T>.foldRight(lb: Eval<U>, f: (T, Eval<U>) -> Eval<U>): Eval<U> =
   lb
+
+fun <A, B, T> Const<A, T>.reduceOrNull(initial: (A) -> B, operation: (acc: B, A) -> B): B? =
+  initial(value())
+
+fun <A, B, T> Const<A, T>.reduceRightNull(initial: (A) -> B, operation: (A, acc: B) -> B): B? =
+  initial(value())
