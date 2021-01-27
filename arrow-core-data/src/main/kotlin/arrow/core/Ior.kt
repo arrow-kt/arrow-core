@@ -631,6 +631,27 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
       { a, b -> Validated.mapN(SA, fa(a), fb(b)) { aa, c -> Both(aa, c) } }
     )
 
+  inline fun <C> crosswalk(fa: (B) -> Iterable<C>): List<Ior<A, C>> =
+    fold(
+      { emptyList() },
+      { b -> fa(b).map { Right(it) } },
+      { a, b -> fa(b).map { Both(a, it) }}
+    )
+
+  inline fun <K, V> crosswalkMap(fa: (B) -> Map<K, V>): Map<K, Ior<A, V>> =
+    fold(
+      { emptyMap() },
+      { b -> fa(b).mapValues { Right(it.value) } },
+      { a, b -> fa(b).mapValues { Both(a, it.value) }}
+    )
+
+  inline fun <A, B, C> crosswalkNull(ior: Ior<A, B>, fa: (B) -> C?): Ior<A, C>? =
+    ior.fold(
+      { a -> Left(a) },
+      { b -> fa(b)?.let { Right(it) } },
+      { a, b -> fa(b)?.let { Both(a, it) }}
+    )
+
   /**
    *  Applies [f] to an [B] inside [Ior] and returns the [Ior] structure with a pair of the [B] value and the
    *  computed [C] value as result of applying [f]
