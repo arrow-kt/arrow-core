@@ -744,6 +744,9 @@ fun <A, B> Ior<A, B>.eqv(EQA: Eq<A>, EQB: Eq<B>, b: Ior<A, B>): Boolean = when (
   }
 }
 
+fun <A, B> Ior<A, B>.neqv(EQA: Eq<A>, EQB: Eq<B>, b: Ior<A, B>): Boolean =
+  !eqv(EQA, EQB, b)
+
 @Suppress("NOTHING_TO_INLINE")
 inline fun <A, B> Ior<A, Ior<A, B>>.flatten(SA: Semigroup<A>): Ior<A, B> =
   flatMap(SA, ::identity)
@@ -813,6 +816,9 @@ fun <A, B, C> Ior<A, B>.zip(SA: Semigroup<A>, fb: Ior<A, C>): Ior<A, Pair<B, C>>
 fun <A, B, C, Z> Ior<A, B>.zipEval(SA: Semigroup<A>, other: Eval<Ior<A, C>>, f: (B, C) -> Z): Eval<Ior<A, Z>> =
   other.map {zip(SA, it).map { a -> f(a.first, a.second) }}
 
+fun <A, B> Eq.Companion.ior(EQA: Eq<A>, EQB: Eq<B>): Eq<Ior<A, B>> =
+  IorEq(EQA, EQB)
+
 fun <A, B> Hash.Companion.ior(HA: Hash<A>, HB: Hash<B>): Hash<Ior<A, B>> =
   IorHash(HA, HB)
 
@@ -824,6 +830,14 @@ fun <A, B> Semigroup.Companion.ior(SA: Semigroup<A>, SB: Semigroup<B>): Semigrou
 
 fun <A, B> Show.Companion.ior(SA: Show<A>, SB: Show<B>): Show<Ior<A, B>> =
   IorShow(SA, SB)
+
+private class IorEq<A, B>(
+  private val EQA: Eq<A>,
+  private val EQB: Eq<B>
+) : Eq<Ior<A, B>> {
+  override fun Ior<A, B>.eqv(b: Ior<A, B>): Boolean =
+    eqv(EQA, EQB, b)
+}
 
 private class IorHash<A, B>(
   private val HA: Hash<A>,

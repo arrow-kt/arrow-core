@@ -4,10 +4,6 @@ import arrow.core.Ior
 import arrow.core.Ior.Companion
 import arrow.core.extensions.IorEq
 import arrow.typeclasses.Eq
-import kotlin.Boolean
-import kotlin.Deprecated
-import kotlin.Suppress
-import kotlin.jvm.JvmName
 
 @JvmName("neqv")
 @Suppress(
@@ -19,7 +15,7 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "neqv(EQL, EQR, arg1)",
+  "this.neqv(EQL, EQR, arg1)",
   "arrow.core.neqv"
   ),
   DeprecationLevel.WARNING
@@ -35,6 +31,14 @@ fun <L, R> Ior<L, R>.neqv(
 @Suppress(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
+)
+@Deprecated(
+  "@extension kinded projected functions are deprecated",
+  ReplaceWith(
+    "Eq.ior(EQL, EQR)",
+    "arrow.core.ior", "arrow.typeclasses.Eq"
+  ),
+  DeprecationLevel.WARNING
 )
 inline fun <L, R> Companion.eq(EQL: Eq<L>, EQR: Eq<R>): IorEq<L, R> = object :
     arrow.core.extensions.IorEq<L, R> { override fun EQL(): arrow.typeclasses.Eq<L> = EQL
