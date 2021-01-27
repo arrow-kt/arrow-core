@@ -150,6 +150,29 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
 
     fun <A, B> bothNel(a: A, b: B): IorNel<A, B> = Both(NonEmptyList.of(a), b)
 
+    /**
+     *  Lifts a function `(B) -> C` to the [Ior] structure returning a polymorphic function
+     *  that can be applied over all [Ior] values in the shape of Ior<A, B>
+     *
+     *  ```kotlin:ank:playground
+     *  import arrow.core.*
+     *
+     *  fun main(args: Array<String>) {
+     *   //sampleStart
+     *   val f = Ior.lift<Int, CharSequence, String> { s: CharSequence -> "$s World" }
+     *   val ior: Ior<Int, CharSequence> = Ior.Right("Hello")
+     *   val result = f(ior)
+     *   //sampleEnd
+     *   println(result)
+     *  }
+     *  ```
+     */
+    fun <A, B, C> lift(f: (B) -> C): (Ior<A, B>) -> Ior<A, C> =
+      { it.map(f) }
+
+    fun <A, B, C, D> lift(fa: (A) -> C, fb: (B) -> D): (Ior<A, B>) -> Ior<C, D> =
+      { it.bimap(fa, fb) }
+
     inline fun <A, B, C, D> mapN(
       SA: Semigroup<A>,
       b: Ior<A, B>,
@@ -580,6 +603,25 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
     override fun toString(): String = show(Show.any(), Show.any())
   }
 
+  /**
+   *  Applies [f] to an [B] inside [Ior] and returns the [Ior] structure with a pair of the [B] value and the
+   *  computed [C] value as result of applying [f]
+   *
+   *  ```kotlin:ank:playground
+   *  import arrow.core.*
+   *
+   *  fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   Ior.Right("Hello").fproduct<String>({ "$it World" })
+   *   //sampleEnd
+   *   println(result)
+   *  }
+   *  ```
+   */
+  fun <C> fproduct(f: (B) -> C): Ior<A, Pair<B, C>> =
+    map { b -> b to f(b) }
+
   fun hash(HA: Hash<A>, HB: Hash<B>): Int =
     fold(
       { HA.run { it.hashWithSalt(0) } },
@@ -595,6 +637,25 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
         HA.run { a.hashWithSalt(salt.hashWithSalt(2)) } +
           HB.run { b.hashWithSalt(salt.hashWithSalt(2)) } }
     )
+
+  /**
+   *  Replaces [B] inside [Ior] with [C] resulting in a Ior<A, C>
+   *
+   *
+   *  ```kotlin:ank:playground
+   *  import arrow.core.*
+   *
+   *  fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   Ior.Left("Hello World").mapConst<String>("...")
+   *   //sampleEnd
+   *   println(result)
+   *  }
+   *  ```
+   */
+  fun <C> mapConst(c: C): Ior<A, C> =
+    map { c }
 
   fun show(SL: Show<A>, SR: Show<B>): String = fold(
     {
@@ -626,6 +687,45 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
       { b -> fa(b).map { Right(it) } },
       { a, b -> fa(b).map { Both(a, it) }}
     )
+
+  /**
+   *  Pairs [C] with [B] returning a Ior<A, Pair<C, B>>
+   *
+   *  ```kotlin:ank:playground
+   *  import arrow.core.*
+   *
+   *  fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   Ior.Right("Hello").tupleLeft<String>("World")
+   *   //sampleEnd
+   *   println(result)
+   *  }
+   *  ```
+   */
+  fun <C> tupleLeft(c: C): Ior<A, Pair<C, B>> =
+    map { b -> c to b }
+
+  /**
+   *  Pairs [C] with [B] returning a Ior<A, Pair<B, C>>
+   *
+   *  ```kotlin:ank:playground
+   *  import arrow.core.*
+   *
+   *  fun main(args: Array<String>) {
+   *   val result =
+   *   //sampleStart
+   *   Ior.Right("Hello").tupleRight<String>("World")
+   *   //sampleEnd
+   *   println(result)
+   *  }
+   *  ```
+   */
+  fun <C> tupleRight(c: C): Ior<A, Pair<B, C>> =
+    map { b -> b to c }
+
+  fun void(): Ior<A, Unit> =
+    mapConst(Unit)
 }
 
 /**
@@ -806,6 +906,28 @@ fun <A, B, C> Ior<A, Either<B, C>>.sequenceEither(): Either<B, Ior<A, C>> =
 
 fun <A, B, C> Ior<A, Validated<B, C>>.sequenceValidated(): Validated<B, Ior<A, C>> =
   traverseValidated(::identity)
+
+/**
+ * Given [B] is a sub type of [C], re-type this value from Ior<A, B> to Ior<A, B>
+ *
+ * ```kotlin:ank:playground:extension
+ * import arrow.core.*
+ *
+ * fun main(args: Array<String>) {
+ *   //sampleStart
+ *   val string: Ior<Int, String> = Ior.Right("Hello")
+ *   val chars: Ior<Int, CharSequence> =
+ *     string.widen<Int, CharSequence, String>()
+ *   //sampleEnd
+ *   println(chars)
+ * }
+ * ```
+ */
+fun <A, C, B : C> Ior<A, B>.widen(): Ior<A, C> =
+  this
+
+fun <AA, A : AA, B> Ior<A, B>.leftWiden(): Ior<AA, B> =
+  this
 
 fun <A, B, C, Z> Ior<A, B>.zip(SA: Semigroup<A>, fb: Ior<A, C>, f: (B, C) -> Z): Ior<A, Z> =
   ap(SA, fb.map { c: C -> { b: B -> f(b, c) } })
