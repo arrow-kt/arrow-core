@@ -4,6 +4,7 @@ import arrow.Kind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
+import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 
@@ -113,4 +114,9 @@ fun <A, B, T> Const<A, T>.reduceRightNull(initial: (A) -> B, operation: (A, acc:
 fun <A, T> Const<A, T>.hashWithSalt(HA: Hash<A>, salt: Int): Int =
   HA.run {
     value().hashWithSalt(salt)
+  }
+
+fun <A, T> Const<A, T>.compare(ORD: Order<A>, b: Const<A, T>): Ordering =
+  ORD.run {
+    value().compare(b.value())
   }
