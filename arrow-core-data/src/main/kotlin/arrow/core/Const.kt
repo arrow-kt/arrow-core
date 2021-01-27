@@ -3,6 +3,7 @@ package arrow.core
 import arrow.Kind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Eq
+import arrow.typeclasses.Hash
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 
@@ -81,12 +82,16 @@ fun <T, A, G> ConstOf<A, Kind<G, T>>.sequence(GA: Applicative<G>): Kind<G, Const
 inline fun <A> A.const(): Const<A, Nothing> =
   Const(this)
 
-fun <A, T, U> Const<A, T>.map(f: (T) -> U): Const<A, U> = retag()
+fun <A, T, U> Const<A, T>.map(f: (T) -> U): Const<A, U> =
+  retag()
 
-fun <A, T, U> Const<A, T>.contramap(f: (U) -> T): Const<A, U> = retag()
+fun <A, T, U> Const<A, T>.contramap(f: (U) -> T): Const<A, U> =
+  retag()
 
 fun <A, T> Const<A, T>.eqv(EQ: Eq<Const<A, T>>, b: Const<A, T>): Boolean =
-  EQ.run { eqv(b) }
+  EQ.run {
+    eqv(b)
+  }
 
 fun <A, T> Eq.Companion.const(EQ: Eq<Const<A, T>>): Eq<Const<A, T>> = object : Eq<Const<A, T>> {
   override fun Const<A, T>.eqv(b: Const<A, T>): Boolean =
@@ -104,3 +109,8 @@ fun <A, B, T> Const<A, T>.reduceOrNull(initial: (A) -> B, operation: (acc: B, A)
 
 fun <A, B, T> Const<A, T>.reduceRightNull(initial: (A) -> B, operation: (A, acc: B) -> B): B? =
   initial(value())
+
+fun <A, T> Const<A, T>.hashWithSalt(HA: Hash<A>, salt: Int): Int =
+  HA.run {
+    value().hashWithSalt(salt)
+  }
