@@ -177,7 +177,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
       SA: Semigroup<A>,
       b: Ior<A, B>,
       c: Ior<A, C>,
-      map: (B, C) -> D
+      crossinline map: (B, C) -> D
     ): Ior<A, D> =
       mapN(SA, b, c, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit) { b, c, _, _, _, _, _, _, _, _ -> map(b, c) }
 
@@ -186,7 +186,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
       b: Ior<A, B>,
       c: Ior<A, C>,
       d: Ior<A, D>,
-      map: (B, C, D) -> E
+      crossinline map: (B, C, D) -> E
     ): Ior<A, E> =
       mapN(SA, b, c, d, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit) { b, c, d, _, _, _, _, _, _, _ -> map(b, c, d) }
 
@@ -196,7 +196,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
       c: Ior<A, C>,
       d: Ior<A, D>,
       e: Ior<A, E>,
-      map: (B, C, D, E) -> F
+      crossinline map: (B, C, D, E) -> F
     ): Ior<A, F> =
       mapN(SA, b, c, d, e, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit) { b, c, d, e, _, _, _, _, _, _ -> map(b, c, d, e) }
 
@@ -207,7 +207,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
       d: Ior<A, D>,
       e: Ior<A, E>,
       f: Ior<A, F>,
-      map: (B, C, D, E, F) -> G
+      crossinline map: (B, C, D, E, F) -> G
     ): Ior<A, G> =
       mapN(SA, b, c, d, e, f, Ior.unit, Ior.unit, Ior.unit, Ior.unit, Ior.unit) { b, c, d, e, f, _, _, _, _, _ -> map(b, c, d, e, f) }
 
@@ -219,7 +219,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
       e: Ior<A, E>,
       f: Ior<A, F>,
       g: Ior<A, G>,
-      map: (B, C, D, E, F, G) -> H
+      crossinline map: (B, C, D, E, F, G) -> H
     ): Ior<A, H> =
       mapN(SA, b, c, d, e, f, g, Ior.unit, Ior.unit, Ior.unit, Ior.unit) { b, c, d, e, f, g, _, _, _, _ -> map(b, c, d, e, f, g) }
 
@@ -232,7 +232,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
       f: Ior<A, F>,
       g: Ior<A, G>,
       h: Ior<A, H>,
-      map: (B, C, D, E, F, G, H) -> I
+      crossinline map: (B, C, D, E, F, G, H) -> I
     ): Ior<A, I> =
       mapN(SA, b, c, d, e, f, g, h, Ior.unit, Ior.unit, Ior.unit) { b, c, d, e, f, g, h, _, _, _ -> map(b, c, d, e, f, g, h) }
 
@@ -246,7 +246,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
       g: Ior<A, G>,
       h: Ior<A, H>,
       i: Ior<A, I>,
-      map: (B, C, D, E, F, G, H, I) -> J
+      crossinline map: (B, C, D, E, F, G, H, I) -> J
     ): Ior<A, J> =
       mapN(SA, b, c, d, e, f, g, h, i, Ior.unit, Ior.unit) { b, c, d, e, f, g, h, i, _, _ -> map(b, c, d, e, f, g, h, i) }
 
@@ -261,7 +261,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
       h: Ior<A, H>,
       i: Ior<A, I>,
       j: Ior<A, J>,
-      map: (B, C, D, E, F, G, H, I, J) -> K
+      crossinline map: (B, C, D, E, F, G, H, I, J) -> K
     ): Ior<A, K> =
       mapN(SA, b, c, d, e, f, g, h, i, j, Ior.unit) { b, c, d, e, f, g, h, i, j, _ -> map(b, c, d, e, f, g, h, i, j) }
 
@@ -277,29 +277,29 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
       i: Ior<A, I>,
       j: Ior<A, J>,
       k: Ior<A, K>,
-      map: (B, C, D, E, F, G, H, I, J, K) -> L
-    ): Ior<A, L> = TODO()
-//      b.flatMap(SA) { bb ->
-//        c.flatMap(SA) { cc ->
-//          d.flatMap(SA) { dd ->
-//            e.flatMap(SA) { ee ->
-//              f.flatMap(SA) { ff ->
-//                g.flatMap(SA) { gg ->
-//                  h.flatMap(SA) { hh ->
-//                    i.flatMap(SA) { ii ->
-//                      j.flatMap(SA) { jj ->
-//                        k.map { kk ->
-//                          map(bb, cc, dd, ee, ff, gg, hh, ii, jj, kk)
-//                        }
-//                      }
-//                    }
-//                  }
-//                }
-//              }
-//            }
-//          }
-//        }
-//      }
+      crossinline map: (B, C, D, E, F, G, H, I, J, K) -> L
+    ): Ior<A, L> =
+      b.flatMap1(SA) { bb ->
+        c.flatMap1(SA) { cc ->
+          d.flatMap1(SA) { dd ->
+            e.flatMap1(SA) { ee ->
+              f.flatMap1(SA) { ff ->
+                g.flatMap1(SA) { gg ->
+                  h.flatMap1(SA) { hh ->
+                    i.flatMap1(SA) { ii ->
+                      j.flatMap1(SA) { jj ->
+                        k.map { kk ->
+                          map(bb, cc, dd, ee, ff, gg, hh, ii, jj, kk)
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
 
     val unit: Ior<Nothing, Unit> = Right(Unit)
 
@@ -854,6 +854,10 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
   fun void(): Ior<A, Unit> =
     mapConst(Unit)
 }
+
+@PublishedApi()
+internal fun <A, B, D> Ior<A, B>.flatMap1(SG: Semigroup<A>, f: (B) -> Ior<A, D>): Ior<A, D> =
+  flatMap(SG, f)
 
 /**
  * Binds the given function across [Ior.Right].
