@@ -31,16 +31,28 @@ import arrow.typeclasses.TraverseFilter
 import arrow.core.ap as constAp
 import arrow.core.combine as combineAp
 
+@Deprecated(
+  message = "Invariant typeclass is deprecated and will be removed in 0.13.0. Use concrete methods on Const",
+  level = DeprecationLevel.WARNING
+)
 interface ConstInvariant<A> : Invariant<ConstPartialOf<A>> {
   override fun <T, U> ConstOf<A, T>.imap(f: (T) -> U, g: (U) -> T): Const<A, U> =
     fix().retag()
 }
 
+@Deprecated(
+  message = "Contravariant typeclass is deprecated and will be removed in 0.13.0. Use concrete methods on Const",
+  level = DeprecationLevel.WARNING
+)
 interface ConstContravariant<A> : Contravariant<ConstPartialOf<A>> {
   override fun <T, U> ConstOf<A, T>.contramap(f: (U) -> T): Const<A, U> =
     fix().retag()
 }
 
+@Deprecated(
+  message = "Divide typeclass is deprecated and will be removed in 0.13.0. Use concrete methods on Const",
+  level = DeprecationLevel.WARNING
+)
 interface ConstDivideInstance<O> : Divide<ConstPartialOf<O>>, ConstContravariant<O> {
   fun MO(): Monoid<O>
   override fun <A, B, Z> divide(fa: Kind<ConstPartialOf<O>, A>, fb: Kind<ConstPartialOf<O>, B>, f: (Z) -> Tuple2<A, B>): Kind<ConstPartialOf<O>, Z> =
@@ -49,6 +61,10 @@ interface ConstDivideInstance<O> : Divide<ConstPartialOf<O>>, ConstContravariant
     )
 }
 
+@Deprecated(
+  message = "Divisible typeclass is deprecated and will be removed in 0.13.0. Use concrete methods on Const",
+  level = DeprecationLevel.WARNING
+)
 interface ConstDivisibleInstance<O> : Divisible<ConstPartialOf<O>>, ConstDivideInstance<O> {
   fun MOO(): Monoid<O>
   override fun MO(): Monoid<O> = MOO()
@@ -57,11 +73,19 @@ interface ConstDivisibleInstance<O> : Divisible<ConstPartialOf<O>>, ConstDivideI
     Const(MOO().empty())
 }
 
+@Deprecated(
+  message = "Functor typeclass is deprecated and will be removed in 0.13.0. Use concrete methods on Const",
+  level = DeprecationLevel.WARNING
+)
 interface ConstFunctor<A> : Functor<ConstPartialOf<A>> {
   override fun <T, U> ConstOf<A, T>.map(f: (T) -> U): Const<A, U> =
     fix().retag()
 }
 
+@Deprecated(
+  message = "Apply typeclass is deprecated and will be removed in 0.13.0. Use concrete methods on Const",
+  level = DeprecationLevel.WARNING
+)
 interface ConstApply<A> : Apply<ConstPartialOf<A>> {
 
   fun MA(): Monoid<A>
@@ -72,6 +96,10 @@ interface ConstApply<A> : Apply<ConstPartialOf<A>> {
     constAp(MA(), ff)
 }
 
+@Deprecated(
+  message = "Applicative typeclass is deprecated and will be removed in 0.13.0. Use concrete methods on Const",
+  level = DeprecationLevel.WARNING
+)
 interface ConstApplicative<A> : Applicative<ConstPartialOf<A>> {
 
   fun MA(): Monoid<A>
@@ -87,6 +115,10 @@ interface ConstApplicative<A> : Applicative<ConstPartialOf<A>> {
     constAp(MA(), ff)
 }
 
+@Deprecated(
+  message = "Foldable typeclass is deprecated and will be removed in 0.13.0. Use concrete methods on Const",
+  level = DeprecationLevel.WARNING
+)
 interface ConstFoldable<A> : Foldable<ConstPartialOf<A>> {
 
   override fun <T, U> ConstOf<A, T>.foldLeft(b: U, f: (U, T) -> U): U = b
@@ -94,6 +126,10 @@ interface ConstFoldable<A> : Foldable<ConstPartialOf<A>> {
   override fun <T, U> ConstOf<A, T>.foldRight(lb: Eval<U>, f: (T, Eval<U>) -> Eval<U>): Eval<U> = lb
 }
 
+@Deprecated(
+  message = "Traverse typeclass is deprecated and will be removed in 0.13.0. Use concrete methods on Const",
+  level = DeprecationLevel.WARNING
+)
 interface ConstTraverse<X> : Traverse<ConstPartialOf<X>>, ConstFoldable<X> {
 
   override fun <T, U> ConstOf<X, T>.map(f: (T) -> U): Const<X, U> = fix().retag()
@@ -102,6 +138,10 @@ interface ConstTraverse<X> : Traverse<ConstPartialOf<X>>, ConstFoldable<X> {
     fix().traverse(AP, f)
 }
 
+@Deprecated(
+  message = "TraverseFilter typeclass is deprecated and will be removed in 0.13.0. Use concrete methods on Const",
+  level = DeprecationLevel.WARNING
+)
 interface ConstTraverseFilter<X> : TraverseFilter<ConstPartialOf<X>>, ConstTraverse<X> {
 
   override fun <T, U> Kind<ConstPartialOf<X>, T>.map(f: (T) -> U): Const<X, U> = fix().retag()
@@ -110,6 +150,11 @@ interface ConstTraverseFilter<X> : TraverseFilter<ConstPartialOf<X>>, ConstTrave
     fix().traverseFilter(AP, f)
 }
 
+@Deprecated(
+  "Typeclass instance have been moved to the companion object of the typeclass.",
+  ReplaceWith("Semigroup.const()", "arrow.core.const", "arrow.typeclasses.Semigroup"),
+  DeprecationLevel.WARNING
+)
 interface ConstSemigroup<A, T> : Semigroup<ConstOf<A, T>> {
 
   fun SA(): Semigroup<A>
@@ -118,6 +163,11 @@ interface ConstSemigroup<A, T> : Semigroup<ConstOf<A, T>> {
     combineAp(SA(), b)
 }
 
+@Deprecated(
+  "Typeclass instance have been moved to the companion object of the typeclass.",
+  ReplaceWith("Monoid.const()", "arrow.core.const", "arrow.typeclasses.Monoid"),
+  DeprecationLevel.WARNING
+)
 interface ConstMonoid<A, T> : Monoid<ConstOf<A, T>>, ConstSemigroup<A, T> {
 
   fun MA(): Monoid<A>
@@ -127,6 +177,11 @@ interface ConstMonoid<A, T> : Monoid<ConstOf<A, T>>, ConstSemigroup<A, T> {
   override fun empty(): Const<A, T> = Const(MA().empty())
 }
 
+@Deprecated(
+  "Typeclass instance have been moved to the companion object of the typeclass.",
+  ReplaceWith("Eq.const()", "arrow.core.const", "arrow.typeclasses.Eq"),
+  DeprecationLevel.WARNING
+)
 interface ConstEq<A, T> : Eq<Const<A, T>> {
 
   fun EQ(): Eq<A>
@@ -135,12 +190,20 @@ interface ConstEq<A, T> : Eq<Const<A, T>> {
     EQ().run { value().eqv(b.value()) }
 }
 
+@Deprecated(
+  message = "Order typeclass is deprecated and will be removed in 0.13.0. Use concrete methods on Const",
+  level = DeprecationLevel.WARNING
+)
 interface ConstOrder<A, T> : Order<Const<A, T>> {
   fun ORD(): Order<A>
   override fun Const<A, T>.compare(b: Const<A, T>): Ordering =
     ORD().run { value().compare(b.value()) }
 }
 
+@Deprecated(
+  message = "EqK typeclass is deprecated and will be removed in 0.13.0. Use concrete methods on Const",
+  level = DeprecationLevel.WARNING
+)
 interface ConstEqK<A> : EqK<ConstPartialOf<A>> {
 
   fun EQA(): Eq<A>
@@ -154,11 +217,21 @@ interface ConstEqK<A> : EqK<ConstPartialOf<A>> {
     }
 }
 
+@Deprecated(
+  "Typeclass instance have been moved to the companion object of the typeclass.",
+  ReplaceWith("Show.const()", "arrow.core.const", "arrow.typeclasses.Show"),
+  DeprecationLevel.WARNING
+)
 interface ConstShow<A, T> : Show<Const<A, T>> {
   fun SA(): Show<A>
   override fun Const<A, T>.show(): String = show(SA())
 }
 
+@Deprecated(
+  "Typeclass instance have been moved to the companion object of the typeclass.",
+  ReplaceWith("Hash.const()", "arrow.core.const", "arrow.typeclasses.Hash"),
+  DeprecationLevel.WARNING
+)
 interface ConstHash<A, T> : Hash<Const<A, T>> {
   fun HA(): Hash<A>
 

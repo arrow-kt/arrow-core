@@ -4,6 +4,7 @@ import arrow.Kind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
+import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
@@ -119,4 +120,37 @@ fun <A, T> Const<A, T>.hashWithSalt(HA: Hash<A>, salt: Int): Int =
 fun <A, T> Const<A, T>.compare(ORD: Order<A>, b: Const<A, T>): Ordering =
   ORD.run {
     value().compare(b.value())
+  }
+
+fun <A, T> Semigroup.Companion.const(SA: Semigroup<A>): Semigroup<Const<A, T>> =
+  object : Semigroup<Const<A, T>> {
+    override fun Const<A, T>.combine(b: Const<A, T>): Const<A, T> =
+      this.combine(SA, b)
+  }
+
+fun <A, T> Monoid.Companion.const(MA: Monoid<A>): Monoid<Const<A, T>> =
+  object : Monoid<Const<A, T>> {
+    override fun empty(): Const<A, T> =
+      Const(MA.empty())
+
+    override fun Const<A, T>.combine(b: Const<A, T>): Const<A, T> =
+      this.combine(MA, b)
+  }
+
+fun <A, T> Hash.Companion.const(HA: Hash<A>): Hash<Const<A, T>> =
+  object : Hash<Const<A, T>> {
+    override fun Const<A, T>.hashWithSalt(salt: Int): Int =
+      hashWithSalt(HA, salt)
+  }
+
+fun <A, T> Show.Companion.const(SA: Show<A>): Show<Const<A, T>> =
+  object : Show<Const<A, T>> {
+    override fun Const<A, T>.show(): String =
+      show(SA)
+  }
+
+fun <A, T> Order.Companion.const(OA: Order<A>): Order<Const<A, T>> =
+  object : Order<Const<A, T>> {
+    override fun Const<A, T>.compare(b: Const<A, T>): Ordering =
+      compare(OA, b)
   }
