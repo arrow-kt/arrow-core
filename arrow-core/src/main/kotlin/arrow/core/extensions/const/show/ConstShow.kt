@@ -9,5 +9,11 @@ import kotlin.Suppress
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
-inline fun <A, T> Companion.show(SA: Show<A>): ConstShow<A, T> = object :
-    arrow.core.extensions.ConstShow<A, T> { override fun SA(): arrow.typeclasses.Show<A> = SA }
+@Deprecated(
+  "Show typeclass is deprecated. Use concrete methods on Const",
+  level = DeprecationLevel.WARNING
+)
+inline fun <A, T> Companion.show(SA: Show<A>): ConstShow<A, T> =
+  object : arrow.core.extensions.ConstShow<A, T> {
+    override fun SA(): arrow.typeclasses.Show<A> = SA
+  }
