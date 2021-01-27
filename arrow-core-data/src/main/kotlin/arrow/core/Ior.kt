@@ -671,6 +671,29 @@ fun <A> A.leftIor(): Ior<A, Nothing> = Ior.Left(this)
 
 fun <A> A.rightIor(): Ior<Nothing, A> = Ior.Right(this)
 
+fun <A, B> Ior<A, B>.combine(SA: Semigroup<A>, SB: Semigroup<B>, other: Ior<A, B>): Ior<A, B> =
+  with(SA) {
+    with(SB) {
+      when (val a = this@combine) {
+        is Ior.Left -> when (other) {
+          is Ior.Left -> Ior.Left(a.value + other.value)
+          is Ior.Right -> Ior.Both(a.value, other.value)
+          is Ior.Both -> Ior.Both(a.value + other.leftValue, other.rightValue)
+        }
+        is Ior.Right -> when (other) {
+          is Ior.Left -> Ior.Both(other.value, a.value)
+          is Ior.Right -> Ior.Right(a.value + other.value)
+          is Ior.Both -> Ior.Both(other.leftValue, a.value + other.rightValue)
+        }
+        is Ior.Both -> when (other) {
+          is Ior.Left -> Ior.Both(a.leftValue + other.value, a.rightValue)
+          is Ior.Right -> Ior.Both(a.leftValue, a.rightValue + other.value)
+          is Ior.Both -> Ior.Both(a.leftValue + other.leftValue, a.rightValue + other.rightValue)
+        }
+      }
+    }
+  }
+
 @Suppress("NOTHING_TO_INLINE")
 inline fun <A, B> Ior<A, Ior<A, B>>.flatten(SA: Semigroup<A>): Ior<A, B> =
   flatMap(SA, ::identity)
@@ -743,6 +766,9 @@ fun <A, B, C, Z> Ior<A, B>.zipEval(SA: Semigroup<A>, other: Eval<Ior<A, C>>, f: 
 fun <A, B> Hash.Companion.ior(HA: Hash<A>, HB: Hash<B>): Hash<Ior<A, B>> =
   IorHash(HA, HB)
 
+fun <A, B> Semigroup.Companion.ior(SA: Semigroup<A>, SB: Semigroup<B>): Semigroup<Ior<A, B>> =
+  IorSemigroup(SA, SB)
+
 fun <A, B> Show.Companion.ior(SA: Show<A>, SB: Show<B>): Show<Ior<A, B>> =
   IorShow(SA, SB)
 
@@ -755,6 +781,18 @@ private class IorHash<A, B>(
 
   override fun Ior<A, B>.hashWithSalt(salt: Int): Int =
     hashWithSalt(HA, HB, salt)
+}
+
+private class IorSemigroup<A, B>(
+  private val SGA: Semigroup<A>,
+  private val SGB: Semigroup<B>
+) : Semigroup<Ior<A, B>> {
+
+  override fun Ior<A, B>.combine(b: Ior<A, B>): Ior<A, B> =
+    combine(SGA, SGB, b)
+
+  override fun Ior<A, B>.maybeCombine(b: Ior<A, B>?): Ior<A, B> =
+    b?.let { combine(SGA, SGB, it) } ?: this
 }
 
 private class IorShow<A, B>(
