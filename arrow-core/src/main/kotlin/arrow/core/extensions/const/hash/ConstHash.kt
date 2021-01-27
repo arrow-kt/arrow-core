@@ -32,5 +32,9 @@ fun <A, T> Const<A, T>.hash(HA: Hash<A>): Int = arrow.core.Const.hash<A, T>(HA).
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated(
+  "Hash typeclass is deprecated. Use concrete methods on Const",
+  level = DeprecationLevel.WARNING
+)
 inline fun <A, T> Companion.hash(HA: Hash<A>): ConstHash<A, T> = object :
     arrow.core.extensions.ConstHash<A, T> { override fun HA(): arrow.typeclasses.Hash<A> = HA }
