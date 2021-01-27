@@ -28,15 +28,15 @@ internal val invariant_singleton: ConstInvariant<Any?> = object : ConstInvariant
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "retag()",
-  "arrow.core.retag"
+    "retag()",
+    "arrow.core.retag"
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<Kind<ForConst, A>, A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>): Const<A,
-    B> = arrow.core.Const.invariant<A>().run {
-  this@imap.imap<A, B>(arg1, arg2) as arrow.core.Const<A, B>
-}
+fun <A, B> Kind<Kind<ForConst, A>, A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>): Const<A, B> =
+  arrow.core.Const.invariant<A>().run {
+    this@imap.imap<A, B>(arg1, arg2) as arrow.core.Const<A, B>
+  }
 
 @Suppress(
   "UNCHECKED_CAST",
@@ -47,4 +47,4 @@ fun <A, B> Kind<Kind<ForConst, A>, A>.imap(arg1: Function1<A, B>, arg2: Function
   level = DeprecationLevel.WARNING
 )
 inline fun <A> Companion.invariant(): ConstInvariant<A> = invariant_singleton as
-    arrow.core.extensions.ConstInvariant<A>
+  arrow.core.extensions.ConstInvariant<A>
