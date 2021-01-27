@@ -603,6 +603,36 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
     override fun toString(): String = show(Show.any(), Show.any())
   }
 
+  inline fun <C, D> bicrosswalk(
+    fa: (A) -> Iterable<C>,
+    fb: (B) -> Iterable<D>
+  ): List<Ior<C, D>> =
+    fold(
+      { a  -> fa(a).map { it.leftIor() } },
+      { b -> fb(b).map { it.rightIor() } },
+      { a, b -> fa(a).align(fb(b)) }
+  )
+
+  inline fun <C, D, K> bicrosswalkMap(
+    fa: (A) -> Map<K, C>,
+    fb: (B) -> Map<K, D>
+  ): Map<K, Ior<C, D>> =
+    fold(
+      { a -> fa(a).mapValues { it.value.leftIor() } },
+      { b -> fb(b).mapValues { it.value.rightIor() } },
+      { a, b -> fa(a).align(fb(b)) }
+  )
+
+  inline fun <C, D> bicrosswalkNull(
+    fa: (A) -> C?,
+    fb: (B) -> D?
+  ): Ior<C, D>? =
+    fold(
+      { a -> fa(a)?.let { Left(it) } },
+      { b -> fb(b)?.let { Right(it) } },
+      { a, b -> fromNullables(fa(a), fb(b)) }
+    )
+
   inline fun <AA, C> bitraverse(fa: (A) -> Iterable<AA>, fb: (B) -> Iterable<C>): List<Ior<AA, C>> =
     fold(
       { a -> fa(a).map { Left(it) } },
