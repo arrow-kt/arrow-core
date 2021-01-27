@@ -603,6 +603,34 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
     override fun toString(): String = show(Show.any(), Show.any())
   }
 
+  inline fun <AA, C> bitraverse(fa: (A) -> Iterable<AA>, fb: (B) -> Iterable<C>): List<Ior<AA, C>> =
+    fold(
+      { a -> fa(a).map { Left(it) } },
+      { b -> fb(b).map { Right(it) } },
+      { a, b -> ListK.mapN(fa(a), fb(b)) { aa, c -> Both(aa, c) } }
+    )
+
+  inline fun <AA, C, D> bitraverseEither(
+    fa: (A) -> Either<AA, C>,
+    fb: (B) -> Either<AA, D>
+  ): Either<AA, Ior<C, D>> =
+    fold(
+      { a -> fa(a).map { Left(it) } },
+      { b -> fb(b).map { Right(it) } },
+      { a, b -> Either.mapN(fa(a), fb(b)) { aa, c -> Both(aa, c) } }
+    )
+
+  inline fun <AA, C, D> bitraverseValidated(
+    SA: Semigroup<AA>,
+    fa: (A) -> Validated<AA, C>,
+    fb: (B) -> Validated<AA, D>
+  ): Validated<AA, Ior<C, D>> =
+    fold(
+      { a -> fa(a).map { Left(it) } },
+      { b -> fb(b).map { Right(it) } },
+      { a, b -> Validated.mapN(SA, fa(a), fb(b)) { aa, c -> Both(aa, c) } }
+    )
+
   /**
    *  Applies [f] to an [B] inside [Ior] and returns the [Ior] structure with a pair of the [B] value and the
    *  computed [C] value as result of applying [f]
@@ -772,6 +800,15 @@ fun <A, B> Tuple2<A, B>.bothIor(): Ior<A, B> = Ior.Both(this.a, this.b)
 fun <A> A.leftIor(): Ior<A, Nothing> = Ior.Left(this)
 
 fun <A> A.rightIor(): Ior<Nothing, A> = Ior.Right(this)
+
+fun <A, B> Ior<Iterable<A>, Iterable<B>>.bisequence(): List<Ior<A, B>> =
+  bitraverse(::identity, ::identity)
+
+fun <A, B, C> Ior<Either<A, B>, Either<A, C>>.bisequenceEither(): Either<A, Ior<B, C>> =
+  bitraverseEither(::identity, ::identity)
+
+fun <A, B, C> Ior<Validated<A, B>, Validated<A, C>>.bisequenceValidated(SA: Semigroup<A>): Validated<A, Ior<B, C>> =
+  bitraverseValidated(SA, ::identity, ::identity)
 
 fun <A, B> Ior<A, B>.combine(SA: Semigroup<A>, SB: Semigroup<B>, other: Ior<A, B>): Ior<A, B> =
   with(SA) {
