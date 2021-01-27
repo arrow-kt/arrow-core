@@ -336,6 +336,10 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
   fun <C> foldRight(lc: Eval<C>, f: (B, Eval<C>) -> Eval<C>): Eval<C> =
     fold({ lc }, { Eval.defer { f(it, lc) } }, { _, b -> Eval.defer { f(b, lc) } })
 
+  fun <C> foldMap(MN: Monoid<C>, f: (B) -> C): C = MN.run {
+    foldLeft(MN.empty()) { b, a -> b.combine(f(a)) }
+  }
+
   fun <G, C> traverse(GA: Applicative<G>, f: (B) -> Kind<G, C>): Kind<G, Ior<A, C>> = GA.run {
     fold({ just(Left(it)) }, { b -> f(b).map { Right(it) } }, { _, b -> f(b).map { Right(it) } })
   }
@@ -686,6 +690,33 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
       { a, b -> fa(b)?.let { Both(a, it) }}
     )
 
+  inline fun all(predicate: (B) -> Boolean): Boolean =
+    fold({ true }, predicate, { _, b -> predicate(b) })
+
+  /**
+   * Returns `false` if [Left] or returns the result of the application of
+   * the given predicate to the [Right] value.
+   *
+   * Example:
+   * ```
+   * Ior.Both(5, 12).exists { it > 10 } // Result: true
+   * Ior.Right(12).exists { it > 10 }   // Result: true
+   * Ior.Right(7).exists { it > 10 }    // Result: false
+   *
+   * val left: Ior<Int, Int> = Ior.Left(12)
+   * left.exists { it > 10 }      // Result: false
+   * ```
+   */
+  inline fun exists(predicate: (B) -> Boolean): Boolean =
+    fold({ false }, predicate, { _, b -> predicate(b) })
+
+  inline fun findOrNull(predicate: (B) -> Boolean): B? =
+    when (this) {
+      is Left -> null
+      is Right -> if (predicate(this.value)) this.value else null
+      is Both -> if (predicate(this.rightValue)) this.rightValue else null
+    }
+
   /**
    *  Applies [f] to an [B] inside [Ior] and returns the [Ior] structure with a pair of the [B] value and the
    *  computed [C] value as result of applying [f]
@@ -720,6 +751,10 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
         HA.run { a.hashWithSalt(salt.hashWithSalt(2)) } +
           HB.run { b.hashWithSalt(salt.hashWithSalt(2)) } }
     )
+
+  fun isEmpty(): Boolean = isLeft
+
+  fun isNotEmpty(): Boolean = !isLeft
 
   /**
    *  Replaces [B] inside [Ior] with [C] resulting in a Ior<A, C>
@@ -770,6 +805,15 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
       { b -> fa(b).map { Right(it) } },
       { a, b -> fa(b).map { Both(a, it) }}
     )
+
+  inline fun <C> traverse_(fa: (B) -> Iterable<C>): List<Unit> =
+    fold({ emptyList() }, { fa(it).void() }, { _, b -> fa(b).void() })
+
+  inline fun <AA, C> traverseEither_(fa: (B) -> Either<AA, C>): Either<AA, Unit> =
+    fold({ Either.right(Unit) }, { fa(it).void() }, { _, b -> fa(b).void() })
+
+  inline fun <AA, C> traverseValidated_(fa: (B) -> Validated<AA, C>): Validated<AA, Unit> =
+    fold({ Valid(Unit) }, { fa(it).void() }, { _, b -> fa(b).void() })
 
   /**
    *  Pairs [C] with [B] returning a Ior<A, Pair<C, B>>
@@ -855,6 +899,15 @@ fun <A, B> Tuple2<A, B>.bothIor(): Ior<A, B> = Ior.Both(this.a, this.b)
 fun <A> A.leftIor(): Ior<A, Nothing> = Ior.Left(this)
 
 fun <A> A.rightIor(): Ior<Nothing, A> = Ior.Right(this)
+
+fun <A, B> Ior<A, Iterable<B>>.sequence_(): List<Unit> =
+  traverse_(::identity)
+
+fun <A, B, C> Ior<A, Either<B, C>>.sequenceEither_(): Either<B, Unit> =
+  traverseEither_(::identity)
+
+fun <A, B, C> Ior<A, Validated<B, C>>.sequenceValidated_(): Validated<B, Unit> =
+  traverseValidated_(::identity)
 
 fun <A, B> Ior<Iterable<A>, Iterable<B>>.bisequence(): List<Ior<A, B>> =
   bitraverse(::identity, ::identity)
