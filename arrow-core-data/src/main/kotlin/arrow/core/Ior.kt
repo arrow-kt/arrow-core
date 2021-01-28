@@ -945,36 +945,6 @@ fun <A, B> Ior<A, B>.combine(SA: Semigroup<A>, SB: Semigroup<B>, other: Ior<A, B
     }
   }
 
-fun <A, B> Ior<A, B>.compare(OA: Order<A>, OB: Order<B>, b: Ior<A, B>): Ordering = fold(
-  { a1 -> b.fold({ a2 -> OA.run { a1.compare(a2) } }, { LT }, { _, _ -> LT }) },
-  { b1 -> b.fold({ GT }, { b2 -> OB.run { b1.compare(b2) } }, { _, _ -> LT }) },
-  { a1, b1 -> b.fold({ GT }, { GT }, { a2, b2 -> OA.run { a1.compare(a2) } + OB.run { b1.compare(b2) } }) }
-)
-
-fun <A, B> Ior<A, B>.compareTo(OA: Order<A>, OB: Order<B>, b: Ior<A, B>): Int =
-  compare(OA, OB, b).toInt()
-
-fun <A, B> Ior<A, B>.lt(OA: Order<A>, OB: Order<B>, b: Ior<A, B>): Boolean =
-  compare(OA, OB, b) == LT
-
-fun <A, B> Ior<A, B>.lte(OA: Order<A>, OB: Order<B>, b: Ior<A, B>): Boolean =
-  compare(OA, OB, b) != GT
-
-fun <A, B> Ior<A, B>.gt(OA: Order<A>, OB: Order<B>, b: Ior<A, B>): Boolean =
-  compare(OA, OB, b) == GT
-
-fun <A, B> Ior<A, B>.gte(OA: Order<A>, OB: Order<B>, b: Ior<A, B>): Boolean =
-  compare(OA, OB, b) != LT
-
-fun <A, B> Ior<A, B>.max(OA: Order<A>, OB: Order<B>, b: Ior<A, B>): Ior<A, B> =
-  if (gt(OA, OB, b)) this else b
-
-fun <A, B> Ior<A, B>.min(OA: Order<A>, OB: Order<B>, b: Ior<A, B>): Ior<A, B> =
-  if (lt(OA, OB, b)) this else b
-
-fun <A, B> Ior<A, B>.sort(OA: Order<A>, OB: Order<B>, b: Ior<A, B>): Pair<Ior<A, B>, Ior<A, B>> =
-  if (gte(OA, OB, b)) this to b else b to this
-
 fun <A, B> Ior<A, B>.eqv(EQA: Eq<A>, EQB: Eq<B>, b: Ior<A, B>): Boolean = when (this) {
   is Ior.Left -> when (b) {
     is Ior.Both -> false
@@ -1087,47 +1057,8 @@ fun <A, B, C> Ior<A, B>.zip(SA: Semigroup<A>, fb: Ior<A, C>): Ior<A, Pair<B, C>>
 fun <A, B, C, Z> Ior<A, B>.zipEval(SA: Semigroup<A>, other: Eval<Ior<A, C>>, f: (B, C) -> Z): Eval<Ior<A, Z>> =
   other.map {zip(SA, it).map { a -> f(a.first, a.second) }}
 
-fun <A, B> Eq.Companion.ior(EQA: Eq<A>, EQB: Eq<B>): Eq<Ior<A, B>> =
-  IorEq(EQA, EQB)
-
-fun <A, B> Hash.Companion.ior(HA: Hash<A>, HB: Hash<B>): Hash<Ior<A, B>> =
-  IorHash(HA, HB)
-
-fun <A, B> Order.Companion.ior(OA: Order<A>, OB: Order<B>): Order<Ior<A, B>> =
-  IorOrder(OA, OB)
-
 fun <A, B> Semigroup.Companion.ior(SA: Semigroup<A>, SB: Semigroup<B>): Semigroup<Ior<A, B>> =
   IorSemigroup(SA, SB)
-
-fun <A, B> Show.Companion.ior(SA: Show<A>, SB: Show<B>): Show<Ior<A, B>> =
-  IorShow(SA, SB)
-
-private class IorEq<A, B>(
-  private val EQA: Eq<A>,
-  private val EQB: Eq<B>
-) : Eq<Ior<A, B>> {
-  override fun Ior<A, B>.eqv(b: Ior<A, B>): Boolean =
-    eqv(EQA, EQB, b)
-}
-
-private class IorHash<A, B>(
-  private val HA: Hash<A>,
-  private val HB: Hash<B>
-) : Hash<Ior<A, B>> {
-  override fun Ior<A, B>.hash(): Int =
-    hash(HA, HB)
-
-  override fun Ior<A, B>.hashWithSalt(salt: Int): Int =
-    hashWithSalt(HA, HB, salt)
-}
-
-private class IorOrder<A, B>(
-  private val OA: Order<A>,
-  private val OB: Order<B>
-) : Order<Ior<A, B>> {
-  override fun Ior<A, B>.compare(b: Ior<A, B>): Ordering =
-    compare(OA, OB, b)
-}
 
 private class IorSemigroup<A, B>(
   private val SGA: Semigroup<A>,
@@ -1139,12 +1070,4 @@ private class IorSemigroup<A, B>(
 
   override fun Ior<A, B>.maybeCombine(b: Ior<A, B>?): Ior<A, B> =
     b?.let { combine(SGA, SGB, it) } ?: this
-}
-
-private class IorShow<A, B>(
-  private val SA: Show<A>,
-  private val SB: Show<B>
-) : Show<Ior<A, B>> {
-  override fun Ior<A, B>.show(): String =
-    show(SA, SB)
 }
