@@ -887,7 +887,7 @@ inline fun <A, B, D> Ior<A, B>.flatMap(SG: Semigroup<A>, f: (B) -> Ior<A, D>): I
 fun <A, B, D> Ior<A, B>.ap(SG: Semigroup<A>, ff: IorOf<A, (B) -> D>): Ior<A, D> =
   flatMap(SG) { a -> ff.fix().map { f -> f(a) } }
 
-fun <A, B, D> Ior<A, B>.ap(SG: Semigroup<A>, ff: Eval<Ior<A, (B) -> D>>): Eval<Ior<A, D>> =
+fun <A, B, D> Ior<A, B>.apEval(SG: Semigroup<A>, ff: Eval<Ior<A, (B) -> D>>): Eval<Ior<A, D>> =
   ff.map { ap(SG, it) }
 
 inline fun <A, B> Ior<A, B>.getOrElse(default: () -> B): B =
