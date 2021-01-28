@@ -37,10 +37,7 @@ internal val foldable_singleton: ConstFoldable<Any?> = object : ConstFoldable<An
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "foldLeft(arg1, arg2)",
-    "arrow.core.foldLeft"
-  ),
+  ReplaceWith("arg1"),
   DeprecationLevel.WARNING
 )
 fun <A, B> Kind<Kind<ForConst, A>, A>.foldLeft(arg1: B, arg2: Function2<B, A, B>): B =
@@ -57,10 +54,7 @@ fun <A, B> Kind<Kind<ForConst, A>, A>.foldLeft(arg1: B, arg2: Function2<B, A, B>
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "foldRight(arg1, arg2)",
-    "arrow.core.foldRight"
-  ),
+  ReplaceWith("arg1"),
   DeprecationLevel.WARNING
 )
 fun <A, B> Kind<Kind<ForConst, A>, A>.foldRight(
@@ -96,8 +90,8 @@ fun <A> Kind<Kind<ForConst, A>, A>.fold(arg1: Monoid<A>): A = arrow.core.Const.f
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "Option.fromNullable(reduceOrNull(arg1, arg2))",
-    "arrow.core.reduceOrNull",
+    "Option.empty()",
+    "arrow.core.empty",
     "arrow.core.Option"
   ),
   DeprecationLevel.WARNING
@@ -119,19 +113,20 @@ fun <A, B> Kind<Kind<ForConst, A>, A>.reduceLeftToOption(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "reduceRightNull(arg1, arg2).map { Option.fromNullable(it) }",
-    "arrow.core.reduceRightNull",
-    "arrow.core.Option"
+    "Eval.Now<Option<B>>(Option.empty())",
+    "arrow.core.empty",
+    "arrow.core.Option",
+    "arrow.core.Eval"
   ),
   DeprecationLevel.WARNING
 )
 fun <A, B> Kind<Kind<ForConst, A>, A>.reduceRightToOption(
   arg1: Function1<A, B>,
   arg2: Function2<A, Eval<B>, Eval<B>>
-): Eval<Option<B>> = arrow.core.Const.foldable<A>().run {
-  this@reduceRightToOption.reduceRightToOption<A, B>(arg1, arg2) as
-    arrow.core.Eval<arrow.core.Option<B>>
-}
+): Eval<Option<B>> =
+  arrow.core.Const.foldable<A>().run {
+    this@reduceRightToOption.reduceRightToOption<A, B>(arg1, arg2) as arrow.core.Eval<arrow.core.Option<B>>
+  }
 
 @JvmName("reduceLeftOption")
 @Suppress(
@@ -143,8 +138,8 @@ fun <A, B> Kind<Kind<ForConst, A>, A>.reduceRightToOption(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "Option.fromNullable(reduceOrNull({ it }, arg1))",
-    "arrow.core.reduceOrNull",
+    "Option.empty()",
+    "arrow.core.empty",
     "arrow.core.Option"
   ),
   DeprecationLevel.WARNING
@@ -164,9 +159,10 @@ fun <A> Kind<Kind<ForConst, A>, A>.reduceLeftOption(arg1: Function2<A, A, A>): O
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "reduceOrNull({ it }, arg2).map { Option.fromNullable(it) }",
-    "arrow.core.reduceOrNull",
-    "arrow.core.Option"
+    "Eval.Now<Option<B>>(Option.empty())",
+    "arrow.core.empty",
+    "arrow.core.Option",
+    "arrow.core.Eval"
   ),
   DeprecationLevel.WARNING
 )

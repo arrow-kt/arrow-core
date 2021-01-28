@@ -21,7 +21,7 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "compare(ORD, arg1)",
+    "compare(ORD, arg1).toInt()",
     "arrow.core.compare"
   ),
   DeprecationLevel.WARNING

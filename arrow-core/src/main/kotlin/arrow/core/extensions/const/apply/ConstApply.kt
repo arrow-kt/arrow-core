@@ -53,18 +53,18 @@ fun <A, B> Kind<Kind<ForConst, A>, A>.ap(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "apEval(MA, arg1)",
-    "arrow.core.apEval"
+    "arg1.map { retag<Z>().combine(MA, it.retag()) }",
+    "arrow.core.combine"
   ),
   DeprecationLevel.WARNING
 )
 fun <A, B> Kind<Kind<ForConst, A>, A>.apEval(
   MA: Monoid<A>,
   arg1: Eval<Kind<Kind<ForConst, A>, Function1<A, B>>>
-): Eval<Kind<Kind<ForConst, A>, B>> = arrow.core.Const.apply<A>(MA).run {
-  this@apEval.apEval<A, B>(arg1) as arrow.core.Eval<arrow.Kind<arrow.Kind<arrow.core.ForConst, A>,
-    B>>
-}
+): Eval<Kind<Kind<ForConst, A>, B>> =
+  arrow.core.Const.apply<A>(MA).run {
+    this@apEval.apEval<A, B>(arg1) as arrow.core.Eval<arrow.Kind<arrow.Kind<arrow.core.ForConst, A>, B>>
+  }
 
 @JvmName("map2Eval")
 @Suppress(
@@ -76,8 +76,8 @@ fun <A, B> Kind<Kind<ForConst, A>, A>.apEval(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "map2Eval(MA, arg1, arg2)",
-    "arrow.core.map2Eval"
+    "arg1.map { retag<Z>().combine(MA, it.retag()) }",
+    "arrow.core.combine"
   ),
   DeprecationLevel.WARNING
 )
@@ -85,10 +85,10 @@ fun <A, B, Z> Kind<Kind<ForConst, A>, A>.map2Eval(
   MA: Monoid<A>,
   arg1: Eval<Kind<Kind<ForConst, A>, B>>,
   arg2: Function1<Tuple2<A, B>, Z>
-): Eval<Kind<Kind<ForConst, A>, Z>> = arrow.core.Const.apply<A>(MA).run {
-  this@map2Eval.map2Eval<A, B, Z>(arg1, arg2) as
-    arrow.core.Eval<arrow.Kind<arrow.Kind<arrow.core.ForConst, A>, Z>>
-}
+): Eval<Kind<Kind<ForConst, A>, Z>> =
+  arrow.core.Const.apply<A>(MA).run {
+    this@map2Eval.map2Eval<A, B, Z>(arg1, arg2) as arrow.core.Eval<arrow.Kind<arrow.Kind<arrow.core.ForConst, A>, Z>>
+  }
 
 @JvmName("map")
 @Suppress(
@@ -100,8 +100,8 @@ fun <A, B, Z> Kind<Kind<ForConst, A>, A>.map2Eval(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "map(MA, arg0, arg1, arg2)",
-    "arrow.core.Const.map"
+    "mapN(MA, arg0, arg1, arg2)",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -125,7 +125,7 @@ fun <A, B, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "mapN(MA, arg0, arg1, arg2)",
-    "arrow.core.Const.mapN"
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -148,8 +148,8 @@ fun <A, B, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "map(MA, arg0, arg1, arg2, arg3)",
-    "arrow.core.Const.map"
+    "mapN(MA, arg0, arg1, arg2, arg3)",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -174,7 +174,7 @@ fun <A, B, C, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "mapN(MA, arg0, arg1, arg2, arg3)",
-    "arrow.core.Const.mapN"
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -198,8 +198,8 @@ fun <A, B, C, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "map(MA, arg0, arg1, arg2, arg3, arg4)",
-    "arrow.core.Const.map"
+    "mapN(MA, arg0, arg1, arg2, arg3, arg4)",
+    "arrow.core.map"
   ),
   DeprecationLevel.WARNING
 )
@@ -225,7 +225,7 @@ fun <A, B, C, D, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "mapN(MA, arg0, arg1, arg2, arg3, arg4)",
-    "arrow.core.Const.mapN"
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -250,8 +250,8 @@ fun <A, B, C, D, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "map(MA, arg0, arg1, arg2, arg3, arg4, arg5)",
-    "arrow.core.Const.map"
+    "mapN(MA, arg0, arg1, arg2, arg3, arg4, arg5)",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -278,7 +278,7 @@ fun <A, B, C, D, E, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "mapN(MA, arg0, arg1, arg2, arg3, arg4, arg5)",
-    "arrow.core.Const.mapN"
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -304,8 +304,8 @@ fun <A, B, C, D, E, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "map(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
-    "arrow.core.Const.map"
+    "mapN(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -333,7 +333,7 @@ fun <A, B, C, D, E, FF, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "mapN(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
-    "arrow.core.Const.mapN"
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -360,8 +360,8 @@ fun <A, B, C, D, E, FF, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "map(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
-    "arrow.core.Const.map"
+    "mapN(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -391,7 +391,7 @@ fun <A, B, C, D, E, FF, G, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "mapN(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
-    "arrow.core.Const.mapN"
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -420,8 +420,8 @@ fun <A, B, C, D, E, FF, G, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "map(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
-    "arrow.core.Const.map"
+    "mapN(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -452,7 +452,7 @@ fun <A, B, C, D, E, FF, G, H, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "mapN(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
-    "arrow.core.Const.mapN"
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -482,8 +482,8 @@ fun <A, B, C, D, E, FF, G, H, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "map(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
-    "arrow.core.Const.map"
+    "mapN(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -515,7 +515,7 @@ fun <A, B, C, D, E, FF, G, H, I, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "mapN(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
-    "arrow.core.Const.mapN"
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -546,8 +546,8 @@ fun <A, B, C, D, E, FF, G, H, I, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "map(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)",
-    "arrow.core.Const.map"
+    "mapN(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -580,7 +580,7 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "mapN(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)",
-    "arrow.core.Const.mapN"
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -599,8 +599,7 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> mapN(
   arg10: Function1<Tuple10<A, B, C, D, E, FF, G, H, I, J>, Z>
 ): Const<A, Z> = arrow.core.Const
   .apply<A>(MA)
-  .mapN<A, B, C, D, E, FF, G, H, I, J,
-    Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10) as arrow.core.Const<A, Z>
+  .mapN<A, B, C, D, E, FF, G, H, I, J, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10) as arrow.core.Const<A, Z>
 
 @JvmName("map2")
 @Suppress(
@@ -612,8 +611,8 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> mapN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "map2(MA, arg1, arg2)",
-    "arrow.core.map2"
+    "mapN(MA, this, arg1).map(arg2)",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -635,15 +634,15 @@ fun <A, B, Z> Kind<Kind<ForConst, A>, A>.map2(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "product(MA, arg1)",
-    "arrow.core.product"
+    "mapN(MA, this, arg1) { a, b -> Tuple2(a, b) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<Kind<ForConst, A>, A>.product(MA: Monoid<A>, arg1: Kind<Kind<ForConst, A>, B>):
-  Const<A, Tuple2<A, B>> = arrow.core.Const.apply<A>(MA).run {
-  this@product.product<A, B>(arg1) as arrow.core.Const<A, arrow.core.Tuple2<A, B>>
-}
+fun <A, B> Kind<Kind<ForConst, A>, A>.product(MA: Monoid<A>, arg1: Kind<Kind<ForConst, A>, B>): Const<A, Tuple2<A, B>> =
+  arrow.core.Const.apply<A>(MA).run {
+    this@product.product<A, B>(arg1) as arrow.core.Const<A, arrow.core.Tuple2<A, B>>
+  }
 
 @JvmName("product1")
 @Suppress(
@@ -655,8 +654,8 @@ fun <A, B> Kind<Kind<ForConst, A>, A>.product(MA: Monoid<A>, arg1: Kind<Kind<For
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "product(MA, arg1)",
-    "arrow.core.product"
+    "mapN(MA, this, arg1).map { (ab, c) -> Tuple3(ab.a, ab.b, c) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -677,8 +676,8 @@ fun <A, B, Z> Kind<Kind<ForConst, A>, Tuple2<A, B>>.product(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "product(MA, arg1)",
-    "arrow.core.product"
+    "mapN(MA, this, arg1).map { (abc, d) -> Tuple4(abc.a, abc.b, abc.c, d) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -700,8 +699,9 @@ fun <A, B, C, Z> Kind<Kind<ForConst, A>, Tuple3<A, B, C>>.product(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "product(MA, arg1)",
-    "arrow.core.product"
+    "mapN(MA, this, arg1).map { (abcd, e) -> Tuple5(abcd.a, abcd.b, abcd.c, abcd.d, e) }",
+    "arrow.core.retag",
+    "arrow.core.combine"
   ),
   DeprecationLevel.WARNING
 )
@@ -723,8 +723,9 @@ fun <A, B, C, D, Z> Kind<Kind<ForConst, A>, Tuple4<A, B, C, D>>.product(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "product(MA, arg1)",
-    "arrow.core.product"
+    "mapN(MA, this, arg1).map { (abcde, f) -> Tuple6(abcde.a, abcde.b, abcde.c, abcde.d, abcde.e, f) }",
+    "arrow.core.retag",
+    "arrow.core.combine"
   ),
   DeprecationLevel.WARNING
 )
@@ -733,8 +734,7 @@ fun <A, B, C, D, E, Z> Kind<Kind<ForConst, A>, Tuple5<A, B, C, D, E>>.product(
   arg1: Kind<Kind<ForConst, A>, Z>
 ): Const<A, Tuple6<A, B, C, D, E, Z>> =
   arrow.core.Const.apply<A>(MA).run {
-    this@product.product<A, B, C, D, E, Z>(arg1) as arrow.core.Const<A, arrow.core.Tuple6<A, B, C, D,
-      E, Z>>
+    this@product.product<A, B, C, D, E, Z>(arg1) as arrow.core.Const<A, arrow.core.Tuple6<A, B, C, D, E, Z>>
   }
 
 @JvmName("product5")
@@ -747,8 +747,10 @@ fun <A, B, C, D, E, Z> Kind<Kind<ForConst, A>, Tuple5<A, B, C, D, E>>.product(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "product(MA, arg1)",
-    "arrow.core.product"
+    "mapN(MA, this, arg1)\n" +
+      ".map { (abcdef, g) -> Tuple7(abcdef.a, abcdef.b, abcdef.c, abcdef.d, abcdef.e, abcdef.f, g) }",
+    "arrow.core.retag",
+    "arrow.core.combine"
   ),
   DeprecationLevel.WARNING
 )
@@ -757,8 +759,7 @@ fun <A, B, C, D, E, FF, Z> Kind<Kind<ForConst, A>, Tuple6<A, B, C, D, E, FF>>.pr
   arg1: Kind<Kind<ForConst, A>, Z>
 ): Const<A, Tuple7<A, B, C, D, E, FF, Z>> =
   arrow.core.Const.apply<A>(MA).run {
-    this@product.product<A, B, C, D, E, FF, Z>(arg1) as arrow.core.Const<A, arrow.core.Tuple7<A, B, C,
-      D, E, FF, Z>>
+    this@product.product<A, B, C, D, E, FF, Z>(arg1) as arrow.core.Const<A, arrow.core.Tuple7<A, B, C, D, E, FF, Z>>
   }
 
 @JvmName("product6")
@@ -771,17 +772,21 @@ fun <A, B, C, D, E, FF, Z> Kind<Kind<ForConst, A>, Tuple6<A, B, C, D, E, FF>>.pr
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "product(MA, arg1)",
-    "arrow.core.product"
+    "mapN(MA, this, arg1)\n" +
+      ".map { (abcdefg, h) -> Tuple8(abcdefg.a, abcdefg.b, abcdefg.c, abcdefg.d, abcdefg.e, abcdefg.f, abcdefg.g, h) }",
+    "arrow.core.retag",
+    "arrow.core.combine"
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C, D, E, FF, G, Z> Kind<Kind<ForConst, A>, Tuple7<A, B, C, D, E, FF,
-  G>>.product(MA: Monoid<A>, arg1: Kind<Kind<ForConst, A>, Z>): Const<A, Tuple8<A, B, C, D, E, FF,
-  G, Z>> = arrow.core.Const.apply<A>(MA).run {
-  this@product.product<A, B, C, D, E, FF, G, Z>(arg1) as arrow.core.Const<A, arrow.core.Tuple8<A, B,
-    C, D, E, FF, G, Z>>
-}
+fun <A, B, C, D, E, FF, G, Z> Kind<Kind<ForConst, A>, Tuple7<A, B, C, D, E, FF, G>>.product(
+  MA: Monoid<A>,
+  arg1: Kind<Kind<ForConst, A>, Z>
+): Const<A, Tuple8<A, B, C, D, E, FF, G, Z>> =
+  arrow.core.Const.apply<A>(MA).run {
+    this@product.product<A, B, C, D, E, FF, G, Z>(arg1) as
+      arrow.core.Const<A, arrow.core.Tuple8<A, B, C, D, E, FF, G, Z>>
+  }
 
 @JvmName("product7")
 @Suppress(
@@ -793,17 +798,21 @@ fun <A, B, C, D, E, FF, G, Z> Kind<Kind<ForConst, A>, Tuple7<A, B, C, D, E, FF,
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "product(MA, arg1)",
-    "arrow.core.product"
+    "mapN(MA, this, arg1)\n" +
+      ".map { (abcdefgh, i) -> Tuple9(abcdefgh.a, abcdefgh.b, abcdefgh.c, abcdefgh.d, abcdefgh.e, abcdefgh.f, abcdefgh.g, abcdefgh.h, i) }",
+    "arrow.core.retag",
+    "arrow.core.combine"
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C, D, E, FF, G, H, Z> Kind<Kind<ForConst, A>, Tuple8<A, B, C, D, E, FF, G,
-  H>>.product(MA: Monoid<A>, arg1: Kind<Kind<ForConst, A>, Z>): Const<A, Tuple9<A, B, C, D, E, FF,
-  G, H, Z>> = arrow.core.Const.apply<A>(MA).run {
-  this@product.product<A, B, C, D, E, FF, G, H, Z>(arg1) as arrow.core.Const<A, arrow.core.Tuple9<A,
-    B, C, D, E, FF, G, H, Z>>
-}
+fun <A, B, C, D, E, FF, G, H, Z> Kind<Kind<ForConst, A>, Tuple8<A, B, C, D, E, FF, G, H>>.product(
+  MA: Monoid<A>,
+  arg1: Kind<Kind<ForConst, A>, Z>
+): Const<A, Tuple9<A, B, C, D, E, FF, G, H, Z>> =
+  arrow.core.Const.apply<A>(MA).run {
+    this@product.product<A, B, C, D, E, FF, G, H, Z>(arg1) as
+      arrow.core.Const<A, arrow.core.Tuple9<A, B, C, D, E, FF, G, H, Z>>
+  }
 
 @JvmName("product8")
 @Suppress(
@@ -815,17 +824,21 @@ fun <A, B, C, D, E, FF, G, H, Z> Kind<Kind<ForConst, A>, Tuple8<A, B, C, D, E, F
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "product(MA, arg1)",
-    "arrow.core.product"
+    "mapN(MA, this, arg1)\n" +
+      ".map { (abcdefghi, j) -> Tuple10(abcdefghi.a, abcdefghi.b, abcdefghi.c, abcdefghi.d, abcdefghi.e, abcdefghi.f, abcdefghi.g, abcdefghi.h, abcdefghi.i, j) }",
+    "arrow.core.retag",
+    "arrow.core.combine"
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B, C, D, E, FF, G, H, I, Z> Kind<Kind<ForConst, A>, Tuple9<A, B, C, D, E, FF, G, H,
-  I>>.product(MA: Monoid<A>, arg1: Kind<Kind<ForConst, A>, Z>): Const<A, Tuple10<A, B, C, D, E,
-  FF, G, H, I, Z>> = arrow.core.Const.apply<A>(MA).run {
-  this@product.product<A, B, C, D, E, FF, G, H, I, Z>(arg1) as arrow.core.Const<A,
-    arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, Z>>
-}
+fun <A, B, C, D, E, FF, G, H, I, Z> Kind<Kind<ForConst, A>, Tuple9<A, B, C, D, E, FF, G, H, I>>.product(
+  MA: Monoid<A>,
+  arg1: Kind<Kind<ForConst, A>, Z>
+): Const<A, Tuple10<A, B, C, D, E, FF, G, H, I, Z>> =
+  arrow.core.Const.apply<A>(MA).run {
+    this@product.product<A, B, C, D, E, FF, G, H, I, Z>(arg1) as
+      arrow.core.Const<A, arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, Z>>
+  }
 
 @JvmName("tupled")
 @Suppress(
@@ -837,8 +850,8 @@ fun <A, B, C, D, E, FF, G, H, I, Z> Kind<Kind<ForConst, A>, Tuple9<A, B, C, D, E
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupled(MA, arg0, arg1)",
-    "arrow.core.Const.tupled"
+    "mapN(SG, arg0, arg1) { a, b -> Tuple2(a, b) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -860,8 +873,8 @@ fun <A, B> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupledN(MA, arg0, arg1)",
-    "arrow.core.Const.tupledN"
+    "mapN(SG, arg0, arg1) { a, b -> Tuple2(a, b) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -883,8 +896,8 @@ fun <A, B> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupled(MA, arg0, arg1, arg2)",
-    "arrow.core.Const.tupled"
+    "mapN(SG, arg0, arg1, arg2) { a, b, c -> Tuple3(a, b, c) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -907,8 +920,8 @@ fun <A, B, C> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupledN(MA, arg0, arg1, arg2)",
-    "arrow.core.Const.tupledN"
+    "mapN(SG, arg0, arg1, arg2) { a, b, c -> Tuple3(a, b, c) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -931,8 +944,8 @@ fun <A, B, C> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupled(MA, arg0, arg1, arg2, arg3)",
-    "arrow.core.Const.tupled"
+    "mapN(SG, arg0, arg1, arg2, arg3) { a, b, c, d -> Tuple4(a, b, c, d) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -956,8 +969,8 @@ fun <A, B, C, D> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupledN(MA, arg0, arg1, arg2, arg3)",
-    "arrow.core.Const.tupledN"
+    "mapN(SG, arg0, arg1, arg2, arg3) { a, b, c, d -> Tuple4(a, b, c, d) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -969,8 +982,7 @@ fun <A, B, C, D> tupledN(
   arg3: Kind<Kind<ForConst, A>, D>
 ): Const<A, Tuple4<A, B, C, D>> = arrow.core.Const
   .apply<A>(MA)
-  .tupledN<A, B, C, D>(arg0, arg1, arg2, arg3) as arrow.core.Const<A, arrow.core.Tuple4<A, B, C,
-  D>>
+  .tupledN<A, B, C, D>(arg0, arg1, arg2, arg3) as arrow.core.Const<A, arrow.core.Tuple4<A, B, C, D>>
 
 @JvmName("tupled")
 @Suppress(
@@ -982,8 +994,8 @@ fun <A, B, C, D> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupled(MA, arg0, arg1, arg2, arg3, arg4)",
-    "arrow.core.Const.tupled"
+    "mapN(SG, arg0, arg1, arg2, arg3, arg4) { a, b, c, d, e -> Tuple5(a, b, c, d, e) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -1009,8 +1021,8 @@ fun <A, B, C, D, E> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupledN(MA, arg0, arg1, arg2, arg3, arg4)",
-    "arrow.core.Const.tupledN"
+    "mapN(SG, arg0, arg1, arg2, arg3, arg4) { a, b, c, d, e -> Tuple5(a, b, c, d, e) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -1036,8 +1048,8 @@ fun <A, B, C, D, E> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupled(MA, arg0, arg1, arg2, arg3, arg4, arg5)",
-    "arrow.core.Const.tupled"
+    "mapN(SG, arg0, arg1, arg2, arg3, arg4, arg5) { a, b, c, d, e, ff -> Tuple6(a, b, c, d, e, ff) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -1064,8 +1076,8 @@ fun <A, B, C, D, E, FF> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupledN(MA, arg0, arg1, arg2, arg3, arg4, arg5)",
-    "arrow.core.Const.tupledN"
+    "mapN(SG, arg0, arg1, arg2, arg3, arg4, arg5) { a, b, c, d, e, ff -> Tuple6(a, b, c, d, e, ff) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -1077,10 +1089,11 @@ fun <A, B, C, D, E, FF> tupledN(
   arg3: Kind<Kind<ForConst, A>, D>,
   arg4: Kind<Kind<ForConst, A>, E>,
   arg5: Kind<Kind<ForConst, A>, FF>
-): Const<A, Tuple6<A, B, C, D, E, FF>> = arrow.core.Const
-  .apply<A>(MA)
-  .tupledN<A, B, C, D, E, FF>(arg0, arg1, arg2, arg3, arg4, arg5) as arrow.core.Const<A,
-  arrow.core.Tuple6<A, B, C, D, E, FF>>
+): Const<A, Tuple6<A, B, C, D, E, FF>> =
+  arrow.core.Const
+    .apply<A>(MA)
+    .tupledN<A, B, C, D, E, FF>(arg0, arg1, arg2, arg3, arg4, arg5) as
+    arrow.core.Const<A, arrow.core.Tuple6<A, B, C, D, E, FF>>
 
 @JvmName("tupled")
 @Suppress(
@@ -1092,8 +1105,8 @@ fun <A, B, C, D, E, FF> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupled(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
-    "arrow.core.Const.tupled"
+    "mapN(SG, arg0, arg1, arg2, arg3, arg4, arg5, arg6) { a, b, c, d, e, ff, g -> Tuple7(a, b, c, d, e, ff, g) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -1121,8 +1134,8 @@ fun <A, B, C, D, E, FF, G> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupledN(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6)",
-    "arrow.core.Const.tupledN"
+    "mapN(SG, arg0, arg1, arg2, arg3, arg4, arg5, arg6) { a, b, c, d, e, ff, g -> Tuple7(a, b, c, d, e, ff, g) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -1150,8 +1163,8 @@ fun <A, B, C, D, E, FF, G> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupled(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
-    "arrow.core.Const.tupled"
+    "mapN(SG, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) { a, b, c, d, e, ff, g, h -> Tuple8(a, b, c, d, e, ff, g, h) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -1180,8 +1193,8 @@ fun <A, B, C, D, E, FF, G, H> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupledN(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)",
-    "arrow.core.Const.tupledN"
+    "mapN(SG, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) { a, b, c, d, e, ff, g, h -> Tuple8(a, b, c, d, e, ff, g, h) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -1210,8 +1223,9 @@ fun <A, B, C, D, E, FF, G, H> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupled(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
-    "arrow.core.Const.tupled"
+    "mapN(SG, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) { a, b, c, d, e, ff, g, h, i -> \n" +
+      "Tuple9(a, b, c, d, e, ff, g, h, i) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -1241,8 +1255,9 @@ fun <A, B, C, D, E, FF, G, H, I> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupledN(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)",
-    "arrow.core.Const.tupledN"
+    "mapN(SG, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) { a, b, c, d, e, ff, g, h, i -> \n" +
+      "Tuple9(a, b, c, d, e, ff, g, h, i) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -1272,8 +1287,9 @@ fun <A, B, C, D, E, FF, G, H, I> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupled(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
-    "arrow.core.Const.tupled"
+    "mapN(SG, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) { a, b, c, d, e, ff, g, h, i, j -> \n" +
+      "Tuple10(a, b, c, d, e, ff, g, h, i, j) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -1289,11 +1305,11 @@ fun <A, B, C, D, E, FF, G, H, I, J> tupled(
   arg7: Kind<Kind<ForConst, A>, H>,
   arg8: Kind<Kind<ForConst, A>, I>,
   arg9: Kind<Kind<ForConst, A>, J>
-): Const<A, Tuple10<A, B, C, D, E, FF, G, H, I, J>> = arrow.core.Const
-  .apply<A>(MA)
-  .tupled<A, B, C, D, E, FF, G, H, I,
-    J>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) as arrow.core.Const<A,
-  arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
+): Const<A, Tuple10<A, B, C, D, E, FF, G, H, I, J>> =
+  arrow.core.Const
+    .apply<A>(MA)
+    .tupled<A, B, C, D, E, FF, G, H, I, J>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) as
+    arrow.core.Const<A, arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -1305,8 +1321,9 @@ fun <A, B, C, D, E, FF, G, H, I, J> tupled(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupledN(MA, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)",
-    "arrow.core.Const.tupledN"
+    "mapN(SG, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) { a, b, c, d, e, ff, g, h, i, j -> \n" +
+      "Tuple10(a, b, c, d, e, ff, g, h, i, j) }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -1322,11 +1339,11 @@ fun <A, B, C, D, E, FF, G, H, I, J> tupledN(
   arg7: Kind<Kind<ForConst, A>, H>,
   arg8: Kind<Kind<ForConst, A>, I>,
   arg9: Kind<Kind<ForConst, A>, J>
-): Const<A, Tuple10<A, B, C, D, E, FF, G, H, I, J>> = arrow.core.Const
-  .apply<A>(MA)
-  .tupledN<A, B, C, D, E, FF, G, H, I,
-    J>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) as arrow.core.Const<A,
-  arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
+): Const<A, Tuple10<A, B, C, D, E, FF, G, H, I, J>> =
+  arrow.core.Const
+    .apply<A>(MA)
+    .tupledN<A, B, C, D, E, FF, G, H, I, J>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) as
+    arrow.core.Const<A, arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
 
 @JvmName("followedBy")
 @Suppress(
@@ -1338,15 +1355,18 @@ fun <A, B, C, D, E, FF, G, H, I, J> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "followedBy(MA, arg1)",
-    "arrow.core.followedBy"
+    "mapN(SG, this, arg1) { (_, right) -> right }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<Kind<ForConst, A>, A>.followedBy(MA: Monoid<A>, arg1: Kind<Kind<ForConst, A>, B>):
-  Const<A, B> = arrow.core.Const.apply<A>(MA).run {
-  this@followedBy.followedBy<A, B>(arg1) as arrow.core.Const<A, B>
-}
+fun <A, B> Kind<Kind<ForConst, A>, A>.followedBy(
+  MA: Monoid<A>,
+  arg1: Kind<Kind<ForConst, A>, B>
+): Const<A, B> =
+  arrow.core.Const.apply<A>(MA).run {
+    this@followedBy.followedBy<A, B>(arg1) as arrow.core.Const<A, B>
+  }
 
 @JvmName("apTap")
 @Suppress(
@@ -1358,8 +1378,8 @@ fun <A, B> Kind<Kind<ForConst, A>, A>.followedBy(MA: Monoid<A>, arg1: Kind<Kind<
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "apTap(MA, arg1)",
-    "arrow.core.apTap"
+    "mapN(SG, this, arg1) { (left, _) -> left }",
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
