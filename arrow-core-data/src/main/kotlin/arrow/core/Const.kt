@@ -2,6 +2,7 @@ package arrow.core
 
 import arrow.Kind
 import arrow.typeclasses.Applicative
+import arrow.typeclasses.Divide
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
@@ -211,16 +212,6 @@ data class Const<A, out T>(private val value: A) : ConstOf<A, T> {
 
   override fun toString(): String =
     show(Show.any())
-
-
-
-  fun <A, B, C, D> tupled(
-    SG: Semigroup<A>,
-    b: Const<A, B>,
-    c: Const<A, C>,
-    d: Const<A, D>,
-  ): Const<A, Tuple3<A, B, C>> =
-    mapN(SG, b, c,d) { b, c, d -> Tuple3(b, c, d) }
 }
 
 @Deprecated(
@@ -307,8 +298,7 @@ fun <A, T> Order.Companion.const(OA: Order<A>): Order<Const<A, T>> =
       compare(OA, b)
   }
 
-//
-//fun <A, B, T> Const<T, A>.divide(MO: Monoid<A>, b: Const<T, B>, f: (T) -> Tuple2<A, B>): Const<A, B> =
+//fun <A, B, T> divide(SG: Semigroup<A>, a: Const<T, A>, b: Const<T, B>, f: (T) -> Tuple2<A, B>): Const<A, B> =
 //  Const(
-//    MO.run { value() + b.value() }
+//    SG.run { a.value() + b.value() }
 //  )
