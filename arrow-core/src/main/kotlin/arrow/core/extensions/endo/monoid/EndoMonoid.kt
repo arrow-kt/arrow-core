@@ -3,13 +3,6 @@ package arrow.core.extensions.endo.monoid
 import arrow.core.Endo
 import arrow.core.Endo.Companion
 import arrow.core.extensions.EndoMonoid
-import kotlin.Any
-import kotlin.Deprecated
-import kotlin.PublishedApi
-import kotlin.Suppress
-import kotlin.collections.Collection
-import kotlin.collections.List
-import kotlin.jvm.JvmName
 
 /**
  * cached extension
@@ -27,7 +20,8 @@ internal val monoid_singleton: EndoMonoid<Any?> = object : EndoMonoid<Any?> {}
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "if (isEmpty()) empty() else reduce { a, b -> a.combine(b) }"
+    "if (isEmpty()) Endo(::identity) else reduce { a, b -> a.combine(b) }",
+    "arrow.core.combine"
   ),
   DeprecationLevel.WARNING
 )
@@ -46,7 +40,8 @@ fun <A> Collection<Endo<A>>.combineAll(): Endo<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "if (arg0.isEmpty()) empty() else arg0.reduce { a, b -> a.combine(b) }"
+    "if (arg0.isEmpty()) Endo(::identity) else arg0.reduce { a, b -> a.combine(b) }",
+    "arrow.core.combine"
   ),
   DeprecationLevel.WARNING
 )
