@@ -700,8 +700,7 @@ fun <A, B, C, Z> Kind<Kind<ForConst, A>, Tuple3<A, B, C>>.product(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "mapN(MA, this, arg1).map { (abcd, e) -> Tuple5(abcd.a, abcd.b, abcd.c, abcd.d, e) }",
-    "arrow.core.retag",
-    "arrow.core.combine"
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -724,8 +723,7 @@ fun <A, B, C, D, Z> Kind<Kind<ForConst, A>, Tuple4<A, B, C, D>>.product(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "mapN(MA, this, arg1).map { (abcde, f) -> Tuple6(abcde.a, abcde.b, abcde.c, abcde.d, abcde.e, f) }",
-    "arrow.core.retag",
-    "arrow.core.combine"
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -749,8 +747,7 @@ fun <A, B, C, D, E, Z> Kind<Kind<ForConst, A>, Tuple5<A, B, C, D, E>>.product(
   ReplaceWith(
     "mapN(MA, this, arg1)\n" +
       ".map { (abcdef, g) -> Tuple7(abcdef.a, abcdef.b, abcdef.c, abcdef.d, abcdef.e, abcdef.f, g) }",
-    "arrow.core.retag",
-    "arrow.core.combine"
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -774,8 +771,7 @@ fun <A, B, C, D, E, FF, Z> Kind<Kind<ForConst, A>, Tuple6<A, B, C, D, E, FF>>.pr
   ReplaceWith(
     "mapN(MA, this, arg1)\n" +
       ".map { (abcdefg, h) -> Tuple8(abcdefg.a, abcdefg.b, abcdefg.c, abcdefg.d, abcdefg.e, abcdefg.f, abcdefg.g, h) }",
-    "arrow.core.retag",
-    "arrow.core.combine"
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -800,8 +796,7 @@ fun <A, B, C, D, E, FF, G, Z> Kind<Kind<ForConst, A>, Tuple7<A, B, C, D, E, FF, 
   ReplaceWith(
     "mapN(MA, this, arg1)\n" +
       ".map { (abcdefgh, i) -> Tuple9(abcdefgh.a, abcdefgh.b, abcdefgh.c, abcdefgh.d, abcdefgh.e, abcdefgh.f, abcdefgh.g, abcdefgh.h, i) }",
-    "arrow.core.retag",
-    "arrow.core.combine"
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
@@ -826,8 +821,7 @@ fun <A, B, C, D, E, FF, G, H, Z> Kind<Kind<ForConst, A>, Tuple8<A, B, C, D, E, F
   ReplaceWith(
     "mapN(MA, this, arg1)\n" +
       ".map { (abcdefghi, j) -> Tuple10(abcdefghi.a, abcdefghi.b, abcdefghi.c, abcdefghi.d, abcdefghi.e, abcdefghi.f, abcdefghi.g, abcdefghi.h, abcdefghi.i, j) }",
-    "arrow.core.retag",
-    "arrow.core.combine"
+    "arrow.core.mapN"
   ),
   DeprecationLevel.WARNING
 )
