@@ -296,8 +296,3 @@ fun <A, T> Order.Companion.const(OA: Order<A>): Order<Const<A, T>> =
     override fun Const<A, T>.compare(b: Const<A, T>): Ordering =
       compare(OA, b)
   }
-
-//fun <A, B, T> divide(SG: Semigroup<A>, a: Const<T, A>, b: Const<T, B>, f: (T) -> Tuple2<A, B>): Const<A, B> =
-//  Const(
-//    SG.run { a.value() + b.value() }
-//  )

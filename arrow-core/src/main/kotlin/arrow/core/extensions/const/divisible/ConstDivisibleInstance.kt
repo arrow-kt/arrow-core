@@ -18,14 +18,14 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "Const(MOO().empty())",
-  "arrow.core.Const"
+    "Const(MOO().empty())",
+    "arrow.core.Const"
   ),
   DeprecationLevel.WARNING
 )
 fun <O, A> conquer(MOO: Monoid<O>): Const<O, A> = arrow.core.Const
-   .divisible<O>(MOO)
-   .conquer<A>() as arrow.core.Const<O, A>
+  .divisible<O>(MOO)
+  .conquer<A>() as arrow.core.Const<O, A>
 
 @Suppress(
   "UNCHECKED_CAST",
@@ -35,6 +35,7 @@ fun <O, A> conquer(MOO: Monoid<O>): Const<O, A> = arrow.core.Const
   "Divisible typeclass is deprecated. Use concrete methods on Const",
   level = DeprecationLevel.WARNING
 )
-inline fun <O> Companion.divisible(MOO: Monoid<O>): ConstDivisibleInstance<O> = object :
-    arrow.core.extensions.ConstDivisibleInstance<O> { override fun MOO():
-    arrow.typeclasses.Monoid<O> = MOO }
+inline fun <O> Companion.divisible(MOO: Monoid<O>): ConstDivisibleInstance<O> =
+  object : arrow.core.extensions.ConstDivisibleInstance<O> {
+    override fun MOO(): arrow.typeclasses.Monoid<O> = MOO
+  }
