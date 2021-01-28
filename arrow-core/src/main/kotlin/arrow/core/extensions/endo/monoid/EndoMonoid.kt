@@ -27,14 +27,14 @@ internal val monoid_singleton: EndoMonoid<Any?> = object : EndoMonoid<Any?> {}
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "combineAll()",
-  "arrow.core.combineAll"
+    "if (isEmpty()) empty() else reduce { a, b -> a.combine(b) }"
   ),
   DeprecationLevel.WARNING
 )
-fun <A> Collection<Endo<A>>.combineAll(): Endo<A> = arrow.core.Endo.monoid<A>().run {
-  this@combineAll.combineAll() as arrow.core.Endo<A>
-}
+fun <A> Collection<Endo<A>>.combineAll(): Endo<A> =
+  arrow.core.Endo.monoid<A>().run {
+    this@combineAll.combineAll() as arrow.core.Endo<A>
+  }
 
 @JvmName("combineAll")
 @Suppress(
@@ -46,18 +46,19 @@ fun <A> Collection<Endo<A>>.combineAll(): Endo<A> = arrow.core.Endo.monoid<A>().
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "combineAll(arg0)",
-  "arrow.core.Endo.combineAll"
+    "if (arg0.isEmpty()) empty() else arg0.reduce { a, b -> a.combine(b) }"
   ),
   DeprecationLevel.WARNING
 )
-fun <A> combineAll(arg0: List<Endo<A>>): Endo<A> = arrow.core.Endo
-   .monoid<A>()
-   .combineAll(arg0) as arrow.core.Endo<A>
+fun <A> combineAll(arg0: List<Endo<A>>): Endo<A> =
+  arrow.core.Endo
+    .monoid<A>()
+    .combineAll(arg0) as arrow.core.Endo<A>
 
 @Suppress(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Monoid typeclasses is deprecated. Use concrete methods on Endo")
 inline fun <A> Companion.monoid(): EndoMonoid<A> = monoid_singleton as
-    arrow.core.extensions.EndoMonoid<A>
+  arrow.core.extensions.EndoMonoid<A>
