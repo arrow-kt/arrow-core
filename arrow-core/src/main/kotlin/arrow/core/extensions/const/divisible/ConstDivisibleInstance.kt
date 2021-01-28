@@ -18,8 +18,8 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "conquer(MOO)",
-  "arrow.core.Const.conquer"
+  "Const(MOO().empty())",
+  "arrow.core.Const"
   ),
   DeprecationLevel.WARNING
 )
