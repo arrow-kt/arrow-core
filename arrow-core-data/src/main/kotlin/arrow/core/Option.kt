@@ -628,7 +628,7 @@ sealed class Option<out A> : OptionOf<A> {
   fun <B> filterMap(f: (A) -> Option<B>): Option<B> =
     flatMap(f)
 
-  fun <B> filterMap(f: (A) -> B?): Option<B> =
+  inline fun <B> filterMap(f: (A) -> B?): Option<B> =
     flatMap { fromNullable(f(it)) }
 
   inline fun <R> fold(ifEmpty: () -> R, ifSome: (A) -> R): R = when (this) {
@@ -645,7 +645,7 @@ sealed class Option<out A> : OptionOf<A> {
    *
    * @param f the function to apply.
    * */
-  fun <B> mapNotNull(f: (A) -> B?): Option<B> =
+  inline fun <B> mapNotNull(f: (A) -> B?): Option<B> =
     flatMap { a -> fromNullable(f(a)) }
 
   /**
@@ -667,7 +667,7 @@ sealed class Option<out A> : OptionOf<A> {
   fun <B> align(b: Option<B>): Option<Ior<A, B>> =
     Ior.fromOptions(this, b)
 
-  fun <B, C> align(b: Option<B>, f: (Ior<A, B>) -> C): Option<C> =
+  inline fun <B, C> align(b: Option<B>, f: (Ior<A, B>) -> C): Option<C> =
     Ior.fromOptions(this, b).map(f)
 
   inline fun all(predicate: (A) -> Boolean): Boolean =
@@ -679,19 +679,19 @@ sealed class Option<out A> : OptionOf<A> {
   fun <B> apEval(ff: Eval<Option<(A) -> B>>): Eval<Option<B>> =
     ff.map { ap(it) }
 
-  fun <B> crosswalk(f: (A) -> Option<B>): Option<Option<B>> =
+  inline fun <B> crosswalk(f: (A) -> Option<B>): Option<Option<B>> =
     when (this) {
       is None -> empty<B>().map { empty() }
       is Some -> f(t).map { just(it) }
     }
 
-  fun <K, V> crosswalkMap(f: (A) -> Map<K, V>): Map<K, Option<V>> =
+  inline fun <K, V> crosswalkMap(f: (A) -> Map<K, V>): Map<K, Option<V>> =
     when (this) {
       is None -> emptyMap()
       is Some -> f(t).mapValues { just(it.value) }
     }
 
-  fun <B> crosswalkNull(f: (A) -> B?): Option<B>? =
+  inline fun <B> crosswalkNull(f: (A) -> B?): Option<B>? =
     when (this) {
       is None -> null
       is Some -> f(t)?.let { just(it) }
@@ -703,7 +703,7 @@ sealed class Option<out A> : OptionOf<A> {
    *
    *  @param predicate the predicate used for testing.
    */
-  fun filter(predicate: (A) -> Boolean): Option<A> =
+  inline fun filter(predicate: (A) -> Boolean): Option<A> =
     flatMap { a -> if (predicate(a)) Some(a) else None }
 
   /**
@@ -712,7 +712,7 @@ sealed class Option<out A> : OptionOf<A> {
    *
    * @param predicate the predicate used for testing.
    */
-  fun filterNot(predicate: (A) -> Boolean): Option<A> =
+  inline fun filterNot(predicate: (A) -> Boolean): Option<A> =
     flatMap { a -> if (!predicate(a)) Some(a) else None }
 
   /**
@@ -731,15 +731,15 @@ sealed class Option<out A> : OptionOf<A> {
    *
    * @param predicate the predicate to test
    */
-  fun exists(predicate: Predicate<A>): Boolean = fold({ false }, predicate)
+  inline fun exists(predicate: (A) -> Boolean): Boolean = fold({ false }, predicate)
 
-  fun filterA(predicate: (A) -> Iterable<Boolean>): Iterable<Option<A>> =
+  inline fun filterA(predicate: (A) -> Iterable<Boolean>): Iterable<Option<A>> =
     traverseFilter { a -> predicate(a).map { if (it) Some(a) else None } }
 
-  fun <AA> filterAEither(predicate: (A) -> Either<AA, Boolean>): Either<AA, Option<A>> =
+  inline fun <AA> filterAEither(predicate: (A) -> Either<AA, Boolean>): Either<AA, Option<A>> =
     traverseFilterEither { a -> predicate(a).map { if (it) Some(a) else None } }
 
-  fun <AA> filterAValidated(predicate: (A) -> Validated<AA, Boolean>): Validated<AA, Option<A>> =
+  inline fun <AA> filterAValidated(predicate: (A) -> Validated<AA, Boolean>): Validated<AA, Option<A>> =
     traverseFilterValidated { a -> predicate(a).map { if (it) Some(a) else None } }
 
   /**
@@ -748,7 +748,7 @@ sealed class Option<out A> : OptionOf<A> {
    *
    * @param p the predicate to test
    */
-  fun forall(p: Predicate<A>): Boolean = fold({ true }, p)
+  inline fun forall(p: (A) -> Boolean): Boolean = fold({ true }, p)
 
   /**
    * Returns the $option's value if this option is nonempty '''and''' the predicate
@@ -788,17 +788,17 @@ sealed class Option<out A> : OptionOf<A> {
       { f(it) }
     )
 
-  fun <B> foldMap(MB: Monoid<B>, f: (A) -> B): B = MB.run {
+  inline fun <B> foldMap(MB: Monoid<B>, f: (A) -> B): B = MB.run {
     foldLeft(empty()) { b, a -> b.combine(f(a)) }
   }
 
-  fun <B> foldLeft(initial: B, operation: (B, A) -> B): B =
+  inline fun <B> foldLeft(initial: B, operation: (B, A) -> B): B =
     when (this) {
       is Some -> operation(initial, t)
       is None -> initial
     }
 
-  fun <B> foldRight(initial: Eval<B>, operation: (A, Eval<B>) -> Eval<B>): Eval<B> =
+  inline fun <B> foldRight(initial: Eval<B>, crossinline operation: (A, Eval<B>) -> Eval<B>): Eval<B> =
     when (this) {
       is Some -> Eval.defer { operation(t, initial) }
       is None -> initial
@@ -843,7 +843,7 @@ sealed class Option<out A> : OptionOf<A> {
       )
     }
 
-  fun <B, C> padZip(other: Option<B>, f: (A?, B?) -> C): Option<C> =
+  inline fun <B, C> padZip(other: Option<B>, f: (A?, B?) -> C): Option<C> =
     align(other) { ior ->
       ior.fold(
         { f(it, null) },
@@ -852,7 +852,7 @@ sealed class Option<out A> : OptionOf<A> {
       )
     }
 
-  fun <B> reduceOrNull(initial: (A) -> B, operation: (acc: B, A) -> B): B? =
+  inline fun <B> reduceOrNull(initial: (A) -> B, operation: (acc: B, A) -> B): B? =
     when (this) {
       is None -> null
       is Some -> operation(initial(t), t)
@@ -903,7 +903,7 @@ sealed class Option<out A> : OptionOf<A> {
   inline fun <AA, B> traverseFilterValidated(f: (A) -> Validated<AA, Option<B>>): Validated<AA, Option<B>> =
     this.fold({ Valid(empty()) }, f)
 
-  fun <L> toEither(ifEmpty: () -> L): Either<L, A> =
+  inline fun <L> toEither(ifEmpty: () -> L): Either<L, A> =
     fold({ ifEmpty().left() }, { it.right() })
 
   fun toList(): List<A> = fold(::emptyList) { listOf(it) }
@@ -954,10 +954,10 @@ sealed class Option<out A> : OptionOf<A> {
   fun <B> zip(other: Option<B>): Option<Pair<A, B>> =
     mapN(this, other) { a, b -> a to b}
 
-  fun <B, C> zip(other: Option<B>, f: (A, B) -> C): Option<C> =
+  inline fun <B, C> zip(other: Option<B>, f: (A, B) -> C): Option<C> =
     zip(other).map { a -> f(a.first, a.second)}
 
-  fun <B, C> zipEval(other: Eval<Option<B>>, f: (A, B) -> C): Eval<Option<C>> =
+  inline fun <B, C> zipEval(other: Eval<Option<B>>, crossinline f: (A, B) -> C): Eval<Option<C>> =
     other.map {zip(it).map { a -> f(a.first, a.second) }}
 
   infix fun <X> and(value: Option<X>): Option<X> = if (isEmpty()) {
@@ -994,7 +994,7 @@ data class Some<out T>(val t: T) : Option<T>() {
  *
  * @param default the default expression.
  */
-fun <T> Option<T>.getOrElse(default: () -> T): T = fold({ default() }, ::identity)
+inline fun <T> Option<T>.getOrElse(default: () -> T): T = fold({ default() }, ::identity)
 
 /**
  * Returns this option's if the option is nonempty, otherwise
@@ -1002,7 +1002,7 @@ fun <T> Option<T>.getOrElse(default: () -> T): T = fold({ default() }, ::identit
  *
  * @param alternative the default option if this is empty.
  */
-fun <A> OptionOf<A>.orElse(alternative: () -> Option<A>): Option<A> = if (fix().isEmpty()) alternative() else fix()
+inline fun <A> OptionOf<A>.orElse(alternative: () -> Option<A>): Option<A> = if (fix().isEmpty()) alternative() else fix()
 
 infix fun <T> OptionOf<T>.or(value: Option<T>): Option<T> = if (fix().isEmpty()) {
   value
@@ -1012,7 +1012,7 @@ infix fun <T> OptionOf<T>.or(value: Option<T>): Option<T> = if (fix().isEmpty())
 
 fun <T> T?.toOption(): Option<T> = this?.let { Some(it) } ?: None
 
-fun <A> Boolean.maybe(f: () -> A): Option<A> =
+inline fun <A> Boolean.maybe(f: () -> A): Option<A> =
   if (this) {
     Some(f())
   } else {
@@ -1030,11 +1030,11 @@ fun <A> Iterable<Option<A>>.combineAll(MA: Monoid<A>): Option<A> =
 
 fun <T> Iterable<T>.firstOrNone(): Option<T> = this.firstOrNull().toOption()
 
-fun <T> Iterable<T>.firstOrNone(predicate: (T) -> Boolean): Option<T> = this.firstOrNull(predicate).toOption()
+inline fun <T> Iterable<T>.firstOrNone(predicate: (T) -> Boolean): Option<T> = this.firstOrNull(predicate).toOption()
 
 fun <T> Iterable<T>.singleOrNone(): Option<T> = this.singleOrNull().toOption()
 
-fun <T> Iterable<T>.singleOrNone(predicate: (T) -> Boolean): Option<T> = this.singleOrNull(predicate).toOption()
+inline fun <T> Iterable<T>.singleOrNone(predicate: (T) -> Boolean): Option<T> = this.singleOrNull(predicate).toOption()
 
 fun <T> Iterable<T>.lastOrNone(): Option<T> = this.lastOrNull().toOption()
 
@@ -1178,7 +1178,7 @@ fun <A, B> Option<Validated<A, B>>.sequenceValidated_(): Validated<A, Unit> =
 fun <A, B> Option<Ior<A, B>>.unalign(): Pair<Option<A>, Option<B>> =
   unalign(::identity)
 
-fun <A, B, C> Option<C>.unalign(f: (C) -> Ior<A, B>): Pair<Option<A>, Option<B>> =
+inline fun <A, B, C> Option<C>.unalign(f: (C) -> Ior<A, B>): Pair<Option<A>, Option<B>> =
   when (val option = this.map(f)) {
     is None -> None to None
     is Some -> when (val v = option.t) {
@@ -1206,7 +1206,7 @@ fun <A, B> Option<Validated<A, B>>.uniteValidated(): Option<B> =
 fun <A, B> Option<Pair<A, B>>.unzip(): Pair<Option<A>, Option<B>> =
   unzip(::identity)
 
-fun <A, B, C> Option<C>.unzip(f: (C) -> Pair<A, B>): Pair<Option<A>, Option<B>> =
+inline fun <A, B, C> Option<C>.unzip(f: (C) -> Pair<A, B>): Pair<Option<A>, Option<B>> =
   fold(
     { Option.empty<A>() to Option.empty() },
     { f(it).let { pair -> Some(pair.first) to Some(pair.second) }}
