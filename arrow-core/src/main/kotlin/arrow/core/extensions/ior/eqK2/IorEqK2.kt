@@ -21,6 +21,9 @@ internal val eqK2_singleton: IorEqK2 = object : arrow.core.extensions.IorEqK2 {}
 )
 @Deprecated(
   "Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0",
+  ReplaceWith(
+    "this.eqv(arg1)"
+  ),
   level = DeprecationLevel.WARNING
 )
 fun <A, B> Kind<Kind<ForIor, A>, B>.eqK(

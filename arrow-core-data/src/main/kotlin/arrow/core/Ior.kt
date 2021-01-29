@@ -2,13 +2,8 @@ package arrow.core
 
 import arrow.Kind
 import arrow.typeclasses.Applicative
-import arrow.typeclasses.Eq
-import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
-import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
-import arrow.typeclasses.Show
-import arrow.typeclasses.hashWithSalt
 
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 class ForIor private constructor() { companion object }
@@ -582,7 +577,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
     override val isLeft: Boolean get() = true
     override val isBoth: Boolean get() = false
 
-    override fun toString(): String = show(Show.any(), Show.any())
+    override fun toString(): String = "Left(${ value.toString() })"
 
     companion object {
       @Deprecated("Deprecated, use the constructor instead", ReplaceWith("Left(a)"))
@@ -595,7 +590,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
     override val isLeft: Boolean get() = false
     override val isBoth: Boolean get() = false
 
-    override fun toString(): String = show(Show.any(), Show.any())
+    override fun toString(): String = "Right(${ value.toString() })"
 
     companion object {
       @Deprecated("Deprecated, use the constructor instead", ReplaceWith("Right(a)"))
@@ -608,7 +603,7 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
     override val isLeft: Boolean get() = false
     override val isBoth: Boolean get() = true
 
-    override fun toString(): String = show(Show.any(), Show.any())
+    override fun toString(): String = "Both(${ leftValue.toString() }, ${ rightValue.toString() })"
   }
 
   inline fun <C, D> bicrosswalk(
@@ -733,24 +728,8 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    *  }
    *  ```
    */
-  fun <C> fproduct(f: (B) -> C): Ior<A, Pair<B, C>> =
+  inline fun <C> fproduct(f: (B) -> C): Ior<A, Pair<B, C>> =
     map { b -> b to f(b) }
-
-  fun hash(HA: Hash<A>, HB: Hash<B>): Int =
-    fold(
-      { HA.run { it.hashWithSalt(0) } },
-      { HB.run { it.hashWithSalt(1) } },
-      { a, b -> HA.run { a.hashWithSalt(2) } + HB.run { b.hashWithSalt(2) } }
-    )
-
-  fun hashWithSalt(HA: Hash<A>, HB: Hash<B>, salt: Int): Int =
-    fold(
-      { HA.run { it.hashWithSalt(salt.hashWithSalt(0)) } },
-      { HB.run { it.hashWithSalt(salt.hashWithSalt(1)) } },
-      { a, b ->
-        HA.run { a.hashWithSalt(salt.hashWithSalt(2)) } +
-          HB.run { b.hashWithSalt(salt.hashWithSalt(2)) } }
-    )
 
   fun isEmpty(): Boolean = isLeft
 
@@ -774,16 +753,6 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
    */
   fun <C> mapConst(c: C): Ior<A, C> =
     map { c }
-
-  fun show(SL: Show<A>, SR: Show<B>): String = fold(
-    {
-      "Left(${SL.run { it.show() }})"
-    },
-    {
-      "Right(${SR.run { it.show() }})"
-    },
-    { a, b -> "Both(${SL.run { a.show() }}, ${SR.run { b.show() }})" }
-  )
 
   inline fun <C> traverse(fa: (B) -> Iterable<C>): List<Ior<A, C>> =
     fold(
@@ -945,26 +914,26 @@ fun <A, B> Ior<A, B>.combine(SA: Semigroup<A>, SB: Semigroup<B>, other: Ior<A, B
     }
   }
 
-fun <A, B> Ior<A, B>.eqv(EQA: Eq<A>, EQB: Eq<B>, b: Ior<A, B>): Boolean = when (this) {
+fun <A, B> Ior<A, B>.eqv(b: Ior<A, B>): Boolean = when (this) {
   is Ior.Left -> when (b) {
     is Ior.Both -> false
     is Ior.Right -> false
-    is Ior.Left -> EQA.run { value.eqv(b.value) }
+    is Ior.Left -> value == b.value
   }
   is Ior.Both -> when (b) {
     is Ior.Left -> false
-    is Ior.Both -> EQA.run { leftValue.eqv(b.leftValue) } && EQB.run { rightValue.eqv(b.rightValue) }
+    is Ior.Both -> leftValue == b.leftValue && rightValue == b.rightValue
     is Ior.Right -> false
   }
   is Ior.Right -> when (b) {
     is Ior.Left -> false
     is Ior.Both -> false
-    is Ior.Right -> EQB.run { value.eqv(b.value) }
+    is Ior.Right -> value ==  b.value
   }
 }
 
-fun <A, B> Ior<A, B>.neqv(EQA: Eq<A>, EQB: Eq<B>, b: Ior<A, B>): Boolean =
-  !eqv(EQA, EQB, b)
+fun <A, B> Ior<A, B>.neqv(b: Ior<A, B>): Boolean =
+  !eqv(b)
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun <A, B> Ior<A, Ior<A, B>>.flatten(SA: Semigroup<A>): Ior<A, B> =
@@ -1071,3 +1040,14 @@ private class IorSemigroup<A, B>(
   override fun Ior<A, B>.maybeCombine(b: Ior<A, B>?): Ior<A, B> =
     b?.let { combine(SGA, SGB, it) } ?: this
 }
+
+operator fun <A : Comparable<A>, B : Comparable<B>> Ior<A, B>.compareTo(other: Ior<A, B>): Int = fold(
+  { a1 -> other.fold({ a2 -> a1.compareTo(a2) }, { -1 }, { _, _ -> -1 }) },
+  { b1 -> other.fold({ 1 }, { b2 -> b1.compareTo(b2) }, { _, _ -> -1 }) },
+  { a1, b1 ->
+    other.fold(
+      { 1 },
+      { 1 },
+      { a2, b2 -> if (a1.compareTo(a2) == 0) b1.compareTo(b2) else a1.compareTo(a2) })
+  }
+)
