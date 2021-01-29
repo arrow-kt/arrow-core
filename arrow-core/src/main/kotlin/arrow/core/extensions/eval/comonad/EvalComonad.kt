@@ -62,8 +62,8 @@ fun <A> Kind<ForEval, A>.extract(): A =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "duplicate()",
-    "arrow.core.duplicate"
+    "coflatMap(::identity)",
+    "arrow.core.coflatMap"
   ),
   DeprecationLevel.WARNING
 )
@@ -76,4 +76,5 @@ fun <A> Kind<ForEval, A>.duplicate(): Eval<Eval<A>> =
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Comonad typeclass is deprecated. Use concrete methods on Eval")
 inline fun Companion.comonad(): EvalComonad = comonad_singleton

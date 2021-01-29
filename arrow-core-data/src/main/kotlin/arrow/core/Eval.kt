@@ -411,7 +411,16 @@ sealed class Eval<out A> : EvalOf<A> {
       }
     }
 
+  @JvmName("coflatMap_")
+  @Deprecated(
+    "Kind is deprecated, and will be removed in 0.13.0. Please use the coflatMap method defined for Eval instead",
+    ReplaceWith("coflatMap(f)"),
+    DeprecationLevel.WARNING
+  )
   inline fun <B> coflatMap(crossinline f: (EvalOf<A>) -> B): Eval<B> =
+    Later { f(this) }
+
+  inline fun <B> coflatMap(crossinline f: (Eval<A>) -> B): Eval<B> =
     Later { f(this) }
 
   fun extract(): A = value()
