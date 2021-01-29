@@ -328,13 +328,17 @@ sealed class Ior<out A, out B> : IorOf<A, B> {
   inline fun <C> foldLeft(c: C, f: (C, B) -> C): C =
     fold({ c }, { f(c, it) }, { _, b -> f(c, b) })
 
-  fun <C> foldRight(lc: Eval<C>, f: (B, Eval<C>) -> Eval<C>): Eval<C> =
+  inline fun <C> foldRight(lc: Eval<C>, crossinline f: (B, Eval<C>) -> Eval<C>): Eval<C> =
     fold({ lc }, { Eval.defer { f(it, lc) } }, { _, b -> Eval.defer { f(b, lc) } })
 
-  fun <C> foldMap(MN: Monoid<C>, f: (B) -> C): C = MN.run {
+  inline fun <C> foldMap(MN: Monoid<C>, f: (B) -> C): C = MN.run {
     foldLeft(MN.empty()) { b, a -> b.combine(f(a)) }
   }
 
+  @Deprecated(
+    "Applicative typleclass is deprecated. Use traverse, traverseEither or traverseValidated instead",
+    level = DeprecationLevel.WARNING
+  )
   fun <G, C> traverse(GA: Applicative<G>, f: (B) -> Kind<G, C>): Kind<G, Ior<A, C>> = GA.run {
     fold({ just(Left(it)) }, { b -> f(b).map { Right(it) } }, { _, b -> f(b).map { Right(it) } })
   }
@@ -862,6 +866,10 @@ fun <A, B, D> Ior<A, B>.apEval(SG: Semigroup<A>, ff: Eval<Ior<A, (B) -> D>>): Ev
 inline fun <A, B> Ior<A, B>.getOrElse(default: () -> B): B =
   fold({ default() }, ::identity, { _, b -> b })
 
+@Deprecated(
+  "Applicative typleclass is deprecated. Use sequence, sequenceEither or sequenceValidated instead",
+  level = DeprecationLevel.WARNING
+)
 fun <A, B, G> IorOf<A, Kind<G, B>>.sequence(GA: Applicative<G>): Kind<G, Ior<A, B>> =
   fix().traverse(GA, ::identity)
 
@@ -1017,7 +1025,7 @@ fun <A, C, B : C> Ior<A, B>.widen(): Ior<A, C> =
 fun <AA, A : AA, B> Ior<A, B>.leftWiden(): Ior<AA, B> =
   this
 
-fun <A, B, C, Z> Ior<A, B>.zip(SA: Semigroup<A>, fb: Ior<A, C>, f: (B, C) -> Z): Ior<A, Z> =
+inline fun <A, B, C, Z> Ior<A, B>.zip(SA: Semigroup<A>, fb: Ior<A, C>, crossinline f: (B, C) -> Z): Ior<A, Z> =
   ap(SA, fb.map { c: C -> { b: B -> f(b, c) } })
 
 fun <A, B, C> Ior<A, B>.zip(SA: Semigroup<A>, fb: Ior<A, C>): Ior<A, Pair<B, C>> =
