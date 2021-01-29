@@ -114,4 +114,5 @@ fun <A> Kind<ForEval, A>.replicate(arg1: Int, arg2: Monoid<A>): Eval<A> =
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Applicative typeclass is deprecated. Use concrete methods on Eval")
 inline fun Companion.applicative(): EvalApplicative = applicative_singleton

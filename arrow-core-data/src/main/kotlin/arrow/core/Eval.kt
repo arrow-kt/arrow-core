@@ -1,5 +1,7 @@
 package arrow.core
 
+import arrow.core.Eval.Companion.just
+import arrow.typeclasses.Monoid
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
@@ -288,7 +290,7 @@ sealed class Eval<out A> : EvalOf<A> {
     e: Eval<E>,
     crossinline map: (A, B, C, D, E) -> F
   ): Eval<F> =
-    mapN(a, b, c, d, e, Unit, Unit, Unit, Unit, Unit) { a, b, c, d, e, f, _, _, _, _ -> map(a, b, c, d, e) }
+    mapN(a, b, c, d, e, Unit, Unit, Unit, Unit, Unit) { a, b, c, d, e, _, _, _, _, _ -> map(a, b, c, d, e) }
 
   inline fun <A, B, C, D, E, F, G> mapN(
     a: Eval<A>,
@@ -502,3 +504,12 @@ fun <A, B, Z> Eval<A>.zip(fb: Eval<B>, f: (A, B) -> Z): Eval<Z> =
 
 fun <A, B> Eval<A>.zip(fb: Eval<B>): Eval<Pair<A, B>> =
   flatMap { a: A -> fb.map { b -> Pair(a, b) } }
+
+fun <A> Eval<A>.replicate(n: Int): Eval<List<A>> =
+  if (n <= 0) just(emptyList())
+  else mapN(this, replicate(n - 1)) { a: A, xs: List<A> -> listOf(a) + xs }
+
+fun <A> Eval<A>.replicate(n: Int, MA: Monoid<A>): Eval<A> = MA.run {
+  if (n <= 0) just(MA.empty())
+  else mapN(this@replicate, replicate(n - 1, MA)) { a: A, xs: A -> MA.run { a + xs } }
+}
