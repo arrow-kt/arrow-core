@@ -1,6 +1,5 @@
 package arrow.core
 
-import arrow.Kind
 import arrow.typeclasses.Monoid
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 
@@ -74,7 +73,7 @@ sealed class Eval<out A> : EvalOf<A> {
 
   companion object {
 
-    @JvmName("tailRecM_")
+    @JvmName("tailRecMKind")
     @Deprecated(
       "Kind is deprecated, and will be removed in 0.13.0. Please use the tailRecM method defined for Eval instead",
       ReplaceWith("tailRecM(f)"),
@@ -398,7 +397,7 @@ sealed class Eval<out A> : EvalOf<A> {
   fun <B> ap(ff: Eval<(A) -> B>): Eval<B> =
     ff.flatMap { f -> map(f) }
 
-  @JvmName("flatMap_")
+  @JvmName("flatMapKind")
   @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use the flatMap method defined for Eval instead")
   @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE", "UNCHECKED_CAST")
   inline fun <B> flatMap(crossinline f: (A) -> EvalOf<B>): Eval<B> =
@@ -433,20 +432,20 @@ sealed class Eval<out A> : EvalOf<A> {
         override fun <S> run(s: S): Eval<B> =
           object : FlatMap<B>() {
             override fun <S1> start(): Eval<S1> = (this@Eval).run(s) as Eval<S1>
-            override fun <S1> run(s1: S1): Eval<B> = f(s1 as A).fix()
+            override fun <S1> run(s1: S1): Eval<B> = f(s1 as A)
           }
       }
       is Defer<A> -> object : FlatMap<B>() {
         override fun <S> start(): Eval<S> = this@Eval.thunk() as Eval<S>
-        override fun <S> run(s: S): Eval<B> = f(s as A).fix()
+        override fun <S> run(s: S): Eval<B> = f(s as A)
       }
       else -> object : FlatMap<B>() {
         override fun <S> start(): Eval<S> = this@Eval as Eval<S>
-        override fun <S> run(s: S): Eval<B> = f(s as A).fix()
+        override fun <S> run(s: S): Eval<B> = f(s as A)
       }
     }
 
-  @JvmName("coflatMap_")
+  @JvmName("coflatMapKind")
   @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use the coflatMap method defined for Eval instead")
   inline fun <B> coflatMap(crossinline f: (EvalOf<A>) -> B): Eval<B> =
     Later { f(this) }
