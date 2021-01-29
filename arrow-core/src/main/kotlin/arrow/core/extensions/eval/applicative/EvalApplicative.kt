@@ -81,8 +81,8 @@ fun <A, B> Kind<ForEval, A>.map(arg1: Function1<A, B>): Eval<B> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "replicate(arg1)",
-  "arrow.core.replicate"
+    "replicate(arg1)",
+    "arrow.core.replicate"
   ),
   DeprecationLevel.WARNING
 )
@@ -100,8 +100,8 @@ fun <A> Kind<ForEval, A>.replicate(arg1: Int): Eval<List<A>> = arrow.core.Eval.a
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "replicate(arg1, arg2)",
-  "arrow.core.replicate"
+    "replicate(arg1, arg2)",
+    "arrow.core.replicate"
   ),
   DeprecationLevel.WARNING
 )

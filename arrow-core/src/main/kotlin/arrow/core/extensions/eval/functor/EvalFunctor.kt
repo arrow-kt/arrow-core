@@ -6,12 +6,6 @@ import arrow.core.Eval.Companion
 import arrow.core.ForEval
 import arrow.core.Tuple2
 import arrow.core.extensions.EvalFunctor
-import kotlin.Deprecated
-import kotlin.Function1
-import kotlin.PublishedApi
-import kotlin.Suppress
-import kotlin.Unit
-import kotlin.jvm.JvmName
 
 /**
  * cached extension
@@ -50,14 +44,15 @@ internal val functor_singleton: EvalFunctor = object : arrow.core.extensions.Eva
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map(arg1)",
-  "arrow.core.map"
+    "map(arg1)",
+    "arrow.core.map"
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<ForEval, A>.map(arg1: Function1<A, B>): Eval<B> = arrow.core.Eval.functor().run {
-  this@map.map<A, B>(arg1) as arrow.core.Eval<B>
-}
+fun <A, B> Kind<ForEval, A>.map(arg1: Function1<A, B>): Eval<B> =
+  arrow.core.Eval.functor().run {
+    this@map.map<A, B>(arg1) as arrow.core.Eval<B>
+  }
 
 @JvmName("imap")
 @Suppress(
@@ -69,15 +64,15 @@ fun <A, B> Kind<ForEval, A>.map(arg1: Function1<A, B>): Eval<B> = arrow.core.Eva
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "imap(arg1, arg2)",
-  "arrow.core.imap"
+    "imap(arg1, arg2)",
+    "arrow.core.imap"
   ),
   DeprecationLevel.WARNING
 )
 fun <A, B> Kind<ForEval, A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>): Eval<B> =
-    arrow.core.Eval.functor().run {
-  this@imap.imap<A, B>(arg1, arg2) as arrow.core.Eval<B>
-}
+  arrow.core.Eval.functor().run {
+    this@imap.imap<A, B>(arg1, arg2) as arrow.core.Eval<B>
+  }
 
 /**
  *  Lifts a function `A -> B` to the [F] structure returning a polymorphic function
@@ -112,15 +107,15 @@ fun <A, B> Kind<ForEval, A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>): 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "lift(arg0)",
-  "arrow.core.Eval.lift"
+    "lift(arg0)",
+    "arrow.core.Eval.lift"
   ),
   DeprecationLevel.WARNING
 )
 fun <A, B> lift(arg0: Function1<A, B>): Function1<Kind<ForEval, A>, Kind<ForEval, B>> =
-    arrow.core.Eval
-   .functor()
-   .lift<A, B>(arg0) as kotlin.Function1<arrow.Kind<arrow.core.ForEval, A>,
+  arrow.core.Eval
+    .functor()
+    .lift<A, B>(arg0) as kotlin.Function1<arrow.Kind<arrow.core.ForEval, A>,
     arrow.Kind<arrow.core.ForEval, B>>
 
 @JvmName("void")
@@ -133,14 +128,15 @@ fun <A, B> lift(arg0: Function1<A, B>): Function1<Kind<ForEval, A>, Kind<ForEval
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "void()",
-  "arrow.core.void"
+    "void()",
+    "arrow.core.void"
   ),
   DeprecationLevel.WARNING
 )
-fun <A> Kind<ForEval, A>.void(): Eval<Unit> = arrow.core.Eval.functor().run {
-  this@void.void<A>() as arrow.core.Eval<kotlin.Unit>
-}
+fun <A> Kind<ForEval, A>.void(): Eval<Unit> =
+  arrow.core.Eval.functor().run {
+    this@void.void<A>() as arrow.core.Eval<kotlin.Unit>
+  }
 
 /**
  *  Applies [f] to an [A] inside [F] and returns the [F] structure with a tuple of the [A] value and the
@@ -175,15 +171,15 @@ fun <A> Kind<ForEval, A>.void(): Eval<Unit> = arrow.core.Eval.functor().run {
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "fproduct(arg1)",
-  "arrow.core.fproduct"
+    "fproduct(arg1)",
+    "arrow.core.fproduct"
   ),
   DeprecationLevel.WARNING
 )
 fun <A, B> Kind<ForEval, A>.fproduct(arg1: Function1<A, B>): Eval<Tuple2<A, B>> =
-    arrow.core.Eval.functor().run {
-  this@fproduct.fproduct<A, B>(arg1) as arrow.core.Eval<arrow.core.Tuple2<A, B>>
-}
+  arrow.core.Eval.functor().run {
+    this@fproduct.fproduct<A, B>(arg1) as arrow.core.Eval<arrow.core.Tuple2<A, B>>
+  }
 
 /**
  *  Replaces [A] inside [F] with [B] resulting in a Kind<F, B>
@@ -217,14 +213,15 @@ fun <A, B> Kind<ForEval, A>.fproduct(arg1: Function1<A, B>): Eval<Tuple2<A, B>> 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapConst(arg1)",
-  "arrow.core.mapConst"
+    "mapConst(arg1)",
+    "arrow.core.mapConst"
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<ForEval, A>.mapConst(arg1: B): Eval<B> = arrow.core.Eval.functor().run {
-  this@mapConst.mapConst<A, B>(arg1) as arrow.core.Eval<B>
-}
+fun <A, B> Kind<ForEval, A>.mapConst(arg1: B): Eval<B> =
+  arrow.core.Eval.functor().run {
+    this@mapConst.mapConst<A, B>(arg1) as arrow.core.Eval<B>
+  }
 
 /**
  *  Replaces the [B] value inside [F] with [A] resulting in a Kind<F, A>
@@ -239,14 +236,15 @@ fun <A, B> Kind<ForEval, A>.mapConst(arg1: B): Eval<B> = arrow.core.Eval.functor
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "mapConst(arg1)",
-  "arrow.core.mapConst"
+    "mapConst(arg1)",
+    "arrow.core.mapConst"
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> A.mapConst(arg1: Kind<ForEval, B>): Eval<A> = arrow.core.Eval.functor().run {
-  this@mapConst.mapConst<A, B>(arg1) as arrow.core.Eval<A>
-}
+fun <A, B> A.mapConst(arg1: Kind<ForEval, B>): Eval<A> =
+  arrow.core.Eval.functor().run {
+    this@mapConst.mapConst<A, B>(arg1) as arrow.core.Eval<A>
+  }
 
 /**
  *  Pairs [B] with [A] returning a Kind<F, Tuple2<B, A>>
@@ -280,14 +278,15 @@ fun <A, B> A.mapConst(arg1: Kind<ForEval, B>): Eval<A> = arrow.core.Eval.functor
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupleLeft(arg1)",
-  "arrow.core.tupleLeft"
+    "tupleLeft(arg1)",
+    "arrow.core.tupleLeft"
   ),
   DeprecationLevel.WARNING
 )
-fun <A, B> Kind<ForEval, A>.tupleLeft(arg1: B): Eval<Tuple2<B, A>> = arrow.core.Eval.functor().run {
-  this@tupleLeft.tupleLeft<A, B>(arg1) as arrow.core.Eval<arrow.core.Tuple2<B, A>>
-}
+fun <A, B> Kind<ForEval, A>.tupleLeft(arg1: B): Eval<Tuple2<B, A>> =
+  arrow.core.Eval.functor().run {
+    this@tupleLeft.tupleLeft<A, B>(arg1) as arrow.core.Eval<arrow.core.Tuple2<B, A>>
+  }
 
 /**
  *  Pairs [A] with [B] returning a Kind<F, Tuple2<A, B>>
@@ -321,15 +320,15 @@ fun <A, B> Kind<ForEval, A>.tupleLeft(arg1: B): Eval<Tuple2<B, A>> = arrow.core.
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "tupleRight(arg1)",
-  "arrow.core.tupleRight"
+    "tupleRight(arg1)",
+    "arrow.core.tupleRight"
   ),
   DeprecationLevel.WARNING
 )
 fun <A, B> Kind<ForEval, A>.tupleRight(arg1: B): Eval<Tuple2<A, B>> =
-    arrow.core.Eval.functor().run {
-  this@tupleRight.tupleRight<A, B>(arg1) as arrow.core.Eval<arrow.core.Tuple2<A, B>>
-}
+  arrow.core.Eval.functor().run {
+    this@tupleRight.tupleRight<A, B>(arg1) as arrow.core.Eval<arrow.core.Tuple2<A, B>>
+  }
 
 /**
  *  Given [A] is a sub type of [B], re-type this value from Kind<F, A> to Kind<F, B>
@@ -364,14 +363,15 @@ fun <A, B> Kind<ForEval, A>.tupleRight(arg1: B): Eval<Tuple2<A, B>> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "widen()",
-  "arrow.core.widen"
+    "widen()",
+    "arrow.core.widen"
   ),
   DeprecationLevel.WARNING
 )
-fun <B, A : B> Kind<ForEval, A>.widen(): Eval<B> = arrow.core.Eval.functor().run {
-  this@widen.widen<B, A>() as arrow.core.Eval<B>
-}
+fun <B, A : B> Kind<ForEval, A>.widen(): Eval<B> =
+  arrow.core.Eval.functor().run {
+    this@widen.widen<B, A>() as arrow.core.Eval<B>
+  }
 
 @Suppress(
   "UNCHECKED_CAST",
