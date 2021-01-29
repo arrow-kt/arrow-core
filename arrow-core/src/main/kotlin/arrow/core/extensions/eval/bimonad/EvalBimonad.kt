@@ -13,4 +13,5 @@ internal val bimonad_singleton: EvalBimonad = object : arrow.core.extensions.Eva
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Bimonad typeclass is deprecated. Use concrete methods on Eval")
 inline fun Companion.bimonad(): EvalBimonad = bimonad_singleton
