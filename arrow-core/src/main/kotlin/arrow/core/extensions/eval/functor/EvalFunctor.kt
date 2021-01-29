@@ -64,8 +64,8 @@ fun <A, B> Kind<ForEval, A>.map(arg1: Function1<A, B>): Eval<B> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "imap(arg1, arg2)",
-    "arrow.core.imap"
+    "map(arg1)",
+    "arrow.core.map"
   ),
   DeprecationLevel.WARNING
 )
@@ -104,14 +104,7 @@ fun <A, B> Kind<ForEval, A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>): 
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "lift(arg0)",
-    "arrow.core.Eval.lift"
-  ),
-  DeprecationLevel.WARNING
-)
+@Deprecated("Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0")
 fun <A, B> lift(arg0: Function1<A, B>): Function1<Kind<ForEval, A>, Kind<ForEval, B>> =
   arrow.core.Eval
     .functor()
@@ -128,8 +121,8 @@ fun <A, B> lift(arg0: Function1<A, B>): Function1<Kind<ForEval, A>, Kind<ForEval
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "void()",
-    "arrow.core.void"
+    "map { Unit }",
+    "arrow.core.map"
   ),
   DeprecationLevel.WARNING
 )
@@ -171,8 +164,8 @@ fun <A> Kind<ForEval, A>.void(): Eval<Unit> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fproduct(arg1)",
-    "arrow.core.fproduct"
+    "map { a -> Tuple2(a, f(a)) }",
+    "arrow.core.map"
   ),
   DeprecationLevel.WARNING
 )
@@ -213,8 +206,8 @@ fun <A, B> Kind<ForEval, A>.fproduct(arg1: Function1<A, B>): Eval<Tuple2<A, B>> 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "mapConst(arg1)",
-    "arrow.core.mapConst"
+    "map { arg1 }",
+    "arrow.core.map"
   ),
   DeprecationLevel.WARNING
 )
@@ -236,8 +229,8 @@ fun <A, B> Kind<ForEval, A>.mapConst(arg1: B): Eval<B> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "mapConst(arg1)",
-    "arrow.core.mapConst"
+    "map { arg1 }",
+    "arrow.core.map"
   ),
   DeprecationLevel.WARNING
 )
@@ -278,8 +271,8 @@ fun <A, B> A.mapConst(arg1: Kind<ForEval, B>): Eval<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupleLeft(arg1)",
-    "arrow.core.tupleLeft"
+    "map { a -> Tuple2(arg1, a) }",
+    "arrow.core.map"
   ),
   DeprecationLevel.WARNING
 )
@@ -320,8 +313,8 @@ fun <A, B> Kind<ForEval, A>.tupleLeft(arg1: B): Eval<Tuple2<B, A>> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "tupleRight(arg1)",
-    "arrow.core.tupleRight"
+    "map { a -> Tuple2(a, arg1) }",
+    "arrow.core.map"
   ),
   DeprecationLevel.WARNING
 )
@@ -362,10 +355,7 @@ fun <A, B> Kind<ForEval, A>.tupleRight(arg1: B): Eval<Tuple2<A, B>> =
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "widen()",
-    "arrow.core.widen"
-  ),
+  ReplaceWith("this"),
   DeprecationLevel.WARNING
 )
 fun <B, A : B> Kind<ForEval, A>.widen(): Eval<B> =
@@ -377,4 +367,5 @@ fun <B, A : B> Kind<ForEval, A>.widen(): Eval<B> =
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated("Functor typeclass is deprecated. Use concrete methods on Eval")
 inline fun Companion.functor(): EvalFunctor = functor_singleton

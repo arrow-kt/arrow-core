@@ -1,6 +1,5 @@
 package arrow.core
 
-import arrow.Kind
 import arrow.typeclasses.Monoid
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 
