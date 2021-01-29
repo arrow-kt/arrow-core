@@ -1,6 +1,6 @@
 package arrow.core
 
-import arrow.core.Eval.Companion.just
+import arrow.Kind
 import arrow.typeclasses.Monoid
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 
@@ -249,123 +249,116 @@ sealed class Eval<out A> : EvalOf<A> {
 
       return curr.value() as A
     }
-  }
 
-  abstract fun value(): A
+    inline fun <A, B, C> mapN(
+      a: Eval<A>,
+      b: Eval<B>,
+      crossinline map: (A, B) -> C
+    ): Eval<C> =
+      mapN(a, b, Unit, Unit, Unit, Unit, Unit, Unit, Unit, Unit) { b, c, _, _, _, _, _, _, _, _ -> map(b, c) }
 
-  abstract fun memoize(): Eval<A>
+    inline fun <A, B, C, D> mapN(
+      a: Eval<A>,
+      b: Eval<B>,
+      c: Eval<C>,
+      crossinline map: (A, B, C) -> D
+    ): Eval<D> =
+      mapN(a, b, c, Unit, Unit, Unit, Unit, Unit, Unit, Unit) { b, c, d, _, _, _, _, _, _, _ -> map(b, c, d) }
 
-  inline fun <B> map(crossinline f: (A) -> B): Eval<B> =
-    flatMap { a -> Now(f(a)) }
+    inline fun <A, B, C, D, E> mapN(
+      a: Eval<A>,
+      b: Eval<B>,
+      c: Eval<C>,
+      d: Eval<D>,
+      crossinline map: (A, B, C, D) -> E
+    ): Eval<E> =
+      mapN(a, b, c, d, Unit, Unit, Unit, Unit, Unit, Unit) { a, b, c, d, _, _, _, _, _, _ -> map(a, b, c, d) }
 
-  inline fun <A, B, C> mapN(
-    a: Eval<A>,
-    b: Eval<B>,
-    crossinline map: (A, B) -> C
-  ): Eval<C> =
-    mapN(a, b, Unit, Unit, Unit, Unit, Unit, Unit, Unit, Unit) { b, c, _, _, _, _, _, _, _, _ -> map(b, c) }
+    inline fun <A, B, C, D, E, F> mapN(
+      a: Eval<A>,
+      b: Eval<B>,
+      c: Eval<C>,
+      d: Eval<D>,
+      e: Eval<E>,
+      crossinline map: (A, B, C, D, E) -> F
+    ): Eval<F> =
+      mapN(a, b, c, d, e, Unit, Unit, Unit, Unit, Unit) { a, b, c, d, e, _, _, _, _, _ -> map(a, b, c, d, e) }
 
-  inline fun <A, B, C, D> mapN(
-    a: Eval<A>,
-    b: Eval<B>,
-    c: Eval<C>,
-    crossinline map: (A, B, C) -> D
-  ): Eval<D> =
-    mapN(a, b, c, Unit, Unit, Unit, Unit, Unit, Unit, Unit) { b, c, d, _, _, _, _, _, _, _ -> map(b, c, d) }
+    inline fun <A, B, C, D, E, F, G> mapN(
+      a: Eval<A>,
+      b: Eval<B>,
+      c: Eval<C>,
+      d: Eval<D>,
+      e: Eval<E>,
+      f: Eval<F>,
+      crossinline map: (A, B, C, D, E, F) -> G
+    ): Eval<G> =
+      mapN(a, b, c, d, e, f, Unit, Unit, Unit, Unit) { a, b, c, d, e, f, _, _, _, _ -> map(a, b, c, d, e, f) }
 
-  inline fun <A, B, C, D, E> mapN(
-    a: Eval<A>,
-    b: Eval<B>,
-    c: Eval<C>,
-    d: Eval<D>,
-    crossinline map: (A, B, C, D) -> E
-  ): Eval<E> =
-    mapN(a, b, c, d, Unit, Unit, Unit, Unit, Unit, Unit) { a, b, c, d, _, _, _, _, _, _ -> map(a, b, c, d) }
+    inline fun <A, B, C, D, E, F, G, H, I> mapN(
+      a: Eval<A>,
+      b: Eval<B>,
+      c: Eval<C>,
+      d: Eval<D>,
+      e: Eval<E>,
+      f: Eval<F>,
+      g: Eval<G>,
+      crossinline map: (A, B, C, D, E, F, G) -> H
+    ): Eval<H> =
+      mapN(a, b, c, d, e, f, g, Unit, Unit, Unit) { a, b, c, d, e, f, g, _, _, _ -> map(a, b, c, d, e, f, g) }
 
-  inline fun <A, B, C, D, E, F> mapN(
-    a: Eval<A>,
-    b: Eval<B>,
-    c: Eval<C>,
-    d: Eval<D>,
-    e: Eval<E>,
-    crossinline map: (A, B, C, D, E) -> F
-  ): Eval<F> =
-    mapN(a, b, c, d, e, Unit, Unit, Unit, Unit, Unit) { a, b, c, d, e, _, _, _, _, _ -> map(a, b, c, d, e) }
+    inline fun <A, B, C, D, E, F, G, H, I> mapN(
+      a: Eval<A>,
+      b: Eval<B>,
+      c: Eval<C>,
+      d: Eval<D>,
+      e: Eval<E>,
+      f: Eval<F>,
+      g: Eval<G>,
+      h: Eval<H>,
+      crossinline map: (A, B, C, D, E, F, G, H) -> I
+    ): Eval<I> =
+      mapN(a, b, c, d, e, f, g, h, Unit, Unit) { a, b, c, d, e, f, g, h, _, _ -> map(a, b, c, d, e, f, g, h) }
 
-  inline fun <A, B, C, D, E, F, G> mapN(
-    a: Eval<A>,
-    b: Eval<B>,
-    c: Eval<C>,
-    d: Eval<D>,
-    e: Eval<E>,
-    f: Eval<F>,
-    crossinline map: (A, B, C, D, E, F) -> G
-  ): Eval<G> =
-    mapN(a, b, c, d, e, f, Unit, Unit, Unit, Unit) { a, b, c, d, e, f, _, _, _, _ -> map(a, b, c, d, e, f) }
+    inline fun <A, B, C, D, E, F, G, H, I, J> mapN(
+      a: Eval<A>,
+      b: Eval<B>,
+      c: Eval<C>,
+      d: Eval<D>,
+      e: Eval<E>,
+      f: Eval<F>,
+      g: Eval<G>,
+      h: Eval<H>,
+      i: Eval<I>,
+      crossinline map: (A, B, C, D, E, F, G, H, I) -> J
+    ): Eval<J> =
+      mapN(a, b, c, d, e, f, g, h, i, Unit) { a, b, c, d, e, f, g, h, i, _ -> map(a, b, c, d, e, f, g, h, i) }
 
-  inline fun <A, B, C, D, E, F, G, H, I> mapN(
-    a: Eval<A>,
-    b: Eval<B>,
-    c: Eval<C>,
-    d: Eval<D>,
-    e: Eval<E>,
-    f: Eval<F>,
-    g: Eval<G>,
-    crossinline map: (A, B, C, D, E, F, G) -> H
-  ): Eval<H> =
-    mapN(a, b, c, d, e, f, g, Unit, Unit, Unit) { a, b, c, d, e, f, g, _, _, _ -> map(a, b, c, d, e, f, g) }
-
-  inline fun <A, B, C, D, E, F, G, H, I> mapN(
-    a: Eval<A>,
-    b: Eval<B>,
-    c: Eval<C>,
-    d: Eval<D>,
-    e: Eval<E>,
-    f: Eval<F>,
-    g: Eval<G>,
-    h: Eval<H>,
-    crossinline map: (A, B, C, D, E, F, G, H) -> I
-  ): Eval<I> =
-    mapN(a, b, c, d, e, f, g, h, Unit, Unit) { a, b, c, d, e, f, g, h, _, _ -> map(a, b, c, d, e, f, g, h) }
-
-  inline fun <A, B, C, D, E, F, G, H, I, J> mapN(
-    a: Eval<A>,
-    b: Eval<B>,
-    c: Eval<C>,
-    d: Eval<D>,
-    e: Eval<E>,
-    f: Eval<F>,
-    g: Eval<G>,
-    h: Eval<H>,
-    i: Eval<I>,
-    crossinline map: (A, B, C, D, E, F, G, H, I) -> J
-  ): Eval<J> =
-    mapN(a, b, c, d, e, f, g, h, i, Unit) { a, b, c, d, e, f, g, h, i, _ -> map(a, b, c, d, e, f, g, h, i) }
-
-  inline fun <A, B, C, D, E, F, G, H, I, J, K> mapN(
-    a: Eval<A>,
-    b: Eval<B>,
-    c: Eval<C>,
-    d: Eval<D>,
-    e: Eval<E>,
-    f: Eval<F>,
-    g: Eval<G>,
-    h: Eval<H>,
-    i: Eval<I>,
-    j: Eval<J>,
-    crossinline map: (A, B, C, D, E, F, G, H, I, J) -> K
-  ): Eval<K> =
-    a.flatMap { aa ->
-      b.flatMap { bb ->
-        c.flatMap { cc ->
-          d.flatMap { dd ->
-            e.flatMap { ee ->
-              f.flatMap { ff ->
-                g.flatMap { gg ->
-                  h.flatMap { hh ->
-                    i.flatMap { ii ->
-                      j.map { jj ->
-                        map(aa, bb, cc, dd, ee, ff, gg, hh, ii, jj)
+    inline fun <A, B, C, D, E, F, G, H, I, J, K> mapN(
+      a: Eval<A>,
+      b: Eval<B>,
+      c: Eval<C>,
+      d: Eval<D>,
+      e: Eval<E>,
+      f: Eval<F>,
+      g: Eval<G>,
+      h: Eval<H>,
+      i: Eval<I>,
+      j: Eval<J>,
+      crossinline map: (A, B, C, D, E, F, G, H, I, J) -> K
+    ): Eval<K> =
+      a.flatMap { aa ->
+        b.flatMap { bb ->
+          c.flatMap { cc ->
+            d.flatMap { dd ->
+              e.flatMap { ee ->
+                f.flatMap { ff ->
+                  g.flatMap { gg ->
+                    h.flatMap { hh ->
+                      i.flatMap { ii ->
+                        j.map { jj ->
+                          map(aa, bb, cc, dd, ee, ff, gg, hh, ii, jj)
+                        }
                       }
                     }
                   }
@@ -375,10 +368,25 @@ sealed class Eval<out A> : EvalOf<A> {
           }
         }
       }
-    }
+  }
 
+  abstract fun value(): A
+
+  abstract fun memoize(): Eval<A>
+
+  inline fun <B> map(crossinline f: (A) -> B): Eval<B> =
+    flatMap { a -> Now(f(a)) }
+
+  @Deprecated(
+    "Kind is deprecated, and will be removed in 0.13.0. Please use the ap method defined for Eval instead",
+    ReplaceWith("ap(ff)"),
+    DeprecationLevel.WARNING
+  )
   fun <B> ap(ff: EvalOf<(A) -> B>): Eval<B> =
     ff.fix().flatMap { f -> map(f) }.fix()
+
+  fun <B> ap(ff: Eval<(A) -> B>): Eval<B> =
+    ff.flatMap { f -> map(f) }
 
   @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE", "UNCHECKED_CAST")
   inline fun <B> flatMap(crossinline f: (A) -> EvalOf<B>): Eval<B> =
@@ -500,16 +508,21 @@ fun <A, B> Iterator<A>.iterateRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Ev
 }
 
 fun <A, B, Z> Eval<A>.zip(fb: Eval<B>, f: (A, B) -> Z): Eval<Z> =
-  flatMap { a: A -> fb.map { b -> f(a, b) } }
+  flatMap { a: A -> fb.map { b: B -> f(a, b) } }
 
 fun <A, B> Eval<A>.zip(fb: Eval<B>): Eval<Pair<A, B>> =
-  flatMap { a: A -> fb.map { b -> Pair(a, b) } }
+  flatMap { a: A -> fb.map { b: B -> Pair(a, b) } }
 
 fun <A> Eval<A>.replicate(n: Int): Eval<List<A>> =
-  if (n <= 0) just(emptyList())
-  else mapN(this, replicate(n - 1)) { a: A, xs: List<A> -> listOf(a) + xs }
+  if (n <= 0) Eval.just(emptyList())
+  else Eval.mapN(this, replicate(n - 1)) { a: A, xs: List<A> -> listOf(a) + xs }
 
 fun <A> Eval<A>.replicate(n: Int, MA: Monoid<A>): Eval<A> = MA.run {
-  if (n <= 0) just(MA.empty())
-  else mapN(this@replicate, replicate(n - 1, MA)) { a: A, xs: A -> MA.run { a + xs } }
+  if (n <= 0) Eval.just(MA.empty())
+  else Eval.mapN(this@replicate, replicate(n - 1, MA)) { a: A, xs: A -> MA.run { a + xs } }
 }
+
+fun <A, B> Eval<A>.apEval(ff: Eval<Eval<(A) -> B>>): Eval<Eval<B>> = ff.map { this.ap(it) }
+
+fun <A, B, Z> Eval<A>.map2Eval(fb: Eval<Eval<B>>, f: (Tuple2<A, B>) -> Z): Eval<Eval<Z>> =
+  apEval(fb.map { it.map { b: B -> { a: A -> f(Tuple2(a, b)) } } })
