@@ -114,7 +114,7 @@ fun <A> Kind<ForOption, A>.combineK(arg1: Kind<ForOption, A>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "map<Option<A>>(::Some).orElse { Option.just(None) }",
+  "map<Option<A>>(::Some).orElse { Some(None) }",
   "arrow.core.None", "arrow.core.Option", "arrow.core.Some", "arrow.core.orElse"
   ),
   DeprecationLevel.WARNING
@@ -133,8 +133,8 @@ fun <A> Kind<ForOption, A>.optional(): Option<Option<A>> = arrow.core.Option.alt
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "if (arg0) Option.just(Unit) else Option.empty()",
-  "arrow.core.Option", "arrow.core.empty", "arrow.core.just"
+  "if (arg0) Some(Unit) else Option.empty()",
+  "arrow.core.Option", "arrow.core.empty"
   ),
   DeprecationLevel.WARNING
 )

@@ -204,7 +204,7 @@ fun <A, B> Kind<ForOption, A>.foldMap(arg1: Monoid<B>, arg2: Function1<A, B>): B
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "Option.just(arg1.empty())",
+    "Option(arg1.empty())",
     "arrow.core.Option"
   ),
   DeprecationLevel.WARNING

@@ -20,8 +20,8 @@ internal val repeat_singleton: OptionRepeat = object : arrow.core.extensions.Opt
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "Option.just(a)",
-  "arrow.core.Option", "arrow.core.just"
+  "Option(a)",
+  "arrow.core.Option"
   ),
   DeprecationLevel.WARNING
 )
