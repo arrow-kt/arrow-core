@@ -708,6 +708,15 @@ sealed class Option<out A> : OptionOf<A> {
   inline fun filter(predicate: (A) -> Boolean): Option<A> =
     flatMap { a -> if (predicate(a)) Some(a) else None }
 
+  inline fun <AA> filterEither(predicate: (A) -> Either<AA, Boolean>): Either<AA, Option<A>> =
+    traverseFilterEither { a -> predicate(a).map { if (it) Some(a) else None } }
+
+  inline fun filterIterable(predicate: (A) -> Iterable<Boolean>): Iterable<Option<A>> =
+    traverseFilter { a -> predicate(a).map { if (it) Some(a) else None } }
+
+  inline fun <AA> filterValidated(predicate: (A) -> Validated<AA, Boolean>): Validated<AA, Option<A>> =
+    traverseFilterValidated { a -> predicate(a).map { if (it) Some(a) else None } }
+
   /**
    * Returns this $option if it is nonempty '''and''' applying the predicate $p to
    * this $option's value returns false. Otherwise, return $none.
@@ -734,15 +743,6 @@ sealed class Option<out A> : OptionOf<A> {
    * @param predicate the predicate to test
    */
   inline fun exists(predicate: (A) -> Boolean): Boolean = fold({ false }, predicate)
-
-  inline fun filterA(predicate: (A) -> Iterable<Boolean>): Iterable<Option<A>> =
-    traverseFilter { a -> predicate(a).map { if (it) Some(a) else None } }
-
-  inline fun <AA> filterAEither(predicate: (A) -> Either<AA, Boolean>): Either<AA, Option<A>> =
-    traverseFilterEither { a -> predicate(a).map { if (it) Some(a) else None } }
-
-  inline fun <AA> filterAValidated(predicate: (A) -> Validated<AA, Boolean>): Validated<AA, Option<A>> =
-    traverseFilterValidated { a -> predicate(a).map { if (it) Some(a) else None } }
 
   /**
    * Returns true if this option is empty '''or''' the predicate
@@ -1099,13 +1099,13 @@ inline fun <A> Option<A>.handleErrorWith(f: (Unit) -> Option<A>): Option<A> =
   if (isEmpty()) f(Unit) else this
 
 inline fun <reified B> Option<*>.traverseFilterIsInstance(): List<Option<B>> =
-  filterA { a -> listOf(a is B) }.map { it.map { a -> a as B } }
+  filterIterable { a -> listOf(a is B) }.map { it.map { a -> a as B } }
 
 inline fun <E, reified B> Option<*>.traverseFilterIsInstanceEither(): Either<E, Option<B>> =
-  filterAEither { a -> Right(a is B) }.map { it.map { a -> a as B } }
+  filterEither { a -> Right(a is B) }.map { it.map { a -> a as B } }
 
 inline fun <E, reified B> Option<*>.traverseFilterIsInstanceValidated(): Validated<E, Option<B>> =
-  filterAValidated { a -> Valid(a is B) }.map { it.map { a -> a as B } }
+  filterValidated { a -> Valid(a is B) }.map { it.map { a -> a as B } }
 
 fun <A> Option<Option<A>>.flatten(): Option<A> =
   flatMap(::identity)

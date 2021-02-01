@@ -61,7 +61,7 @@ fun <A, B> Kind<ForOption, A>.filterMap(arg1: Function1<A, Option<B>>): Option<B
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "Applicative typeclass is deprecated, Replace with filterA, filterAEither or filterAValidated from arrow.core.*",
+  "Applicative typeclass is deprecated, Replace with filterEither, filterIterable or filterValidated from arrow.core.*",
   level = DeprecationLevel.WARNING
 )
 fun <G, A> Kind<ForOption, A>.filterA(arg1: Function1<A, Kind<G, Boolean>>, arg2: Applicative<G>):
