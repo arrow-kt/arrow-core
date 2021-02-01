@@ -24,7 +24,8 @@ internal val monadFilter_singleton: OptionMonadFilter = object :
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "filterMap(arg1)"
+    "this.mapNotNull(arg1.andThen { it.orNull() })",
+    "arrow.core.andThen"
   ),
   DeprecationLevel.WARNING
 )

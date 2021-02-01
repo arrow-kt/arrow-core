@@ -616,20 +616,16 @@ sealed class Option<out A> : OptionOf<A> {
   fun <B, R> map2(fb: Kind<ForOption, B>, f: (Tuple2<A, B>) -> R): Option<R> =
     flatMap { a: A -> fb.fix().map { b -> f(a toT b) } }
 
-  @JvmName("filterMapOption")
   @Deprecated(
-    "Use the filterMap method that receives a function from A to nullable instead",
+    "filterMap will be renamed to mapNotNull to be consistent with Kotlin Std's naming, please use mapNotNull instead of filterMap",
     ReplaceWith(
-      "this.filterMap(f.andThen { it.orNull() })",
+      "this.mapNotNull(f.andThen { it.orNull() })",
       "arrow.core.andThen"
     ),
     level = DeprecationLevel.WARNING
   )
   fun <B> filterMap(f: (A) -> Option<B>): Option<B> =
     flatMap(f)
-
-  inline fun <B> filterMap(f: (A) -> B?): Option<B> =
-    flatMap { fromNullable(f(it)) }
 
   inline fun <R> fold(ifEmpty: () -> R, ifSome: (A) -> R): R = when (this) {
     is None -> ifEmpty()
@@ -1080,7 +1076,7 @@ inline fun <A> Option<A>.ensure(error: () -> Unit, predicate: (A) -> Boolean): O
  */
 inline fun <reified B> Option<*>.filterIsInstance(): Option<B> {
   val f: (Any?) -> B? = { it as? B }
-  return this.filterMap(f)
+  return this.mapNotNull(f)
 }
 
 inline fun <A> Option<A>.handleError(f: (Unit) -> A): Option<A> =
