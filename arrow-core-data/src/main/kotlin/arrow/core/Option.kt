@@ -28,6 +28,13 @@ typealias OptionOf<A> = arrow.Kind<ForOption, A>
 )
 inline fun <A> OptionOf<A>.fix(): Option<A> = this as Option<A>
 
+class ForOption private constructor() { companion object }
+typealias OptionOf<A> = arrow.Kind<ForOption, A>
+
+@Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
+inline fun <A> OptionOf<A>.fix(): Option<A> =
+  this as Option<A>
+
 /**
  *
  *
