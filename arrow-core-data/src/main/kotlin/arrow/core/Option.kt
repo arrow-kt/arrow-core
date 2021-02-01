@@ -535,27 +535,10 @@ sealed class Option<out A> : OptionOf<A> {
       j: Option<J>,
       map: (A, B, C, D, E, F, G, H, I, J) -> K
     ): Option<K> =
-      a.flatMap { aa ->
-        b.flatMap { bb ->
-          c.flatMap { cc ->
-            d.flatMap { dd ->
-              e.flatMap { ee ->
-                f.flatMap { ff ->
-                  g.flatMap { gg ->
-                    h.flatMap { hh ->
-                      i.flatMap { ii ->
-                        j.map { jj ->
-                          map(aa, bb, cc, dd, ee, ff, gg, hh, ii, jj)
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+      if (a is Some && b is Some && c is Some && d is Some && e is Some && f is Some && g is Some && h is Some && i is Some && j is Some)
+        Some(map(a.t, b.t, c.t, d.t, e.t, f.t, g.t, h.t, i.t, j.t))
+      else
+        None
   }
 
   /**
