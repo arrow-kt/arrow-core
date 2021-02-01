@@ -20,14 +20,6 @@ inline fun <A, B> IorOf<A, B>.fix(): Ior<A, B> =
 
 typealias IorNel<A, B> = Ior<Nel<A>, B>
 
-class ForIor private constructor() { companion object }
-typealias IorOf<A, B> = arrow.Kind2<ForIor, A, B>
-typealias IorPartialOf<A> = arrow.Kind<ForIor, A>
-
-@Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
-inline fun <A, B> IorOf<A, B>.fix(): Ior<A, B> =
-  this as Ior<A, B>
-
 /**
  * Port of https://github.com/typelevel/cats/blob/v0.9.0/core/src/main/scala/cats/data/Ior.scala
  *
