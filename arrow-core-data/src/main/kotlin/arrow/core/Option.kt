@@ -401,6 +401,14 @@ sealed class Option<out A> : OptionOf<A> {
      * ```
      *
      */
+    @Deprecated(
+      "just is deprecated, and will be removed in 0.13.0. Please use Some instead.",
+      ReplaceWith(
+        "Some(a)",
+        "arrow.core.Some"
+      ),
+      DeprecationLevel.WARNING
+    )
     fun <A> just(a: A): Option<A> = Some(a)
 
     tailrec fun <A, B> tailRecM(a: A, f: (A) -> OptionOf<Either<A, B>>): Option<B> =
@@ -420,7 +428,7 @@ sealed class Option<out A> : OptionOf<A> {
 
     inline fun <A> catch(recover: (Throwable) -> Unit, f: () -> A): Option<A> =
       try {
-        just(f())
+        Some(f())
       } catch (t: Throwable) {
         recover(t.nonFatalOrThrow())
         None
@@ -683,19 +691,19 @@ sealed class Option<out A> : OptionOf<A> {
   inline fun <B> crosswalk(f: (A) -> Option<B>): Option<Option<B>> =
     when (this) {
       is None -> empty<B>().map { empty() }
-      is Some -> f(t).map { just(it) }
+      is Some -> f(t).map { Some(it) }
     }
 
   inline fun <K, V> crosswalkMap(f: (A) -> Map<K, V>): Map<K, Option<V>> =
     when (this) {
       is None -> emptyMap()
-      is Some -> f(t).mapValues { just(it.value) }
+      is Some -> f(t).mapValues { Some(it.value) }
     }
 
   inline fun <B> crosswalkNull(f: (A) -> B?): Option<B>? =
     when (this) {
       is None -> null
-      is Some -> f(t)?.let { just(it) }
+      is Some -> f(t)?.let { Some(it) }
     }
 
   /**
@@ -1032,7 +1040,7 @@ fun <A> A.some(): Option<A> = Some(this)
 fun <A> none(): Option<A> = None
 
 fun <A> Iterable<Option<A>>.combineAll(MA: Monoid<A>): Option<A> =
-  fold(Option.just(MA.empty())) { acc, a ->
+  fold(Option(MA.empty())) { acc, a ->
     acc.combine(MA, a)
   }
 
@@ -1069,10 +1077,10 @@ fun <A> Option<Boolean>.ifS(fl: Option<A>, fr: Option<A>): Option<A> =
   selector().branch(fl.map { { _: Unit -> it } }, fr.map { { _: Unit -> it } })
 
 fun Option<Boolean>.orS(f: Option<Boolean>): Option<Boolean> =
-  ifS(Option.just(true), f)
+  ifS(Some(true), f)
 
 fun Option<Boolean>.andS(f: Option<Boolean>): Option<Boolean> =
-  ifS(f, Option.just(false))
+  ifS(f, Some(false))
 
 fun <A> Option<A>.combineAll(MA: Monoid<A>): A = MA.run {
   foldLeft(empty()) { acc, a -> acc.combine(a) } }
@@ -1097,7 +1105,7 @@ inline fun <reified B> Option<*>.filterIsInstance(): Option<B> {
 }
 
 inline fun <A> Option<A>.handleError(f: (Unit) -> A): Option<A> =
-  handleErrorWith { Option.just(f(Unit)) }
+  handleErrorWith { Some(f(Unit)) }
 
 inline fun <A> Option<A>.handleErrorWith(f: (Unit) -> Option<A>): Option<A> =
   if (isEmpty()) f(Unit) else this
@@ -1139,7 +1147,7 @@ fun <A> Option<A>.replicate(n: Int, MA: Monoid<A>): Option<A> = MA.run {
   else map { a -> List(n) { a }.fold(empty()) { acc, v -> acc + v } }}
 
 fun <A> Option<Either<Unit, A>>.rethrow(): Option<A> =
-  flatMap { it.fold({ None }, { a -> Option.just(a) }) }
+  flatMap { it.fold({ None }, { a -> Some(a) }) }
 
 fun <A> Option<A>.salign(SA: Semigroup<A>, b: Option<A>): Option<A> =
   align(b) { it.fold(::identity, ::identity) { a, b ->
