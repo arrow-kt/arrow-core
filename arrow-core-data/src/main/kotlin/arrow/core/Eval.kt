@@ -268,7 +268,7 @@ sealed class Eval<out A> : EvalOf<A> {
       b: Eval<B>,
       crossinline map: (A, B) -> C
     ): Eval<C> =
-      mapN(a, b, Unit, Unit, Unit, Unit, Unit, Unit, Unit, Unit) { aa, bb, _, _, _, _, _, _, _, _ -> map(aa, bb) }
+      mapN(a, b, Unit, Unit, Unit, Unit, Unit) { aa, bb, _, _, _, _, _ -> map(aa, bb) }
 
     inline fun <A, B, C, D> mapN(
       a: Eval<A>,
@@ -276,7 +276,7 @@ sealed class Eval<out A> : EvalOf<A> {
       c: Eval<C>,
       crossinline map: (A, B, C) -> D
     ): Eval<D> =
-      mapN(a, b, c, Unit, Unit, Unit, Unit, Unit, Unit, Unit) { aa, bb, cc, _, _, _, _, _, _, _ -> map(aa, bb, cc) }
+      mapN(a, b, c, Unit, Unit, Unit, Unit) { aa, bb, cc, _, _, _, _ -> map(aa, bb, cc) }
 
     inline fun <A, B, C, D, E> mapN(
       a: Eval<A>,
@@ -285,7 +285,7 @@ sealed class Eval<out A> : EvalOf<A> {
       d: Eval<D>,
       crossinline map: (A, B, C, D) -> E
     ): Eval<E> =
-      mapN(a, b, c, d, Unit, Unit, Unit, Unit, Unit, Unit) { aa, bb, cc, dd, _, _, _, _, _, _ -> map(aa, bb, cc, dd) }
+      mapN(a, b, c, d, Unit, Unit, Unit) { aa, bb, cc, dd, _, _, _ -> map(aa, bb, cc, dd) }
 
     inline fun <A, B, C, D, E, F> mapN(
       a: Eval<A>,
@@ -295,7 +295,7 @@ sealed class Eval<out A> : EvalOf<A> {
       e: Eval<E>,
       crossinline map: (A, B, C, D, E) -> F
     ): Eval<F> =
-      mapN(a, b, c, d, e, Unit, Unit, Unit, Unit, Unit) { aa, bb, cc, dd, ee, _, _, _, _, _ -> map(aa, bb, cc, dd, ee) }
+      mapN(a, b, c, d, e, Unit, Unit) { aa, bb, cc, dd, ee, _, _ -> map(aa, bb, cc, dd, ee) }
 
     inline fun <A, B, C, D, E, F, G> mapN(
       a: Eval<A>,
@@ -306,7 +306,7 @@ sealed class Eval<out A> : EvalOf<A> {
       f: Eval<F>,
       crossinline map: (A, B, C, D, E, F) -> G
     ): Eval<G> =
-      mapN(a, b, c, d, e, f, Unit, Unit, Unit, Unit) { aa, bb, cc, dd, ee, ff, _, _, _, _ -> map(aa, bb, cc, dd, ee, ff) }
+      mapN(a, b, c, d, e, f, Unit) { aa, bb, cc, dd, ee, ff, _ -> map(aa, bb, cc, dd, ee, ff) }
 
     inline fun <A, B, C, D, E, F, G, H> mapN(
       a: Eval<A>,
@@ -318,62 +318,15 @@ sealed class Eval<out A> : EvalOf<A> {
       g: Eval<G>,
       crossinline map: (A, B, C, D, E, F, G) -> H
     ): Eval<H> =
-      mapN(a, b, c, d, e, f, g, Unit, Unit, Unit) { aa, bb, cc, dd, ee, ff, gg, _, _, _ -> map(aa, bb, cc, dd, ee, ff, gg) }
-
-    inline fun <A, B, C, D, E, F, G, H, I> mapN(
-      a: Eval<A>,
-      b: Eval<B>,
-      c: Eval<C>,
-      d: Eval<D>,
-      e: Eval<E>,
-      f: Eval<F>,
-      g: Eval<G>,
-      h: Eval<H>,
-      crossinline map: (A, B, C, D, E, F, G, H) -> I
-    ): Eval<I> =
-      mapN(a, b, c, d, e, f, g, h, Unit, Unit) { aa, bb, cc, dd, ee, ff, gg, hh, _, _ -> map(aa, bb, cc, dd, ee, ff, gg, hh) }
-
-    inline fun <A, B, C, D, E, F, G, H, I, J> mapN(
-      a: Eval<A>,
-      b: Eval<B>,
-      c: Eval<C>,
-      d: Eval<D>,
-      e: Eval<E>,
-      f: Eval<F>,
-      g: Eval<G>,
-      h: Eval<H>,
-      i: Eval<I>,
-      crossinline map: (A, B, C, D, E, F, G, H, I) -> J
-    ): Eval<J> =
-      mapN(a, b, c, d, e, f, g, h, i, Unit) { aa, bb, cc, dd, ee, ff, gg, hh, ii, _ -> map(aa, bb, cc, dd, ee, ff, gg, hh, ii) }
-
-    inline fun <A, B, C, D, E, F, G, H, I, J, K> mapN(
-      a: Eval<A>,
-      b: Eval<B>,
-      c: Eval<C>,
-      d: Eval<D>,
-      e: Eval<E>,
-      f: Eval<F>,
-      g: Eval<G>,
-      h: Eval<H>,
-      i: Eval<I>,
-      j: Eval<J>,
-      crossinline map: (A, B, C, D, E, F, G, H, I, J) -> K
-    ): Eval<K> =
+//      mapN(a, b, c, d, e, f, g, Unit) { aa, bb, cc, dd, ee, ff, gg, _ -> map(aa, bb, cc, dd, ee, ff, gg) }
       a.flatMap { aa ->
         b.flatMap { bb ->
           c.flatMap { cc ->
             d.flatMap { dd ->
               e.flatMap { ee ->
                 f.flatMap { ff ->
-                  g.flatMap { gg ->
-                    h.flatMap { hh ->
-                      i.flatMap { ii ->
-                        j.map { jj ->
-                          map(aa, bb, cc, dd, ee, ff, gg, hh, ii, jj)
-                        }
-                      }
-                    }
+                  g.map { gg ->
+                    map(aa, bb, cc, dd, ee, ff, gg)
                   }
                 }
               }
@@ -381,6 +334,85 @@ sealed class Eval<out A> : EvalOf<A> {
           }
         }
       }
+
+//    inline fun <A, B, C, D, E, F, G, H, I> mapN(
+//      a: Eval<A>,
+//      b: Eval<B>,
+//      c: Eval<C>,
+//      d: Eval<D>,
+//      e: Eval<E>,
+//      f: Eval<F>,
+//      g: Eval<G>,
+//      h: Eval<H>,
+//      crossinline map: (A, B, C, D, E, F, G, H) -> I
+//    ): Eval<I> =
+//      mapN(a, b, c, d, e, f, g, h, Unit, Unit) { aa, bb, cc, dd, ee, ff, gg, hh, _, _ -> map(aa, bb, cc, dd, ee, ff, gg, hh) }
+//      a.flatMap { aa ->
+//        b.flatMap { bb ->
+//          c.flatMap { cc ->
+//            d.flatMap { dd ->
+//              e.flatMap { ee ->
+//                f.flatMap { ff ->
+//                  g.flatMap { gg ->
+//                    h.map { hh ->
+//                      map(aa, bb, cc, dd, ee, ff, gg, hh)
+//                    }
+//                  }
+//                }
+//              }
+//            }
+//          }
+//        }
+//      }
+
+//    inline fun <A, B, C, D, E, F, G, H, I, J> mapN(
+//      a: Eval<A>,
+//      b: Eval<B>,
+//      c: Eval<C>,
+//      d: Eval<D>,
+//      e: Eval<E>,
+//      f: Eval<F>,
+//      g: Eval<G>,
+//      h: Eval<H>,
+//      i: Eval<I>,
+//      crossinline map: (A, B, C, D, E, F, G, H, I) -> J
+//    ): Eval<J> =
+//      mapN(a, b, c, d, e, f, g, h, i, Unit) { aa, bb, cc, dd, ee, ff, gg, hh, ii, _ -> map(aa, bb, cc, dd, ee, ff, gg, hh, ii) }
+//
+//    inline fun <A, B, C, D, E, F, G, H, I, J, K> mapN(
+//      a: Eval<A>,
+//      b: Eval<B>,
+//      c: Eval<C>,
+//      d: Eval<D>,
+//      e: Eval<E>,
+//      f: Eval<F>,
+//      g: Eval<G>,
+//      h: Eval<H>,
+//      i: Eval<I>,
+//      j: Eval<J>,
+//      crossinline map: (A, B, C, D, E, F, G, H, I, J) -> K
+//    ): Eval<K> =
+//      a.flatMap { aa ->
+//        b.flatMap { bb ->
+//          c.flatMap { cc ->
+//            d.flatMap { dd ->
+//              e.flatMap { ee ->
+//                f.flatMap { ff ->
+//                  g.flatMap { gg ->
+//                    h.flatMap { hh ->
+//                      i.flatMap { ii ->
+//                        j.map { jj ->
+//                          map(aa, bb, cc, dd, ee, ff, gg, hh, ii, jj)
+//                        }
+//                      }
+//                    }
+//                  }
+//                }
+//              }
+//            }
+//          }
+//        }
+//      }
   }
 
   abstract fun value(): A
