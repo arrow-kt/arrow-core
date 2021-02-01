@@ -226,15 +226,7 @@ interface IorEqK2 : EqK2<ForIor> {
 interface IorShow<L, R> : Show<Ior<L, R>> {
   fun SL(): Show<L>
   fun SR(): Show<R>
-  override fun Ior<L, R>.show(): String = fold(
-    {
-      "Left(${SL().run { it.show() }})"
-    },
-    {
-      "Right(${SR().run { it.show() }})"
-    },
-    { a, b -> "Both(${SL().run { a.show() }}, ${SR().run { b.show() }})" }
-  )
+  override fun Ior<L, R>.show(): String = show(SL(), SR())
 }
 
 @extension
