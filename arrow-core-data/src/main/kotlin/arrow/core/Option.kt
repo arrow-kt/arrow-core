@@ -666,6 +666,12 @@ sealed class Option<out A> : OptionOf<A> {
   inline fun <B, C> align(b: Option<B>, f: (Ior<A, B>) -> C): Option<C> =
     Ior.fromOptions(this, b).map(f)
 
+  /**
+   * Returns true if this option is empty '''or''' the predicate
+   * $predicate returns true when applied to this $option's value.
+   *
+   * @param predicate the predicate to test
+   */
   inline fun all(predicate: (A) -> Boolean): Boolean =
     fold({ true }, predicate)
 
@@ -744,6 +750,13 @@ sealed class Option<out A> : OptionOf<A> {
    *
    * @param p the predicate to test
    */
+  @Deprecated(
+    "forall will be renamed to all to be consistent with Kotlin Std's naming, please use all instead of forall",
+    ReplaceWith(
+      "this.all(p)"
+    ),
+    DeprecationLevel.WARNING
+  )
   inline fun forall(p: (A) -> Boolean): Boolean = fold({ true }, p)
 
   /**
