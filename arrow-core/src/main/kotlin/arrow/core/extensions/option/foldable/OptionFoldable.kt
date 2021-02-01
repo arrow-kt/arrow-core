@@ -275,7 +275,7 @@ fun <A> Kind<ForOption, A>.find(arg1: Function1<A, Boolean>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "exists(arg1)"
+  "exists(arg1)", "arrow.core.exists"
   ),
   DeprecationLevel.WARNING
 )
@@ -294,7 +294,7 @@ fun <A> Kind<ForOption, A>.exists(arg1: Function1<A, Boolean>): Boolean =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "all(arg1)"
+  "all(arg1)", "arrow.core.all"
   ),
   DeprecationLevel.WARNING
 )
@@ -313,7 +313,7 @@ fun <A> Kind<ForOption, A>.forAll(arg1: Function1<A, Boolean>): Boolean =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "all(arg1)"
+  "all(arg1)", "arrow.core.all"
   ),
   DeprecationLevel.WARNING
 )

@@ -94,7 +94,7 @@ fun <A, B, Z> Kind<ForOption, A>.map2Eval(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
   "Option.mapN(arg0, arg1) { a, b -> arg2(Tuple2(a, b)) }",
-    "arrow.core.Option", "arrow.core.Tuple2", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple2"
   ),
   DeprecationLevel.WARNING
 )
@@ -588,7 +588,7 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> mapN(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
   "zip(arg1) { a, b -> arg2(Tuple2(a, b)) }",
-    "arrow.core.Tuple2"
+    "arrow.core.Tuple2", "arrow.core.zip"
   ),
   DeprecationLevel.WARNING
 )
@@ -608,7 +608,7 @@ fun <A, B, Z> Kind<ForOption, A>.map2(arg1: Kind<ForOption, B>, arg2: Function1<
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "zip(arg1) { a, b -> Tuple2(a, b) }",
-    "arrow.core.Tuple2"
+    "arrow.core.Tuple2", "arrow.core.zip"
   ),
   DeprecationLevel.WARNING
 )
@@ -628,7 +628,7 @@ fun <A, B> Kind<ForOption, A>.product(arg1: Kind<ForOption, B>): Option<Tuple2<A
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "zip(arg1) { tuple, b -> Tuple3(tuple.a, tuple.b, b) }",
-    "arrow.core.Tuple3"
+    "arrow.core.Tuple3", "arrow.core.zip"
   ),
   DeprecationLevel.WARNING
 )
