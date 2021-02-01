@@ -19,3 +19,7 @@ dependencies {
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$JUNIT_VINTAGE_VERSION"
     testImplementation project(":arrow-core-test")
 }
+
+jar {
+    zip64 true
+}

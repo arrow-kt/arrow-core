@@ -48,11 +48,3 @@ configure(subprojects
         signature 'net.sf.androidscents.signature:android-api-level-21:5.0.1_r2@signature'
     }
 }
-
-//shadowJar {
-//    zip64 true
-//}
-
-//tasks.shadowJar {
-//    zip64 = true
-//}
