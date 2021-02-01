@@ -117,7 +117,7 @@ fun <A, B, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1) { a, b -> arg2(Tuple2(a, b)) }",
-    "arrow.core.Option", "arrow.core.Tuple2", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple2"
   ),
   DeprecationLevel.WARNING
 )
@@ -140,7 +140,7 @@ fun <A, B, Z> mapN(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2) { a, b, c -> arg3(Tuple3(a, b, c)) }",
-    "arrow.core.Option", "arrow.core.Tuple3", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple3"
   ),
   DeprecationLevel.WARNING
 )
@@ -164,7 +164,7 @@ fun <A, B, C, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2) { a, b, c -> arg3(Tuple3(a, b, c)) }",
-    "arrow.core.Option", "arrow.core.Tuple3", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple3"
   ),
   DeprecationLevel.WARNING
 )
@@ -188,7 +188,7 @@ fun <A, B, C, Z> mapN(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3) { a, b, c, d -> arg4(Tuple4(a, b, c, d)) }",
-    "arrow.core.Option", "arrow.core.Tuple4", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple4"
   ),
   DeprecationLevel.WARNING
 )
@@ -213,7 +213,7 @@ fun <A, B, C, D, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3) { a, b, c, d -> arg4(Tuple4(a, b, c, d)) }",
-    "arrow.core.Option", "arrow.core.Tuple4", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple4"
   ),
   DeprecationLevel.WARNING
 )
@@ -238,7 +238,7 @@ fun <A, B, C, D, Z> mapN(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4) { a, b, c, d, e -> arg5(Tuple5(a, b, c, d, e)) }",
-    "arrow.core.Option", "arrow.core.Tuple5", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple5"
   ),
   DeprecationLevel.WARNING
 )
@@ -264,7 +264,7 @@ fun <A, B, C, D, E, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4) { a, b, c, d, e -> arg5(Tuple5(a, b, c, d, e)) }",
-    "arrow.core.Option", "arrow.core.Tuple5", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple5"
   ),
   DeprecationLevel.WARNING
 )
@@ -290,7 +290,7 @@ fun <A, B, C, D, E, Z> mapN(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5) { a, b, c, d, e, f -> arg6(Tuple6(a, b, c, d, e, f)) }",
-    "arrow.core.Option", "arrow.core.Tuple6", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple6"
   ),
   DeprecationLevel.WARNING
 )
@@ -317,7 +317,7 @@ fun <A, B, C, D, E, FF, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5) { a, b, c, d, e, f -> arg6(Tuple6(a, b, c, d, e, f)) }",
-    "arrow.core.Option", "arrow.core.Tuple6", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple6"
   ),
   DeprecationLevel.WARNING
 )
@@ -344,7 +344,7 @@ fun <A, B, C, D, E, FF, Z> mapN(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6) { a, b, c, d, e, f, g -> arg7(Tuple7(a, b, c, d, e, f, g)) }",
-    "arrow.core.Option", "arrow.core.Tuple7", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple7"
   ),
   DeprecationLevel.WARNING
 )
@@ -373,7 +373,7 @@ fun <A, B, C, D, E, FF, G, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6) { a, b, c, d, e, f, g -> arg7(Tuple7(a, b, c, d, e, f, g)) }",
-    "arrow.core.Option", "arrow.core.Tuple7", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple7"
   ),
   DeprecationLevel.WARNING
 )
@@ -402,7 +402,7 @@ fun <A, B, C, D, E, FF, G, Z> mapN(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) { a, b, c, d, e, f, g, h -> arg8(Tuple8(a, b, c, d, e, f, g, h)) }",
-    "arrow.core.Option", "arrow.core.Tuple8", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple8"
   ),
   DeprecationLevel.WARNING
 )
@@ -432,7 +432,7 @@ fun <A, B, C, D, E, FF, G, H, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) { a, b, c, d, e, f, g, h -> arg8(Tuple8(a, b, c, d, e, f, g, h)) }",
-    "arrow.core.Option", "arrow.core.Tuple8", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple8"
   ),
   DeprecationLevel.WARNING
 )
@@ -462,7 +462,7 @@ fun <A, B, C, D, E, FF, G, H, Z> mapN(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) { a, b, c, d, e, f, g, h, i -> arg9(Tuple9(a, b, c, d, e, f, g, h, i)) }",
-    "arrow.core.Option", "arrow.core.Tuple9", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple9"
   ),
   DeprecationLevel.WARNING
 )
@@ -493,7 +493,7 @@ fun <A, B, C, D, E, FF, G, H, I, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) { a, b, c, d, e, f, g, h, i -> arg9(Tuple9(a, b, c, d, e, f, g, h, i)) }",
-    "arrow.core.Option", "arrow.core.Tuple9", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple9"
   ),
   DeprecationLevel.WARNING
 )
@@ -524,7 +524,7 @@ fun <A, B, C, D, E, FF, G, H, I, Z> mapN(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) { a, b, c, d, e, f, g, h, i, j -> arg10(Tuple10(a, b, c, d, e, f, g, h, i, j)) }",
-    "arrow.core.Option", "arrow.core.Tuple10", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple10"
   ),
   DeprecationLevel.WARNING
 )
@@ -556,7 +556,7 @@ fun <A, B, C, D, E, FF, G, H, I, J, Z> map(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) { a, b, c, d, e, f, g, h, i, j -> arg10(Tuple10(a, b, c, d, e, f, g, h, i, j)) }",
-    "arrow.core.Option", "arrow.core.Tuple10", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple10"
   ),
   DeprecationLevel.WARNING
 )
@@ -797,7 +797,7 @@ fun <A, B, C, D, E, FF, G, H, I, Z> Kind<ForOption, Tuple9<A, B, C, D, E, FF, G,
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1) { a, b -> Tuple2(a, b) }",
-    "arrow.core.Option", "arrow.core.Tuple2", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple2"
   ),
   DeprecationLevel.WARNING
 )
@@ -817,7 +817,7 @@ fun <A, B> tupled(arg0: Kind<ForOption, A>, arg1: Kind<ForOption, B>): Option<Tu
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1) { a, b -> Tuple2(a, b) }",
-    "arrow.core.Option", "arrow.core.Tuple2", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple2"
   ),
   DeprecationLevel.WARNING
 )
@@ -837,7 +837,7 @@ fun <A, B> tupledN(arg0: Kind<ForOption, A>, arg1: Kind<ForOption, B>): Option<T
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2) { a, b, c -> Tuple3(a, b, c) }",
-    "arrow.core.Option", "arrow.core.Tuple3", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple3"
   ),
   DeprecationLevel.WARNING
 )
@@ -860,7 +860,7 @@ fun <A, B, C> tupled(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2) { a, b, c -> Tuple3(a, b, c) }",
-    "arrow.core.Option", "arrow.core.Tuple3", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple3"
   ),
   DeprecationLevel.WARNING
 )
@@ -883,7 +883,7 @@ fun <A, B, C> tupledN(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3) { a, b, c, d -> Tuple4(a, b, c, d) }",
-    "arrow.core.Option", "arrow.core.Tuple4", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple4"
   ),
   DeprecationLevel.WARNING
 )
@@ -907,7 +907,7 @@ fun <A, B, C, D> tupled(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3) { a, b, c, d -> Tuple4(a, b, c, d) }",
-    "arrow.core.Option", "arrow.core.Tuple4", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple4"
   ),
   DeprecationLevel.WARNING
 )
@@ -931,7 +931,7 @@ fun <A, B, C, D> tupledN(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4) { a, b, c, d, e -> Tuple5(a, b, c, d, e) }",
-    "arrow.core.Option", "arrow.core.Tuple5", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple5"
   ),
   DeprecationLevel.WARNING
 )
@@ -957,7 +957,7 @@ fun <A, B, C, D, E> tupled(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4) { a, b, c, d, e -> Tuple5(a, b, c, d, e) }",
-    "arrow.core.Option", "arrow.core.Tuple5", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple5"
   ),
   DeprecationLevel.WARNING
 )
@@ -983,7 +983,7 @@ fun <A, B, C, D, E> tupledN(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5) { a, b, c, d, e, f -> Tuple6(a, b, c, d, e, f) }",
-    "arrow.core.Option", "arrow.core.Tuple6", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple6"
   ),
   DeprecationLevel.WARNING
 )
@@ -1010,7 +1010,7 @@ fun <A, B, C, D, E, FF> tupled(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5) { a, b, c, d, e, f -> Tuple6(a, b, c, d, e, f) }",
-    "arrow.core.Option", "arrow.core.Tuple6", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple6"
   ),
   DeprecationLevel.WARNING
 )
@@ -1037,7 +1037,7 @@ fun <A, B, C, D, E, FF> tupledN(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6) { a, b, c, d, e, f, g -> Tuple7(a, b, c, d, e, f, g) }",
-    "arrow.core.Option", "arrow.core.Tuple7", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple7"
   ),
   DeprecationLevel.WARNING
 )
@@ -1065,7 +1065,7 @@ fun <A, B, C, D, E, FF, G> tupled(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6) { a, b, c, d, e, f, g -> Tuple7(a, b, c, d, e, f, g) }",
-    "arrow.core.Option", "arrow.core.Tuple7", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple7"
   ),
   DeprecationLevel.WARNING
 )
@@ -1093,7 +1093,7 @@ fun <A, B, C, D, E, FF, G> tupledN(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) { a, b, c, d, e, f, g, h -> Tuple8(a, b, c, d, e, f, g, h) }",
-    "arrow.core.Option", "arrow.core.Tuple8", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple8"
   ),
   DeprecationLevel.WARNING
 )
@@ -1122,7 +1122,7 @@ fun <A, B, C, D, E, FF, G, H> tupled(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) { a, b, c, d, e, f, g, h -> Tuple8(a, b, c, d, e, f, g, h) }",
-    "arrow.core.Option", "arrow.core.Tuple8", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple8"
   ),
   DeprecationLevel.WARNING
 )
@@ -1151,7 +1151,7 @@ fun <A, B, C, D, E, FF, G, H> tupledN(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) { a, b, c, d, e, f, g, h, i -> Tuple9(a, b, c, d, e, f, g, h, i) }",
-    "arrow.core.Option", "arrow.core.Tuple9", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple9"
   ),
   DeprecationLevel.WARNING
 )
@@ -1181,7 +1181,7 @@ fun <A, B, C, D, E, FF, G, H, I> tupled(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) { a, b, c, d, e, f, g, h, i -> Tuple9(a, b, c, d, e, f, g, h, i) }",
-    "arrow.core.Option", "arrow.core.Tuple9", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple9"
   ),
   DeprecationLevel.WARNING
 )
@@ -1211,7 +1211,7 @@ fun <A, B, C, D, E, FF, G, H, I> tupledN(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) { a, b, c, d, e, f, g, h, i, j -> Tuple10(a, b, c, d, e, f, g, h, i, j) }",
-    "arrow.core.Option", "arrow.core.Tuple10", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple10"
   ),
   DeprecationLevel.WARNING
 )
@@ -1243,7 +1243,7 @@ fun <A, B, C, D, E, FF, G, H, I, J> tupled(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.mapN(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) { a, b, c, d, e, f, g, h, i, j -> Tuple10(a, b, c, d, e, f, g, h, i, j) }",
-    "arrow.core.Option", "arrow.core.Tuple10", "arrow.core.mapN"
+    "arrow.core.Option", "arrow.core.Tuple10"
   ),
   DeprecationLevel.WARNING
 )

@@ -332,7 +332,7 @@ fun <A> Kind<ForOption, A>.all(arg1: Function1<A, Boolean>): Boolean =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "isEmpty()"
+  "isEmpty()", "arrow.core.isEmpty"
   ),
   DeprecationLevel.WARNING
 )
