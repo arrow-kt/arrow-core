@@ -268,7 +268,7 @@ sealed class Eval<out A> : EvalOf<A> {
       b: Eval<B>,
       crossinline map: (A, B) -> C
     ): Eval<C> =
-      mapN(a, b, Unit, Unit, Unit, Unit, Unit, Unit, Unit) { aa, bb, _, _, _, _, _, _, _ -> map(aa, bb) }
+      mapN(a, b, Unit, Unit, Unit, Unit, Unit, Unit, Unit, Unit) { aa, bb, _, _, _, _, _, _, _, _ -> map(aa, bb) }
 
     inline fun <A, B, C, D> mapN(
       a: Eval<A>,
