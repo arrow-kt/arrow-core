@@ -422,12 +422,11 @@ sealed class Option<out A> : OptionOf<A> {
       try {
         just(f())
       } catch (t: Throwable) {
-        raiseError(recover(t.nonFatalOrThrow()))
+        recover(t.nonFatalOrThrow())
+        None
       }
 
     fun <A> empty(): Option<A> = None
-
-    fun <A> raiseError(e: Unit): Option<A> = None
 
     val unit: Option<Unit> = Some(Unit)
 
@@ -1080,7 +1079,12 @@ fun <A> Option<A>.combineAll(MA: Monoid<A>): A = MA.run {
 
 inline fun <A> Option<A>.ensure(error: () -> Unit, predicate: (A) -> Boolean): Option<A> =
   when (this) {
-    is Some -> if (predicate(t)) this else Option.raiseError(error())
+    is Some ->
+      if (predicate(t)) this
+      else {
+        error()
+        None
+      }
     is None -> this
   }
 
@@ -1135,7 +1139,7 @@ fun <A> Option<A>.replicate(n: Int, MA: Monoid<A>): Option<A> = MA.run {
   else map { a -> List(n) { a }.fold(empty()) { acc, v -> acc + v } }}
 
 fun <A> Option<Either<Unit, A>>.rethrow(): Option<A> =
-  flatMap { it.fold({ Option.raiseError(Unit) }, { a -> Option.just(a) }) }
+  flatMap { it.fold({ None }, { a -> Option.just(a) }) }
 
 fun <A> Option<A>.salign(SA: Semigroup<A>, b: Option<A>): Option<A> =
   align(b) { it.fold(::identity, ::identity) { a, b ->

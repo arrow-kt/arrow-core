@@ -45,8 +45,8 @@ fun <A> Kind<ForOption, A>.handleErrorWith(arg1: Function1<Unit, Kind<ForOption,
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "Option.raiseError<A>(Unit)",
-    "arrow.core.Option", "arrow.core.raiseError"
+    "None",
+    "arrow.core.None"
   ),
   DeprecationLevel.WARNING
 )
@@ -64,8 +64,8 @@ fun <A> Unit.raiseError(): Option<A> = arrow.core.Option.applicativeError().run 
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "fold<Option<A>>({ Option.raiseError(arg1()) }, { Option.just(it) })",
-  "arrow.core.Option", "arrow.core.just", "arrow.core.raiseError"
+  "fold<Option<A>>({ arg1(); None }, { Option.just(it) })",
+  "arrow.core.None", "arrow.core.Option", "arrow.core.just"
   ),
   DeprecationLevel.WARNING
 )
@@ -84,8 +84,8 @@ fun <A> Kind<ForOption, A>.fromOption(arg1: Function0<Unit>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "fold<Option<A>>({ Option.raiseError(arg1(it)) }, { Option.just(it) })",
-    "arrow.core.Option", "arrow.core.just", "arrow.core.raiseError"
+    "fold<Option<A>>({ arg1(it); None }, { Option.just(it) })",
+    "arrow.core.None", "arrow.core.Option", "arrow.core.just"
   ),
   DeprecationLevel.WARNING
 )
