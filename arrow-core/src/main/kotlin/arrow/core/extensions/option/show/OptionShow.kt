@@ -9,12 +9,8 @@ import arrow.typeclasses.Show
   "NOTHING_TO_INLINE"
 )
 @Deprecated(
-  "@extension projected functions are deprecated",
-  ReplaceWith(
-    "Show.option(SA)",
-    "arrow.core.option", "arrow.core.Show"
-  ),
-  DeprecationLevel.WARNING
+  "Show typeclass is deprecated. Use concrete methods on Option",
+  level = DeprecationLevel.WARNING
 )
 inline fun <A> Companion.show(SA: Show<A>): OptionShow<A> = object :
     arrow.core.extensions.OptionShow<A> { override fun SA(): arrow.typeclasses.Show<A> = SA }

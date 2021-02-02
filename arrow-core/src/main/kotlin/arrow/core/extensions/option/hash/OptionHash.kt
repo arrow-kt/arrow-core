@@ -19,7 +19,7 @@ import kotlin.jvm.JvmName
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "hash(HA)"
+  "hashCode()"
   ),
   DeprecationLevel.WARNING
 )
@@ -32,12 +32,8 @@ fun <A> Option<A>.hash(HA: Hash<A>): Int = arrow.core.Option.hash<A>(HA).run {
   "NOTHING_TO_INLINE"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "Hash.option(HA)",
-    "arrow.core.option", "arrow.typeclasses.Hash"
-  ),
-  DeprecationLevel.WARNING
+  "Hash typeclass is deprecated. Use concrete methods on Option",
+  level = DeprecationLevel.WARNING
 )
 inline fun <A> Companion.hash(HA: Hash<A>): OptionHash<A> = object :
     arrow.core.extensions.OptionHash<A> { override fun HA(): arrow.typeclasses.Hash<A> = HA }

@@ -16,7 +16,7 @@ import arrow.typeclasses.Order
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "compareTo(OA, arg1)",
+  "this.compareTo(arg1)",
   "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
@@ -36,8 +36,8 @@ fun <A> Option<A>.compareTo(OA: Order<A>, arg1: Option<A>): Int =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "compare(OA, arg1) == EQ",
-  "arrow.core.EQ", "arrow.core.compare"
+    "this.compareTo(arg1) == 0",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -55,8 +55,8 @@ fun <A> Option<A>.eqv(OA: Order<A>, arg1: Option<A>): Boolean = arrow.core.Optio
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "lt(OA, arg1)",
-  "arrow.core.lt"
+    "this < arg1",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -74,8 +74,8 @@ fun <A> Option<A>.lt(OA: Order<A>, arg1: Option<A>): Boolean = arrow.core.Option
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "lte(OA, arg1)",
-  "arrow.core.lte"
+    "this <= arg1",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -93,8 +93,8 @@ fun <A> Option<A>.lte(OA: Order<A>, arg1: Option<A>): Boolean = arrow.core.Optio
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "gt(OA, arg1)",
-  "arrow.core.gt"
+    "this > arg1",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -112,8 +112,8 @@ fun <A> Option<A>.gt(OA: Order<A>, arg1: Option<A>): Boolean = arrow.core.Option
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "gte(OA, arg1)",
-  "arrow.core.gte"
+    "this >= arg1",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -131,8 +131,8 @@ fun <A> Option<A>.gte(OA: Order<A>, arg1: Option<A>): Boolean = arrow.core.Optio
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "max(OA, arg1)",
-  "arrow.core.max"
+    "if (this > arg1) this else arg1",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -151,8 +151,8 @@ fun <A> Option<A>.max(OA: Order<A>, arg1: Option<A>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "min(OA, arg1)",
-  "arrow.core.min"
+    "if (this < arg1) this else arg1",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -171,8 +171,8 @@ fun <A> Option<A>.min(OA: Order<A>, arg1: Option<A>): Option<A> =
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "sort(OA, arg1)",
-  "arrow.core.sort"
+    "if (this < arg1) this toT arg1 else arg1 toT this",
+    "arrow.core.compareTo", "arrow.core.toT"
   ),
   DeprecationLevel.WARNING
 )
@@ -186,12 +186,8 @@ fun <A> Option<A>.sort(OA: Order<A>, arg1: Option<A>): Tuple2<Option<A>, Option<
   "NOTHING_TO_INLINE"
 )
 @Deprecated(
-  "@extension projected functions are deprecated",
-  ReplaceWith(
-    "Order.option<A>(EQ)",
-    "arrow.core.option", "arrow.typeclasses.Order"
-  ),
-  DeprecationLevel.WARNING
+  "Order typeclass is deprecated. Use concrete methods on Option",
+  level = DeprecationLevel.WARNING
 )
 inline fun <A> Companion.order(OA: Order<A>): OptionOrder<A> = object :
     arrow.core.extensions.OptionOrder<A> { override fun OA(): arrow.typeclasses.Order<A> = OA }

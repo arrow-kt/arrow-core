@@ -15,8 +15,8 @@ import arrow.typeclasses.Eq
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "neqv(EQ, arg1)",
-    "arrow.core.neqv"
+    "this.compareTo(arg1) != 0",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -29,12 +29,8 @@ fun <A> Option<A>.neqv(EQ: Eq<A>, arg1: Option<A>): Boolean = arrow.core.Option.
   "NOTHING_TO_INLINE"
 )
 @Deprecated(
-  "@extension projected functions are deprecated",
-  ReplaceWith(
-    "Eq.option<A>(EQ)",
-    "arrow.core.option", "arrow.typeclasses.Eq"
-  ),
-  DeprecationLevel.WARNING
+  "Eq typeclass is deprecated. Use concrete methods on Option",
+  level = DeprecationLevel.WARNING
 )
 inline fun <A> Companion.eq(EQ: Eq<A>): OptionEq<A> = object : arrow.core.extensions.OptionEq<A> {
     override fun EQ(): arrow.typeclasses.Eq<A> = EQ }
