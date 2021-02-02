@@ -965,6 +965,13 @@ sealed class Option<out A> : OptionOf<A> {
     value
   }
 
+  @Deprecated(
+    "Show typeclass is deprecated, and will be removed in 0.13.0. Please use the toString method instead.",
+    ReplaceWith(
+      "toString()"
+    ),
+    DeprecationLevel.WARNING
+  )
   fun show(SA: Show<A>): String = fold(
     {
       "None"
@@ -978,13 +985,13 @@ sealed class Option<out A> : OptionOf<A> {
 object None : Option<Nothing>() {
   override fun isEmpty() = true
 
-  override fun toString(): String = show(Show.any())
+  override fun toString(): String = "None"
 }
 
 data class Some<out T>(val t: T) : Option<T>() {
   override fun isEmpty() = false
 
-  override fun toString(): String = show(Show.any())
+  override fun toString(): String = "Some(${t.toString()})"
 }
 
 /**
