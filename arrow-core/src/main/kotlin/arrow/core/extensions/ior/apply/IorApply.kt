@@ -72,7 +72,7 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.apEval(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
   "this.zipEval<L, A, B, Z>(SL, arg1) { a, b -> arg2(Tuple2(a, b)) }",
-  "arrow.core.zipEval"
+  "arrow.core.zipEval", "arrow.core.Tuple2"
   ),
   DeprecationLevel.WARNING
 )
