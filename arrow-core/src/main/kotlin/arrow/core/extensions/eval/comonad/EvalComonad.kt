@@ -41,10 +41,7 @@ fun <A, B> Kind<ForEval, A>.coflatMap(arg1: Function1<Kind<ForEval, A>, B>): Eva
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "extract()",
-    "arrow.core.extract"
-  ),
+  ReplaceWith("value()"),
   DeprecationLevel.WARNING
 )
 fun <A> Kind<ForEval, A>.extract(): A =

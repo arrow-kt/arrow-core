@@ -95,6 +95,11 @@ sealed class Eval<out A> : EvalOf<A> {
         }
       }
 
+    @Deprecated(
+      "just is deprecated in favor of now",
+      ReplaceWith("now(a)"),
+      DeprecationLevel.WARNING
+    )
     fun <A> just(a: A): Eval<A> =
       now(a)
 
@@ -453,6 +458,11 @@ sealed class Eval<out A> : EvalOf<A> {
   inline fun <B> coflatMap(crossinline f: (Eval<A>) -> B): Eval<B> =
     Later { f(this) }
 
+  @Deprecated(
+    "extract is deprecated in favor of value",
+    ReplaceWith("value()"),
+    DeprecationLevel.WARNING
+  )
   fun extract(): A = value()
 
   /**

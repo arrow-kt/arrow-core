@@ -23,8 +23,8 @@ internal val applicative_singleton: EvalApplicative = object : arrow.core.extens
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "just()",
-    "arrow.core.just"
+    "Eval.now(this)",
+    "arrow.core.Eval"
   ),
   DeprecationLevel.WARNING
 )
@@ -42,8 +42,8 @@ fun <A> A.just(): Eval<A> = arrow.core.Eval.applicative().run {
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-    "just(Unit)",
-    "arrow.core.just"
+    "Eval.Unit",
+    "arrow.core.Eval"
   ),
   DeprecationLevel.WARNING
 )
