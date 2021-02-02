@@ -15,8 +15,8 @@ import arrow.typeclasses.Eq
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.neqv(EQL, EQR, arg1)",
-  "arrow.core.neqv"
+    "this.compareTo(arg1) != 0",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -33,12 +33,8 @@ fun <L, R> Ior<L, R>.neqv(
   "NOTHING_TO_INLINE"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "Eq.ior(EQL, EQR)",
-    "arrow.core.ior", "arrow.typeclasses.Eq"
-  ),
-  DeprecationLevel.WARNING
+  "Eq typeclass is deprecated. Use concrete methods on Ior",
+  level = DeprecationLevel.WARNING
 )
 inline fun <L, R> Companion.eq(EQL: Eq<L>, EQR: Eq<R>): IorEq<L, R> = object :
     arrow.core.extensions.IorEq<L, R> { override fun EQL(): arrow.typeclasses.Eq<L> = EQL

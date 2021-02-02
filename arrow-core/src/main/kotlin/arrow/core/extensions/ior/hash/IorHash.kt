@@ -15,8 +15,7 @@ import arrow.typeclasses.Hash
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.hash(HL, HR)",
-  "arrow.core.hash"
+  "hashCode()"
   ),
   DeprecationLevel.WARNING
 )
@@ -29,12 +28,8 @@ fun <L, R> Ior<L, R>.hash(HL: Hash<L>, HR: Hash<R>): Int = arrow.core.Ior.hash<L
   "NOTHING_TO_INLINE"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "Hash.ior(HL, HR)",
-    "arrow.core.ior", "arrow.typeclasses.Hash"
-  ),
-  DeprecationLevel.WARNING
+  "Hash typeclass is deprecated. Use concrete methods on Ior",
+  level = DeprecationLevel.WARNING
 )
 inline fun <L, R> Companion.hash(HL: Hash<L>, HR: Hash<R>): IorHash<L, R> = object :
     arrow.core.extensions.IorHash<L, R> { override fun HL(): arrow.typeclasses.Hash<L> = HL

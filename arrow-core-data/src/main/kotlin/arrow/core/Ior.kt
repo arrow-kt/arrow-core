@@ -950,27 +950,6 @@ fun <A, B> Ior<A, B>.combine(SA: Semigroup<A>, SB: Semigroup<B>, other: Ior<A, B
     }
   }
 
-fun <A, B> Ior<A, B>.eqv(b: Ior<A, B>): Boolean = when (this) {
-  is Ior.Left -> when (b) {
-    is Ior.Both -> false
-    is Ior.Right -> false
-    is Ior.Left -> value == b.value
-  }
-  is Ior.Both -> when (b) {
-    is Ior.Left -> false
-    is Ior.Both -> leftValue == b.leftValue && rightValue == b.rightValue
-    is Ior.Right -> false
-  }
-  is Ior.Right -> when (b) {
-    is Ior.Left -> false
-    is Ior.Both -> false
-    is Ior.Right -> value == b.value
-  }
-}
-
-fun <A, B> Ior<A, B>.neqv(b: Ior<A, B>): Boolean =
-  !eqv(b)
-
 @Suppress("NOTHING_TO_INLINE")
 inline fun <A, B> Ior<A, Ior<A, B>>.flatten(SA: Semigroup<A>): Ior<A, B> =
   flatMap(SA, ::identity)

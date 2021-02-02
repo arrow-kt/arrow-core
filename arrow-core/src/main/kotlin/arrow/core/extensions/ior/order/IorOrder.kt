@@ -16,8 +16,8 @@ import arrow.typeclasses.Order
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.compareTo(OL, OR, arg1)",
-  "arrow.core.compareTo"
+    "this.compareTo(arg1)",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -39,8 +39,8 @@ fun <L, R> Ior<L, R>.compareTo(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.eqv(OL, OR, arg1)",
-  "arrow.core.eqv"
+    "this.compareTo(arg1) == 0",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -62,8 +62,8 @@ fun <L, R> Ior<L, R>.eqv(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.lt(OL, OR, arg1)",
-  "arrow.core.lt"
+    "this < arg1",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -85,8 +85,8 @@ fun <L, R> Ior<L, R>.lt(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.lte(OL, OR, arg1)",
-  "arrow.core.lte"
+    "this <= arg1",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -108,8 +108,8 @@ fun <L, R> Ior<L, R>.lte(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.gt(OL, OR, arg1)",
-  "arrow.core.gt"
+    "this > arg1",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -131,8 +131,8 @@ fun <L, R> Ior<L, R>.gt(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.gte(OL, OR, arg1)",
-  "arrow.core.gte"
+    "this >= arg1",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -154,8 +154,8 @@ fun <L, R> Ior<L, R>.gte(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.max(OL, OR, arg1)",
-  "arrow.core.max"
+    "if (this > arg1) this else arg1",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -177,8 +177,8 @@ fun <L, R> Ior<L, R>.max(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.min(OL, OR, arg1)",
-  "arrow.core.min"
+    "if (this < arg1) this else arg1",
+    "arrow.core.compareTo"
   ),
   DeprecationLevel.WARNING
 )
@@ -200,8 +200,8 @@ fun <L, R> Ior<L, R>.min(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.sort(OL, OR, arg1)",
-  "arrow.core.sort"
+    "if (this < arg1) this toT arg1 else arg1 toT this",
+    "arrow.core.compareTo", "arrow.core.toT"
   ),
   DeprecationLevel.WARNING
 )
@@ -218,12 +218,8 @@ fun <L, R> Ior<L, R>.sort(
   "NOTHING_TO_INLINE"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-    "Order.ior(OL, OR)",
-    "arrow.core.ior", "arrow.typeclasses.Order"
-  ),
-  DeprecationLevel.WARNING
+  "Order typeclass is deprecated. Use concrete methods on Ior",
+  level = DeprecationLevel.WARNING
 )
 inline fun <L, R> Companion.order(OL: Order<L>, OR: Order<R>): IorOrder<L, R> = object :
     arrow.core.extensions.IorOrder<L, R> { override fun OL(): arrow.typeclasses.Order<L> = OL
