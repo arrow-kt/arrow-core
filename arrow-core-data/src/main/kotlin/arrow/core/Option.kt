@@ -2,13 +2,9 @@ package arrow.core
 
 import arrow.Kind
 import arrow.core.Either.Right
-import arrow.typeclasses.Eq
-import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
-import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
-import arrow.typeclasses.hashWithSalt
 
 @Deprecated(
   "Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead",
@@ -824,15 +820,6 @@ sealed class Option<out A> : OptionOf<A> {
   inline fun <B> fproduct(f: (A) -> B): Option<Pair<A, B>> =
     map { a -> Pair(a, f(a)) }
 
-  fun hash(HA: Hash<A>): Int =
-    fold(
-      { hashWithSalt(HA, 0) },
-      { HA.run { it.hashWithSalt(1) } }
-    )
-
-  fun hashWithSalt(HA: Hash<A>, salt: Int): Int =
-    fold({ salt.hashWithSalt(0) }, { v -> HA.run { v.hashWithSalt(salt.hashWithSalt(1)) } })
-
   fun <B> padZip(other: Option<B>): Option<Pair<A?, B?>> =
     align(other) { ior ->
       ior.fold(
@@ -1245,49 +1232,6 @@ inline fun <A, B, C> Option<C>.unzip(f: (C) -> Pair<A, B>): Pair<Option<A>, Opti
 fun <B, A : B> Option<A>.widen(): Option<B> =
   this
 
-fun <A> Option<A>.eqv(EQA: Eq<A>, other: Option<A>): Boolean = when (this) {
-  is Some -> when (other) {
-    None -> false
-    is Some -> EQA.run { t.eqv(other.t) }
-  }
-  None -> when (other) {
-    None -> true
-    is Some -> false
-  }
-}
-
-fun <A> Option<A>.neqv(EQA: Eq<A>, other: Option<A>): Boolean =
-  !eqv(EQA, other)
-
-fun <A> Option<A>.compare(OA: Order<A>, b: Option<A>): Ordering = fold(
-  { b.fold({ EQ }, { LT }) },
-  { a1 -> b.fold({ GT }, { a2 -> OA.run { a1.compare(a2) } })
-})
-
-fun <A> Option<A>.compareTo(OA: Order<A>, b: Option<A>): Int =
-  compare(OA, b).toInt()
-
-fun <A> Option<A>.lt(OA: Order<A>, b: Option<A>): Boolean =
-  compare(OA, b) == LT
-
-fun <A> Option<A>.lte(OA: Order<A>, b: Option<A>): Boolean =
-  compare(OA, b) != GT
-
-fun <A> Option<A>.gt(OA: Order<A>, b: Option<A>): Boolean =
-  compare(OA, b) == GT
-
-fun <A> Option<A>.gte(OA: Order<A>, b: Option<A>): Boolean =
-  compare(OA, b) != LT
-
-fun <A> Option<A>.max(OA: Order<A>, b: Option<A>): Option<A> =
-  if (gt(OA, b)) this else b
-
-fun <A> Option<A>.min(OA: Order<A>, b: Option<A>): Option<A> =
-  if (lt(OA, b)) this else b
-
-fun <A> Option<A>.sort(OA: Order<A>, b: Option<A>): Pair<Option<A>, Option<A>> =
-  if (gte(OA, b)) this to b else b to this
-
 fun <A> Option<A>.combine(SGA: Semigroup<A>, b: Option<A>): Option<A> =
   when (this) {
     is Some -> when (b) {
@@ -1297,40 +1241,11 @@ fun <A> Option<A>.combine(SGA: Semigroup<A>, b: Option<A>): Option<A> =
     None -> b
   }
 
-/** Construct an [Eq] instance which use [EQA] to compare the element of the option **/
-fun <A> Eq.Companion.option(EQA: Eq<A>): Eq<Option<A>> =
-  OptionEq(EQA)
-
-fun <A> Hash.Companion.option(HA: Hash<A>): Hash<Option<A>> =
-  OptionHash(HA)
-
 fun <A> Monoid.Companion.option(MA: Monoid<A>): Monoid<Option<A>> =
   OptionMonoid(MA)
 
-fun <A> Order.Companion.option(OA: Order<A>): Order<Option<A>> =
-  OptionOrder(OA)
-
 fun <A> Semigroup.Companion.option(SGA: Semigroup<A>): Semigroup<Option<A>> =
   OptionSemigroup(SGA)
-
-fun <A> Show.Companion.option(SA: Show<A>): Show<Option<A>> =
-  OptionShow(SA)
-
-private class OptionEq<A>(
-  private val EQA: Eq<A>,
-) : Eq<Option<A>> {
-  override fun Option<A>.eqv(b: Option<A>): Boolean = eqv(EQA, b)
-}
-
-private class OptionHash<A>(
-  private val HA: Hash<A>
-) : Hash<Option<A>> {
-  override fun Option<A>.hash(): Int =
-    hash(HA)
-
-  override fun Option<A>.hashWithSalt(salt: Int): Int =
-    hashWithSalt(HA, salt)
-}
 
 private class OptionMonoid<A>(
   private val MA: Monoid<A>
@@ -1345,13 +1260,6 @@ private class OptionMonoid<A>(
   override fun empty(): Option<A> = None
 }
 
-private class OptionOrder<A>(
-  private val OA: Order<A>
-) : Order<Option<A>> {
-  override fun Option<A>.compare(b: Option<A>): Ordering =
-    compare(OA, b)
-}
-
 private class OptionSemigroup<A>(
   private val SGA: Semigroup<A>
 ) : Semigroup<Option<A>> {
@@ -1361,10 +1269,4 @@ private class OptionSemigroup<A>(
 
   override fun Option<A>.maybeCombine(b: Option<A>?): Option<A> =
     b?.let { combine(SGA, it) } ?: this
-}
-
-private class OptionShow<A>(
-  private val SA: Show<A>,
-) : Show<Option<A>> {
-  override fun Option<A>.show(): String = show(SA)
 }
