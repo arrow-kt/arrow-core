@@ -1270,3 +1270,8 @@ private class OptionSemigroup<A>(
   override fun Option<A>.maybeCombine(b: Option<A>?): Option<A> =
     b?.let { combine(SGA, it) } ?: this
 }
+
+operator fun <A : Comparable<A>> Option<A>.compareTo(other: Option<A>): Int = fold(
+  { other.fold({ 0 }, { -1 }) },
+  { a1 -> other.fold({ 1 }, { a2 -> a1.compareTo(a2) })
+  })
