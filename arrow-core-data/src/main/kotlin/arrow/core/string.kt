@@ -1,6 +1,5 @@
 package arrow.core
 
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
@@ -21,13 +20,6 @@ private object StringMonoid : Monoid<String> {
 
 fun Monoid.Companion.string(): Monoid<String> =
   StringMonoid
-
-private object StringEq : Eq<String> {
-  override fun String.eqv(b: String): Boolean = this == b
-}
-
-fun Eq.Companion.string(): Eq<String> =
-  StringEq
 
 private object StringShow : Show<String> {
   override fun String.show(): String = "\"${this.escape()}\""

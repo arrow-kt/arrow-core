@@ -3,7 +3,6 @@
 
 package arrow.core
 
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
@@ -58,74 +57,6 @@ fun <A, B, C, D, E, F, G, H, I, J> Show.Companion.tuple10(
   SJ: Show<J>
 ): Show<Tuple10<A, B, C, D, E, F, G, H, I, J>> =
   Tuple10Show(SA, SB, SC, SD, SE, SF, SG, SH, SI, SJ)
-
-fun <A, B, C, D, E, F, G, H, I, J> Tuple10<A, B, C, D, E, F, G, H, I, J>.eqv(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  EQD: Eq<D>,
-  EQE: Eq<E>,
-  EQF: Eq<F>,
-  EQG: Eq<G>,
-  EQH: Eq<H>,
-  EQI: Eq<I>,
-  EQJ: Eq<J>,
-  other: Tuple10<A, B, C, D, E, F, G, H, I, J>
-): Boolean =
-  EQA.run { a.eqv(other.a) } &&
-    EQB.run { this@eqv.b.eqv(other.b) } &&
-    EQC.run { c.eqv(other.c) } &&
-    EQD.run { d.eqv(other.d) } &&
-    EQE.run { e.eqv(other.e) } &&
-    EQF.run { f.eqv(other.f) } &&
-    EQG.run { g.eqv(other.g) } &&
-    EQH.run { h.eqv(other.h) } &&
-    EQI.run { i.eqv(other.i) } &&
-    EQJ.run { j.eqv(other.j) }
-
-fun <A, B, C, D, E, F, G, H, I, J> Tuple10<A, B, C, D, E, F, G, H, I, J>.neqv(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  EQD: Eq<D>,
-  EQE: Eq<E>,
-  EQF: Eq<F>,
-  EQG: Eq<G>,
-  EQH: Eq<H>,
-  EQI: Eq<I>,
-  EQJ: Eq<J>,
-  other: Tuple10<A, B, C, D, E, F, G, H, I, J>
-): Boolean = !eqv(EQA, EQB, EQC, EQD, EQE, EQF, EQG, EQH, EQI, EQJ, other)
-
-private class Tuple10Eq<A, B, C, D, E, F, G, H, I, J>(
-  private val EQA: Eq<A>,
-  private val EQB: Eq<B>,
-  private val EQC: Eq<C>,
-  private val EQD: Eq<D>,
-  private val EQE: Eq<E>,
-  private val EQF: Eq<F>,
-  private val EQG: Eq<G>,
-  private val EQH: Eq<H>,
-  private val EQI: Eq<I>,
-  private val EQJ: Eq<J>,
-) : Eq<Tuple10<A, B, C, D, E, F, G, H, I, J>> {
-  override fun Tuple10<A, B, C, D, E, F, G, H, I, J>.eqv(other: Tuple10<A, B, C, D, E, F, G, H, I, J>): Boolean =
-    eqv(EQA, EQB, EQC, EQD, EQE, EQF, EQG, EQH, EQI, EQJ, other)
-}
-
-fun <A, B, C, D, E, F, G, H, I, J> Eq.Companion.tuple10(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  EQD: Eq<D>,
-  EQE: Eq<E>,
-  EQF: Eq<F>,
-  EQG: Eq<G>,
-  EQH: Eq<H>,
-  EQI: Eq<I>,
-  EQJ: Eq<J>
-): Eq<Tuple10<A, B, C, D, E, F, G, H, I, J>> =
-  Tuple10Eq(EQA, EQB, EQC, EQD, EQE, EQF, EQG, EQH, EQI, EQJ)
 
 fun <A, B, C, D, E, F, G, H, I, J> Tuple10<A, B, C, D, E, F, G, H, I, J>.hashWithSalt(
   HA: Hash<A>,

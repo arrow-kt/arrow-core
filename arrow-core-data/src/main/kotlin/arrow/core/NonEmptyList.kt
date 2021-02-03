@@ -2,7 +2,6 @@ package arrow.core
 
 import arrow.Kind
 import arrow.typeclasses.Applicative
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
@@ -650,10 +649,6 @@ fun <A> NonEmptyList<A>.min(OA: Order<A>, b: NonEmptyList<A>): NonEmptyList<A> =
 fun <A> NonEmptyList<A>.sort(OA: Order<A>, b: NonEmptyList<A>): Tuple2<NonEmptyList<A>, NonEmptyList<A>> =
   if (gte(OA, b)) Tuple2(this, b) else Tuple2(b, this)
 
-/** Construct an [Eq] instance which use [EQA] to compare the elements of the lists **/
-fun <A> Eq.Companion.nonEmptyList(EQA: Eq<A>): Eq<NonEmptyList<A>> =
-  NonEmptyListEq(EQA)
-
 fun <A> Hash.Companion.nonEmptyList(HA: Hash<A>): Hash<NonEmptyList<A>> =
   NonEmptyListHash(HA)
 
@@ -666,12 +661,6 @@ fun <A> Semigroup.Companion.nonEmptyList(): Semigroup<NonEmptyList<A>> =
 
 fun <A> Show.Companion.nonEmptyList(SA: Show<A>): Show<NonEmptyList<A>> =
   NonEmptyListShow(SA)
-
-private class NonEmptyListEq<A>(
-  private val EQA: Eq<A>,
-) : Eq<NonEmptyList<A>> {
-  override fun NonEmptyList<A>.eqv(b: NonEmptyList<A>): Boolean = eqv(EQA, b)
-}
 
 private class NonEmptyListHash<A>(
   private val HA: Hash<A>,
