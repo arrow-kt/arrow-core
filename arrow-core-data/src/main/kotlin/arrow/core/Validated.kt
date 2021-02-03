@@ -958,9 +958,6 @@ fun <E, A> Eq.Companion.validated(EQE: Eq<E>, EQA: Eq<A>): Eq<Validated<E, A>> =
 fun <E, A> Hash.Companion.validated(HE: Hash<E>, HA: Hash<A>): Hash<Validated<E, A>> =
   ValidatedHash(HE, HA)
 
-fun <E, A> Show.Companion.validated(SE: Show<E>, SA: Show<A>): Show<Validated<E, A>> =
-  ValidatedShow(SE, SA)
-
 fun <E, A> Order.Companion.validated(OE: Order<E>, OA: Order<A>): Order<Validated<E, A>> =
   ValidatedOrder(OE, OA)
 
@@ -1265,14 +1262,6 @@ private class ValidatedEq<L, R>(
 
   override fun Validated<L, R>.eqv(b: Validated<L, R>): Boolean =
     eqv(EQL, EQR, b)
-}
-
-private class ValidatedShow<L, R>(
-  private val SL: Show<L>,
-  private val SR: Show<R>,
-) : Show<Validated<L, R>> {
-  override fun Validated<L, R>.show(): String =
-    show(SL, SR)
 }
 
 private class ValidatedHash<L, R>(
