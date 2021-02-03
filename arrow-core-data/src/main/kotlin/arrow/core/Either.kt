@@ -1085,6 +1085,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     }
   }
 
+  @Deprecated(ShowDeprecation)
   fun show(SL: Show<A>, SR: Show<B>): String = fold(
     { "Left(${SL.run { it.show() }})" },
     { "Right(${SR.run { it.show() }})" }

@@ -546,7 +546,7 @@ sealed class Eval<out A> : EvalOf<A> {
     override fun value(): A = evaluate(this)
 
     override fun toString(): String =
-      "Eval.FlatMao(..)"
+      "Eval.FlatMap(..)"
   }
 
   /**
