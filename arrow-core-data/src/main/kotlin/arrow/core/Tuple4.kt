@@ -131,33 +131,14 @@ fun <A, B, C, D> Hash.Companion.tuple4(
 ): Hash<Tuple4<A, B, C, D>> =
   Tuple4Hash(HA, HB, HC, HD)
 
-fun <A, B, C, D> Tuple4<A, B, C, D>.compare(
-  OA: Order<A>,
-  OB: Order<B>,
-  OC: Order<C>,
-  OD: Order<D>,
-  other: Tuple4<A, B, C, D>
-): Ordering = listOf(
-  OA.run { a.compare(other.a) },
-  OB.run { b.compare(other.b) },
-  OC.run { c.compare(other.c) },
-  OD.run { d.compare(other.d) }
-).fold(Monoid.ordering())
-
-private class Tuple4Order<A, B, C, D>(
-  private val OA: Order<A>,
-  private val OB: Order<B>,
-  private val OC: Order<C>,
-  private val OD: Order<D>
-) : Order<Tuple4<A, B, C, D>> {
-  override fun Tuple4<A, B, C, D>.compare(other: Tuple4<A, B, C, D>): Ordering =
-    compare(OA, OB, OC, OD, other)
+operator fun <A : Comparable<A>, B : Comparable<B>, C : Comparable<C>, D : Comparable<D>> Tuple4<A, B, C, D>.compareTo(other: Tuple4<A, B, C, D>): Int {
+  val first = a.compareTo(other.a)
+  return if (first == 0) {
+    val second = b.compareTo(other.b)
+    if (second == 0) {
+      val third = c.compareTo(other.c)
+      if (third == 0) d.compareTo(other.d)
+      else third
+    } else second
+  } else first
 }
-
-fun <A, B, C, D> Order.Companion.tuple4(
-  OA: Order<A>,
-  OB: Order<B>,
-  OC: Order<C>,
-  OD: Order<D>
-): Order<Tuple4<A, B, C, D>> =
-  Tuple4Order(OA, OB, OC, OD)
