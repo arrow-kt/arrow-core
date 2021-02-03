@@ -56,7 +56,7 @@ fun <A, B, C> Kind<ForSequenceK, A>.zipWith(arg1: Kind<ForSequenceK, B>, arg2: F
   "NOTHING_TO_INLINE"
 )
 @Deprecated(
-  "Zip typeclasses is deprecated. Use concrete methods on Sequence",
+  "Zip typeclass is deprecated. Use concrete methods on Sequence",
   level = DeprecationLevel.WARNING
 )
 inline fun Companion.zip(): SequenceKZip = zip_singleton

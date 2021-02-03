@@ -59,7 +59,7 @@ fun <A, B, C> Kind<ForSequenceK, C>.unzipWith(arg1: Function1<C, Tuple2<A, B>>):
   "NOTHING_TO_INLINE"
 )
 @Deprecated(
-  "Unzip typeclasses is deprecated. Use concrete methods on Sequence",
+  "Unzip typeclass is deprecated. Use concrete methods on Sequence",
   level = DeprecationLevel.WARNING
 )
 inline fun Companion.unzip(): SequenceKUnzip = unzip_singleton

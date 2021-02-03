@@ -38,7 +38,7 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   @Deprecated(
-    "Align typeclasses is deprecated. Use concrete methods on Sequence",
+    "Align typeclass is deprecated. Use concrete methods on Sequence",
     level = DeprecationLevel.WARNING
   )
   inline fun align(): SequenceKAlign = align_singleton}

@@ -60,7 +60,7 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   @Deprecated(
-    "Zip typeclasses is deprecated. Use concrete methods on Sequence",
+    "Zip typeclass is deprecated. Use concrete methods on Sequence",
     level = DeprecationLevel.WARNING
   )
   inline fun zip(): SequenceKZip = zip_singleton}

@@ -61,7 +61,7 @@ fun <A, B, C> unalignWith(arg0: Kind<ForSequenceK, C>, arg1: Function1<C, Ior<A,
   "NOTHING_TO_INLINE"
 )
 @Deprecated(
-  "Unalign typeclasses is deprecated. Use concrete methods on Sequence",
+  "Unalign typeclass is deprecated. Use concrete methods on Sequence",
   level = DeprecationLevel.WARNING
 )
 inline fun Companion.unalign(): SequenceKUnalign = unalign_singleton

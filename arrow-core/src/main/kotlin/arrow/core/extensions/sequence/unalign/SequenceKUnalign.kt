@@ -68,7 +68,7 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   @Deprecated(
-    "Unalign typeclasses is deprecated. Use concrete methods on Sequence",
+    "Unalign typeclass is deprecated. Use concrete methods on Sequence",
     level = DeprecationLevel.WARNING
   )
   inline fun unalign(): SequenceKUnalign = unalign_singleton}

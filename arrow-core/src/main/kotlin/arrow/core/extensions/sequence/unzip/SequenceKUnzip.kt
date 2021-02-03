@@ -66,7 +66,7 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   @Deprecated(
-    "Unzip typeclasses is deprecated. Use concrete methods on Sequence",
+    "Unzip typeclass is deprecated. Use concrete methods on Sequence",
     level = DeprecationLevel.WARNING
   )
   inline fun unzip(): SequenceKUnzip = unzip_singleton

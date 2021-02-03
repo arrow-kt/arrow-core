@@ -33,7 +33,7 @@ fun <A> empty(): SequenceK<A> = arrow.core.SequenceK
   "NOTHING_TO_INLINE"
 )
 @Deprecated(
-  "Align typeclasses is deprecated. Use concrete methods on Sequence",
+  "Align typeclass is deprecated. Use concrete methods on Sequence",
   level = DeprecationLevel.WARNING
 )
 inline fun Companion.align(): SequenceKAlign = align_singleton
