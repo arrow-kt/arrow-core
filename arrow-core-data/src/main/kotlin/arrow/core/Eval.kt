@@ -290,6 +290,9 @@ sealed class Eval<out A> : EvalOf<A> {
   data class Now<out A>(val value: A) : Eval<A>() {
     override fun value(): A = value
     override fun memoize(): Eval<A> = this
+
+    override fun toString(): String =
+      "Eval.Now($value)"
   }
 
   /**
@@ -308,6 +311,9 @@ sealed class Eval<out A> : EvalOf<A> {
 
     override fun value(): A = value
     override fun memoize(): Eval<A> = this
+
+    override fun toString(): String =
+      "Eval.Later(f)"
   }
 
   /**
@@ -321,6 +327,9 @@ sealed class Eval<out A> : EvalOf<A> {
   data class Always<out A>(private val f: () -> A) : Eval<A>() {
     override fun value(): A = f()
     override fun memoize(): Eval<A> = Later(f)
+
+    override fun toString(): String =
+      "Eval.Always(f)"
   }
 
   /**
@@ -331,6 +340,9 @@ sealed class Eval<out A> : EvalOf<A> {
   data class Defer<out A>(val thunk: () -> Eval<A>) : Eval<A>() {
     override fun memoize(): Eval<A> = Memoize(this)
     override fun value(): A = collapse(this).value()
+
+    override fun toString(): String =
+      "Eval.Defer(thunk)"
   }
 
   /**
@@ -348,6 +360,9 @@ sealed class Eval<out A> : EvalOf<A> {
     abstract fun <S> run(s: S): Eval<A>
     override fun memoize(): Eval<A> = Memoize(this)
     override fun value(): A = evaluate(this)
+
+    override fun toString(): String =
+      "Eval.FlatMao(..)"
   }
 
   /**
@@ -363,7 +378,13 @@ sealed class Eval<out A> : EvalOf<A> {
     override fun value(): A = result.getOrElse {
       evaluate(eval).also { result = Some(it) }
     }
+
+    override fun toString(): String =
+      "Eval.Memoize($eval)"
   }
+
+  override fun toString(): String =
+    "Eval(...)"
 }
 
 fun <A, B> Iterator<A>.iterateRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<B> {

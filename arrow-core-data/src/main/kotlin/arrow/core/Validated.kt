@@ -8,6 +8,7 @@ import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
 import arrow.typeclasses.defaultSalt
 import arrow.typeclasses.hashWithSalt
 
@@ -821,13 +822,15 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
   inline fun <B> foldMap(MB: Monoid<B>, f: (A) -> B): B =
     fold({ MB.empty() }, f)
 
+  @Deprecated(ShowDeprecation)
   fun show(SE: Show<E>, SA: Show<A>): String = fold(
-    {
-      "Invalid(${SE.run { it.show() }})"
-    },
-    {
-      "Valid(${SA.run { it.show() }})"
-    }
+    { "Invalid(${SE.run { it.show() }})" },
+    { "Valid(${SA.run { it.show() }})" }
+  )
+
+  override fun toString(): String = fold(
+    { "Validated.Invalid($it)" },
+    { "Validated.Valid($it)" }
   )
 
   fun hash(HL: Hash<E>, HR: Hash<A>): Int =
@@ -839,11 +842,11 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
   )
 
   data class Valid<out A>(val a: A) : Validated<Nothing, A>() {
-    override fun toString(): String = show(Show.any(), Show.any())
+    override fun toString(): String = "Validated.Valid($a)"
   }
 
   data class Invalid<out E>(val e: E) : Validated<E, Nothing>() {
-    override fun toString(): String = show(Show.any(), Show.any())
+    override fun toString(): String = "Validated.Invalid($e)"
   }
 
   inline fun <B> fold(fe: (E) -> B, fa: (A) -> B): B =

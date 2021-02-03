@@ -1063,7 +1063,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     override val isLeft = true
     override val isRight = false
 
-    override fun toString(): String = show(Show.any(), Show.any())
+    override fun toString(): String = "Either.Left($a)"
 
     companion object {
       operator fun <A> invoke(a: A): Either<A, Nothing> = Left(a)
@@ -1078,7 +1078,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     override val isLeft = false
     override val isRight = true
 
-    override fun toString(): String = show(Show.any(), Show.any())
+    override fun toString(): String = "Either.Right($b)"
 
     companion object {
       operator fun <B> invoke(b: B): Either<Nothing, B> = Right(b)
@@ -1086,12 +1086,13 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
   }
 
   fun show(SL: Show<A>, SR: Show<B>): String = fold(
-    {
-      "Left(${SL.run { it.show() }})"
-    },
-    {
-      "Right(${SR.run { it.show() }})"
-    }
+    { "Left(${SL.run { it.show() }})" },
+    { "Right(${SR.run { it.show() }})" }
+  )
+
+  override fun toString(): String = fold(
+    { "Either.Left($it)" },
+    { "Either.Right($it)" }
   )
 
   fun toValidatedNel(): ValidatedNel<A, B> =
