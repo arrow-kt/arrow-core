@@ -3,65 +3,47 @@ package arrow.core
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
-import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.hashWithSalt
 
-sealed class Ordering {
-  override fun equals(other: Any?): Boolean = this === other // ref equality is fine because objects should be singletons
+sealed class Ordering(private val toInt: Int) {
+  override fun equals(other: Any?): Boolean =
+    this === other // ref equality is fine because objects should be singletons
 
   override fun toString(): String = show()
 
   override fun hashCode(): Int = toInt()
 
-  fun toInt(): Int = when (this) {
-    LT -> -1
-    GT -> 1
-    EQ -> 0
-  }
+  fun toInt(): Int = toInt
 
-  operator fun plus(b: Ordering): Ordering = when (this) {
-    LT -> LT
-    EQ -> b
-    GT -> GT
-  }
+  operator fun plus(b: Ordering): Ordering =
+    when (this) {
+      LT -> LT
+      EQ -> b
+      GT -> GT
+    }
 
   fun hash(): Int = hashWithSalt(hashCode())
 
   fun hashWithSalt(salt: Int): Int =
     salt.hashWithSalt(hashCode())
 
-  fun compare(b: Ordering): Ordering = when (this) {
-    is LT -> when (b) {
-      is LT -> EQ
-      else -> GT
+  fun compare(b: Ordering): Ordering =
+    when (this) {
+      is LT -> when (b) {
+        is LT -> EQ
+        else -> GT
+      }
+      is GT -> when (b) {
+        is GT -> EQ
+        else -> LT
+      }
+      is EQ -> b
     }
-    is GT -> when (b) {
-      is GT -> EQ
-      else -> LT
-    }
-    is EQ -> b
-  }
 
-  fun compareTo(b: Ordering): Int = compare(b).toInt()
-
-  fun eqv(other: Ordering): Boolean = compare(other) == EQ
-
-  fun lt(b: Ordering): Boolean = compare(b) == LT
-
-  fun lte(b: Ordering): Boolean = compare(b) != GT
-
-  fun gt(b: Ordering): Boolean = compare(b) == GT
-
-  fun gte(b: Ordering): Boolean = compare(b) != LT
-
-  fun max(b: Ordering): Ordering = if (gt(b)) this else b
-
-  fun min(b: Ordering): Ordering = if (lt(b)) this else b
-
-  fun sort(b: Ordering): Tuple2<Ordering, Ordering> =
-    if (gte(b)) Tuple2(this, b) else Tuple2(b, this)
+  operator fun compareTo(b: Ordering): Int =
+    compare(b).toInt()
 
   fun empty(): Ordering = EQ
 
@@ -81,9 +63,9 @@ sealed class Ordering {
   }
 }
 
-object LT : Ordering()
-object GT : Ordering()
-object EQ : Ordering()
+object LT : Ordering(-1)
+object GT : Ordering(0)
+object EQ : Ordering(1)
 
 fun Collection<Ordering>.combineAll(): Ordering =
   if (isEmpty()) OrderingMonoid.empty() else reduce { a, b -> a.combine(b) }
@@ -95,8 +77,6 @@ fun Hash.Companion.ordering(): Hash<Ordering> = OrderingHash
 fun Semigroup.Companion.ordering(): Semigroup<Ordering> = OrderingMonoid
 
 fun Monoid.Companion.ordering(): Monoid<Ordering> = OrderingMonoid
-
-fun Order.Companion.ordering(): Order<Ordering> = OrderingOrder
 
 fun Show.Companion.ordering(): Show<Ordering> = OrderingShow
 
@@ -120,11 +100,6 @@ private object OrderingMonoid : Monoid<Ordering> {
 
   override fun Ordering.combine(b: Ordering): Ordering =
     this + b
-}
-
-@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
-private object OrderingOrder : Order<Ordering> {
-  override fun Ordering.compare(b: Ordering): Ordering = this.compare(b)
 }
 
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
