@@ -4,7 +4,6 @@ import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
-import arrow.typeclasses.Show
 import arrow.typeclasses.defaultSalt
 import arrow.typeclasses.hashWithSalt
 import kotlin.collections.plus as _plus
@@ -116,9 +115,3 @@ object ListMonoid : Monoid<List<Any?>> {
   override fun empty(): List<Any?> = emptyList()
   override fun List<Any?>.combine(b: List<Any?>): List<Any?> = this._plus(b)
 }
-
-fun <A> Show.Companion.list(SA: Show<A>): Show<List<A>> =
-  object : Show<List<A>> {
-    override fun List<A>.show(): String =
-      show(SA)
-  }

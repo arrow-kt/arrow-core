@@ -2,12 +2,6 @@ package arrow.core
 
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Order
-import arrow.typeclasses.Show
-
-private object CharShow : Show<Char> {
-  override fun Char.show(): String =
-    this.toString()
-}
 
 private object CharOrder : Order<Char> {
   override fun Char.compare(b: Char): Ordering =
@@ -20,9 +14,6 @@ private object CharOrder : Order<Char> {
 private object CharHash : Hash<Char> {
   override fun Char.hash(): Int = this.hashCode()
 }
-
-fun Show.Companion.char(): Show<Char> =
-  CharShow
 
 fun Order.Companion.char(): Order<Char> =
   CharOrder

@@ -5,7 +5,6 @@ import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Semiring
-import arrow.typeclasses.Show
 
 // ////////
 // Byte
@@ -32,19 +31,12 @@ private object ByteOrder : Order<Byte> {
   override fun Byte.compareTo(b: Byte): Int = this.compareTo(b)
 }
 
-private object ByteShow : Show<Byte> {
-  override fun Byte.show(): String = toString()
-}
-
 private object ByteHash : Hash<Byte> {
   override fun Byte.hash(): Int = hashCode()
 }
 
 fun Hash.Companion.byte(): Hash<Byte> =
   ByteHash
-
-fun Show.Companion.byte(): Show<Byte> =
-  ByteShow
 
 fun Order.Companion.byte(): Order<Byte> =
   ByteOrder
@@ -83,19 +75,12 @@ private object DoubleOrder : Order<Double> {
   override fun Double.compareTo(b: Double): Int = this.compareTo(b)
 }
 
-private object DoubleShow : Show<Double> {
-  override fun Double.show(): String = toString()
-}
-
 private object DoubleHash : Hash<Double> {
   override fun Double.hash(): Int = hashCode()
 }
 
 fun Hash.Companion.double(): Hash<Double> =
   DoubleHash
-
-fun Show.Companion.double(): Show<Double> =
-  DoubleShow
 
 fun Order.Companion.double(): Order<Double> =
   DoubleOrder
@@ -129,10 +114,6 @@ private object IntSemiring : Semiring<Int> {
   override fun Int.combineMultiplicate(b: Int): Int = this * b
 }
 
-private object IntShow : Show<Int> {
-  override fun Int.show(): String = toString()
-}
-
 private object IntOrder : Order<Int> {
   override fun Int.compare(b: Int): Ordering = Ordering.fromInt(this.compareTo(b))
   override fun Int.compareTo(b: Int): Int = this.compareTo(b)
@@ -144,9 +125,6 @@ private object IntHash : Hash<Int> {
 
 fun Hash.Companion.int(): Hash<Int> =
   IntHash
-
-fun Show.Companion.int(): Show<Int> =
-  IntShow
 
 fun Order.Companion.int(): Order<Int> =
   IntOrder
@@ -185,19 +163,12 @@ private object LongOrder : Order<Long> {
   override fun Long.compareTo(b: Long): Int = this.compareTo(b)
 }
 
-private object LongShow : Show<Long> {
-  override fun Long.show(): String = toString()
-}
-
 private object LongHash : Hash<Long> {
   override fun Long.hash(): Int = hashCode()
 }
 
 fun Hash.Companion.long(): Hash<Long> =
   LongHash
-
-fun Show.Companion.long(): Show<Long> =
-  LongShow
 
 fun Order.Companion.long(): Order<Long> =
   LongOrder
@@ -236,19 +207,12 @@ private object ShortOrder : Order<Short> {
   override fun Short.compareTo(b: Short): Int = this.compareTo(b)
 }
 
-private object ShortShow : Show<Short> {
-  override fun Short.show(): String = toString()
-}
-
 private object ShortHash : Hash<Short> {
   override fun Short.hash(): Int = hashCode()
 }
 
 fun Hash.Companion.short(): Hash<Short> =
   ShortHash
-
-fun Show.Companion.short(): Show<Short> =
-  ShortShow
 
 fun Order.Companion.short(): Order<Short> =
   ShortOrder
@@ -287,19 +251,12 @@ private object FloatOrder : Order<Float> {
   override fun Float.compareTo(b: Float): Int = this.compareTo(b)
 }
 
-private object FloatShow : Show<Float> {
-  override fun Float.show(): String = toString()
-}
-
 private object FloatHash : Hash<Float> {
   override fun Float.hash(): Int = hashCode()
 }
 
 fun Hash.Companion.float(): Hash<Float> =
   FloatHash
-
-fun Show.Companion.float(): Show<Float> =
-  FloatShow
 
 fun Order.Companion.float(): Order<Float> =
   FloatOrder

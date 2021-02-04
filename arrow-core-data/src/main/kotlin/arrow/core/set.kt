@@ -3,7 +3,6 @@ package arrow.core
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
-import arrow.typeclasses.Show
 import arrow.typeclasses.hashWithSalt
 
 object SetExtensions
@@ -25,11 +24,6 @@ fun <A> Monoid.Companion.set(): Monoid<Set<A>> = object : Monoid<Set<A>> {
 
   override fun Set<A>.combine(b: Set<A>): Set<A> =
     this + b
-}
-
-fun <A> Show.Companion.set(SA: () -> Show<A>): Show<Set<A>> = object : Show<Set<A>> {
-  override fun Set<A>.show(): String =
-    show(SA())
 }
 
 fun <A> Hash.Companion.set(HA: Hash<A>): Hash<Set<A>> = object : Hash<Set<A>> {
