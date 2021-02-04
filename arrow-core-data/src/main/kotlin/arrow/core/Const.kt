@@ -55,3 +55,6 @@ fun <T, A, G> ConstOf<A, Kind<G, T>>.sequence(GA: Applicative<G>): Kind<G, Const
 
 inline fun <A> A.const(): Const<A, Nothing> =
   Const(this)
+
+operator fun <A : Comparable<A>, T> Const<A, T>.compareTo(other: Const<A, T>): Int =
+  value().compareTo(other.value())
