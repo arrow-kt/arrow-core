@@ -15,11 +15,6 @@ private object BooleanEq : Eq<Boolean> {
   override fun Boolean.eqv(b: Boolean): Boolean = this == b
 }
 
-private object BooleanOrder : Order<Boolean> {
-  override fun Boolean.compare(b: Boolean): Ordering = Ordering.fromInt(this.compareTo(b))
-  override fun Boolean.compareTo(b: Boolean): Int = this.compareTo(b)
-}
-
 private object BooleanHash : Hash<Boolean> {
   override fun Boolean.hash(): Int = this.hashCode()
 }
@@ -29,9 +24,6 @@ fun Show.Companion.boolean(): Show<Boolean> =
 
 fun Eq.Companion.boolean(): Eq<Boolean> =
   BooleanEq
-
-fun Order.Companion.boolean(): Order<Boolean> =
-  BooleanOrder
 
 fun Hash.Companion.boolean(): Hash<Boolean> =
   BooleanHash
