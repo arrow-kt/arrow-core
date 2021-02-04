@@ -1,19 +1,11 @@
 package arrow.core
 
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
-
-private object BooleanEq : Eq<Boolean> {
-  override fun Boolean.eqv(b: Boolean): Boolean = this == b
-}
 
 private object BooleanHash : Hash<Boolean> {
   override fun Boolean.hash(): Int = this.hashCode()
 }
-
-fun Eq.Companion.boolean(): Eq<Boolean> =
-  BooleanEq
 
 fun Hash.Companion.boolean(): Hash<Boolean> =
   BooleanHash

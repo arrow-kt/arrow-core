@@ -1,6 +1,5 @@
 package arrow.core
 
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
@@ -54,7 +53,7 @@ sealed class Ordering(private val toInt: Int) {
       is EQ -> b
     }
 
-  operator fun compareTo(b: Ordering): Int =
+  fun compareTo(b: Ordering): Int =
     compare(b).toInt()
 
   fun empty(): Ordering = EQ
@@ -80,19 +79,11 @@ object EQ : Ordering(1)
 fun Collection<Ordering>.combineAll(): Ordering =
   if (isEmpty()) OrderingMonoid.empty() else reduce { a, b -> a.combine(b) }
 
-fun Eq.Companion.ordering(): Eq<Ordering> = OrderingEq
-
 fun Hash.Companion.ordering(): Hash<Ordering> = OrderingHash
 
 fun Semigroup.Companion.ordering(): Semigroup<Ordering> = OrderingMonoid
 
 fun Monoid.Companion.ordering(): Monoid<Ordering> = OrderingMonoid
-
-@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
-private object OrderingEq : Eq<Ordering> {
-  override fun Ordering.eqv(b: Ordering): Boolean =
-    this.eqv(b)
-}
 
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 private object OrderingHash : Hash<Ordering> {

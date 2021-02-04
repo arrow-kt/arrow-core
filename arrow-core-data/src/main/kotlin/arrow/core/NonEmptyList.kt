@@ -2,7 +2,6 @@ package arrow.core
 
 import arrow.Kind
 import arrow.typeclasses.Applicative
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
@@ -577,22 +576,12 @@ fun <E, A> NonEmptyList<Validated<E, NonEmptyList<A>>>.flatSequenceValidated(sem
 fun <E> NonEmptyList<Validated<E, *>>.sequenceValidated_(semigroup: Semigroup<E>): Validated<E, Unit> =
   traverseValidated_(semigroup, ::identity)
 
-/** Construct an [Eq] instance which use [EQA] to compare the elements of the lists **/
-fun <A> Eq.Companion.nonEmptyList(EQA: Eq<A>): Eq<NonEmptyList<A>> =
-  NonEmptyListEq(EQA)
-
 fun <A> Hash.Companion.nonEmptyList(HA: Hash<A>): Hash<NonEmptyList<A>> =
   NonEmptyListHash(HA)
 
 @Suppress("UNCHECKED_CAST")
 fun <A> Semigroup.Companion.nonEmptyList(): Semigroup<NonEmptyList<A>> =
   NonEmptyListSemigroup as Semigroup<NonEmptyList<A>>
-
-private class NonEmptyListEq<A>(
-  private val EQA: Eq<A>,
-) : Eq<NonEmptyList<A>> {
-  override fun NonEmptyList<A>.eqv(b: NonEmptyList<A>): Boolean = eqv(EQA, b)
-}
 
 private class NonEmptyListHash<A>(
   private val HA: Hash<A>,

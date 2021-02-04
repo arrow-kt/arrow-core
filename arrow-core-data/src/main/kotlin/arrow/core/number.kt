@@ -1,6 +1,5 @@
 package arrow.core
 
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
@@ -26,19 +25,12 @@ private object ByteSemiring : Semiring<Byte> {
   override fun Byte.combineMultiplicate(b: Byte): Byte = (this * b).toByte()
 }
 
-private object ByteEq : Eq<Byte> {
-  override fun Byte.eqv(b: Byte): Boolean = this == b
-}
-
 private object ByteHash : Hash<Byte> {
   override fun Byte.hash(): Int = hashCode()
 }
 
 fun Hash.Companion.byte(): Hash<Byte> =
   ByteHash
-
-fun Eq.Companion.byte(): Eq<Byte> =
-  ByteEq
 
 fun Semigroup.Companion.byte(): Semigroup<Byte> =
   ByteSemigroup
@@ -69,19 +61,12 @@ private object DoubleSemiring : Semiring<Double> {
   override fun Double.combineMultiplicate(b: Double): Double = this * b
 }
 
-private object DoubleEq : Eq<Double> {
-  override fun Double.eqv(b: Double): Boolean = this == b
-}
-
 private object DoubleHash : Hash<Double> {
   override fun Double.hash(): Int = hashCode()
 }
 
 fun Hash.Companion.double(): Hash<Double> =
   DoubleHash
-
-fun Eq.Companion.double(): Eq<Double> =
-  DoubleEq
 
 fun Semigroup.Companion.double(): Semigroup<Double> =
   DoubleSemigroup
@@ -112,19 +97,12 @@ private object IntSemiring : Semiring<Int> {
   override fun Int.combineMultiplicate(b: Int): Int = this * b
 }
 
-private object IntEq : Eq<Int> {
-  override fun Int.eqv(b: Int): Boolean = this == b
-}
-
 private object IntHash : Hash<Int> {
   override fun Int.hash(): Int = hashCode()
 }
 
 fun Hash.Companion.int(): Hash<Int> =
   IntHash
-
-fun Eq.Companion.int(): Eq<Int> =
-  IntEq
 
 fun Semigroup.Companion.int(): Semigroup<Int> =
   IntSemigroup
@@ -155,19 +133,12 @@ private object LongSemiring : Semiring<Long> {
   override fun Long.combineMultiplicate(b: Long): Long = this * b
 }
 
-private object LongEq : Eq<Long> {
-  override fun Long.eqv(b: Long): Boolean = this == b
-}
-
 private object LongHash : Hash<Long> {
   override fun Long.hash(): Int = hashCode()
 }
 
 fun Hash.Companion.long(): Hash<Long> =
   LongHash
-
-fun Eq.Companion.long(): Eq<Long> =
-  LongEq
 
 fun Semigroup.Companion.long(): Semigroup<Long> =
   LongSemigroup
@@ -198,19 +169,12 @@ private object ShortSemiring : Semiring<Short> {
   override fun Short.combineMultiplicate(b: Short): Short = (this * b).toShort()
 }
 
-private object ShortEq : Eq<Short> {
-  override fun Short.eqv(b: Short): Boolean = this == b
-}
-
 private object ShortHash : Hash<Short> {
   override fun Short.hash(): Int = hashCode()
 }
 
 fun Hash.Companion.short(): Hash<Short> =
   ShortHash
-
-fun Eq.Companion.short(): Eq<Short> =
-  ShortEq
 
 fun Semigroup.Companion.short(): Semigroup<Short> =
   ShortSemigroup
@@ -241,19 +205,12 @@ private object FloatSemiring : Semiring<Float> {
   override fun Float.combineMultiplicate(b: Float): Float = this * b
 }
 
-private object FloatEq : Eq<Float> {
-  override fun Float.eqv(b: Float): Boolean = this == b
-}
-
 private object FloatHash : Hash<Float> {
   override fun Float.hash(): Int = hashCode()
 }
 
 fun Hash.Companion.float(): Hash<Float> =
   FloatHash
-
-fun Eq.Companion.float(): Eq<Float> =
-  FloatEq
 
 fun Semigroup.Companion.float(): Semigroup<Float> =
   FloatSemigroup
