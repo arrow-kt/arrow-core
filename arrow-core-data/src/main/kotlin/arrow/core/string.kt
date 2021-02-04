@@ -41,16 +41,6 @@ private object StringShow : Show<String> {
 fun Show.Companion.string(): Show<String> =
   StringShow
 
-private object StringOrder : Order<String> {
-  override fun String.compare(b: String): Ordering =
-    Ordering.fromInt(this.compareTo(b))
-
-  override fun String.compareTo(b: String): Int = this.compareTo(b)
-}
-
-fun Order.Companion.string(): Order<String> =
-  StringOrder
-
 private object StringHash : Hash<String> {
   override fun String.hash(): Int = hashCode()
 }
