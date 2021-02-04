@@ -509,11 +509,6 @@ fun <A, G> NonEmptyListOf<Kind<G, A>>.sequence(GA: Applicative<G>): Kind<G, NonE
 fun <A> NonEmptyListOf<A>.combineK(y: NonEmptyListOf<A>): NonEmptyList<A> =
   fix().plus(y.fix())
 
-fun <A> NonEmptyList<A>.compare(OA: Order<A>, b: NonEmptyList<A>): Ordering = OA.run {
-  align(b) { ior -> ior.fold({ GT }, { LT }, { a1, a2 -> a1.compare(a2) }) }
-    .fold(Monoid.ordering())
-}
-
 fun <A> NonEmptyList<NonEmptyList<A>>.flatten(): NonEmptyList<A> =
   this.flatMap(::identity)
 
@@ -580,85 +575,12 @@ fun <E, A> NonEmptyList<Validated<E, NonEmptyList<A>>>.flatSequenceValidated(sem
 fun <E> NonEmptyList<Validated<E, *>>.sequenceValidated_(semigroup: Semigroup<E>): Validated<E, Unit> =
   traverseValidated_(semigroup, ::identity)
 
-/**
- * Check if [this@lt] is `lower than` [b]
- *
- * @receiver object to compare with [b]
- * @param b object to compare with [this@lt]
- * @returns true if [this@lt] is `lower than` [b] and false otherwise
- */
-fun <A> NonEmptyList<A>.lt(OA: Order<A>, b: NonEmptyList<A>): Boolean =
-  compare(OA, b) == LT
-
-/**
- * Check if [this@lte] is `lower than or equal to` [b]
- *
- * @receiver object to compare with [b]
- * @param b object to compare with [this@lte]
- * @returns true if [this@lte] is `lower than or equal to` [b] and false otherwise
- */
-fun <A> NonEmptyList<A>.lte(OA: Order<A>, b: NonEmptyList<A>): Boolean =
-  compare(OA, b) != GT
-
-/**
- * Check if [this@gt] is `greater than` [b]
- *
- * @receiver object to compare with [b]
- * @param b object to compare with [this@gt]
- * @returns true if [this@gt] is `greater than` [b] and false otherwise
- */
-fun <A> NonEmptyList<A>.gt(OA: Order<A>, b: NonEmptyList<A>): Boolean =
-  compare(OA, b) == GT
-
-/**
- * Check if [this@gte] is `greater than or equal to` [b]
- *
- * @receiver object to compare with [b]
- * @param b object to compare with [this@gte]
- * @returns true if [this@gte] is `greater than or equal to` [b] and false otherwise
- */
-fun <A> NonEmptyList<A>.gte(OA: Order<A>, b: NonEmptyList<A>): Boolean =
-  compare(OA, b) != LT
-
-/**
- * Determines the maximum of [this@max] and [b] in terms of order.
- *
- * @receiver object to compare with [b]
- * @param b object to compare with [this@max]
- * @returns the maximum [this@max] if it is greater than [b] or [b] otherwise
- */
-fun <A> NonEmptyList<A>.max(OA: Order<A>, b: NonEmptyList<A>): NonEmptyList<A> =
-  if (gt(OA, b)) this else b
-
-/**
- * Determines the minimum of [this@min] and [b] in terms of order.
- *
- * @receiver object to compare with [b]
- * @param b object to compare with [this@min]
- * @returns the minimum [this@min] if it is less than [b] or [b] otherwise
- */
-fun <A> NonEmptyList<A>.min(OA: Order<A>, b: NonEmptyList<A>): NonEmptyList<A> =
-  if (lt(OA, b)) this else b
-
-/**
- * Sorts [this@sort] and [b] in terms of order.
- *
- * @receiver object to compare with [b]
- * @param b object to compare with [this@sort]
- * @returns a sorted [Tuple2] of [this@sort] and [b].
- */
-fun <A> NonEmptyList<A>.sort(OA: Order<A>, b: NonEmptyList<A>): Tuple2<NonEmptyList<A>, NonEmptyList<A>> =
-  if (gte(OA, b)) Tuple2(this, b) else Tuple2(b, this)
-
 /** Construct an [Eq] instance which use [EQA] to compare the elements of the lists **/
 fun <A> Eq.Companion.nonEmptyList(EQA: Eq<A>): Eq<NonEmptyList<A>> =
   NonEmptyListEq(EQA)
 
 fun <A> Hash.Companion.nonEmptyList(HA: Hash<A>): Hash<NonEmptyList<A>> =
   NonEmptyListHash(HA)
-
-fun <A> Order.Companion.nonEmptyList(OA: Order<A>): Order<NonEmptyList<A>> =
-  NonEmptyListOrder(OA)
 
 @Suppress("UNCHECKED_CAST")
 fun <A> Semigroup.Companion.nonEmptyList(): Semigroup<NonEmptyList<A>> =
@@ -679,12 +601,6 @@ private class NonEmptyListHash<A>(
   override fun NonEmptyList<A>.hash(): Int = hash(HA)
 
   override fun NonEmptyList<A>.hashWithSalt(salt: Int): Int = hashWithSalt(HA, salt)
-}
-
-private class NonEmptyListOrder<A>(
-  private val OA: Order<A>
-) : Order<NonEmptyList<A>> {
-  override fun NonEmptyList<A>.compare(b: NonEmptyList<A>): Ordering = compare(OA, b)
 }
 
 object NonEmptyListSemigroup : Semigroup<NonEmptyList<Any?>> {
