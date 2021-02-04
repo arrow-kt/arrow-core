@@ -2,7 +2,6 @@ package arrow.core
 
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
-import arrow.typeclasses.Order
 
 private object CharEq : Eq<Char> {
   override fun Char.eqv(b: Char): Boolean = this == b

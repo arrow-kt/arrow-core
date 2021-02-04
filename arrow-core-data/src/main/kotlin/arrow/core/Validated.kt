@@ -5,7 +5,6 @@ import arrow.typeclasses.Applicative
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
-import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.ShowDeprecation
@@ -1055,7 +1054,7 @@ fun <E, A, B> Validated<A, Either<E, B>>.sequenceEither(): Either<E, Validated<A
 fun <E, A, B> Validated<A, Either<E, B>>.traverseEither_(): Either<E, Unit> =
   traverseEither_(::identity)
 
-operator fun <E : Comparable<E>, A : Comparable<A>>  Validated<E, A>.compareTo(other: Validated<E, A>): Int =
+operator fun <E : Comparable<E>, A : Comparable<A>> Validated<E, A>.compareTo(other: Validated<E, A>): Int =
   fold(
     { l1 -> other.fold({ l2 -> l1.compareTo(l2) }, { -1 }) },
     { r1 -> other.fold({ 1 }, { r2 -> r1.compareTo(r2) }) }

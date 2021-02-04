@@ -4,14 +4,14 @@ import arrow.Kind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
-import arrow.typeclasses.Monoid
-import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.ShowDeprecation
 
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
-class ForNonEmptyList private constructor() { companion object }
+class ForNonEmptyList private constructor() {
+  companion object
+}
 typealias NonEmptyListOf<A> = arrow.Kind<ForNonEmptyList, A>
 
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
@@ -521,11 +521,11 @@ fun <A, B> NonEmptyList<Tuple2<A, B>>.unzip(): Tuple2<NonEmptyList<A>, NonEmptyL
   this.unzipWith(::identity)
 
 fun <A, B, C> NonEmptyList<C>.unzipWith(f: (C) -> Tuple2<A, B>): Tuple2<NonEmptyList<A>, NonEmptyList<B>> =
- this.map(f).let { nel ->
-   nel.tail.unzip().bimap(
-     { NonEmptyList(nel.head.a, it) },
-     { NonEmptyList(nel.head.b, it) })
- }
+  this.map(f).let { nel ->
+    nel.tail.unzip().bimap(
+      { NonEmptyList(nel.head.a, it) },
+      { NonEmptyList(nel.head.b, it) })
+  }
 
 inline fun <E, A, B> NonEmptyList<A>.traverseEither(f: (A) -> Either<E, B>): Either<E, NonEmptyList<B>> =
   foldRight(f(head).map { NonEmptyList.just(it) }) { a, acc ->
