@@ -510,6 +510,9 @@ fun <A, G> NonEmptyListOf<Kind<G, A>>.sequence(GA: Applicative<G>): Kind<G, NonE
 fun <A> NonEmptyListOf<A>.combineK(y: NonEmptyListOf<A>): NonEmptyList<A> =
   fix().plus(y.fix())
 
+operator fun <A : Comparable<A>> NonEmptyList<A>.compareTo(other: NonEmptyList<A>): Int =
+  all.compareTo(other.all)
+
 fun <A> NonEmptyList<NonEmptyList<A>>.flatten(): NonEmptyList<A> =
   this.flatMap(::identity)
 
