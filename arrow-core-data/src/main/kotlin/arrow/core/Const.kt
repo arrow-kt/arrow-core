@@ -256,11 +256,21 @@ fun <A, T> Eq.Companion.const(EQ: Eq<A>): Eq<Const<A, T>> = object : Eq<Const<A,
     eqv(EQ, b)
 }
 
+@Deprecated(
+  "Hash is going to be removed, please use hashCode() instead",
+  ReplaceWith("hashCode()"),
+  level = DeprecationLevel.WARNING
+)
 fun <A, T> Const<A, T>.hashWithSalt(HA: Hash<A>, salt: Int): Int =
   HA.run {
     value().hashWithSalt(salt)
   }
 
+@Deprecated(
+  "Order is going to be removed, please use compareTo() instead",
+  ReplaceWith("compareTo(b)"),
+  level = DeprecationLevel.WARNING
+)
 fun <A, T> Const<A, T>.compare(ORD: Order<A>, b: Const<A, T>): Ordering =
   ORD.run {
     value().compare(b.value())
@@ -279,22 +289,4 @@ fun <A, T> Monoid.Companion.const(MA: Monoid<A>): Monoid<Const<A, T>> =
 
     override fun Const<A, T>.combine(b: Const<A, T>): Const<A, T> =
       this.combine(MA, b)
-  }
-
-fun <A, T> Hash.Companion.const(HA: Hash<A>): Hash<Const<A, T>> =
-  object : Hash<Const<A, T>> {
-    override fun Const<A, T>.hashWithSalt(salt: Int): Int =
-      hashWithSalt(HA, salt)
-  }
-
-fun <A, T> Show.Companion.const(SA: Show<A>): Show<Const<A, T>> =
-  object : Show<Const<A, T>> {
-    override fun Const<A, T>.show(): String =
-      show(SA)
-  }
-
-fun <A, T> Order.Companion.const(OA: Order<A>): Order<Const<A, T>> =
-  object : Order<Const<A, T>> {
-    override fun Const<A, T>.compare(b: Const<A, T>): Ordering =
-      compare(OA, b)
   }
