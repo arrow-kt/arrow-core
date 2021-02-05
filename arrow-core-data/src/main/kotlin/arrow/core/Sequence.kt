@@ -1,6 +1,5 @@
 package arrow.core
 
-import arrow.Kind
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
 import kotlin.sequences.plus as _plus

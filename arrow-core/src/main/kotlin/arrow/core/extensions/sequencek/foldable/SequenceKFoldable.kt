@@ -227,7 +227,7 @@ fun <A> orEmpty(arg0: Applicative<ForSequenceK>, arg1: Monoid<A>): SequenceK<A> 
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated. Replace with traverseEither_ or traverseValidated_ from arrow.core.*",
-  level= DeprecationLevel.WARNING
+  level = DeprecationLevel.WARNING
 )
 fun <G, A, B> Kind<ForSequenceK, A>.traverse_(arg1: Applicative<G>, arg2: Function1<A, Kind<G, B>>):
     Kind<G, Unit> = arrow.core.SequenceK.foldable().run {
@@ -243,7 +243,7 @@ fun <G, A, B> Kind<ForSequenceK, A>.traverse_(arg1: Applicative<G>, arg2: Functi
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated. Replace with sequenceEither_ or sequenceValidated_ from arrow.core.*",
-  level= DeprecationLevel.WARNING
+  level = DeprecationLevel.WARNING
 )
 fun <G, A> Kind<ForSequenceK, Kind<G, A>>.sequence_(arg1: Applicative<G>): Kind<G, Unit> =
     arrow.core.SequenceK.foldable().run {
