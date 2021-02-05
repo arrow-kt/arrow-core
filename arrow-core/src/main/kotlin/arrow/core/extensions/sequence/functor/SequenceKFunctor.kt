@@ -135,12 +135,8 @@ fun <A> Sequence<A>.void(): Sequence<Unit> =
  *  Kind<F, A> -> Kind<F, Tuple2<A, B>>
  *
  *  ```kotlin:ank:playground
- *  import arrow.core.*
- * import arrow.core.extensions.sequencek.functor.*
- * import arrow.core.*
- *
- *
  *  import arrow.core.extensions.sequencek.applicative.just
+ *  import arrow.core.fproduct
  *
  *  fun main(args: Array<String>) {
  *   val result =
@@ -178,12 +174,8 @@ fun <A, B> Sequence<A>.fproduct(arg1: Function1<A, B>): Sequence<Tuple2<A, B>> =
  *  Kind<F, A> -> Kind<F, B>
  *
  *  ```kotlin:ank:playground
- *  import arrow.core.*
- * import arrow.core.extensions.sequencek.functor.*
- * import arrow.core.*
- *
- *
- *  import arrow.core.extensions.sequencek.applicative.just
+ *  import arrow.core.extensions.sequence.applicative.just
+ *  import arrow.core.mapConst
  *
  *  fun main(args: Array<String>) {
  *   val result =
@@ -243,12 +235,8 @@ fun <A, B> A.mapConst(arg1: Sequence<B>): Sequence<A> =
  *  Kind<F, A> -> Kind<F, Tuple2<B, A>>
  *
  *  ```kotlin:ank:playground
- *  import arrow.core.*
- * import arrow.core.extensions.sequencek.functor.*
- * import arrow.core.*
- *
- *
- *  import arrow.core.extensions.sequencek.applicative.just
+ *  import arrow.core.extensions.sequence.applicative.just
+ *  import arrow.core.tupleLeft
  *
  *  fun main(args: Array<String>) {
  *   val result =
@@ -286,12 +274,8 @@ fun <A, B> Sequence<A>.tupleLeft(arg1: B): Sequence<Tuple2<B, A>> =
  *  Kind<F, A> -> Kind<F, Tuple2<A, B>>
  *
  *  ```kotlin:ank:playground
- *  import arrow.core.*
- * import arrow.core.extensions.sequencek.functor.*
- * import arrow.core.*
- *
- *
- *  import arrow.core.extensions.sequencek.applicative.just
+ *  import arrow.core.extensions.sequence.applicative.just
+ *  import arrow.core.tupleRight
  *
  *  fun main(args: Array<String>) {
  *   val result =
@@ -329,18 +313,15 @@ fun <A, B> Sequence<A>.tupleRight(arg1: B): Sequence<Tuple2<A, B>> =
  *  Kind<F, A> -> Kind<F, B>
  *
  *  ```kotlin:ank:playground
- *  import arrow.core.*
- * import arrow.core.extensions.sequencek.functor.*
- * import arrow.core.*
- *
- *
- *  import arrow.core.extensions.sequencek.applicative.just
  *  import arrow.Kind
+ *  import arrow.core.extensions.sequence.applicative.just
+ *  import arrow.core.k
+ *  import arrow.core.widen
  *
  *  fun main(args: Array<String>) {
  *   val result: Kind<*, CharSequence> =
  *   //sampleStart
- *   "Hello".just().map({ "$it World" }).widen()
+ *   "Hello".just().map { "$it World" }.widen().k()
  *   //sampleEnd
  *   println(result)
  *  }
