@@ -8,6 +8,7 @@ import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
 
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 class ForConst private constructor() {
@@ -206,11 +207,12 @@ data class Const<A, out T>(private val value: A) : ConstOf<A, T> {
   fun <U> map(f: (T) -> U): Const<A, U> =
     retag()
 
+  @Deprecated(ShowDeprecation)
   fun show(SA: Show<A>): String =
     "$Const(${SA.run { value.show() }})"
 
   override fun toString(): String =
-    show(Show.any())
+    "$Const($value)"
 }
 
 @Deprecated(

@@ -3,11 +3,11 @@
 
 package arrow.core
 
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
 import arrow.typeclasses.defaultSalt
 
 class ForTuple6 private constructor() {
@@ -21,83 +21,15 @@ inline fun <A, B, C, D, E, F> Tuple6Of<A, B, C, D, E, F>.fix(): Tuple6<A, B, C, 
   this as Tuple6<A, B, C, D, E, F>
 
 data class Tuple6<out A, out B, out C, out D, out E, out F>(val a: A, val b: B, val c: C, val d: D, val e: E, val f: F) : Tuple6Of<A, B, C, D, E, F> {
+  @Deprecated(ShowDeprecation)
   fun show(SA: Show<A>, SB: Show<B>, SC: Show<C>, SD: Show<D>, SE: Show<E>, SF: Show<F>): String =
     "(" + listOf(SA.run { a.show() }, SB.run { b.show() }, SC.run { c.show() }, SD.run { d.show() }, SE.run { e.show() }, SF.run { f.show() }).joinToString(", ") + ")"
 
-  override fun toString(): String = show(Show.any(), Show.any(), Show.any(), Show.any(), Show.any(), Show.any())
+  override fun toString(): String =
+    "($a, $b, $c, $d, $e, $f)"
 
   companion object
 }
-
-private class Tuple6Show<A, B, C, D, E, F>(
-  private val SA: Show<A>,
-  private val SB: Show<B>,
-  private val SC: Show<C>,
-  private val SD: Show<D>,
-  private val SE: Show<E>,
-  private val SF: Show<F>
-) : Show<Tuple6<A, B, C, D, E, F>> {
-  override fun Tuple6<A, B, C, D, E, F>.show(): String =
-    show(SA, SB, SC, SD, SE, SF)
-}
-
-fun <A, B, C, D, E, F> Show.Companion.tuple6(
-  SA: Show<A>,
-  SB: Show<B>,
-  SC: Show<C>,
-  SD: Show<D>,
-  SE: Show<E>,
-  SF: Show<F>
-): Show<Tuple6<A, B, C, D, E, F>> =
-  Tuple6Show(SA, SB, SC, SD, SE, SF)
-
-fun <A, B, C, D, E, F> Tuple6<A, B, C, D, E, F>.eqv(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  EQD: Eq<D>,
-  EQE: Eq<E>,
-  EQF: Eq<F>,
-  other: Tuple6<A, B, C, D, E, F>
-): Boolean =
-  EQA.run { a.eqv(other.a) } &&
-    EQB.run { this@eqv.b.eqv(other.b) } &&
-    EQC.run { c.eqv(other.c) } &&
-    EQD.run { d.eqv(other.d) } &&
-    EQE.run { e.eqv(other.e) } &&
-    EQF.run { f.eqv(other.f) }
-
-fun <A, B, C, D, E, F> Tuple6<A, B, C, D, E, F>.neqv(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  EQD: Eq<D>,
-  EQE: Eq<E>,
-  EQF: Eq<F>,
-  other: Tuple6<A, B, C, D, E, F>
-): Boolean = !eqv(EQA, EQB, EQC, EQD, EQE, EQF, other)
-
-private class Tuple6Eq<A, B, C, D, E, F>(
-  private val EQA: Eq<A>,
-  private val EQB: Eq<B>,
-  private val EQC: Eq<C>,
-  private val EQD: Eq<D>,
-  private val EQE: Eq<E>,
-  private val EQF: Eq<F>
-) : Eq<Tuple6<A, B, C, D, E, F>> {
-  override fun Tuple6<A, B, C, D, E, F>.eqv(other: Tuple6<A, B, C, D, E, F>): Boolean =
-    eqv(EQA, EQB, EQC, EQD, EQE, EQF, other)
-}
-
-fun <A, B, C, D, E, F> Eq.Companion.tuple6(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  EQD: Eq<D>,
-  EQE: Eq<E>,
-  EQF: Eq<F>
-): Eq<Tuple6<A, B, C, D, E, F>> =
-  Tuple6Eq(EQA, EQB, EQC, EQD, EQE, EQF)
 
 fun <A, B, C, D, E, F> Tuple6<A, B, C, D, E, F>.hashWithSalt(
   HA: Hash<A>,

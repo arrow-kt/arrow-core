@@ -1,10 +1,8 @@
 package arrow.core
 
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
-import arrow.typeclasses.Show
 import arrow.typeclasses.defaultSalt
 import kotlin.collections.flatMap as _flatMap
 
@@ -305,27 +303,6 @@ fun <K, A, B, C> Map<K, A>.zip(other: Map<K, B>, f: (K, A, B) -> C): Map<K, C> =
     Nullable.mapN(this[key], other[key]) { a, b -> key to f(key, a, b) }
   }.toMap()
 
-fun <K, A> Map<K, A>.eqv(EQK: Eq<K>, EQA: Eq<A>, b: Map<K, A>): Boolean =
-  if (keys.eqv(EQK, b.keys)) EQA.run {
-    keys.map { key ->
-      b[key]?.let { getValue(key).eqv(it) } ?: false
-    }.fold(true) { b1, b2 -> b1 && b2 }
-  } else false
-
-fun <K, A> Map<K, A>.neqv(EQK: Eq<K>, EQA: Eq<A>, b: Map<K, A>): Boolean =
-  !eqv(EQK, EQA, b)
-
-fun <K, A> Eq.Companion.map(EQK: Eq<K>, EQA: Eq<A>): Eq<Map<K, A>> =
-  MapEq(EQK, EQA)
-
-private class MapEq<K, A>(
-  private val EQK: Eq<K>,
-  private val EQA: Eq<A>
-) : Eq<Map<K, A>> {
-  override fun Map<K, A>.eqv(b: Map<K, A>): Boolean =
-    eqv(EQK, EQA, b)
-}
-
 fun <K, A> Map<K, A>.hashWithSalt(HK: Hash<K>, HA: Hash<A>, salt: Int): Int =
   values.toHashSet().hashWithSalt(HA, salt)
     .let { hash -> keys.hashWithSalt(HK, hash) }
@@ -342,19 +319,6 @@ private class MapHash<K, A>(
 ) : Hash<Map<K, A>> {
   override fun Map<K, A>.hashWithSalt(salt: Int): Int =
     hashWithSalt(HK, HA, salt)
-}
-
-fun <K, A> Map<K, A>.show(SK: Show<K>, SA: Show<A>): String =
-  "Map(${toList().k().show(Show { show(SK, SA) })})"
-
-fun <K, A> Show.Companion.map(SK: Show<K>, SA: Show<A>): Show<Map<K, A>> =
-  MapShow(SK, SA)
-
-private class MapShow<K, A>(
-  private val SK: Show<K>,
-  private val SA: Show<A>
-) : Show<Map<K, A>> {
-  override fun Map<K, A>.show(): String = show(SK, SA)
 }
 
 fun <K, A> Map<K, A>.combine(SG: Semigroup<A>, b: Map<K, A>): Map<K, A> = with(SG) {

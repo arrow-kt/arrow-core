@@ -1,22 +1,12 @@
 package arrow.core
 
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
-import arrow.typeclasses.Show
 import arrow.typeclasses.defaultSalt
 import arrow.typeclasses.hashWithSalt
 import kotlin.collections.plus as _plus
-
-fun <A> Eq.Companion.list(EQA: Eq<A>): Eq<List<A>> =
-  ListEq(EQA)
-
-private class ListEq<A>(private val EQA: Eq<A>) : Eq<List<A>> {
-  override fun List<A>.eqv(b: List<A>): Boolean =
-    eqv(EQA, b)
-}
 
 fun <A> Hash.Companion.list(HA: Hash<A>): Hash<List<A>> =
   ListHash(HA)
@@ -125,9 +115,3 @@ object ListMonoid : Monoid<List<Any?>> {
   override fun empty(): List<Any?> = emptyList()
   override fun List<Any?>.combine(b: List<Any?>): List<Any?> = this._plus(b)
 }
-
-fun <A> Show.Companion.list(SA: Show<A>): Show<List<A>> =
-  object : Show<List<A>> {
-    override fun List<A>.show(): String =
-      show(SA)
-  }

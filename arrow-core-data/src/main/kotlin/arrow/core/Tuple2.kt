@@ -3,12 +3,12 @@
 
 package arrow.core
 
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
 import arrow.typeclasses.defaultSalt
 
 class ForTuple2 private constructor() {
@@ -58,58 +58,15 @@ data class Tuple2<out A, out B>(val a: A, val b: B) : Tuple2Of<A, B> {
 
   fun reverse(): Tuple2<B, A> = Tuple2(b, a)
 
+  @Deprecated(ShowDeprecation)
   fun show(SA: Show<A>, SB: Show<B>): String =
     "(" + listOf(SA.run { a.show() }, SB.run { b.show() }).joinToString(", ") + ")"
 
-  override fun toString(): String = show(Show.any(), Show.any())
+  override fun toString(): String =
+    "($a, $b)"
 
   companion object
 }
-
-fun <A, B> Pair<A, B>.show(SA: Show<A>, SB: Show<B>): String =
-  "(${SA.run { first.show() }}, ${SB.run { second.show() }})"
-
-private class PairShow<A, B>(
-  private val SA: Show<A>,
-  private val SB: Show<B>
-) : Show<Pair<A, B>> {
-  override fun Pair<A, B>.show(): String =
-    show(SA, SB)
-}
-
-fun <A, B> Show.Companion.pair(
-  SA: Show<A>,
-  SB: Show<B>
-): Show<Pair<A, B>> =
-  PairShow(SA, SB)
-
-fun <A, B> Pair<A, B>.eqv(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  other: Pair<A, B>
-): Boolean =
-  EQA.run { first.eqv(other.first) } &&
-    EQB.run { this@eqv.second.eqv(other.second) }
-
-fun <A, B> Pair<A, B>.neqv(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  other: Pair<A, B>
-): Boolean = !eqv(EQA, EQB, other)
-
-private class PairEq<A, B>(
-  private val EQA: Eq<A>,
-  private val EQB: Eq<B>
-) : Eq<Pair<A, B>> {
-  override fun Pair<A, B>.eqv(other: Pair<A, B>): Boolean =
-    eqv(EQA, EQB, other)
-}
-
-fun <A, B> Eq.Companion.pair(
-  EQA: Eq<A>,
-  EQB: Eq<B>
-): Eq<Pair<A, B>> =
-  PairEq(EQA, EQB)
 
 fun <A, B> Pair<A, B>.hashWithSalt(
   HA: Hash<A>,

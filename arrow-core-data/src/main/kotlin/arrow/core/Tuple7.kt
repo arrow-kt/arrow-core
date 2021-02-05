@@ -3,11 +3,11 @@
 
 package arrow.core
 
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
 import arrow.typeclasses.defaultSalt
 
 class ForTuple7 private constructor() {
@@ -21,90 +21,15 @@ inline fun <A, B, C, D, E, F, G> Tuple7Of<A, B, C, D, E, F, G>.fix(): Tuple7<A, 
   this as Tuple7<A, B, C, D, E, F, G>
 
 data class Tuple7<out A, out B, out C, out D, out E, out F, out G>(val a: A, val b: B, val c: C, val d: D, val e: E, val f: F, val g: G) : Tuple7Of<A, B, C, D, E, F, G> {
+  @Deprecated(ShowDeprecation)
   fun show(SA: Show<A>, SB: Show<B>, SC: Show<C>, SD: Show<D>, SE: Show<E>, SF: Show<F>, SG: Show<G>): String =
     "(" + listOf(SA.run { a.show() }, SB.run { b.show() }, SC.run { c.show() }, SD.run { d.show() }, SE.run { e.show() }, SF.run { f.show() }, SG.run { g.show() }).joinToString(", ") + ")"
 
-  override fun toString(): String = show(Show.any(), Show.any(), Show.any(), Show.any(), Show.any(), Show.any(), Show.any())
+  override fun toString(): String =
+    "($a, $b, $c, $d, $e, $f, $g)"
 
   companion object
 }
-
-private class Tuple7Show<A, B, C, D, E, F, G>(
-  private val SA: Show<A>,
-  private val SB: Show<B>,
-  private val SC: Show<C>,
-  private val SD: Show<D>,
-  private val SE: Show<E>,
-  private val SF: Show<F>,
-  private val SG: Show<G>
-) : Show<Tuple7<A, B, C, D, E, F, G>> {
-  override fun Tuple7<A, B, C, D, E, F, G>.show(): String =
-    show(SA, SB, SC, SD, SE, SF, SG)
-}
-
-fun <A, B, C, D, E, F, G> Show.Companion.tuple7(
-  SA: Show<A>,
-  SB: Show<B>,
-  SC: Show<C>,
-  SD: Show<D>,
-  SE: Show<E>,
-  SF: Show<F>,
-  SG: Show<G>
-): Show<Tuple7<A, B, C, D, E, F, G>> =
-  Tuple7Show(SA, SB, SC, SD, SE, SF, SG)
-
-fun <A, B, C, D, E, F, G> Tuple7<A, B, C, D, E, F, G>.eqv(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  EQD: Eq<D>,
-  EQE: Eq<E>,
-  EQF: Eq<F>,
-  EQG: Eq<G>,
-  other: Tuple7<A, B, C, D, E, F, G>
-): Boolean =
-  EQA.run { a.eqv(other.a) } &&
-    EQB.run { this@eqv.b.eqv(other.b) } &&
-    EQC.run { c.eqv(other.c) } &&
-    EQD.run { d.eqv(other.d) } &&
-    EQE.run { e.eqv(other.e) } &&
-    EQF.run { f.eqv(other.f) } &&
-    EQG.run { g.eqv(other.g) }
-
-fun <A, B, C, D, E, F, G> Tuple7<A, B, C, D, E, F, G>.neqv(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  EQD: Eq<D>,
-  EQE: Eq<E>,
-  EQF: Eq<F>,
-  EQG: Eq<G>,
-  other: Tuple7<A, B, C, D, E, F, G>
-): Boolean = !eqv(EQA, EQB, EQC, EQD, EQE, EQF, EQG, other)
-
-private class Tuple7Eq<A, B, C, D, E, F, G>(
-  private val EQA: Eq<A>,
-  private val EQB: Eq<B>,
-  private val EQC: Eq<C>,
-  private val EQD: Eq<D>,
-  private val EQE: Eq<E>,
-  private val EQF: Eq<F>,
-  private val EQG: Eq<G>
-) : Eq<Tuple7<A, B, C, D, E, F, G>> {
-  override fun Tuple7<A, B, C, D, E, F, G>.eqv(other: Tuple7<A, B, C, D, E, F, G>): Boolean =
-    eqv(EQA, EQB, EQC, EQD, EQE, EQF, EQG, other)
-}
-
-fun <A, B, C, D, E, F, G> Eq.Companion.tuple7(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  EQD: Eq<D>,
-  EQE: Eq<E>,
-  EQF: Eq<F>,
-  EQG: Eq<G>
-): Eq<Tuple7<A, B, C, D, E, F, G>> =
-  Tuple7Eq(EQA, EQB, EQC, EQD, EQE, EQF, EQG)
 
 fun <A, B, C, D, E, F, G> Tuple7<A, B, C, D, E, F, G>.hashWithSalt(
   HA: Hash<A>,

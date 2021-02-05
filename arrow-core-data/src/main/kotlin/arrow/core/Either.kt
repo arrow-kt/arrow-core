@@ -4,12 +4,12 @@ import arrow.Kind
 import arrow.core.Either.Companion.resolve
 import arrow.core.Either.Left
 import arrow.core.Either.Right
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
 import arrow.typeclasses.hashWithSalt
 
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
@@ -1063,7 +1063,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     override val isLeft = true
     override val isRight = false
 
-    override fun toString(): String = show(Show.any(), Show.any())
+    override fun toString(): String = "Either.Left($a)"
 
     companion object {
       operator fun <A> invoke(a: A): Either<A, Nothing> = Left(a)
@@ -1078,20 +1078,22 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     override val isLeft = false
     override val isRight = true
 
-    override fun toString(): String = show(Show.any(), Show.any())
+    override fun toString(): String = "Either.Right($b)"
 
     companion object {
       operator fun <B> invoke(b: B): Either<Nothing, B> = Right(b)
     }
   }
 
+  @Deprecated(ShowDeprecation)
   fun show(SL: Show<A>, SR: Show<B>): String = fold(
-    {
-      "Left(${SL.run { it.show() }})"
-    },
-    {
-      "Right(${SR.run { it.show() }})"
-    }
+    { "Left(${SL.run { it.show() }})" },
+    { "Right(${SR.run { it.show() }})" }
+  )
+
+  override fun toString(): String = fold(
+    { "Either.Left($it)" },
+    { "Either.Right($it)" }
   )
 
   fun toValidatedNel(): ValidatedNel<A, B> =
@@ -1404,10 +1406,6 @@ fun <L> Left(left: L): Either<L, Nothing> = Left(left)
 
 fun <R> Right(right: R): Either<Nothing, R> = Right(right)
 
-/** Construct an [Eq] instance which use [EQL] and [EQR] to compare the [Left] and [Right] cases **/
-fun <L, R> Eq.Companion.either(EQL: Eq<L>, EQR: Eq<R>): Eq<Either<L, R>> =
-  EitherEq(EQL, EQR)
-
 fun <A, B> Hash.Companion.either(HA: Hash<A>, HB: Hash<B>): Hash<Either<A, B>> =
   EitherHash(HA, HB)
 
@@ -1646,41 +1644,6 @@ inline fun <A, B, C> Either<A, B>.redeem(fe: (A) -> C, fa: (B) -> C): Either<A, 
     is Right -> map(fa)
   }
 
-/**
- * Compares two instances of [Either] and returns true if they're considered not equal for this instance.
- *
- * @receiver object to compare with [other]
- * @param other object to compare with [this@neqv]
- * @returns false if [this@neqv] and [other] are equivalent, true otherwise.
- */
-fun <L, R> Either<L, R>.neqv(
-  EQL: Eq<L>,
-  EQR: Eq<R>,
-  other: Either<L, R>
-): Boolean = !eqv(EQL, EQR, other)
-
-/**
- * Compares two instances of [Either] and returns true if they're considered not equal for this instance.
- *
- * @receiver object to compare with [other]
- * @param other object to compare with [this@neqv]
- * @returns false if [this@neqv] and [other] are equivalent, true otherwise.
- */
-fun <L, R> Either<L, R>.eqv(
-  EQL: Eq<L>,
-  EQR: Eq<R>,
-  other: Either<L, R>
-): Boolean = when (this) {
-  is Left -> when (other) {
-    is Left -> EQL.run { a.eqv(other.a) }
-    is Right -> false
-  }
-  is Right -> when (other) {
-    is Left -> false
-    is Right -> EQR.run { this@eqv.b.eqv(other.b) }
-  }
-}
-
 fun <A, B> Either<A, B>.compare(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Ordering = fold(
   { a1 -> b.fold({ a2 -> OA.run { a1.compare(a2) } }, { LT }) },
   { b1 -> b.fold({ GT }, { b2 -> OB.run { b1.compare(b2) } }) }
@@ -1832,14 +1795,6 @@ fun <A, B> Either<Iterable<A>, Iterable<B>>.bisequence(): List<Either<A, B>> =
 
 fun <A, B, C> Either<Validated<A, B>, Validated<A, C>>.bisequenceValidated(): Validated<A, Either<B, C>> =
   bitraverseValidated(::identity, ::identity)
-
-private class EitherEq<L, R>(
-  private val EQL: Eq<L>,
-  private val EQR: Eq<R>
-) : Eq<Either<L, R>> {
-  override fun Either<L, R>.eqv(b: Either<L, R>): Boolean =
-    eqv(EQL, EQR, b)
-}
 
 private class EitherHash<L, R>(
   private val HL: Hash<L>,

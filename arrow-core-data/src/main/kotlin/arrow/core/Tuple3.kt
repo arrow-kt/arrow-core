@@ -3,11 +3,11 @@
 
 package arrow.core
 
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
 import arrow.typeclasses.defaultSalt
 
 class ForTuple3 private constructor() {
@@ -22,65 +22,15 @@ inline fun <A, B, C> Tuple3Of<A, B, C>.fix(): Tuple3<A, B, C> =
 
 @Deprecated("Deprecated in favor of Kotlin's Triple", ReplaceWith("Triple(a, b, c)"))
 data class Tuple3<out A, out B, out C>(val a: A, val b: B, val c: C) : Tuple3Of<A, B, C> {
+  @Deprecated(ShowDeprecation)
   fun show(SA: Show<A>, SB: Show<B>, SC: Show<C>): String =
     "(" + listOf(SA.run { a.show() }, SB.run { b.show() }, SC.run { c.show() }).joinToString(", ") + ")"
 
-  override fun toString(): String = show(Show.any(), Show.any(), Show.any())
+  override fun toString(): String =
+    "($a, $b, $c)"
 
   companion object
 }
-
-fun <A, B, C> Triple<A, B, C>.show(SA: Show<A>, SB: Show<B>, SC: Show<C>): String =
-  "(${SA.run { first.show() }}, ${SB.run { second.show() }}, ${SC.run { third.show() }})"
-
-private class TripleShow<A, B, C>(
-  private val SA: Show<A>,
-  private val SB: Show<B>,
-  private val SC: Show<C>
-) : Show<Triple<A, B, C>> {
-  override fun Triple<A, B, C>.show(): String =
-    show(SA, SB, SC)
-}
-
-fun <A, B, C> Show.Companion.triple(
-  SA: Show<A>,
-  SB: Show<B>,
-  SC: Show<C>
-): Show<Triple<A, B, C>> =
-  TripleShow(SA, SB, SC)
-
-fun <A, B, C> Triple<A, B, C>.eqv(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  other: Triple<A, B, C>
-): Boolean =
-  EQA.run { first.eqv(other.first) } &&
-    EQB.run { this@eqv.second.eqv(other.second) } &&
-    EQC.run { third.eqv(other.third) }
-
-fun <A, B, C> Triple<A, B, C>.neqv(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  other: Triple<A, B, C>
-): Boolean = !eqv(EQA, EQB, EQC, other)
-
-private class TripleEq<A, B, C>(
-  private val EQA: Eq<A>,
-  private val EQB: Eq<B>,
-  private val EQC: Eq<C>
-) : Eq<Triple<A, B, C>> {
-  override fun Triple<A, B, C>.eqv(other: Triple<A, B, C>): Boolean =
-    eqv(EQA, EQB, EQC, other)
-}
-
-fun <A, B, C> Eq.Companion.triple(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>
-): Eq<Triple<A, B, C>> =
-  TripleEq(EQA, EQB, EQC)
 
 fun <A, B, C> Triple<A, B, C>.hashWithSalt(
   HA: Hash<A>,

@@ -2,12 +2,12 @@ package arrow.core
 
 import arrow.Kind
 import arrow.typeclasses.Applicative
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
 
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 class ForNonEmptyList private constructor() { companion object }
@@ -306,11 +306,12 @@ class NonEmptyList<out A>(
   override fun hashCode(): Int =
     all.hashCode()
 
+  @Deprecated(ShowDeprecation)
   fun show(SA: Show<A>): String =
     "NonEmptyList(${all.k().show(SA)})"
 
   override fun toString(): String =
-    show(Show.any())
+    "NonEmptyList(${all.joinToString()})"
 
   fun <B> align(b: NonEmptyList<B>): NonEmptyList<Ior<A, B>> =
     NonEmptyList(Ior.Both(head, b.head), tail.align(b.tail))
@@ -650,10 +651,6 @@ fun <A> NonEmptyList<A>.min(OA: Order<A>, b: NonEmptyList<A>): NonEmptyList<A> =
 fun <A> NonEmptyList<A>.sort(OA: Order<A>, b: NonEmptyList<A>): Tuple2<NonEmptyList<A>, NonEmptyList<A>> =
   if (gte(OA, b)) Tuple2(this, b) else Tuple2(b, this)
 
-/** Construct an [Eq] instance which use [EQA] to compare the elements of the lists **/
-fun <A> Eq.Companion.nonEmptyList(EQA: Eq<A>): Eq<NonEmptyList<A>> =
-  NonEmptyListEq(EQA)
-
 fun <A> Hash.Companion.nonEmptyList(HA: Hash<A>): Hash<NonEmptyList<A>> =
   NonEmptyListHash(HA)
 
@@ -663,15 +660,6 @@ fun <A> Order.Companion.nonEmptyList(OA: Order<A>): Order<NonEmptyList<A>> =
 @Suppress("UNCHECKED_CAST")
 fun <A> Semigroup.Companion.nonEmptyList(): Semigroup<NonEmptyList<A>> =
   NonEmptyListSemigroup as Semigroup<NonEmptyList<A>>
-
-fun <A> Show.Companion.nonEmptyList(SA: Show<A>): Show<NonEmptyList<A>> =
-  NonEmptyListShow(SA)
-
-private class NonEmptyListEq<A>(
-  private val EQA: Eq<A>,
-) : Eq<NonEmptyList<A>> {
-  override fun NonEmptyList<A>.eqv(b: NonEmptyList<A>): Boolean = eqv(EQA, b)
-}
 
 private class NonEmptyListHash<A>(
   private val HA: Hash<A>,
@@ -690,12 +678,6 @@ private class NonEmptyListOrder<A>(
 object NonEmptyListSemigroup : Semigroup<NonEmptyList<Any?>> {
   override fun NonEmptyList<Any?>.combine(b: NonEmptyList<Any?>): NonEmptyList<Any?> =
     NonEmptyList(this.head, this.tail.plus(b))
-}
-
-private class NonEmptyListShow<A>(
-  private val SA: Show<A>,
-) : Show<NonEmptyList<A>> {
-  override fun NonEmptyList<A>.show(): String = show(SA)
 }
 
 fun <A, B, Z> NonEmptyList<A>.zip(fb: NonEmptyList<B>, f: (A, B) -> Z): NonEmptyList<Z> =

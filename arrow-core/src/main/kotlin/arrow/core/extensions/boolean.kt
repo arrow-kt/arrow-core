@@ -2,18 +2,20 @@ package arrow.core.extensions
 
 import arrow.core.Ordering
 import arrow.typeclasses.Eq
+import arrow.typeclasses.EqDeprecation
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
 
-@Deprecated("Typeclass interface implementation will not be exposed directly anymore", ReplaceWith("Show.boolean()", "arrow.core.Show", "arrow.core.boolean"))
+@Deprecated(ShowDeprecation)
 interface BooleanShow : Show<Boolean> {
   override fun Boolean.show(): String =
     this.toString()
 }
 
-@Deprecated("Typeclass interface implementation will not be exposed directly anymore", ReplaceWith("Eq.boolean()", "arrow.core.Eq", "arrow.core.boolean"))
+@Deprecated(EqDeprecation)
 interface BooleanEq : Eq<Boolean> {
   override fun Boolean.eqv(b: Boolean): Boolean = this == b
 }
@@ -29,11 +31,11 @@ interface BooleanHash : Hash<Boolean>, BooleanEq {
   override fun Boolean.hash(): Int = this.hashCode()
 }
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Show.boolean()", "arrow.core.Show", "arrow.core.boolean"))
+@Deprecated(ShowDeprecation)
 fun Boolean.Companion.show(): Show<Boolean> =
   object : BooleanShow {}
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Eq.boolean()", "arrow.core.Eq", "arrow.core.boolean"))
+@Deprecated(EqDeprecation)
 fun Boolean.Companion.eq(): Eq<Boolean> =
   object : BooleanEq {}
 

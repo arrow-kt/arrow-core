@@ -3,11 +3,11 @@
 
 package arrow.core
 
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
 import arrow.typeclasses.defaultSalt
 
 class ForTuple9 private constructor() {
@@ -21,104 +21,15 @@ inline fun <A, B, C, D, E, F, G, H, I> Tuple9Of<A, B, C, D, E, F, G, H, I>.fix()
   this as Tuple9<A, B, C, D, E, F, G, H, I>
 
 data class Tuple9<out A, out B, out C, out D, out E, out F, out G, out H, out I>(val a: A, val b: B, val c: C, val d: D, val e: E, val f: F, val g: G, val h: H, val i: I) : Tuple9Of<A, B, C, D, E, F, G, H, I> {
+  @Deprecated(ShowDeprecation)
   fun show(SA: Show<A>, SB: Show<B>, SC: Show<C>, SD: Show<D>, SE: Show<E>, SF: Show<F>, SG: Show<G>, SH: Show<H>, SI: Show<I>): String =
     "(" + listOf(SA.run { a.show() }, SB.run { b.show() }, SC.run { c.show() }, SD.run { d.show() }, SE.run { e.show() }, SF.run { f.show() }, SG.run { g.show() }, SH.run { h.show() }, SI.run { i.show() }).joinToString(", ") + ")"
 
-  override fun toString(): String = show(Show.any(), Show.any(), Show.any(), Show.any(), Show.any(), Show.any(), Show.any(), Show.any(), Show.any())
+  override fun toString(): String =
+    "($a, $b, $c, $d, $e, $f, $g, $h, $i)"
 
   companion object
 }
-
-private class Tuple9Show<A, B, C, D, E, F, G, H, I>(
-  private val SA: Show<A>,
-  private val SB: Show<B>,
-  private val SC: Show<C>,
-  private val SD: Show<D>,
-  private val SE: Show<E>,
-  private val SF: Show<F>,
-  private val SG: Show<G>,
-  private val SH: Show<H>,
-  private val SI: Show<I>
-) : Show<Tuple9<A, B, C, D, E, F, G, H, I>> {
-  override fun Tuple9<A, B, C, D, E, F, G, H, I>.show(): String =
-    show(SA, SB, SC, SD, SE, SF, SG, SH, SI)
-}
-
-fun <A, B, C, D, E, F, G, H, I> Show.Companion.tuple9(
-  SA: Show<A>,
-  SB: Show<B>,
-  SC: Show<C>,
-  SD: Show<D>,
-  SE: Show<E>,
-  SF: Show<F>,
-  SG: Show<G>,
-  SH: Show<H>,
-  SI: Show<I>
-): Show<Tuple9<A, B, C, D, E, F, G, H, I>> =
-  Tuple9Show(SA, SB, SC, SD, SE, SF, SG, SH, SI)
-
-fun <A, B, C, D, E, F, G, H, I> Tuple9<A, B, C, D, E, F, G, H, I>.eqv(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  EQD: Eq<D>,
-  EQE: Eq<E>,
-  EQF: Eq<F>,
-  EQG: Eq<G>,
-  EQH: Eq<H>,
-  EQI: Eq<I>,
-  other: Tuple9<A, B, C, D, E, F, G, H, I>
-): Boolean =
-  EQA.run { a.eqv(other.a) } &&
-    EQB.run { this@eqv.b.eqv(other.b) } &&
-    EQC.run { c.eqv(other.c) } &&
-    EQD.run { d.eqv(other.d) } &&
-    EQE.run { e.eqv(other.e) } &&
-    EQF.run { f.eqv(other.f) } &&
-    EQG.run { g.eqv(other.g) } &&
-    EQH.run { h.eqv(other.h) } &&
-    EQI.run { i.eqv(other.i) }
-
-fun <A, B, C, D, E, F, G, H, I> Tuple9<A, B, C, D, E, F, G, H, I>.neqv(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  EQD: Eq<D>,
-  EQE: Eq<E>,
-  EQF: Eq<F>,
-  EQG: Eq<G>,
-  EQH: Eq<H>,
-  EQI: Eq<I>,
-  other: Tuple9<A, B, C, D, E, F, G, H, I>
-): Boolean = !eqv(EQA, EQB, EQC, EQD, EQE, EQF, EQG, EQH, EQI, other)
-
-private class Tuple9Eq<A, B, C, D, E, F, G, H, I>(
-  private val EQA: Eq<A>,
-  private val EQB: Eq<B>,
-  private val EQC: Eq<C>,
-  private val EQD: Eq<D>,
-  private val EQE: Eq<E>,
-  private val EQF: Eq<F>,
-  private val EQG: Eq<G>,
-  private val EQH: Eq<H>,
-  private val EQI: Eq<I>
-) : Eq<Tuple9<A, B, C, D, E, F, G, H, I>> {
-  override fun Tuple9<A, B, C, D, E, F, G, H, I>.eqv(other: Tuple9<A, B, C, D, E, F, G, H, I>): Boolean =
-    eqv(EQA, EQB, EQC, EQD, EQE, EQF, EQG, EQH, EQI, other)
-}
-
-fun <A, B, C, D, E, F, G, H, I> Eq.Companion.tuple9(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  EQD: Eq<D>,
-  EQE: Eq<E>,
-  EQF: Eq<F>,
-  EQG: Eq<G>,
-  EQH: Eq<H>,
-  EQI: Eq<I>
-): Eq<Tuple9<A, B, C, D, E, F, G, H, I>> =
-  Tuple9Eq(EQA, EQB, EQC, EQD, EQE, EQF, EQG, EQH, EQI)
 
 fun <A, B, C, D, E, F, G, H, I> Tuple9<A, B, C, D, E, F, G, H, I>.hashWithSalt(
   HA: Hash<A>,

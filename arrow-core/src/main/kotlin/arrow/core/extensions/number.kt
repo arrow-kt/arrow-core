@@ -2,12 +2,14 @@ package arrow.core.extensions
 
 import arrow.core.Ordering
 import arrow.typeclasses.Eq
+import arrow.typeclasses.EqDeprecation
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Semiring
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
 
 // ////////
 // Byte
@@ -37,12 +39,12 @@ interface ByteOrder : Order<Byte> {
   override fun Byte.compareTo(b: Byte): Int = this.compareTo(b)
 }
 
-@Deprecated("Typeclass interface implementation will not be exposed directly anymore", ReplaceWith("Eq.byte()", "arrow.core.Eq", "arrow.core.byte"))
+@Deprecated(EqDeprecation)
 interface ByteEq : Eq<Byte> {
   override fun Byte.eqv(b: Byte): Boolean = this == b
 }
 
-@Deprecated("Typeclass interface implementation will not be exposed directly anymore", ReplaceWith("Show.byte()", "arrow.core.Show", "arrow.core.byte"))
+@Deprecated(ShowDeprecation)
 interface ByteShow : Show<Byte> {
   override fun Byte.show(): String = toString()
 }
@@ -56,11 +58,11 @@ interface ByteHash : Hash<Byte>, ByteEq {
 fun Byte.Companion.hash(): Hash<Byte> =
   object : ByteHash {}
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Show.byte()", "arrow.core.Show", "arrow.core.byte"))
+@Deprecated(ShowDeprecation)
 fun Byte.Companion.show(): Show<Byte> =
   object : ByteShow {}
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Eq.byte()", "arrow.core.Eq", "arrow.core.byte"))
+@Deprecated(EqDeprecation)
 fun Byte.Companion.eq(): Eq<Byte> =
   object : ByteEq {}
 
@@ -108,12 +110,12 @@ interface DoubleOrder : Order<Double> {
   override fun Double.compareTo(b: Double): Int = this.compareTo(b)
 }
 
-@Deprecated("Typeclass interface implementation will not be exposed directly anymore", ReplaceWith("Eq.double()", "arrow.core.Eq", "arrow.core.double"))
+@Deprecated(EqDeprecation)
 interface DoubleEq : Eq<Double> {
   override fun Double.eqv(b: Double): Boolean = this == b
 }
 
-@Deprecated("Typeclass interface implementation will not be exposed directly anymore", ReplaceWith("Show.double()", "arrow.core.Show", "arrow.core.double"))
+@Deprecated(ShowDeprecation)
 interface DoubleShow : Show<Double> {
   override fun Double.show(): String = toString()
 }
@@ -127,11 +129,11 @@ interface DoubleHash : Hash<Double>, DoubleEq {
 fun Double.Companion.hash(): Hash<Double> =
   object : DoubleHash {}
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Show.double()", "arrow.core.Show", "arrow.core.double"))
+@Deprecated(ShowDeprecation)
 fun Double.Companion.show(): Show<Double> =
   object : DoubleShow {}
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Eq.double()", "arrow.core.Eq", "arrow.core.double"))
+@Deprecated(EqDeprecation)
 fun Double.Companion.eq(): Eq<Double> =
   object : DoubleEq {}
 
@@ -173,12 +175,12 @@ interface IntSemiring : Semiring<Int> {
   override fun Int.combineMultiplicate(b: Int): Int = this * b
 }
 
-@Deprecated("Typeclass interface implementation will not be exposed directly anymore", ReplaceWith("Eq.int()", "arrow.core.Eq", "arrow.core.int"))
+@Deprecated(EqDeprecation)
 interface IntEq : Eq<Int> {
   override fun Int.eqv(b: Int): Boolean = this == b
 }
 
-@Deprecated("Typeclass interface implementation will not be exposed directly anymore", ReplaceWith("Show.int()", "arrow.core.Show", "arrow.core.int"))
+@Deprecated(ShowDeprecation)
 interface IntShow : Show<Int> {
   override fun Int.show(): String = toString()
 }
@@ -197,11 +199,11 @@ interface IntHash : Hash<Int> {
 @Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Hash.int()", "arrow.core.Hash", "arrow.core.int"))
 fun Int.Companion.hash(): Hash<Int> = object : IntHash {}
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Show.int()", "arrow.core.Show", "arrow.core.int"))
+@Deprecated(ShowDeprecation)
 fun Int.Companion.show(): Show<Int> =
   object : IntShow {}
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Eq.int()", "arrow.core.Eq", "arrow.core.int"))
+@Deprecated(EqDeprecation)
 fun Int.Companion.eq(): Eq<Int> =
   object : IntEq {}
 
@@ -249,12 +251,12 @@ interface LongOrder : Order<Long> {
   override fun Long.compareTo(b: Long): Int = this.compareTo(b)
 }
 
-@Deprecated("Typeclass interface implementation will not be exposed directly anymore", ReplaceWith("Eq.long()", "arrow.core.Eq", "arrow.core.long"))
+@Deprecated(EqDeprecation)
 interface LongEq : Eq<Long> {
   override fun Long.eqv(b: Long): Boolean = this == b
 }
 
-@Deprecated("Typeclass interface implementation will not be exposed directly anymore", ReplaceWith("Show.long()", "arrow.core.Show", "arrow.core.long"))
+@Deprecated(ShowDeprecation)
 interface LongShow : Show<Long> {
   override fun Long.show(): String = toString()
 }
@@ -268,11 +270,11 @@ interface LongHash : Hash<Long>, LongEq {
 fun Long.Companion.hash(): Hash<Long> =
   object : LongHash {}
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Hash.long()", "arrow.core.Show", "arrow.core.long"))
+@Deprecated(ShowDeprecation)
 fun Long.Companion.show(): Show<Long> =
   object : LongShow {}
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Eq.long()", "arrow.core.Eq", "arrow.core.long"))
+@Deprecated(EqDeprecation)
 fun Long.Companion.eq(): Eq<Long> =
   object : LongEq {}
 
@@ -320,12 +322,12 @@ interface ShortOrder : Order<Short> {
   override fun Short.compareTo(b: Short): Int = this.compareTo(b)
 }
 
-@Deprecated("Typeclass interface implementation will not be exposed directly anymore", ReplaceWith("Eq.short()", "arrow.core.Eq", "arrow.core.short"))
+@Deprecated(EqDeprecation)
 interface ShortEq : Eq<Short> {
   override fun Short.eqv(b: Short): Boolean = this == b
 }
 
-@Deprecated("Typeclass interface implementation will not be exposed directly anymore", ReplaceWith("Show.short()", "arrow.core.Show", "arrow.core.short"))
+@Deprecated(ShowDeprecation)
 interface ShortShow : Show<Short> {
   override fun Short.show(): String = toString()
 }
@@ -339,11 +341,11 @@ interface ShortHash : Hash<Short>, ShortEq {
 fun Short.Companion.hash(): Hash<Short> =
   object : ShortHash {}
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Show.short()", "arrow.core.Show", "arrow.core.short"))
+@Deprecated(ShowDeprecation)
 fun Short.Companion.show(): Show<Short> =
   object : ShortShow {}
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Eq.short()", "arrow.core.Eq", "arrow.core.short"))
+@Deprecated(EqDeprecation)
 fun Short.Companion.eq(): Eq<Short> =
   object : ShortEq {}
 
@@ -391,12 +393,12 @@ interface FloatOrder : Order<Float> {
   override fun Float.compareTo(b: Float): Int = this.compareTo(b)
 }
 
-@Deprecated("Typeclass interface implementation will not be exposed directly anymore", ReplaceWith("Eq.float()", "arrow.core.Eq", "arrow.core.float"))
+@Deprecated(EqDeprecation)
 interface FloatEq : Eq<Float> {
   override fun Float.eqv(b: Float): Boolean = this == b
 }
 
-@Deprecated("Typeclass interface implementation will not be exposed directly anymore", ReplaceWith("Show.float()", "arrow.core.Show", "arrow.core.float"))
+@Deprecated(ShowDeprecation)
 interface FloatShow : Show<Float> {
   override fun Float.show(): String = toString()
 }
@@ -410,11 +412,11 @@ interface FloatHash : Hash<Float>, FloatEq {
 fun Float.Companion.hash(): Hash<Float> =
   object : FloatHash {}
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Show.float()", "arrow.core.Show", "arrow.core.float"))
+@Deprecated(ShowDeprecation)
 fun Float.Companion.show(): Show<Float> =
   object : FloatShow {}
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Eq.float()", "arrow.core.Eq", "arrow.core.float"))
+@Deprecated(EqDeprecation)
 fun Float.Companion.eq(): Eq<Float> =
   object : FloatEq {}
 

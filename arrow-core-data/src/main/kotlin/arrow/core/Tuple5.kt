@@ -3,11 +3,11 @@
 
 package arrow.core
 
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
 import arrow.typeclasses.defaultSalt
 
 class ForTuple5 private constructor() {
@@ -21,76 +21,16 @@ inline fun <A, B, C, D, E> Tuple5Of<A, B, C, D, E>.fix(): Tuple5<A, B, C, D, E> 
   this as Tuple5<A, B, C, D, E>
 
 data class Tuple5<out A, out B, out C, out D, out E>(val a: A, val b: B, val c: C, val d: D, val e: E) : Tuple5Of<A, B, C, D, E> {
+
+  @Deprecated(ShowDeprecation)
   fun show(SA: Show<A>, SB: Show<B>, SC: Show<C>, SD: Show<D>, SE: Show<E>): String =
     "(" + listOf(SA.run { a.show() }, SB.run { b.show() }, SC.run { c.show() }, SD.run { d.show() }, SE.run { e.show() }).joinToString(", ") + ")"
 
-  override fun toString(): String = show(Show.any(), Show.any(), Show.any(), Show.any(), Show.any())
+  override fun toString(): String =
+    "($a, $b, $c, $d, $e)"
 
   companion object
 }
-
-private class Tuple5Show<A, B, C, D, E>(
-  private val SA: Show<A>,
-  private val SB: Show<B>,
-  private val SC: Show<C>,
-  private val SD: Show<D>,
-  private val SE: Show<E>
-) : Show<Tuple5<A, B, C, D, E>> {
-  override fun Tuple5<A, B, C, D, E>.show(): String =
-    show(SA, SB, SC, SD, SE)
-}
-
-fun <A, B, C, D, E> Show.Companion.tuple5(
-  SA: Show<A>,
-  SB: Show<B>,
-  SC: Show<C>,
-  SD: Show<D>,
-  SE: Show<E>
-): Show<Tuple5<A, B, C, D, E>> =
-  Tuple5Show(SA, SB, SC, SD, SE)
-
-fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.eqv(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  EQD: Eq<D>,
-  EQE: Eq<E>,
-  other: Tuple5<A, B, C, D, E>
-): Boolean =
-  EQA.run { a.eqv(other.a) } &&
-    EQB.run { this@eqv.b.eqv(other.b) } &&
-    EQC.run { c.eqv(other.c) } &&
-    EQD.run { d.eqv(other.d) } &&
-    EQE.run { e.eqv(other.e) }
-
-fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.neqv(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  EQD: Eq<D>,
-  EQE: Eq<E>,
-  other: Tuple5<A, B, C, D, E>
-): Boolean = !eqv(EQA, EQB, EQC, EQD, EQE, other)
-
-private class Tuple5Eq<A, B, C, D, E>(
-  private val EQA: Eq<A>,
-  private val EQB: Eq<B>,
-  private val EQC: Eq<C>,
-  private val EQD: Eq<D>,
-  private val EQE: Eq<E>
-) : Eq<Tuple5<A, B, C, D, E>> {
-  override fun Tuple5<A, B, C, D, E>.eqv(other: Tuple5<A, B, C, D, E>): Boolean =
-    eqv(EQA, EQB, EQC, EQD, EQE, other)
-}
-
-fun <A, B, C, D, E> Eq.Companion.tuple5(
-  EQA: Eq<A>,
-  EQB: Eq<B>,
-  EQC: Eq<C>,
-  EQD: Eq<D>,
-  EQE: Eq<E>
-): Eq<Tuple5<A, B, C, D, E>> =
-  Tuple5Eq(EQA, EQB, EQC, EQD, EQE)
 
 fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.hashWithSalt(
   HA: Hash<A>,

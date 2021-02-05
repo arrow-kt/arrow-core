@@ -2,12 +2,12 @@ package arrow.core
 
 import arrow.Kind
 import arrow.typeclasses.Applicative
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
 import arrow.typeclasses.defaultSalt
 import arrow.typeclasses.hashWithSalt
 
@@ -821,13 +821,15 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
   inline fun <B> foldMap(MB: Monoid<B>, f: (A) -> B): B =
     fold({ MB.empty() }, f)
 
+  @Deprecated(ShowDeprecation)
   fun show(SE: Show<E>, SA: Show<A>): String = fold(
-    {
-      "Invalid(${SE.run { it.show() }})"
-    },
-    {
-      "Valid(${SA.run { it.show() }})"
-    }
+    { "Invalid(${SE.run { it.show() }})" },
+    { "Valid(${SA.run { it.show() }})" }
+  )
+
+  override fun toString(): String = fold(
+    { "Validated.Invalid($it)" },
+    { "Validated.Valid($it)" }
   )
 
   fun hash(HL: Hash<E>, HR: Hash<A>): Int =
@@ -839,11 +841,11 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
   )
 
   data class Valid<out A>(val a: A) : Validated<Nothing, A>() {
-    override fun toString(): String = show(Show.any(), Show.any())
+    override fun toString(): String = "Validated.Valid($a)"
   }
 
   data class Invalid<out E>(val e: E) : Validated<E, Nothing>() {
-    override fun toString(): String = show(Show.any(), Show.any())
+    override fun toString(): String = "Validated.Invalid($e)"
   }
 
   inline fun <B> fold(fe: (E) -> B, fa: (A) -> B): B =
@@ -948,15 +950,8 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
     fold(::Valid, ::Invalid)
 }
 
-/** Construct an [Eq] instance which use [EQE] and [EQA] to compare the [Invalid] and [Valid] cases **/
-fun <E, A> Eq.Companion.validated(EQE: Eq<E>, EQA: Eq<A>): Eq<Validated<E, A>> =
-  ValidatedEq(EQE, EQA)
-
 fun <E, A> Hash.Companion.validated(HE: Hash<E>, HA: Hash<A>): Hash<Validated<E, A>> =
   ValidatedHash(HE, HA)
-
-fun <E, A> Show.Companion.validated(SE: Show<E>, SA: Show<A>): Show<Validated<E, A>> =
-  ValidatedShow(SE, SA)
 
 fun <E, A> Order.Companion.validated(OE: Order<E>, OA: Order<A>): Order<Validated<E, A>> =
   ValidatedOrder(OE, OA)
@@ -966,42 +961,6 @@ fun <E, A> Semigroup.Companion.validated(SE: Semigroup<E>, SA: Semigroup<A>): Se
 
 fun <E, A> Semigroup.Companion.monoid(SE: Semigroup<E>, MA: Monoid<A>): Monoid<Validated<E, A>> =
   ValidatedMonoid(SE, MA)
-
-/**
- * Compares two instances of [Validated] and returns true if they're considered not equal for this instance.
- *
- * @receiver object to compare with [other]
- * @param other object to compare with [this@neqv]
- * @returns false if [this@neqv] and [other] are equivalent, true otherwise.
- */
-fun <E, B> Validated<E, B>.neqv(
-  EQL: Eq<E>,
-  EQR: Eq<B>,
-  other: Validated<E, B>
-): Boolean =
-  !eqv(EQL, EQR, other)
-
-/**
- * Compares two instances of [Validated] and returns true if they're considered not equal for this instance.
- *
- * @receiver object to compare with [other]
- * @param other object to compare with [this@neqv]
- * @returns false if [this@neqv] and [other] are equivalent, true otherwise.
- */
-fun <E, B> Validated<E, B>.eqv(
-  EQL: Eq<E>,
-  EQR: Eq<B>,
-  other: Validated<E, B>
-): Boolean = when (this) {
-  is Valid -> when (other) {
-    is Invalid -> false
-    is Valid -> EQR.run { a.eqv(other.a) }
-  }
-  is Invalid -> when (other) {
-    is Invalid -> EQL.run { e.eqv(other.e) }
-    is Valid -> false
-  }
-}
 
 /**
  * Given [A] is a sub type of [B], re-type this value from Validated<E, A> to Validated<E, B>
@@ -1254,23 +1213,6 @@ inline fun <A> A.validNel(): ValidatedNel<Nothing, A> =
 
 inline fun <E> E.invalidNel(): ValidatedNel<E, Nothing> =
   Validated.invalidNel(this)
-
-private class ValidatedEq<L, R>(
-  private val EQL: Eq<L>,
-  private val EQR: Eq<R>
-) : Eq<Validated<L, R>> {
-
-  override fun Validated<L, R>.eqv(b: Validated<L, R>): Boolean =
-    eqv(EQL, EQR, b)
-}
-
-private class ValidatedShow<L, R>(
-  private val SL: Show<L>,
-  private val SR: Show<R>,
-) : Show<Validated<L, R>> {
-  override fun Validated<L, R>.show(): String =
-    show(SL, SR)
-}
 
 private class ValidatedHash<L, R>(
   private val HL: Hash<L>,

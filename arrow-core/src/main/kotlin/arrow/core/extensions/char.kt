@@ -2,17 +2,19 @@ package arrow.core.extensions
 
 import arrow.core.Ordering
 import arrow.typeclasses.Eq
+import arrow.typeclasses.EqDeprecation
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Order
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
 
-@Deprecated("Typeclass interface implementation will not be exposed directly anymore", ReplaceWith("Show.char()", "arrow.core.Show", "arrow.core.char"))
+@Deprecated(ShowDeprecation)
 interface CharShow : Show<Char> {
   override fun Char.show(): String =
     this.toString()
 }
 
-@Deprecated("Typeclass interface implementation will not be exposed directly anymore", ReplaceWith("Eq.char()", "arrow.core.Eq", "arrow.core.char"))
+@Deprecated(EqDeprecation)
 interface CharEq : Eq<Char> {
   override fun Char.eqv(b: Char): Boolean = this == b
 }
@@ -31,11 +33,11 @@ interface CharHash : Hash<Char>, CharEq {
   override fun Char.hash(): Int = this.hashCode()
 }
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Show.char()", "arrow.core.Show", "arrow.core.char"))
+@Deprecated(ShowDeprecation)
 fun Char.Companion.show(): Show<Char> =
   object : CharShow {}
 
-@Deprecated("Typeclass instance have been moved to the companion object of the typeclass", ReplaceWith("Eq.char()", "arrow.core.Eq", "arrow.core.char"))
+@Deprecated(EqDeprecation)
 fun Char.Companion.eq(): Eq<Char> =
   object : CharEq {}
 
