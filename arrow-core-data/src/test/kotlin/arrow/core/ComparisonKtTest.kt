@@ -175,7 +175,7 @@ class ComparisonKtTest : StringSpec() {
     "Int - sortAll" {
       forAll(Gen.int(), Gen.int(), Gen.int(), Gen.int()) { a, b, c, d ->
         val res = sort(a, b, c, d)
-        val expected = listOf(a, b, c, d ).sorted()
+        val expected = listOf(a, b, c, d).sorted()
 
         res == expected
       }
@@ -207,9 +207,9 @@ class ComparisonKtTest : StringSpec() {
     }
 
     "Long - sortAll" {
-      forAll(Gen.long(), Gen.long(), Gen.long(), Gen.long()) { a, b, c, d  ->
-        val res = sort(a, b, c, d )
-        val expected = listOf(a, b, c, d ).sorted()
+      forAll(Gen.long(), Gen.long(), Gen.long(), Gen.long()) { a, b, c, d ->
+        val res = sort(a, b, c, d)
+        val expected = listOf(a, b, c, d).sorted()
 
         res == expected
       }
@@ -219,8 +219,6 @@ class ComparisonKtTest : StringSpec() {
       forAll(Gen.float(), Gen.float()) { a, b ->
         val (first, second) = sort(a, b)
         val (aa, bb) = listOf(a, b).sorted()
-
-
 
         first.eqv(aa) && second.eqv(bb)
       }

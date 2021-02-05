@@ -53,7 +53,7 @@ sealed class Ordering(private val toInt: Int) {
       is EQ -> b
     }
 
-  fun compareTo(b: Ordering): Int =
+  operator fun compareTo(b: Ordering): Int =
     compare(b).toInt()
 
   fun empty(): Ordering = EQ

@@ -134,6 +134,5 @@ fun sort(a: Double, b: Double, c: Double): Triple<Double, Double, Double> =
     else -> if (c <= b) Triple(c, b, a) else Triple(b, c, a)
   }
 
-
 fun sort(a: Double, vararg aas: Double): List<Double> =
   (arrayOf(a) + aas.toTypedArray()).sorted()
