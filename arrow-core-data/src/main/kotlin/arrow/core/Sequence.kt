@@ -2,7 +2,6 @@ package arrow.core
 
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
-import kotlin.sequences.plus as _plus
 
 /**
  * Combines two structures by taking the union of their shapes and combining the elements with the given function.
@@ -78,7 +77,7 @@ fun <A, B> Sequence<A>.crosswalk(f: (A) -> Sequence<B>): Sequence<Sequence<B>> =
       ior.fold(
         { sequenceOf(it) },
         ::identity,
-        { l, r -> sequenceOf(l)._plus(r) }
+        { l, r -> sequenceOf(l) + r }
       )
     }
   }
@@ -89,7 +88,7 @@ fun <A, K, V> Sequence<A>.crosswalkMap(f: (A) -> Map<K, V>): Map<K, Sequence<V>>
       ior.fold(
         { sequenceOf(it) },
         ::identity,
-        { l, r -> sequenceOf(l)._plus(r) }
+        { l, r -> sequenceOf(l) + r }
       )
     }
   }
@@ -99,7 +98,7 @@ fun <A, B> Sequence<A>.crosswalkNull(f: (A) -> B?): Sequence<B>? =
     Ior.fromNullables(f(a), bs)?.fold(
       { sequenceOf(it) },
       ::identity,
-      { l, r -> sequenceOf(l)._plus(r) }
+      { l, r -> sequenceOf(l) + r }
     )
   }
 
@@ -111,12 +110,12 @@ fun <E, A> Sequence<Validated<E, Sequence<A>>>.flatSequenceValidated(semigroup: 
 
 fun <E, A, B> Sequence<A>.flatTraverseEither(f: (A) -> Either<E, Sequence<B>>): Either<E, Sequence<B>> =
   foldRight<A, Either<E, Sequence<B>>>(emptySequence<B>().right()) { a, acc ->
-    f(a).ap(acc.map { bs -> { b: Sequence<B> -> b._plus(bs) } })
+    f(a).ap(acc.map { bs -> { b: Sequence<B> -> b + bs } })
   }
 
 fun <E, A, B> Sequence<A>.flatTraverseValidated(semigroup: Semigroup<E>, f: (A) -> Validated<E, Sequence<B>>): Validated<E, Sequence<B>> =
   foldRight<A, Validated<E, Sequence<B>>>(emptySequence<B>().valid()) { a, acc ->
-    f(a).ap(semigroup, acc.map { bs -> { b: Sequence<B> -> b._plus(bs) } })
+    f(a).ap(semigroup, acc.map { bs -> { b: Sequence<B> -> b + bs } })
   }
 
 fun <A> Sequence<Sequence<A>>.flatten(): Sequence<A> =
@@ -187,7 +186,7 @@ fun <B> Sequence<Boolean>.ifM(ifFalse: () -> Sequence<B>, ifTrue: () -> Sequence
  */
 fun <A, B> Sequence<A>.ifThen(fb: Sequence<B>, ffa: (A) -> Sequence<B>): Sequence<B> =
   split()?.let { (fa, a) ->
-    ffa(a)._plus(fa.flatMap(ffa))
+    ffa(a) + fa.flatMap(ffa)
   } ?: fb
 
 /**
@@ -472,7 +471,7 @@ fun <A> Sequence<A>.tail(): Sequence<A> =
 
 fun <E, A, B> Sequence<A>.traverseEither(f: (A) -> Either<E, B>): Either<E, Sequence<B>> =
   foldRight<A, Either<E, Sequence<B>>>(emptySequence<B>().right()) { a, acc ->
-    f(a).ap(acc.map { bs -> { b: B -> sequenceOf(b)._plus(bs) } })
+    f(a).ap(acc.map { bs -> { b: B -> sequenceOf(b) + bs } })
   }
 
 fun <E, A> Sequence<A>.traverseEither_(f: (A) -> Either<E, *>): Either<E, Unit> {
@@ -484,7 +483,7 @@ fun <E, A> Sequence<A>.traverseEither_(f: (A) -> Either<E, *>): Either<E, Unit> 
 
 fun <E, A, B> Sequence<A>.traverseValidated(semigroup: Semigroup<E>, f: (A) -> Validated<E, B>): Validated<E, Sequence<B>> =
   foldRight<A, Validated<E, Sequence<B>>>(emptySequence<B>().valid()) { a, acc ->
-    f(a).ap(semigroup, acc.map { bs -> { b: B -> sequenceOf(b)._plus(bs) } })
+    f(a).ap(semigroup, acc.map { bs -> { b: B -> sequenceOf(b) + bs } })
   }
 
 fun <E, A> Sequence<A>.traverseValidated_(semigroup: Semigroup<E>, f: (A) -> Validated<E, *>): Validated<E, Unit> =
@@ -547,9 +546,9 @@ fun <A, B> Sequence<A>.tupleRight(b: B): Sequence<Pair<A, B>> =
 fun <A, B> Sequence<Ior<A, B>>.unalign(): Pair<Sequence<A>, Sequence<B>> =
   fold(emptySequence<A>() to emptySequence()) { (l, r), x ->
     x.fold(
-      { l._plus(it) to r },
-      { l to r._plus(it) },
-      { a, b -> l._plus(a) to r._plus(b) }
+      { l + it to r },
+      { l to r + it },
+      { a, b -> l + a to r + b }
     )
   }
 
@@ -619,7 +618,7 @@ fun <A, B> Sequence<A>.unweave(ffa: (A) -> Sequence<B>): Sequence<B> =
  */
 fun <A, B> Sequence<Pair<A, B>>.unzip(): Pair<Sequence<A>, Sequence<B>> =
   fold(emptySequence<A>() to emptySequence()) { (l, r), x ->
-    l._plus(x.first) to r._plus(x.second)
+    l + x.first to r + x.second
   }
 
 /**
@@ -681,5 +680,5 @@ fun <A> Monoid.Companion.sequence(): Monoid<Sequence<A>> =
 
 object SequenceMonoid : Monoid<Sequence<Any?>> {
   override fun empty(): Sequence<Any?> = emptySequence()
-  override fun Sequence<Any?>.combine(b: Sequence<Any?>): Sequence<Any?> = this._plus(b)
+  override fun Sequence<Any?>.combine(b: Sequence<Any?>): Sequence<Any?> = this + b
 }
