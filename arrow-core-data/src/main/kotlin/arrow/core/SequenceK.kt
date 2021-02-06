@@ -87,10 +87,6 @@ data class SequenceK<out A>(val sequence: Sequence<A>) : SequenceKOf<A>, Sequenc
 
   companion object {
 
-    @PublishedApi
-    internal val unit: Sequence<Unit> =
-      sequenceOf(Unit)
-
     fun <A> empty(): SequenceK<A> = emptySequence<A>().k()
 
     fun <A> just(a: A): SequenceK<A> = sequenceOf(a).k()
@@ -100,7 +96,7 @@ data class SequenceK<out A>(val sequence: Sequence<A>) : SequenceKOf<A>, Sequenc
       c: Sequence<C>,
       map: (B, C) -> D
     ): Sequence<D> =
-      mapN(b, c, unit, unit, unit, unit, unit, unit, unit, unit) { b, c, _, _, _, _, _, _, _, _ -> map(b, c) }
+      mapN(b, c, sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit)) { b, c, _, _, _, _, _, _, _, _ -> map(b, c) }
 
     fun <B, C, D, E> mapN(
       b: Sequence<B>,
@@ -108,7 +104,7 @@ data class SequenceK<out A>(val sequence: Sequence<A>) : SequenceKOf<A>, Sequenc
       d: Sequence<D>,
       map: (B, C, D) -> E
     ): Sequence<E> =
-      mapN(b, c, d, unit, unit, unit, unit, unit, unit, unit) { b, c, d, _, _, _, _, _, _, _ -> map(b, c, d) }
+      mapN(b, c, d, sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit)) { b, c, d, _, _, _, _, _, _, _ -> map(b, c, d) }
 
     fun <B, C, D, E, F> mapN(
       b: Sequence<B>,
@@ -117,7 +113,7 @@ data class SequenceK<out A>(val sequence: Sequence<A>) : SequenceKOf<A>, Sequenc
       e: Sequence<E>,
       map: (B, C, D, E) -> F
     ): Sequence<F> =
-      mapN(b, c, d, e, unit, unit, unit, unit, unit, unit) { b, c, d, e, _, _, _, _, _, _ -> map(b, c, d, e) }
+      mapN(b, c, d, e, sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit)) { b, c, d, e, _, _, _, _, _, _ -> map(b, c, d, e) }
 
     fun <B, C, D, E, F, G> mapN(
       b: Sequence<B>,
@@ -127,7 +123,7 @@ data class SequenceK<out A>(val sequence: Sequence<A>) : SequenceKOf<A>, Sequenc
       f: Sequence<F>,
       map: (B, C, D, E, F) -> G
     ): Sequence<G> =
-      mapN(b, c, d, e, f, unit, unit, unit, unit, unit) { b, c, d, e, f, _, _, _, _, _ -> map(b, c, d, e, f) }
+      mapN(b, c, d, e, f, sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit)) { b, c, d, e, f, _, _, _, _, _ -> map(b, c, d, e, f) }
 
     fun <B, C, D, E, F, G, H> mapN(
       b: Sequence<B>,
@@ -138,7 +134,7 @@ data class SequenceK<out A>(val sequence: Sequence<A>) : SequenceKOf<A>, Sequenc
       g: Sequence<G>,
       map: (B, C, D, E, F, G) -> H
     ): Sequence<H> =
-      mapN(b, c, d, e, f, g, unit, unit, unit, unit) { b, c, d, e, f, g, _, _, _, _ -> map(b, c, d, e, f, g) }
+      mapN(b, c, d, e, f, g, sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit)) { b, c, d, e, f, g, _, _, _, _ -> map(b, c, d, e, f, g) }
 
     fun <B, C, D, E, F, G, H, I> mapN(
       b: Sequence<B>,
@@ -150,7 +146,7 @@ data class SequenceK<out A>(val sequence: Sequence<A>) : SequenceKOf<A>, Sequenc
       h: Sequence<H>,
       map: (B, C, D, E, F, G, H) -> I
     ): Sequence<I> =
-      mapN(b, c, d, e, f, g, h, unit, unit, unit) { b, c, d, e, f, g, h, _, _, _ -> map(b, c, d, e, f, g, h) }
+      mapN(b, c, d, e, f, g, h, sequenceOf(Unit), sequenceOf(Unit), sequenceOf(Unit)) { b, c, d, e, f, g, h, _, _, _ -> map(b, c, d, e, f, g, h) }
 
     fun <B, C, D, E, F, G, H, I, J> mapN(
       b: Sequence<B>,
@@ -163,7 +159,7 @@ data class SequenceK<out A>(val sequence: Sequence<A>) : SequenceKOf<A>, Sequenc
       i: Sequence<I>,
       map: (B, C, D, E, F, G, H, I) -> J
     ): Sequence<J> =
-      mapN(b, c, d, e, f, g, h, i, unit, unit) { b, c, d, e, f, g, h, i, _, _ -> map(b, c, d, e, f, g, h, i) }
+      mapN(b, c, d, e, f, g, h, i, sequenceOf(Unit), sequenceOf(Unit)) { b, c, d, e, f, g, h, i, _, _ -> map(b, c, d, e, f, g, h, i) }
 
     fun <B, C, D, E, F, G, H, I, J, K> mapN(
       b: Sequence<B>,
@@ -177,7 +173,7 @@ data class SequenceK<out A>(val sequence: Sequence<A>) : SequenceKOf<A>, Sequenc
       j: Sequence<J>,
       map: (B, C, D, E, F, G, H, I, J) -> K
     ): Sequence<K> =
-      mapN(b, c, d, e, f, g, h, i, j, unit) { b, c, d, e, f, g, h, i, j, _ -> map(b, c, d, e, f, g, h, i, j) }
+      mapN(b, c, d, e, f, g, h, i, j, sequenceOf(Unit)) { b, c, d, e, f, g, h, i, j, _ -> map(b, c, d, e, f, g, h, i, j) }
 
     fun <B, C, D, E, F, G, H, I, J, K, L> mapN(
       b: Sequence<B>,
