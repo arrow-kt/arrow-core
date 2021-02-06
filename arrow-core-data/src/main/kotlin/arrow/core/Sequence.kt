@@ -7,16 +7,16 @@ import arrow.typeclasses.Semigroup
  * Combines two structures by taking the union of their shapes and combining the elements with the given function.
  *
  * ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.align
  *
  * fun main(args: Array<String>) {
  *   //sampleStart
  *   val result =
- *    listOf("A", "B").align(listOf(1, 2, 3)) {
+ *    sequenceOf("A", "B").align(sequenceOf(1, 2, 3)) {
  *      "$it"
  *    }
  *   //sampleEnd
- *   println(result)
+ *   println(result.toList())
  * }
  * ```
  */
@@ -27,14 +27,14 @@ fun <A, B, C> Sequence<A>.align(b: Sequence<B>, fa: (Ior<A, B>) -> C): Sequence<
  * Combines two structures by taking the union of their shapes and using Ior to hold the elements.
  *
  * ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.align
  *
  * fun main(args: Array<String>) {
  *   //sampleStart
  *   val result =
- *     listOf("A", "B").align(listOf(1, 2, 3))
+ *     sequenceOf("A", "B").align(sequenceOf(1, 2, 3))
  *   //sampleEnd
- *   println(result)
+ *   println(result.toList())
  * }
  * ```
  */
@@ -143,18 +143,18 @@ fun <A, B> Sequence<A>.foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>): Eval<
 }
 
 /**
- *  Applies [f] to an [A] inside [Iterable] and returns the [List] structure with a tuple of the [A] value and the
+ *  Applies [f] to an [A] inside [Sequence] and returns the [Sequence] structure with a pair of the [A] value and the
  *  computed [B] value as result of applying [f]
  *
  *  ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.fproduct
  *
  *  fun main(args: Array<String>) {
  *   val result =
  *   //sampleStart
- *   listOf("Hello").fproduct { "$it World" }
+ *   sequenceOf("Hello").fproduct { "$it World" }
  *   //sampleEnd
- *   println(result)
+ *   println(result.toList())
  *  }
  *  ```
  */
@@ -172,16 +172,16 @@ fun <B> Sequence<Boolean>.ifM(ifFalse: () -> Sequence<B>, ifTrue: () -> Sequence
  * fed into the success branch. Otherwise, the failure branch is taken.
  *
  * ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.ifThen
  *
  * fun main(args: Array<String>) {
  *   //sampleStart
  *   val result =
- *    listOf(1,2,3).ifThen(listOf("empty")) { i ->
- *      listOf("$i, ${i + 1}")
+ *    sequenceOf(1,2,3).ifThen(sequenceOf("empty")) { i ->
+ *      sequenceOf("$i, ${i + 1}")
  *    }
  *   //sampleEnd
- *   println(result)
+ *   println(result.toList())
  * }
  */
 fun <A, B> Sequence<A>.ifThen(fb: Sequence<B>, ffa: (A) -> Sequence<B>): Sequence<B> =
@@ -193,15 +193,15 @@ fun <A, B> Sequence<A>.ifThen(fb: Sequence<B>, ffa: (A) -> Sequence<B>): Sequenc
  * interleave both computations in a fair way.
  *
  * ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.interleave
  *
  * fun main(args: Array<String>) {
  *   //sampleStart
- *   val tags = List(10) { "#" }
+ *   val tags = generateSequence { "#" }.take(10)
  *   val result =
- *    tags.interleave(listOf("A", "B", "C"))
+ *    tags.interleave(sequenceOf("A", "B", "C"))
  *   //sampleEnd
- *   println(result)
+ *   println(result.toList())
  * }
  */
 fun <A> Sequence<A>.interleave(other: Sequence<A>): Sequence<A> =
@@ -218,17 +218,17 @@ fun <A> Sequence<A>.interleave(other: Sequence<A>): Sequence<A> =
   }
 
 /**
- * Returns a [List<C>] containing the result of applying some transformation `(A?, B) -> C`
+ * Returns a [Sequence<C>] containing the result of applying some transformation `(A?, B) -> C`
  * on a zip, excluding all cases where the right value is null.
  *
  * Example:
  * ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.leftPadZip
  *
  * //sampleStart
- * val left = listOf(1, 2).leftPadZip(listOf("a")) { l, r -> l toT r }      // Result: [Tuple2(1, "a")]
- * val right = listOf(1).leftPadZip(listOf("a", "b")) { l, r -> l toT r }   // Result: [Tuple2(1, "a"), Tuple2(null, "b")]
- * val both = listOf(1, 2).leftPadZip(listOf("a", "b")) { l, r -> l toT r } // Result: [Tuple2(1, "a"), Tuple2(2, "b")]
+ * val left = sequenceOf(1, 2).leftPadZip(sequenceOf(3)) { l, r -> l?.plus(r) ?: r }    // Result: [4]
+ * val right = sequenceOf(1).leftPadZip(sequenceOf(3, 4)) { l, r -> l?.plus(r) ?: r }   // Result: [4, 4]
+ * val both = sequenceOf(1, 2).leftPadZip(sequenceOf(3, 4)) { l, r -> l?.plus(r) ?: r } // Result: [4, 6]
  * //sampleEnd
  *
  * fun main() {
@@ -241,22 +241,18 @@ fun <A> Sequence<A>.interleave(other: Sequence<A>): Sequence<A> =
 fun <A, B, C> Sequence<A>.leftPadZip(other: Sequence<B>, fab: (A?, B) -> C): Sequence<C> =
   padZip(other) { a: A?, b: B? -> b?.let { fab(a, it) } }.mapNotNull(::identity)
 
-fun <A> Sequence<A>.many(): Sequence<Sequence<A>> =
-  if (none()) sequenceOf(emptySequence())
-  else map { generateSequence { it } }
-
 /**
- * Returns a [List<Tuple2<A?, B>>] containing the zipped values of the two listKs
+ * Returns a [Sequence<Pair<A?, B>>] containing the zipped values of the two sequences
  * with null for padding on the left.
  *
  * Example:
  * ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.leftPadZip
  *
  * //sampleStart
- * val padRight = listOf(1, 2).leftPadZip(listOf("a"))        // Result: [Tuple2(1, "a")]
- * val padLeft = listOf(1).leftPadZip(listOf("a", "b"))       // Result: [Tuple2(1, "a"), Tuple2(null, "b")]
- * val noPadding = listOf(1, 2).leftPadZip(listOf("a", "b"))  // Result: [Tuple2(1, "a"), Tuple2(2, "b")]
+ * val padRight = sequenceOf(1, 2).leftPadZip(sequenceOf("a"))        // Result: [Pair(1, "a")]
+ * val padLeft = sequenceOf(1).leftPadZip(sequenceOf("a", "b"))       // Result: [Pair(1, "a"), Pair(null, "b")]
+ * val noPadding = sequenceOf(1, 2).leftPadZip(sequenceOf("a", "b"))  // Result: [Pair(1, "a"), Pair(2, "b")]
  * //sampleEnd
  *
  * fun main() {
@@ -269,6 +265,10 @@ fun <A> Sequence<A>.many(): Sequence<Sequence<A>> =
 fun <A, B> Sequence<A>.leftPadZip(other: Sequence<B>): Sequence<Pair<A?, B>> =
   this.leftPadZip(other) { a, b -> a to b }
 
+fun <A> Sequence<A>.many(): Sequence<Sequence<A>> =
+  if (none()) sequenceOf(emptySequence())
+  else map { generateSequence { it } }
+
 fun <A, B> Sequence<A>.mapConst(b: B): Sequence<B> =
   map { b }
 
@@ -276,16 +276,16 @@ fun <A> Sequence<A>.once(): Sequence<A> =
   firstOrNull()?.let { sequenceOf(it) } ?: emptySequence()
 
 /**
- * Returns a [List<Tuple2<A?, B?>>] containing the zipped values of the two lists with null for padding.
+ * Returns a [Sequence<Pair<A?, B?>>] containing the zipped values of the two sequences with null for padding.
  *
  * Example:
  * ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.padZip
  *
  * //sampleStart
- * val padRight = listOf(1, 2).padZip(listOf("a"))        // Result: [Tuple2(1, "a"), Tuple2(2, null)]
- * val padLeft = listOf(1).padZip(listOf("a", "b"))       // Result: [Tuple2(1, "a"), Tuple2(null, "b")]
- * val noPadding = listOf(1, 2).padZip(listOf("a", "b"))  // Result: [Tuple2(1, "a"), Tuple2(2, "b")]
+ * val padRight = sequenceOf(1, 2).padZip(sequenceOf("a"))       // Result: [Pair(1, "a"), Pair(2, null)]
+ * val padLeft = sequenceOf(1).padZip(sequenceOf("a", "b"))      // Result: [Pair(1, "a"), Pair(null, "b")]
+ * val noPadding = sequenceOf(1, 2).padZip(sequenceOf("a", "b")) // Result: [Pair(1, "a"), Pair(2, "b")]
  * //sampleEnd
  *
  * fun main() {
@@ -305,17 +305,17 @@ fun <A, B> Sequence<A>.padZip(other: Sequence<B>): Sequence<Pair<A?, B?>> =
   }
 
 /**
- * Returns a [ListK<C>] containing the result of applying some transformation `(A?, B?) -> C`
+ * Returns a [Sequence<C>] containing the result of applying some transformation `(A?, B?) -> C`
  * on a zip.
  *
  * Example:
  * ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.padZip
  *
  * //sampleStart
- * val padZipRight = listOf(1, 2).padZip(listOf("a")) { l, r -> l toT r }     // Result: [Tuple2(1, "a"), Tuple2(2, null)]
- * val padZipLeft = listOf(1).padZip(listOf("a", "b")) { l, r -> l toT r }    // Result: [Tuple2(1, "a"), Tuple2(null, "b")]
- * val noPadding = listOf(1, 2).padZip(listOf("a", "b")) { l, r -> l toT r }  // Result: [Tuple2(1, "a"), Tuple2(2, "b")]
+ * val padZipRight = sequenceOf(1, 2).padZip(sequenceOf(3)) { l, r -> (l?:0) + (r?:0) }  // Result: [4, 2]
+ * val padZipLeft = sequenceOf(1).padZip(sequenceOf(3, 4)) { l, r -> (l?:0) + (r?:0) }   // Result: [4, 4]
+ * val noPadding = sequenceOf(1, 2).padZip(sequenceOf(3, 4)) { l, r -> (l?:0) + (r?:0) } // Result: [4, 6]
  * //sampleEnd
  *
  * fun main() {
@@ -343,17 +343,17 @@ fun <A> Sequence<A>.replicate(n: Int, MA: Monoid<A>): Sequence<A> =
   else SequenceK.mapN(this@replicate, replicate(n - 1, MA)) { a, xs -> MA.run { a + xs } }
 
 /**
- * Returns a [List<C>] containing the result of applying some transformation `(A, B?) -> C`
+ * Returns a [Sequence<C>] containing the result of applying some transformation `(A, B?) -> C`
  * on a zip, excluding all cases where the left value is null.
  *
  * Example:
  * ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.rightPadZip
  *
  * //sampleStart
- * val left = listOf(1, 2).rightPadZip(listOf("a")) { l, r -> l toT r }      // Result: [Tuple2(1, "a"), Tuple2(null, "b")]
- * val right = listOf(1).rightPadZip(listOf("a", "b")) { l, r -> l toT r }   // Result: [Tuple2(1, "a")]
- * val both = listOf(1, 2).rightPadZip(listOf("a", "b")) { l, r -> l toT r } // Result: [Tuple2(1, "a"), Tuple2(2, "b")]
+ * val left = sequenceOf(1, 2).rightPadZip(sequenceOf(3)) { l, r -> l + (r?:0) }    // Result: [4, 2]
+ * val right = sequenceOf(1).rightPadZip(sequenceOf(3, 4)) { l, r -> l + (r?:0) }   // Result: [4]
+ * val both = sequenceOf(1, 2).rightPadZip(sequenceOf(3, 4)) { l, r -> l + (r?:0) } // Result: [4, 6]
  * //sampleEnd
  *
  * fun main() {
@@ -367,17 +367,17 @@ fun <A, B, C> Sequence<A>.rightPadZip(other: Sequence<B>, fa: (A, B?) -> C): Seq
   other.leftPadZip(this) { a, b -> fa(b, a) }
 
 /**
- * Returns a [List<Tuple2<A, B?>>] containing the zipped values of the two listKs
+ * Returns a [Sequence<Pair<A, B?>>] containing the zipped values of the two sequences
  * with null for padding on the right.
  *
  * Example:
  * ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.rightPadZip
  *
  * //sampleStart
- * val padRight = listOf(1, 2).rightPadZip(listOf("a"))        // Result: [Tuple2(1, "a"), Tuple2(2, null)]
- * val padLeft = listOf(1).rightPadZip(listOf("a", "b"))       // Result: [Tuple2(1, "a")]
- * val noPadding = listOf(1, 2).rightPadZip(listOf("a", "b"))  // Result: [Tuple2(1, "a"), Tuple2(2, "b")]
+ * val padRight = sequenceOf(1, 2).rightPadZip(sequenceOf("a"))        // Result: [Pair(1, "a"), Pair(2, null)]
+ * val padLeft = sequenceOf(1).rightPadZip(sequenceOf("a", "b"))       // Result: [Pair(1, "a")]
+ * val noPadding = sequenceOf(1, 2).rightPadZip(sequenceOf("a", "b"))  // Result: [Pair(1, "a"), Pair(2, "b")]
  * //sampleEnd
  *
  * fun main() {
@@ -411,7 +411,7 @@ fun <A, B> Sequence<Either<A, B>>.selectM(f: Sequence<(A) -> B>): Sequence<B> =
  * Separate the inner [Either] values into the [Either.Left] and [Either.Right].
  *
  * @receiver Iterable of Validated
- * @return a tuple containing List with [Either.Left] and another List with its [Either.Right] values.
+ * @return a tuple containing Sequence with [Either.Left] and another Sequence with its [Either.Right] values.
  */
 fun <A, B> Sequence<Either<A, B>>.separateEither(): Pair<Sequence<A>, Sequence<B>> {
   val asep = flatMap { gab -> gab.fold({ sequenceOf(it) }, { emptySequence() }) }
@@ -423,7 +423,7 @@ fun <A, B> Sequence<Either<A, B>>.separateEither(): Pair<Sequence<A>, Sequence<B
  * Separate the inner [Validated] values into the [Validated.Invalid] and [Validated.Valid].
  *
  * @receiver Iterable of Validated
- * @return a tuple containing List with [Validated.Invalid] and another List with its [Validated.Valid] values.
+ * @return a tuple containing Sequence with [Validated.Invalid] and another Sequence with its [Validated.Valid] values.
  */
 fun <A, B> Sequence<Validated<A, B>>.separateValidated(): Pair<Sequence<A>, Sequence<B>> {
   val asep = flatMap { gab -> gab.fold({ sequenceOf(it) }, { emptySequence() }) }
@@ -451,14 +451,13 @@ fun <A> Sequence<A>.some(): Sequence<Sequence<A>> =
  * attempt to split the computation, giving access to the first result.
  *
  * ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.split
  *
  * fun main(args: Array<String>) {
  *   //sampleStart
- *   val result =
- *    listOf("A", "B", "C").split()
+ *   val result = sequenceOf("A", "B", "C").split()
  *   //sampleEnd
- *   println(result)
+ *   result?.let { println("(${it.first.toList()}, ${it.second.toList()})") }
  * }
  */
 fun <A> Sequence<A>.split(): Pair<Sequence<A>, A>? =
@@ -492,17 +491,16 @@ fun <E, A> Sequence<A>.traverseValidated_(semigroup: Semigroup<E>, f: (A) -> Val
   }
 
 /**
- *  Pairs [B] with [A] returning a List<Tuple2<B, A>>
+ *  Pairs [B] with [A] returning a Sequence<Pair<B, A>>
  *
  *  ```kotlin:ank:playground
- *  import arrow.core.*
+ *  import arrow.core.tupleLeft
  *
  *  fun main(args: Array<String>) {
- *   val result =
  *   //sampleStart
- *   listOf("Hello", "Hello2").tupleLeft("World")
+ *   val result = sequenceOf("Hello", "Hello2").tupleLeft("World")
  *   //sampleEnd
- *   println(result)
+ *   println(result.toList())
  *  }
  *  ```
  */
@@ -510,17 +508,16 @@ fun <A, B> Sequence<A>.tupleLeft(b: B): Sequence<Pair<B, A>> =
   map { a -> b to a }
 
 /**
- *  Pairs [A] with [B] returning a List<Tuple2<A, B>>
+ *  Pairs [A] with [B] returning a Sequence<Pair<A, B>>
  *
  *  ```kotlin:ank:playground
- *  import arrow.core.*
+ *  import arrow.core.tupleRight
  *
  *  fun main(args: Array<String>) {
- *   val result =
  *   //sampleStart
- *   listOf("Hello").tupleRight("World")
+ *   val result = sequenceOf("Hello").tupleRight("World")
  *   //sampleEnd
- *   println(result)
+ *   println(result.toList())
  *  }
  *  ```
  */
@@ -528,18 +525,18 @@ fun <A, B> Sequence<A>.tupleRight(b: B): Sequence<Pair<A, B>> =
   map { a -> a to b }
 
 /**
- * splits a union into its component parts.
+ * splits an union into its component parts.
  *
  * ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.bothIor
+ * import arrow.core.leftIor
+ * import arrow.core.unalign
  *
  * fun main(args: Array<String>) {
  *   //sampleStart
- *   val result =
- *    listOf(("A" toT 1).bothIor(), ("B" toT 2).bothIor(), "C".leftIor())
- *      .unalign()
+ *   val result = sequenceOf(("A" to 1).bothIor(), ("B" to 2).bothIor(), "C".leftIor()).unalign()
  *   //sampleEnd
- *   println(result)
+ *   println("(${result.first.toList()}, ${result.second.toList()})")
  * }
  * ```
  */
@@ -556,16 +553,14 @@ fun <A, B> Sequence<Ior<A, B>>.unalign(): Pair<Sequence<A>, Sequence<B>> =
  * after applying the given function, splits the resulting union shaped structure into its components parts
  *
  * ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.leftIor
+ * import arrow.core.unalign
  *
  * fun main(args: Array<String>) {
  *   //sampleStart
- *   val result =
- *      listOf(1, 2, 3).unalign {
- *        it.leftIor()
- *      }
+ *   val result = sequenceOf(1, 2, 3).unalign { it.leftIor() }
  *   //sampleEnd
- *   println(result)
+ *   println("(${result.first.toList()}, ${result.second.toList()})")
  * }
  * ```
  */
@@ -586,14 +581,13 @@ fun <A, B> Sequence<Validated<A, B>>.uniteValidated(): Sequence<B> =
  * Fair conjunction. Similarly to interleave
  *
  * ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.unweave
  *
  * fun main(args: Array<String>) {
  *   //sampleStart
- *   val result =
- *    listOf(1,2,3).unweave { i -> listOf("$i, ${i + 1}") }
+ *   val result = sequenceOf(1,2,3).unweave { i -> sequenceOf("$i, ${i + 1}") }
  *   //sampleEnd
- *   println(result)
+ *   println(result.toList())
  * }
  */
 fun <A, B> Sequence<A>.unweave(ffa: (A) -> Sequence<B>): Sequence<B> =
@@ -605,14 +599,13 @@ fun <A, B> Sequence<A>.unweave(ffa: (A) -> Sequence<B>): Sequence<B> =
  * unzips the structure holding the resulting elements in an `Tuple2`
  *
  * ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.unzip
  *
  * fun main(args: Array<String>) {
  *   //sampleStart
- *   val result =
- *      listOf("A" toT 1, "B" toT 2).k().unzip()
+ *   val result = sequenceOf("A" to 1, "B" to 2).unzip()
  *   //sampleEnd
- *   println(result)
+ *   println("(${result.first.toList()}, ${result.second.toList()})")
  * }
  * ```
  */
@@ -625,18 +618,18 @@ fun <A, B> Sequence<Pair<A, B>>.unzip(): Pair<Sequence<A>, Sequence<B>> =
  * after applying the given function unzip the resulting structure into its elements.
  *
  * ```kotlin:ank:playground
- * import arrow.core.*
+ * import arrow.core.unzip
  *
  * fun main(args: Array<String>) {
  *   //sampleStart
  *   val result =
- *    listOf("A:1", "B:2", "C:3").k().unzip { e ->
+ *    sequenceOf("A:1", "B:2", "C:3").unzip { e ->
  *      e.split(":").let {
- *        it.first() toT it.last()
+ *        it.first() to it.last()
  *      }
  *    }
  *   //sampleEnd
- *   println(result)
+ *   println("(${result.first.toList()}, ${result.second.toList()})")
  * }
  * ```
  */
@@ -647,17 +640,17 @@ fun <A> Sequence<A>.void(): Sequence<Unit> =
   mapConst(Unit)
 
 /**
- *  Given [A] is a sub type of [B], re-type this value from Iterable<A> to Iterable<B>
+ *  Given [A] is a sub type of [B], re-type this value from Sequence<A> to Sequence<B>
  *
  *  Kind<F, A> -> Kind<F, B>
  *
  *  ```kotlin:ank:playground
- *  import arrow.core.*
+ *  import arrow.core.widen
  *
  *  fun main(args: Array<String>) {
  *   //sampleStart
- *   val result: Iterable<CharSequence> =
- *     listOf("Hello World").widen()
+ *   val result: Sequence<CharSequence> =
+ *     sequenceOf("Hello World").widen()
  *   //sampleEnd
  *   println(result)
  *  }
