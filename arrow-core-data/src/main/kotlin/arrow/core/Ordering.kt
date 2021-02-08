@@ -73,8 +73,8 @@ sealed class Ordering(private val toInt: Int) {
 }
 
 object LT : Ordering(-1)
-object GT : Ordering(0)
-object EQ : Ordering(1)
+object GT : Ordering(1)
+object EQ : Ordering(0)
 
 fun Collection<Ordering>.combineAll(): Ordering =
   if (isEmpty()) OrderingMonoid.empty() else reduce { a, b -> a.combine(b) }
