@@ -16,7 +16,7 @@ import kotlin.sequences.Sequence
 @Deprecated(
   "Kind/type constructors will be deprecated, so this typeclass will no longer be available from 0.13.0",
   ReplaceWith(
-    "this == arg1"
+    "this.toList() == arg1.toList()"
   ),
   DeprecationLevel.WARNING
 )

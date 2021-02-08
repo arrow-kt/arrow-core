@@ -58,7 +58,8 @@ object Sequence {
     "NOTHING_TO_INLINE"
   )
   @Deprecated(
-    "Monoid typeclass is deprecated. Use concrete methods on Sequence",
+    "@extension kinded projected functions are deprecated",
+    ReplaceWith("Monoid.sequence<A>()", "arrow.core.sequence", "arrow.typeclasses.Monoid"),
     level = DeprecationLevel.WARNING
   )
   inline fun <A> monoid(): SequenceKMonoid<A> = monoid_singleton as
