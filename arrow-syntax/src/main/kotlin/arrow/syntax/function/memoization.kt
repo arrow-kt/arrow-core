@@ -1,6 +1,7 @@
 package arrow.syntax.function
 
-import arrow.syntax.internal.Platform.newConcurrentMap
+import kotlinx.atomicfu.atomic
+import kotlinx.atomicfu.loop
 
 fun <R> (() -> R).memoize(): () -> R = object : () -> R {
   private val m = MemoizedHandler<() -> R, MemoizeKey0<R>, R>(this@memoize)
@@ -214,6 +215,18 @@ private data class MemoizeKey22<out P1, out P2, out P3, out P4, out P5, out P6, 
 }
 
 private class MemoizedHandler<F, in K : MemoizedCall<F, R>, out R>(val f: F) {
-  private val m = newConcurrentMap<K, R>()
-  operator fun invoke(k: K): R = m[k] ?: run { m.putSafely(k, k(f)) }
+  private val cache = atomic(emptyMap<K, R>())
+  operator fun invoke(k: K): R {
+    val cached = cache.value[k]
+    return if (cached == null) {                                    // No cached value found, compute one
+      val b = k(f)
+      cache.loop { old ->
+        val bb = old[k]
+        if (bb == null) {                                           // No value is set yet (race condition)
+          if (cache.compareAndSet(old, old + Pair(k, b))) return b  // Value was set, return the value
+          else Unit                                                 // keep looping failed to set
+        } else return bb                                            // A value was already set first, return it
+      }
+    } else cached                                                   // Cached value found, return it
+  }
 }
