@@ -9,6 +9,9 @@ import arrow.typeclasses.internal.Id
 import arrow.typeclasses.internal.fix
 import arrow.typeclasses.internal.idApplicative
 
+/**
+ * ank_macro_hierarchy(arrow.typeclasses.TraverseFilter)
+ */
 @Deprecated(KindDeprecation)
 interface TraverseFilter<F> : Traverse<F>, FunctorFilter<F> {
 

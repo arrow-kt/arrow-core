@@ -2,6 +2,9 @@ package arrow.typeclasses
 
 import arrow.KindDeprecation
 
+/**
+ * ank_macro_hierarchy(arrow.typeclasses.Bimonad)
+ */
 @Deprecated(KindDeprecation)
 interface Bimonad<F> : Monad<F>, Comonad<F> {
 

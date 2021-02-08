@@ -7,6 +7,9 @@ import arrow.core.NonFatal
 import arrow.documented
 import kotlin.coroutines.startCoroutine
 
+/**
+ * ank_macro_hierarchy(arrow.typeclasses.MonadError)
+ */
 @Deprecated(KindDeprecation)
 interface MonadError<F, E> : ApplicativeError<F, E>, Monad<F> {
 
@@ -24,6 +27,8 @@ interface MonadError<F, E> : ApplicativeError<F, E>, Monad<F> {
 }
 
 /**
+ * ank_macro_hierarchy(arrow.typeclasses.MonadThrow)
+ *
  * MonadThrow has the error type fixed to Throwable. It provides [fx.monadThrow] for automatically catching throwable
  * errors in the context of a binding, short-circuiting the complete computation and returning the error raised to the
  * same computational context (through [raiseError]).

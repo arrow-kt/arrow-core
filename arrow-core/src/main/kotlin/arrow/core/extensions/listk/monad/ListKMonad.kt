@@ -259,6 +259,8 @@ fun <A, B> Kind<ForListK, Either<A, B>>.select(arg1: Kind<ForListK, Function1<A,
 }
 
 /**
+ *  ank_macro_hierarchy(arrow.typeclasses.Monad)
+ *
  *  [Monad] abstract over the ability to declare sequential computations that are dependent in the order or
  *  the results of previous computations.
  *

@@ -5,6 +5,9 @@ import arrow.Kind2
 import arrow.KindDeprecation
 import arrow.core.Tuple2
 
+/**
+ * ank_macro_hierarchy(arrow.typeclasses.MonadCombine)
+ */
 @Deprecated(KindDeprecation)
 interface MonadCombine<F> : MonadFilter<F>, Alternative<F> {
 

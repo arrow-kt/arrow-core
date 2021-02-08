@@ -10,6 +10,9 @@ import arrow.core.fix
 import arrow.core.identity
 import arrow.core.nonFatalOrThrow
 
+/**
+ * ank_macro_hierarchy(arrow.typeclasses.ApplicativeError)
+ */
 @Deprecated(KindDeprecation)
 interface ApplicativeError<F, E> : Applicative<F> {
 

@@ -21,6 +21,9 @@ inline fun <A> NonEmptyListOf<A>.fix(): NonEmptyList<A> =
 typealias Nel<A> = NonEmptyList<A>
 
 /**
+ * ank_macro_hierarchy(arrow.core.NonEmptyList)
+ *
+ *
  * `NonEmptyList` is a data type used in __Λrrow__ to model ordered lists that guarantee to have at least one value.
  * `NonEmptyList` is available in the `arrow-core-data` module under the `import arrow.core.NonEmptyList`
  *

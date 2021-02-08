@@ -9,6 +9,8 @@ import arrow.core.identity
 
 @Deprecated(KindDeprecation)
 /**
+ * ank_macro_hierarchy(arrow.typeclasses.FunctorFilter)
+ *
  * A Functor with the ability to [filterMap].
  */
 interface FunctorFilter<F> : Functor<F> {

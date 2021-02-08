@@ -5,6 +5,9 @@ package arrow.typeclasses
 import arrow.Kind
 import arrow.KindDeprecation
 
+/**
+ * ank_macro_hierarchy(arrow.typeclasses.Applicative)
+ */
 @Deprecated(KindDeprecation)
 interface Applicative<F> : Apply<F> {
 

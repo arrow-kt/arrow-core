@@ -14,6 +14,8 @@ import kotlin.coroutines.startCoroutine
 
 @Deprecated(KindDeprecation)
 /**
+ * ank_macro_hierarchy(arrow.typeclasses.Comonad)
+ *
  * The dual of monads, used to extract values from F
  */
 interface Comonad<F> : Functor<F> {

@@ -16,6 +16,8 @@ inline fun <A> ListKOf<A>.fix(): ListK<A> =
 
 /**
  *
+ * ank_macro_hierarchy(arrow.core.ListK)
+ *
  * ListK wraps over the platform `List` type to make it a [type constructor]({{'/patterns/glossary/#type-constructors' | relative_url }}).
  *
  * It can be created from Kotlin List type with a convenient `k()` function.
