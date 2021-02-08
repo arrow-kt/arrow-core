@@ -19,6 +19,7 @@ class MemoizationTest : FreeSpec() {
       memoized() shouldBe 1
       runs shouldBe 1
     }
+
     "Memoize P1 only first execution runs" {
       var runs = 0
       fun sum(n: Int): Int {
@@ -36,6 +37,7 @@ class MemoizationTest : FreeSpec() {
       memoized(3) shouldBe 4
       runs shouldBe 3
     }
+
     "Memoize P2 only first execution runs" {
       var runs = 0
       fun sum(n1: Int, n2: Int): Int {
@@ -54,6 +56,7 @@ class MemoizationTest : FreeSpec() {
       memoized(3, 2) shouldBe 6
       runs shouldBe 3
     }
+
     "Memoize P3 only first execution runs" {
       var runs = 0
       fun sum(
@@ -74,6 +77,7 @@ class MemoizationTest : FreeSpec() {
       memoized(3, 1, 2) shouldBe result
       runs shouldBe 3
     }
+
     "Memoize P4 only first execution runs" {
       var runs = 0
       fun sum(
@@ -94,6 +98,7 @@ class MemoizationTest : FreeSpec() {
       memoized(3, 4, 1, 2) shouldBe result
       runs shouldBe 3
     }
+
     "Memoize P5 only first execution runs" {
       var runs = 0
       fun sum(
@@ -114,6 +119,7 @@ class MemoizationTest : FreeSpec() {
       memoized(3, 4, 5, 1, 2) shouldBe result
       runs shouldBe 3
     }
+
     "Memoize P6 only first execution runs" {
       var runs = 0
       fun sum(
@@ -134,6 +140,7 @@ class MemoizationTest : FreeSpec() {
       memoized(3, 4, 5, 6, 1, 2) shouldBe result
       runs shouldBe 3
     }
+
     "Memoize P7 only first execution runs" {
       var runs = 0
       fun sum(
@@ -154,6 +161,7 @@ class MemoizationTest : FreeSpec() {
       memoized(3, 4, 5, 6, 7, 1, 2) shouldBe result
       runs shouldBe 3
     }
+
     "Memoize P8 only first execution runs" {
       var runs = 0
       fun sum(
@@ -174,6 +182,7 @@ class MemoizationTest : FreeSpec() {
       memoized(3, 4, 5, 6, 7, 8, 1, 2) shouldBe result
       runs shouldBe 3
     }
+
     "Memoize P9 only first execution runs" {
       var runs = 0
       fun sum(
@@ -194,6 +203,7 @@ class MemoizationTest : FreeSpec() {
       memoized(3, 4, 5, 6, 7, 8, 9, 1, 2) shouldBe result
       runs shouldBe 3
     }
+
     "Memoize P10 only first execution runs" {
       var runs = 0
       fun sum(
@@ -214,6 +224,7 @@ class MemoizationTest : FreeSpec() {
       memoized(3, 4, 5, 6, 7, 8, 9, 10, 1, 2) shouldBe result
       runs shouldBe 3
     }
+
     "Memoize P11 only first execution runs" {
       var runs = 0
       fun sum(
@@ -234,6 +245,7 @@ class MemoizationTest : FreeSpec() {
       memoized(3, 4, 5, 6, 7, 8, 9, 10, 11, 1, 2) shouldBe result
       runs shouldBe 3
     }
+
     "Memoize P12 only first execution runs" {
       var runs = 0
       fun sum(
@@ -255,6 +267,7 @@ class MemoizationTest : FreeSpec() {
       memoized(3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2) shouldBe result
       runs shouldBe 3
     }
+
     "Memoize P13 only first execution runs" {
       var runs = 0
       fun sum(
@@ -276,6 +289,7 @@ class MemoizationTest : FreeSpec() {
       memoized(3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2) shouldBe result
       runs shouldBe 3
     }
+
     "Memoize P14 only first execution runs" {
       var runs = 0
       fun sum(
@@ -297,6 +311,7 @@ class MemoizationTest : FreeSpec() {
       memoized(3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 1, 2) shouldBe result
       runs shouldBe 3
     }
+
     "Memoize P15 only first execution runs" {
       var runs = 0
       fun sum(
@@ -318,6 +333,7 @@ class MemoizationTest : FreeSpec() {
       memoized(3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 2) shouldBe result
       runs shouldBe 3
     }
+
     "Memoize P16 only first execution runs" {
       var runs = 0
       fun sum(
@@ -339,6 +355,7 @@ class MemoizationTest : FreeSpec() {
       memoized(3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 2) shouldBe result
       runs shouldBe 3
     }
+
     "Memoize P17 only first execution runs" {
       var runs = 0
       fun sum(
