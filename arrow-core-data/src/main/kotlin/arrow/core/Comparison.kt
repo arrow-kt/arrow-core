@@ -25,6 +25,9 @@ fun <A> sort(a: A, b: A, c: A, comparator: Comparator<A>): Triple<A, A, A> =
     else -> if (comparator.compare(c, b) <= 0) Triple(c, b, a) else Triple(b, c, a)
   }
 
+fun <A> sort(a: A, vararg aas: A, comparator: Comparator<A>): List<A> =
+  (listOf(a) + aas).sortedWith(comparator)
+
 fun sort(a: Byte, b: Byte): Pair<Byte, Byte> =
   if (a <= b) Pair(a, b) else Pair(b, a)
 
