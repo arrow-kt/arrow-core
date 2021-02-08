@@ -218,15 +218,21 @@ private class MemoizedHandler<F, in K : MemoizedCall<F, R>, out R>(val f: F) {
   private val cache = atomic(emptyMap<K, R>())
   operator fun invoke(k: K): R {
     val cached = cache.value[k]
-    return if (cached == null) {                                    // No cached value found, compute one
+    // No cached value found, compute one
+    return if (cached == null) {
       val b = k(f)
       cache.loop { old ->
         val bb = old[k]
-        if (bb == null) {                                           // No value is set yet (race condition)
-          if (cache.compareAndSet(old, old + Pair(k, b))) return b  // Value was set, return the value
-          else Unit                                                 // keep looping failed to set
-        } else return bb                                            // A value was already set first, return it
+        // No value is set yet (race condition)
+        if (bb == null) {
+          // Value was set, return the value
+          if (cache.compareAndSet(old, old + Pair(k, b))) return b
+          // keep looping failed to set
+          else Unit
+          // A value was already set first, return it
+        } else return bb
       }
-    } else cached                                                   // Cached value found, return it
+      // Cached value found, return it
+    } else cached
   }
 }
