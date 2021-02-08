@@ -5,12 +5,15 @@ import arrow.typeclasses.Applicative
 import arrow.typeclasses.Show
 import arrow.typeclasses.ShowDeprecation
 
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 class ForSequenceK private constructor() {
   companion object
 }
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 typealias SequenceKOf<A> = arrow.Kind<ForSequenceK, A>
 
 @Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 inline fun <A> SequenceKOf<A>.fix(): SequenceK<A> =
   this as SequenceK<A>
 

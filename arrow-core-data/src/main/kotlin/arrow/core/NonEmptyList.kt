@@ -11,10 +11,12 @@ import arrow.typeclasses.ShowDeprecation
 
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 class ForNonEmptyList private constructor() { companion object }
-typealias NonEmptyListOf<A> = arrow.Kind<ForNonEmptyList, A>
 
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
+typealias NonEmptyListOf<A> = arrow.Kind<ForNonEmptyList, A>
+
 @Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
+@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
 inline fun <A> NonEmptyListOf<A>.fix(): NonEmptyList<A> =
   this as NonEmptyList<A>
 
