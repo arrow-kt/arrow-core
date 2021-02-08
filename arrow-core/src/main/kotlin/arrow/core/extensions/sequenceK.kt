@@ -52,6 +52,7 @@ import arrow.typeclasses.Monoid
 import arrow.typeclasses.MonoidK
 import arrow.typeclasses.Monoidal
 import arrow.typeclasses.Order
+import arrow.typeclasses.OrderDeprecation
 import arrow.typeclasses.Repeat
 import arrow.typeclasses.Semialign
 import arrow.typeclasses.Semigroup
@@ -248,6 +249,7 @@ interface SequenceKHash<A> : Hash<SequenceK<A>> {
       .let { (hash, size) -> hash.hashWithSalt(size) }
 }
 
+@Deprecated(OrderDeprecation)
 interface SequenceKOrder<A> : Order<SequenceK<A>> {
   fun OA(): Order<A>
   override fun SequenceK<A>.compare(b: SequenceK<A>): Ordering =
