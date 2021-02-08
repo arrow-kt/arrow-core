@@ -6,7 +6,8 @@ import arrow.typeclasses.Semigroup
 import arrow.typeclasses.ShowDeprecation
 import arrow.typeclasses.hashWithSalt
 
-sealed class Ordering(private val toInt: Int) {
+@Deprecated("Ordering is deprecated together with Order. Use compareTo instead of Order instead.")
+sealed class Ordering {
   override fun equals(other: Any?): Boolean =
     this === other // ref equality is fine because objects should be singletons
 
@@ -25,7 +26,11 @@ sealed class Ordering(private val toInt: Int) {
     }
 
   fun toInt(): Int =
-    toInt
+    when (this) {
+      LT -> -1
+      GT -> 1
+      EQ -> 0
+    }
 
   operator fun plus(b: Ordering): Ordering =
     when (this) {
@@ -72,9 +77,9 @@ sealed class Ordering(private val toInt: Int) {
   }
 }
 
-object LT : Ordering(-1)
-object GT : Ordering(1)
-object EQ : Ordering(0)
+object LT : Ordering()
+object GT : Ordering()
+object EQ : Ordering()
 
 fun Collection<Ordering>.combineAll(): Ordering =
   if (isEmpty()) OrderingMonoid.empty() else reduce { a, b -> a.combine(b) }
