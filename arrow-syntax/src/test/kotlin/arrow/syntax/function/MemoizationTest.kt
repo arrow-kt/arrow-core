@@ -59,9 +59,7 @@ class MemoizationTest : FreeSpec() {
 
     "Memoize P3 only first execution runs" {
       var runs = 0
-      fun sum(
-        n1: Int, n2: Int, n3: Int
-      ): Int {
+      fun sum(n1: Int, n2: Int, n3: Int): Int {
         runs++
         return n1 + n2 + n3 + 1
       }
@@ -80,9 +78,7 @@ class MemoizationTest : FreeSpec() {
 
     "Memoize P4 only first execution runs" {
       var runs = 0
-      fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int
-      ): Int {
+      fun sum(n1: Int, n2: Int, n3: Int, n4: Int): Int {
         runs++
         return n1 + n2 + n3 + n4 + 1
       }
@@ -101,9 +97,7 @@ class MemoizationTest : FreeSpec() {
 
     "Memoize P5 only first execution runs" {
       var runs = 0
-      fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int
-      ): Int {
+      fun sum(n1: Int, n2: Int, n3: Int, n4: Int, n5: Int): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + 1
       }
@@ -122,9 +116,7 @@ class MemoizationTest : FreeSpec() {
 
     "Memoize P6 only first execution runs" {
       var runs = 0
-      fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int
-      ): Int {
+      fun sum(n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + n6 + 1
       }
@@ -143,9 +135,7 @@ class MemoizationTest : FreeSpec() {
 
     "Memoize P7 only first execution runs" {
       var runs = 0
-      fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int
-      ): Int {
+      fun sum(n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + n6 + n7 + 1
       }
@@ -164,9 +154,7 @@ class MemoizationTest : FreeSpec() {
 
     "Memoize P8 only first execution runs" {
       var runs = 0
-      fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int
-      ): Int {
+      fun sum(n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + 1
       }
@@ -185,9 +173,7 @@ class MemoizationTest : FreeSpec() {
 
     "Memoize P9 only first execution runs" {
       var runs = 0
-      fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int, n9: Int
-      ): Int {
+      fun sum(n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int, n9: Int): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + n9 + 1
       }
@@ -206,9 +192,7 @@ class MemoizationTest : FreeSpec() {
 
     "Memoize P10 only first execution runs" {
       var runs = 0
-      fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int, n9: Int, n10: Int
-      ): Int {
+      fun sum(n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int, n9: Int, n10: Int): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + n9 + n10 + 1
       }
@@ -228,7 +212,17 @@ class MemoizationTest : FreeSpec() {
     "Memoize P11 only first execution runs" {
       var runs = 0
       fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int, n9: Int, n10: Int, n11: Int
+        n1: Int,
+        n2: Int,
+        n3: Int,
+        n4: Int,
+        n5: Int,
+        n6: Int,
+        n7: Int,
+        n8: Int,
+        n9: Int,
+        n10: Int,
+        n11: Int
       ): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + n9 + n10 + n11 + 1
@@ -249,7 +243,17 @@ class MemoizationTest : FreeSpec() {
     "Memoize P12 only first execution runs" {
       var runs = 0
       fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int, n9: Int, n10: Int, n11: Int,
+        n1: Int,
+        n2: Int,
+        n3: Int,
+        n4: Int,
+        n5: Int,
+        n6: Int,
+        n7: Int,
+        n8: Int,
+        n9: Int,
+        n10: Int,
+        n11: Int,
         n12: Int
       ): Int {
         runs++
@@ -271,8 +275,19 @@ class MemoizationTest : FreeSpec() {
     "Memoize P13 only first execution runs" {
       var runs = 0
       fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int, n9: Int, n10: Int, n11: Int,
-        n12: Int, n13: Int
+        n1: Int,
+        n2: Int,
+        n3: Int,
+        n4: Int,
+        n5: Int,
+        n6: Int,
+        n7: Int,
+        n8: Int,
+        n9: Int,
+        n10: Int,
+        n11: Int,
+        n12: Int,
+        n13: Int
       ): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + n9 + n10 + n11 + n12 + n13 + 1
@@ -293,8 +308,20 @@ class MemoizationTest : FreeSpec() {
     "Memoize P14 only first execution runs" {
       var runs = 0
       fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int, n9: Int, n10: Int, n11: Int,
-        n12: Int, n13: Int, n14: Int
+        n1: Int,
+        n2: Int,
+        n3: Int,
+        n4: Int,
+        n5: Int,
+        n6: Int,
+        n7: Int,
+        n8: Int,
+        n9: Int,
+        n10: Int,
+        n11: Int,
+        n12: Int,
+        n13: Int,
+        n14: Int
       ): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + n9 + n10 + n11 + n12 + n13 + n14 + 1
@@ -315,8 +342,21 @@ class MemoizationTest : FreeSpec() {
     "Memoize P15 only first execution runs" {
       var runs = 0
       fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int, n9: Int, n10: Int, n11: Int,
-        n12: Int, n13: Int, n14: Int, n15: Int
+        n1: Int,
+        n2: Int,
+        n3: Int,
+        n4: Int,
+        n5: Int,
+        n6: Int,
+        n7: Int,
+        n8: Int,
+        n9: Int,
+        n10: Int,
+        n11: Int,
+        n12: Int,
+        n13: Int,
+        n14: Int,
+        n15: Int
       ): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + n9 + n10 + n11 + n12 + n13 + n14 + n15 + 1
@@ -337,8 +377,22 @@ class MemoizationTest : FreeSpec() {
     "Memoize P16 only first execution runs" {
       var runs = 0
       fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int, n9: Int, n10: Int, n11: Int,
-        n12: Int, n13: Int, n14: Int, n15: Int, n16: Int
+        n1: Int,
+        n2: Int,
+        n3: Int,
+        n4: Int,
+        n5: Int,
+        n6: Int,
+        n7: Int,
+        n8: Int,
+        n9: Int,
+        n10: Int,
+        n11: Int,
+        n12: Int,
+        n13: Int,
+        n14: Int,
+        n15: Int,
+        n16: Int
       ): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + n9 + n10 + n11 + n12 + n13 + n14 + n15 + n16 + 1
@@ -359,8 +413,23 @@ class MemoizationTest : FreeSpec() {
     "Memoize P17 only first execution runs" {
       var runs = 0
       fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int, n9: Int, n10: Int, n11: Int,
-        n12: Int, n13: Int, n14: Int, n15: Int, n16: Int, n17: Int
+        n1: Int,
+        n2: Int,
+        n3: Int,
+        n4: Int,
+        n5: Int,
+        n6: Int,
+        n7: Int,
+        n8: Int,
+        n9: Int,
+        n10: Int,
+        n11: Int,
+        n12: Int,
+        n13: Int,
+        n14: Int,
+        n15: Int,
+        n16: Int,
+        n17: Int
       ): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + n9 + n10 + n11 + n12 + n13 + n14 + n15 + n16 + n17 + 1
@@ -381,8 +450,24 @@ class MemoizationTest : FreeSpec() {
     "Memoize P18 only first execution runs" {
       var runs = 0
       fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int, n9: Int, n10: Int, n11: Int,
-        n12: Int, n13: Int, n14: Int, n15: Int, n16: Int, n17: Int, n18: Int
+        n1: Int,
+        n2: Int,
+        n3: Int,
+        n4: Int,
+        n5: Int,
+        n6: Int,
+        n7: Int,
+        n8: Int,
+        n9: Int,
+        n10: Int,
+        n11: Int,
+        n12: Int,
+        n13: Int,
+        n14: Int,
+        n15: Int,
+        n16: Int,
+        n17: Int,
+        n18: Int
       ): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + n9 + n10 + n11 + n12 + n13 + n14 + n15 + n16 + n17 + n18 + 1
@@ -403,8 +488,25 @@ class MemoizationTest : FreeSpec() {
     "Memoize P19 only first execution runs" {
       var runs = 0
       fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int, n9: Int, n10: Int, n11: Int,
-        n12: Int, n13: Int, n14: Int, n15: Int, n16: Int, n17: Int, n18: Int, n19: Int
+        n1: Int,
+        n2: Int,
+        n3: Int,
+        n4: Int,
+        n5: Int,
+        n6: Int,
+        n7: Int,
+        n8: Int,
+        n9: Int,
+        n10: Int,
+        n11: Int,
+        n12: Int,
+        n13: Int,
+        n14: Int,
+        n15: Int,
+        n16: Int,
+        n17: Int,
+        n18: Int,
+        n19: Int
       ): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + n9 + n10 + n11 + n12 + n13 + n14 + n15 + n16 + n17 + n18 + n19 + 1
@@ -425,8 +527,26 @@ class MemoizationTest : FreeSpec() {
     "Memoize P20 only first execution runs" {
       var runs = 0
       fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int, n9: Int, n10: Int, n11: Int,
-        n12: Int, n13: Int, n14: Int, n15: Int, n16: Int, n17: Int, n18: Int, n19: Int, n20: Int
+        n1: Int,
+        n2: Int,
+        n3: Int,
+        n4: Int,
+        n5: Int,
+        n6: Int,
+        n7: Int,
+        n8: Int,
+        n9: Int,
+        n10: Int,
+        n11: Int,
+        n12: Int,
+        n13: Int,
+        n14: Int,
+        n15: Int,
+        n16: Int,
+        n17: Int,
+        n18: Int,
+        n19: Int,
+        n20: Int
       ): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + n9 + n10 + n11 + n12 + n13 + n14 + n15 + n16 + n17 + n18 + n19 + n20 + 1
@@ -447,8 +567,27 @@ class MemoizationTest : FreeSpec() {
     "Memoize P21 only first execution runs" {
       var runs = 0
       fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int, n9: Int, n10: Int, n11: Int,
-        n12: Int, n13: Int, n14: Int, n15: Int, n16: Int, n17: Int, n18: Int, n19: Int, n20: Int, n21: Int
+        n1: Int,
+        n2: Int,
+        n3: Int,
+        n4: Int,
+        n5: Int,
+        n6: Int,
+        n7: Int,
+        n8: Int,
+        n9: Int,
+        n10: Int,
+        n11: Int,
+        n12: Int,
+        n13: Int,
+        n14: Int,
+        n15: Int,
+        n16: Int,
+        n17: Int,
+        n18: Int,
+        n19: Int,
+        n20: Int,
+        n21: Int
       ): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + n9 + n10 + n11 + n12 + n13 + n14 + n15 + n16 + n17 + n18 + n19 + n20 + n21 + 1
@@ -469,8 +608,28 @@ class MemoizationTest : FreeSpec() {
     "Memoize P22 only first execution runs" {
       var runs = 0
       fun sum(
-        n1: Int, n2: Int, n3: Int, n4: Int, n5: Int, n6: Int, n7: Int, n8: Int, n9: Int, n10: Int, n11: Int,
-        n12: Int, n13: Int, n14: Int, n15: Int, n16: Int, n17: Int, n18: Int, n19: Int, n20: Int, n21: Int, n22: Int
+        n1: Int,
+        n2: Int,
+        n3: Int,
+        n4: Int,
+        n5: Int,
+        n6: Int,
+        n7: Int,
+        n8: Int,
+        n9: Int,
+        n10: Int,
+        n11: Int,
+        n12: Int,
+        n13: Int,
+        n14: Int,
+        n15: Int,
+        n16: Int,
+        n17: Int,
+        n18: Int,
+        n19: Int,
+        n20: Int,
+        n21: Int,
+        n22: Int
       ): Int {
         runs++
         return n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + n9 + n10 + n11 + n12 + n13 + n14 + n15 + n16 + n17 + n18 + n19 + n20 + n21 + n22 + 1
