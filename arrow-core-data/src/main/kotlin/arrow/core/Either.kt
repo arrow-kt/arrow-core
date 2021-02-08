@@ -4,12 +4,11 @@ import arrow.Kind
 import arrow.core.Either.Companion.resolve
 import arrow.core.Either.Left
 import arrow.core.Either.Right
-import arrow.typeclasses.Eq
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
-import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
 import arrow.typeclasses.hashWithSalt
 
 @Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
@@ -1063,7 +1062,7 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     override val isLeft = true
     override val isRight = false
 
-    override fun toString(): String = show(Show.any(), Show.any())
+    override fun toString(): String = "Either.Left($a)"
 
     companion object {
       operator fun <A> invoke(a: A): Either<A, Nothing> = Left(a)
@@ -1078,20 +1077,22 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     override val isLeft = false
     override val isRight = true
 
-    override fun toString(): String = show(Show.any(), Show.any())
+    override fun toString(): String = "Either.Right($b)"
 
     companion object {
       operator fun <B> invoke(b: B): Either<Nothing, B> = Right(b)
     }
   }
 
+  @Deprecated(ShowDeprecation)
   fun show(SL: Show<A>, SR: Show<B>): String = fold(
-    {
-      "Left(${SL.run { it.show() }})"
-    },
-    {
-      "Right(${SR.run { it.show() }})"
-    }
+    { "Left(${SL.run { it.show() }})" },
+    { "Right(${SR.run { it.show() }})" }
+  )
+
+  override fun toString(): String = fold(
+    { "Either.Left($it)" },
+    { "Either.Right($it)" }
   )
 
   fun toValidatedNel(): ValidatedNel<A, B> =
@@ -1362,112 +1363,6 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
           }
         }
       }
-
-    fun <A, B, C> tupledN(
-      b: Either<A, B>,
-      c: Either<A, C>
-    ): Either<A, Tuple2<B, C>> =
-      b.product(c)
-
-    fun <A, B, C, D> tupledN(
-      b: Either<A, B>,
-      c: Either<A, C>,
-      d: Either<A, D>
-    ): Either<A, Tuple3<B, C, D>> =
-      mapN(b, c, d) { b, c, d ->
-        Tuple3(b, c, d)
-      }
-
-    fun <A, B, C, D, E> tupledN(
-      b: Either<A, B>,
-      c: Either<A, C>,
-      d: Either<A, D>,
-      e: Either<A, E>
-    ): Either<A, Tuple4<B, C, D, E>> =
-      mapN(b, c, d, e) { b, c, d, e ->
-        Tuple4(b, c, d, e)
-      }
-
-    fun <A, B, C, D, E, F> tupledN(
-      b: Either<A, B>,
-      c: Either<A, C>,
-      d: Either<A, D>,
-      e: Either<A, E>,
-      f: Either<A, F>
-    ): Either<A, Tuple5<B, C, D, E, F>> =
-      mapN(b, c, d, e, f) { b, c, d, e, f ->
-        Tuple5(b, c, d, e, f)
-      }
-
-    fun <A, B, C, D, E, F, G> tupledN(
-      b: Either<A, B>,
-      c: Either<A, C>,
-      d: Either<A, D>,
-      e: Either<A, E>,
-      f: Either<A, F>,
-      g: Either<A, G>
-    ): Either<A, Tuple6<B, C, D, E, F, G>> =
-      mapN(b, c, d, e, f, g) { b, c, d, e, f, g ->
-        Tuple6(b, c, d, e, f, g)
-      }
-
-    fun <A, B, C, D, E, F, G, H> tupledN(
-      b: Either<A, B>,
-      c: Either<A, C>,
-      d: Either<A, D>,
-      e: Either<A, E>,
-      f: Either<A, F>,
-      g: Either<A, G>,
-      h: Either<A, H>
-    ): Either<A, Tuple7<B, C, D, E, F, G, H>> =
-      mapN(b, c, d, e, f, g, h) { b, c, d, e, f, g, h ->
-        Tuple7(b, c, d, e, f, g, h)
-      }
-
-    fun <A, B, C, D, E, F, G, H, I> tupledN(
-      b: Either<A, B>,
-      c: Either<A, C>,
-      d: Either<A, D>,
-      e: Either<A, E>,
-      f: Either<A, F>,
-      g: Either<A, G>,
-      h: Either<A, H>,
-      i: Either<A, I>
-    ): Either<A, Tuple8<B, C, D, E, F, G, H, I>> =
-      mapN(b, c, d, e, f, g, h, i) { b, c, d, e, f, g, h, i ->
-        Tuple8(b, c, d, e, f, g, h, i)
-      }
-
-    fun <A, B, C, D, E, F, G, H, I, J> tupledN(
-      b: Either<A, B>,
-      c: Either<A, C>,
-      d: Either<A, D>,
-      e: Either<A, E>,
-      f: Either<A, F>,
-      g: Either<A, G>,
-      h: Either<A, H>,
-      i: Either<A, I>,
-      j: Either<A, J>
-    ): Either<A, Tuple9<B, C, D, E, F, G, H, I, J>> =
-      mapN(b, c, d, e, f, g, h, i, j) { b, c, d, e, f, g, h, i, j ->
-        Tuple9(b, c, d, e, f, g, h, i, j)
-      }
-
-    fun <A, B, C, D, E, F, G, H, I, J, K> tupledN(
-      b: Either<A, B>,
-      c: Either<A, C>,
-      d: Either<A, D>,
-      e: Either<A, E>,
-      f: Either<A, F>,
-      g: Either<A, G>,
-      h: Either<A, H>,
-      i: Either<A, I>,
-      j: Either<A, J>,
-      k: Either<A, K>
-    ): Either<A, Tuple10<B, C, D, E, F, G, H, I, J, K>> =
-      mapN(b, c, d, e, f, g, h, i, j, k) { b, c, d, e, f, g, h, i, j, k ->
-        Tuple10(b, c, d, e, f, g, h, i, j, k)
-      }
   }
 
   /**
@@ -1510,18 +1405,11 @@ fun <L> Left(left: L): Either<L, Nothing> = Left(left)
 
 fun <R> Right(right: R): Either<Nothing, R> = Right(right)
 
-/** Construct an [Eq] instance which use [EQL] and [EQR] to compare the [Left] and [Right] cases **/
-fun <L, R> Eq.Companion.either(EQL: Eq<L>, EQR: Eq<R>): Eq<Either<L, R>> =
-  EitherEq(EQL, EQR)
-
 fun <A, B> Hash.Companion.either(HA: Hash<A>, HB: Hash<B>): Hash<Either<A, B>> =
   EitherHash(HA, HB)
 
 fun <A, B> Show.Companion.either(SA: Show<A>, SB: Show<B>): Show<Either<A, B>> =
   EitherShow(SA, SB)
-
-fun <A, B> Order.Companion.either(OA: Order<A>, OB: Order<B>): Order<Either<A, B>> =
-  EitherOrder(OA, OB)
 
 fun <A, B> Semigroup.Companion.either(SA: Semigroup<A>, SB: Semigroup<B>): Semigroup<Either<A, B>> =
   EitherSemigroup(SA, SB)
@@ -1752,69 +1640,11 @@ inline fun <A, B, C> Either<A, B>.redeem(fe: (A) -> C, fa: (B) -> C): Either<A, 
     is Right -> map(fa)
   }
 
-/**
- * Compares two instances of [Either] and returns true if they're considered not equal for this instance.
- *
- * @receiver object to compare with [other]
- * @param other object to compare with [this@neqv]
- * @returns false if [this@neqv] and [other] are equivalent, true otherwise.
- */
-fun <L, R> Either<L, R>.neqv(
-  EQL: Eq<L>,
-  EQR: Eq<R>,
-  other: Either<L, R>
-): Boolean = !eqv(EQL, EQR, other)
-
-/**
- * Compares two instances of [Either] and returns true if they're considered not equal for this instance.
- *
- * @receiver object to compare with [other]
- * @param other object to compare with [this@neqv]
- * @returns false if [this@neqv] and [other] are equivalent, true otherwise.
- */
-fun <L, R> Either<L, R>.eqv(
-  EQL: Eq<L>,
-  EQR: Eq<R>,
-  other: Either<L, R>
-): Boolean = when (this) {
-  is Left -> when (other) {
-    is Left -> EQL.run { a.eqv(other.a) }
-    is Right -> false
-  }
-  is Right -> when (other) {
-    is Left -> false
-    is Right -> EQR.run { this@eqv.b.eqv(other.b) }
-  }
-}
-
-fun <A, B> Either<A, B>.compare(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Ordering = fold(
-  { a1 -> b.fold({ a2 -> OA.run { a1.compare(a2) } }, { LT }) },
-  { b1 -> b.fold({ GT }, { b2 -> OB.run { b1.compare(b2) } }) }
-)
-
-fun <A, B> Either<A, B>.compareTo(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Int =
-  compare(OA, OB, b).toInt()
-
-fun <A, B> Either<A, B>.lt(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Boolean =
-  compare(OA, OB, b) == LT
-
-fun <A, B> Either<A, B>.lte(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Boolean =
-  compare(OA, OB, b) != GT
-
-fun <A, B> Either<A, B>.gt(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Boolean =
-  compare(OA, OB, b) == GT
-
-fun <A, B> Either<A, B>.gte(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Boolean =
-  compare(OA, OB, b) != LT
-
-fun <A, B> Either<A, B>.max(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Either<A, B> =
-  if (gt(OA, OB, b)) this else b
-
-fun <A, B> Either<A, B>.min(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Either<A, B> =
-  if (lt(OA, OB, b)) this else b
-
-fun <A, B> Either<A, B>.sort(OA: Order<A>, OB: Order<B>, b: Either<A, B>): Tuple2<Either<A, B>, Either<A, B>> =
-  if (gte(OA, OB, b)) Tuple2(this, b) else Tuple2(b, this)
+operator fun <A : Comparable<A>, B : Comparable<B>> Either<A, B>.compareTo(other: Either<A, B>): Int =
+  fold(
+    { a1 -> other.fold({ a2 -> a1.compareTo(a2) }, { -1 }) },
+    { b1 -> other.fold({ 1 }, { b2 -> b1.compareTo(b2) }) }
+  )
 
 fun <A, B> Either<A, B>.combine(SGA: Semigroup<A>, SGB: Semigroup<B>, b: Either<A, B>): Either<A, B> =
   when (this) {
@@ -1855,61 +1685,39 @@ fun <A, C, B : C> Either<A, B>.widen(): Either<A, C> =
 fun <AA, A : AA, B> Either<A, B>.leftWiden(): Either<AA, B> =
   this
 
+@Deprecated(
+  "map2 will be renamed to zip to be consistent with Kotlin Std's naming, please use zip instead of map2",
+  ReplaceWith(
+    "zip(fb) { b, c -> f(Tuple2(b, c)) }",
+    "arrow.core.Tuple2",
+    "arrow.core.zip"
+  )
+)
+fun <A, B, C, D> Either<A, B>.map2(fb: Either<A, C>, f: (Tuple2<B, C>) -> D): Either<A, D> =
+  product(fb).map(f)
+
+@Deprecated(
+  "product will be renamed to zip to be consistent with Kotlin Std's naming, please use zip instead of product",
+  ReplaceWith(
+    "zip(fb) { a, b -> Tuple2(a, b) }",
+    "arrow.core.Tuple2",
+    "arrow.core.zip"
+  )
+)
 fun <A, B, C> Either<A, B>.product(fb: Either<A, C>): Either<A, Tuple2<B, C>> =
   flatMap { a ->
     fb.map { b -> Tuple2(a, b) }
   }
 
-fun <A, B, C, D> Either<A, B>.map2(fb: Either<A, C>, f: (Tuple2<B, C>) -> D): Either<A, D> =
-  product(fb).map(f)
+fun <A, B, C, D> Either<A, B>.zip(fb: Either<A, C>, f: (B, C) -> D): Either<A, D> =
+  flatMap { b ->
+    fb.map { c -> f(b, c) }
+  }
 
-@JvmName("product3")
-fun <A, B, C, D> Either<A, Tuple2<B, C>>.product(
-  other: Either<A, D>,
-): Either<A, Tuple3<B, C, D>> =
-  map2(other) { (abcdefg, h) -> Tuple3(abcdefg.a, abcdefg.b, h) }
-
-@JvmName("product4")
-fun <A, B, C, D, E> Either<A, Tuple3<B, C, D>>.product(
-  other: Either<A, E>,
-): Either<A, Tuple4<B, C, D, E>> =
-  map2(other) { (abcdefg, h) -> Tuple4(abcdefg.a, abcdefg.b, abcdefg.c, h) }
-
-@JvmName("product5")
-fun <A, B, C, D, E, F> Either<A, Tuple4<B, C, D, E>>.product(
-  other: Either<A, F>,
-): Either<A, Tuple5<B, C, D, E, F>> =
-  map2(other) { (abcdefg, h) -> Tuple5(abcdefg.a, abcdefg.b, abcdefg.c, abcdefg.d, h) }
-
-@JvmName("product6")
-fun <A, B, C, D, E, F, G> Either<A, Tuple5<B, C, D, E, F>>.product(
-  other: Either<A, G>,
-): Either<A, Tuple6<B, C, D, E, F, G>> =
-  map2(other) { (abcdefg, h) -> Tuple6(abcdefg.a, abcdefg.b, abcdefg.c, abcdefg.d, abcdefg.e, h) }
-
-@JvmName("product7")
-fun <A, B, C, D, E, F, G, H> Either<A, Tuple6<B, C, D, E, F, G>>.product(
-  other: Either<A, H>,
-): Either<A, Tuple7<B, C, D, E, F, G, H>> =
-  map2(other) { (abcdefg, h) -> Tuple7(abcdefg.a, abcdefg.b, abcdefg.c, abcdefg.d, abcdefg.e, abcdefg.f, h) }
-
-@JvmName("product8")
-fun <A, B, C, D, E, F, G, H, I> Either<A, Tuple7<B, C, D, E, F, G, H>>.product(
-  other: Either<A, I>,
-): Either<A, Tuple8<B, C, D, E, F, G, H, I>> =
-  map2(other) { (abcdefg, h) -> Tuple8(abcdefg.a, abcdefg.b, abcdefg.c, abcdefg.d, abcdefg.e, abcdefg.f, abcdefg.g, h) }
-
-@JvmName("product9")
-fun <A, B, C, D, E, F, G, H, I, J> Either<A, Tuple8<B, C, D, E, F, G, H, I>>.product(
-  other: Either<A, J>,
-): Either<A, Tuple9<B, C, D, E, F, G, H, I, J>> =
-  map2(other) { (abcdefgh, i) -> Tuple9(abcdefgh.a, abcdefgh.b, abcdefgh.c, abcdefgh.d, abcdefgh.e, abcdefgh.f, abcdefgh.g, abcdefgh.h, i) }
-
-@JvmName("product10")
-fun <A, B, C, D, E, F, G, H, I, J, K> Either<A, Tuple9<B, C, D, E, F, G, H, I, J>>.product(
-  other: Either<A, K>,
-): Either<A, Tuple10<B, C, D, E, F, G, H, I, J, K>> =
-  map2(other) { (abcdefghi, j) -> Tuple10(abcdefghi.a, abcdefghi.b, abcdefghi.c, abcdefghi.d, abcdefghi.e, abcdefghi.f, abcdefghi.g, abcdefghi.h, abcdefghi.i, j) }
+fun <A, B, C> Either<A, B>.zip(fb: Either<A, C>): Either<A, Pair<B, C>> =
+  flatMap { a ->
+    fb.map { b -> Pair(a, b) }
+  }
 
 fun <A, B> Either<A, B>.replicate(n: Int, MB: Monoid<B>): Either<A, B> =
   if (n <= 0) MB.empty().right()
@@ -1961,14 +1769,6 @@ fun <A, B> Either<Iterable<A>, Iterable<B>>.bisequence(): List<Either<A, B>> =
 fun <A, B, C> Either<Validated<A, B>, Validated<A, C>>.bisequenceValidated(): Validated<A, Either<B, C>> =
   bitraverseValidated(::identity, ::identity)
 
-private class EitherEq<L, R>(
-  private val EQL: Eq<L>,
-  private val EQR: Eq<R>
-) : Eq<Either<L, R>> {
-  override fun Either<L, R>.eqv(b: Either<L, R>): Boolean =
-    eqv(EQL, EQR, b)
-}
-
 private class EitherHash<L, R>(
   private val HL: Hash<L>,
   private val HR: Hash<R>
@@ -1986,14 +1786,6 @@ private class EitherShow<L, R>(
 ) : Show<Either<L, R>> {
   override fun Either<L, R>.show(): String =
     show(SL, SR)
-}
-
-private class EitherOrder<L, R>(
-  private val OL: Order<L>,
-  private val OR: Order<R>
-) : Order<Either<L, R>> {
-  override fun Either<L, R>.compare(b: Either<L, R>): Ordering =
-    compare(OL, OR, b)
 }
 
 private open class EitherSemigroup<L, R>(

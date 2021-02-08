@@ -1,12 +1,13 @@
 package arrow.typeclasses
 
+const val EqDeprecation = "Eq is deprecated in favor of equals(), since Kotlin's Std doesn't take Eq into account"
+
 /**
- * ank_macro_hierarchy(arrow.typeclasses.Eq)
- *
  * A type class used to determine equality between 2 instances of the same type [F] in a type safe way.
  *
  * @see <a href="http://arrow-kt.io/docs/arrow/typeclasses/eq/">Eq documentation</a>
  */
+@Deprecated(EqDeprecation)
 interface Eq<in F> {
 
   /**

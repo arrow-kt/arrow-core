@@ -4,6 +4,7 @@ import arrow.core.Tuple5
 import arrow.core.Tuple5.Companion
 import arrow.core.extensions.Tuple5Eq
 import arrow.typeclasses.Eq
+import arrow.typeclasses.EqDeprecation
 import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.Suppress
@@ -17,10 +18,9 @@ import kotlin.jvm.JvmName
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
+  EqDeprecation,
   ReplaceWith(
-  "neqv(EQA, EQB, EQC, EQD, EQE, arg1)",
-  "arrow.core.neqv"
+  "this != arg1"
   ),
   DeprecationLevel.WARNING
 )
@@ -38,6 +38,10 @@ fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.neqv(
 @Suppress(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
+)
+@Deprecated(
+  EqDeprecation,
+  level = DeprecationLevel.WARNING
 )
 inline fun <A, B, C, D, E> Companion.eq(
   EQA: Eq<A>,

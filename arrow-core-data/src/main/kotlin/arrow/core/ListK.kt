@@ -1,14 +1,20 @@
 package arrow.core
 
 import arrow.Kind
-import arrow.higherkind
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
+
+class ForListK private constructor() {
+  companion object
+}
+typealias ListKOf<A> = arrow.Kind<ForListK, A>
+
+@Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
+inline fun <A> ListKOf<A>.fix(): ListK<A> =
+  this as ListK<A>
 
 /**
- *
- * ank_macro_hierarchy(arrow.core.ListK)
- *
  *
  * ListK wraps over the platform `List` type to make it a [type constructor]({{'/patterns/glossary/#type-constructors' | relative_url }}).
  *
@@ -119,7 +125,6 @@ import arrow.typeclasses.Show
  * ```
  *
  */
-@higherkind
 data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list {
 
   fun <B> flatMap(f: (A) -> ListKOf<B>): ListK<B> = list.flatMap { f(it).fix().list }.k()
@@ -418,10 +423,13 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
   ): ListK<Tuple2<A, B?>> =
     this.rightPadZip(other) { a, b -> a toT b }
 
-  fun show(SA: Show<A>): String = "[" +
-    list.joinToString(", ") { SA.run { it.show() } } + "]"
+  @Deprecated(ShowDeprecation)
+  fun show(SA: Show<A>): String = SA.run {
+    joinToString(prefix = "[", separator = ", ", postfix = "]") { it.show() }
+  }
 
-  override fun toString(): String = show(Show.any())
+  override fun toString(): String =
+   list.toString()
 
   companion object {
 
@@ -580,114 +588,6 @@ data class ListK<out A>(private val list: List<A>) : ListKOf<A>, List<A> by list
             }
           }
         }
-      }
-
-    fun <B, C> tupledN(
-      b: Iterable<B>,
-      c: Iterable<C>
-    ): List<Tuple2<B, C>> =
-      mapN(b, c) { b, c ->
-        Tuple2(b, c)
-      }
-
-    fun <B, C, D> tupledN(
-      b: Iterable<B>,
-      c: Iterable<C>,
-      d: Iterable<D>
-    ): List<Tuple3<B, C, D>> =
-      mapN(b, c, d) { b, c, d ->
-        Tuple3(b, c, d)
-      }
-
-    fun <B, C, D, E> tupledN(
-      b: Iterable<B>,
-      c: Iterable<C>,
-      d: Iterable<D>,
-      e: Iterable<E>
-    ): List<Tuple4<B, C, D, E>> =
-      mapN(b, c, d, e) { b, c, d, e ->
-        Tuple4(b, c, d, e)
-      }
-
-    fun <B, C, D, E, F> tupledN(
-      b: Iterable<B>,
-      c: Iterable<C>,
-      d: Iterable<D>,
-      e: Iterable<E>,
-      f: Iterable<F>
-    ): List<Tuple5<B, C, D, E, F>> =
-      mapN(b, c, d, e, f) { b, c, d, e, f ->
-        Tuple5(b, c, d, e, f)
-      }
-
-    fun <B, C, D, E, F, G> tupledN(
-      b: Iterable<B>,
-      c: Iterable<C>,
-      d: Iterable<D>,
-      e: Iterable<E>,
-      f: Iterable<F>,
-      g: Iterable<G>
-    ): List<Tuple6<B, C, D, E, F, G>> =
-      mapN(b, c, d, e, f, g) { b, c, d, e, f, g ->
-        Tuple6(b, c, d, e, f, g)
-      }
-
-    fun <B, C, D, E, F, G, H> tupledN(
-      b: Iterable<B>,
-      c: Iterable<C>,
-      d: Iterable<D>,
-      e: Iterable<E>,
-      f: Iterable<F>,
-      g: Iterable<G>,
-      h: Iterable<H>
-    ): List<Tuple7<B, C, D, E, F, G, H>> =
-      mapN(b, c, d, e, f, g, h) { b, c, d, e, f, g, h ->
-        Tuple7(b, c, d, e, f, g, h)
-      }
-
-    fun <B, C, D, E, F, G, H, I> tupledN(
-      b: Iterable<B>,
-      c: Iterable<C>,
-      d: Iterable<D>,
-      e: Iterable<E>,
-      f: Iterable<F>,
-      g: Iterable<G>,
-      h: Iterable<H>,
-      i: Iterable<I>
-    ): List<Tuple8<B, C, D, E, F, G, H, I>> =
-      mapN(b, c, d, e, f, g, h, i) { b, c, d, e, f, g, h, i ->
-        Tuple8(b, c, d, e, f, g, h, i)
-      }
-
-    fun <B, C, D, E, F, G, H, I, J> tupledN(
-      b: Iterable<B>,
-      c: Iterable<C>,
-      d: Iterable<D>,
-      e: Iterable<E>,
-      f: Iterable<F>,
-      g: Iterable<G>,
-      h: Iterable<H>,
-      i: Iterable<I>,
-      j: Iterable<J>
-    ): List<Tuple9<B, C, D, E, F, G, H, I, J>> =
-      mapN(b, c, d, e, f, g, h, i, j) { b, c, d, e, f, g, h, i, j ->
-        Tuple9(b, c, d, e, f, g, h, i, j)
-      }
-
-    fun <B, C, D, E, F, G, H, I, J, K> tupledN(
-      b: Iterable<B>,
-      c: Iterable<C>,
-      d: Iterable<D>,
-      e: Iterable<E>,
-      f: Iterable<F>,
-      g: Iterable<G>,
-      h: Iterable<H>,
-      i: Iterable<I>,
-      j: Iterable<J>,
-      k: Iterable<K>
-    ): List<Tuple10<B, C, D, E, F, G, H, I, J, K>> =
-      mapN(b, c, d, e, f, g, h, i, j, k) { b, c, d, e, f, g, h, i, j, k ->
-        Tuple10(b, c, d, e, f, g, h, i, j, k)
       }
   }
 }

@@ -5,6 +5,7 @@ import arrow.core.Tuple5
 import arrow.core.Tuple5.Companion
 import arrow.core.extensions.Tuple5Order
 import arrow.typeclasses.Order
+import arrow.typeclasses.OrderDeprecation
 import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.Int
@@ -19,12 +20,8 @@ import kotlin.jvm.JvmName
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "compareTo(OA, OB, OC, OD, OE, arg1)",
-  "arrow.core.compareTo"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("this.compareTo(arg1)", "arrow.core.compareTo")
 )
 fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.compareTo(
   OA: Order<A>,
@@ -45,12 +42,8 @@ fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.compareTo(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "eqv(OA, OB, OC, OD, OE, arg1)",
-  "arrow.core.eqv"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("this == arg1")
 )
 fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.eqv(
   OA: Order<A>,
@@ -71,12 +64,8 @@ fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.eqv(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "lt(OA, OB, OC, OD, OE, arg1)",
-  "arrow.core.lt"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("this < arg1", "arrow.core.compareTo")
 )
 fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.lt(
   OA: Order<A>,
@@ -97,12 +86,8 @@ fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.lt(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "lte(OA, OB, OC, OD, OE, arg1)",
-  "arrow.core.lte"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("this <= arg1", "arrow.core.compareTo")
 )
 fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.lte(
   OA: Order<A>,
@@ -123,12 +108,8 @@ fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.lte(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "gt(OA, OB, OC, OD, OE, arg1)",
-  "arrow.core.gt"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("this > arg1", "arrow.core.compareTo")
 )
 fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.gt(
   OA: Order<A>,
@@ -149,12 +130,8 @@ fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.gt(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "gte(OA, OB, OC, OD, OE, arg1)",
-  "arrow.core.gte"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("this >= arg1", "arrow.core.compareTo")
 )
 fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.gte(
   OA: Order<A>,
@@ -175,12 +152,8 @@ fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.gte(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "max(OA, OB, OC, OD, OE, arg1)",
-  "arrow.core.max"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("maxOf(this,arg1)")
 )
 fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.max(
   OA: Order<A>,
@@ -201,12 +174,8 @@ fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.max(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "min(OA, OB, OC, OD, OE, arg1)",
-  "arrow.core.min"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("minOf(this,arg1)")
 )
 fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.min(
   OA: Order<A>,
@@ -227,12 +196,8 @@ fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.min(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "sort(OA, OB, OC, OD, OE, arg1)",
-  "arrow.core.sort"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("sort(this, arg1).let { (a, b) -> Tuple2(b, a) }", "arrow.core.Tuple2", "arrow.core.sort")
 )
 fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.sort(
   OA: Order<A>,
@@ -251,6 +216,7 @@ fun <A, B, C, D, E> Tuple5<A, B, C, D, E>.sort(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated(OrderDeprecation)
 inline fun <A, B, C, D, E> Companion.order(
   OA: Order<A>,
   OB: Order<B>,

@@ -4,6 +4,7 @@ import arrow.core.Tuple2
 import arrow.core.Tuple2.Companion
 import arrow.core.extensions.Tuple2Order
 import arrow.typeclasses.Order
+import arrow.typeclasses.OrderDeprecation
 import kotlin.Boolean
 import kotlin.Deprecated
 import kotlin.Int
@@ -18,12 +19,8 @@ import kotlin.jvm.JvmName
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "compareTo(OA, OB, arg1)",
-  "arrow.core.compareTo"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("this.compareTo(arg1)", "arrow.core.compareTo")
 )
 fun <A, B> Tuple2<A, B>.compareTo(
   OA: Order<A>,
@@ -41,12 +38,8 @@ fun <A, B> Tuple2<A, B>.compareTo(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "eqv(OA, OB, arg1)",
-  "arrow.core.eqv"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("this == arg1")
 )
 fun <A, B> Tuple2<A, B>.eqv(
   OA: Order<A>,
@@ -64,12 +57,8 @@ fun <A, B> Tuple2<A, B>.eqv(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "lt(OA, OB, arg1)",
-  "arrow.core.lt"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("this < arg1", "arrow.core.compareTo")
 )
 fun <A, B> Tuple2<A, B>.lt(
   OA: Order<A>,
@@ -87,12 +76,8 @@ fun <A, B> Tuple2<A, B>.lt(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "lte(OA, OB, arg1)",
-  "arrow.core.lte"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("this <= arg1", "arrow.core.compareTo")
 )
 fun <A, B> Tuple2<A, B>.lte(
   OA: Order<A>,
@@ -110,12 +95,8 @@ fun <A, B> Tuple2<A, B>.lte(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "gt(OA, OB, arg1)",
-  "arrow.core.gt"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("this > arg1", "arrow.core.compareTo")
 )
 fun <A, B> Tuple2<A, B>.gt(
   OA: Order<A>,
@@ -133,12 +114,8 @@ fun <A, B> Tuple2<A, B>.gt(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "gte(OA, OB, arg1)",
-  "arrow.core.gte"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("this >= arg1", "arrow.core.compareTo")
 )
 fun <A, B> Tuple2<A, B>.gte(
   OA: Order<A>,
@@ -156,12 +133,8 @@ fun <A, B> Tuple2<A, B>.gte(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "max(OA, OB, arg1)",
-  "arrow.core.max"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("maxOf(this,arg1)")
 )
 fun <A, B> Tuple2<A, B>.max(
   OA: Order<A>,
@@ -179,12 +152,8 @@ fun <A, B> Tuple2<A, B>.max(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "min(OA, OB, arg1)",
-  "arrow.core.min"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("minOf(this,arg1)")
 )
 fun <A, B> Tuple2<A, B>.min(
   OA: Order<A>,
@@ -202,12 +171,8 @@ fun <A, B> Tuple2<A, B>.min(
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "sort(OA, OB, arg1)",
-  "arrow.core.sort"
-  ),
-  DeprecationLevel.WARNING
+  OrderDeprecation,
+  ReplaceWith("sort(this, arg1).let { (a, b) -> Tuple2(b, a) }", "arrow.core.Tuple2", "arrow.core.sort")
 )
 fun <A, B> Tuple2<A, B>.sort(
   OA: Order<A>,
@@ -221,6 +186,7 @@ fun <A, B> Tuple2<A, B>.sort(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated(OrderDeprecation)
 inline fun <A, B> Companion.order(OA: Order<A>, OB: Order<B>): Tuple2Order<A, B> = object :
     arrow.core.extensions.Tuple2Order<A, B> { override fun OA(): arrow.typeclasses.Order<A> = OA
 

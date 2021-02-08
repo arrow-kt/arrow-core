@@ -262,8 +262,6 @@ internal val monad_singleton: ListKMonad = object : arrow.core.extensions.ListKM
 @Deprecated("Receiver List object is deprecated, prefer to turn List functions into top-level functions")
 object List {
   /**
-   *  ank_macro_hierarchy(arrow.typeclasses.Monad)
-   *
    *  [Monad] abstract over the ability to declare sequential computations that are dependent in the order or
    *  the results of previous computations.
    *
@@ -279,5 +277,5 @@ object List {
     "UNCHECKED_CAST",
     "NOTHING_TO_INLINE"
   )
-  @Deprecated("Monad typeclasses are deprecated. Use concrete methods on List")
+  @Deprecated("Monad typeclasses is deprecated. Use concrete methods on List")
   inline fun monad(): ListKMonad = monad_singleton}

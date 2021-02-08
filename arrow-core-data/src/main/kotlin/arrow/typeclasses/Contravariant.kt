@@ -1,10 +1,9 @@
 package arrow.typeclasses
 
 import arrow.Kind
+import arrow.KindDeprecation
 
-/**
- * ank_macro_hierarchy(arrow.typeclasses.Contravariant)
- */
+@Deprecated(KindDeprecation)
 interface Contravariant<F> : Invariant<F> {
   fun <A, B> Kind<F, A>.contramap(f: (B) -> A): Kind<F, B>
 

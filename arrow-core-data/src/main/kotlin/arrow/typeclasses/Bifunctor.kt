@@ -2,11 +2,11 @@ package arrow.typeclasses
 
 import arrow.Kind
 import arrow.Kind2
+import arrow.KindDeprecation
 import arrow.core.identity
 
+@Deprecated(KindDeprecation)
 /**
- * ank_macro_hierarchy(arrow.typeclasses.Bifunctor)
- *
  * [Bifunctor] has the same properties of [Functor], but acting onto two types, instead of one.
  *
  * It can be used to map both of its inside types.

@@ -4,10 +4,7 @@ import arrow.core.Option
 import arrow.core.Option.Companion
 import arrow.core.extensions.OptionEq
 import arrow.typeclasses.Eq
-import kotlin.Boolean
-import kotlin.Deprecated
-import kotlin.Suppress
-import kotlin.jvm.JvmName
+import arrow.typeclasses.EqDeprecation
 
 @JvmName("neqv")
 @Suppress(
@@ -17,11 +14,8 @@ import kotlin.jvm.JvmName
   "UNUSED_PARAMETER"
 )
 @Deprecated(
-  "@extension kinded projected functions are deprecated",
-  ReplaceWith(
-  "neqv(EQ, arg1)",
-  "arrow.core.neqv"
-  ),
+  EqDeprecation,
+  ReplaceWith("this != arg1"),
   DeprecationLevel.WARNING
 )
 fun <A> Option<A>.neqv(EQ: Eq<A>, arg1: Option<A>): Boolean = arrow.core.Option.eq<A>(EQ).run {
@@ -31,6 +25,10 @@ fun <A> Option<A>.neqv(EQ: Eq<A>, arg1: Option<A>): Boolean = arrow.core.Option.
 @Suppress(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
+)
+@Deprecated(
+  EqDeprecation,
+  level = DeprecationLevel.WARNING
 )
 inline fun <A> Companion.eq(EQ: Eq<A>): OptionEq<A> = object : arrow.core.extensions.OptionEq<A> {
     override fun EQ(): arrow.typeclasses.Eq<A> = EQ }

@@ -1,13 +1,12 @@
 package arrow.typeclasses
 
 import arrow.Kind
+import arrow.KindDeprecation
 import arrow.core.Option
 import arrow.core.Tuple2
 import arrow.documented
 
 /**
- * ank_macro_hierarchy(arrow.typeclasses.Semigroupal)
- *
  * The [Semigroupal] type class for a given type `F` can be seen as an abstraction over the [cartesian product](https://en.wikipedia.org/wiki/Cartesian_product).
  * It defines the function [product].
  *
@@ -93,6 +92,7 @@ import arrow.documented
  * ```
  */
 @documented
+@Deprecated(KindDeprecation)
 interface Semigroupal<F> {
 
   /**

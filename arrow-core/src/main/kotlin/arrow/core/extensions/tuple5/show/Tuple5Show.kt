@@ -3,12 +3,14 @@ package arrow.core.extensions.tuple5.show
 import arrow.core.Tuple5.Companion
 import arrow.core.extensions.Tuple5Show
 import arrow.typeclasses.Show
+import arrow.typeclasses.ShowDeprecation
 import kotlin.Suppress
 
 @Suppress(
   "UNCHECKED_CAST",
   "NOTHING_TO_INLINE"
 )
+@Deprecated(ShowDeprecation)
 inline fun <A, B, C, D, E> Companion.show(
   SA: Show<A>,
   SB: Show<B>,

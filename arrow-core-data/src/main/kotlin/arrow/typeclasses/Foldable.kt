@@ -1,6 +1,7 @@
 package arrow.typeclasses
 
 import arrow.Kind
+import arrow.KindDeprecation
 import arrow.core.Either
 import arrow.core.Eval
 import arrow.core.Eval.Companion.always
@@ -13,9 +14,8 @@ import arrow.core.flatMap
 import arrow.core.identity
 import arrow.core.right
 
+@Deprecated(KindDeprecation)
 /**
- * ank_macro_hierarchy(arrow.typeclasses.Foldable)
- *
  * Data structures that can be folded to a summary value.
  *
  * Foldable<F> is implemented in terms of two basic methods:

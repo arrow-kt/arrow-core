@@ -1,12 +1,16 @@
 package arrow.typeclasses
 
+import arrow.KindDeprecation
+
+@Deprecated(KindDeprecation)
 class ForMonoid private constructor() { companion object }
+
+@Deprecated(KindDeprecation)
 typealias MonoidOf<A> = arrow.Kind<ForMonoid, A>
+
+@Deprecated(KindDeprecation)
 fun <A> MonoidOf<A>.fix(): Monoid<A> = this as Monoid<A>
 
-/**
- * ank_macro_hierarchy(arrow.typeclasses.Monoid)
- */
 interface Monoid<A> : Semigroup<A>, MonoidOf<A> {
   /**
    * A zero value for this A

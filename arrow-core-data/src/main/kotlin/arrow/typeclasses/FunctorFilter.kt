@@ -1,14 +1,14 @@
 package arrow.typeclasses
 
 import arrow.Kind
+import arrow.KindDeprecation
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
 import arrow.core.identity
 
+@Deprecated(KindDeprecation)
 /**
- * ank_macro_hierarchy(arrow.typeclasses.FunctorFilter)
- *
  * A Functor with the ability to [filterMap].
  */
 interface FunctorFilter<F> : Functor<F> {

@@ -32,6 +32,7 @@ import arrow.typeclasses.Foldable
 import arrow.typeclasses.Functor
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Order
+import arrow.typeclasses.OrderDeprecation
 import arrow.typeclasses.Selective
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.SemigroupK
@@ -173,6 +174,7 @@ interface ValidatedHash<L, R> : Hash<Validated<L, R>> {
     )
 }
 
+@Deprecated(OrderDeprecation)
 interface ValidatedOrder<L, R> : Order<Validated<L, R>> {
   fun OL(): Order<L>
   fun OR(): Order<R>
@@ -183,6 +185,6 @@ interface ValidatedOrder<L, R> : Order<Validated<L, R>> {
   })
 }
 
-@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Validated")
+@Deprecated("Applicative typeclass is deprecated. Use concrete methods on Validated")
 fun <E> Validated.Companion.applicativeNel(): ValidatedApplicative<NonEmptyList<E>> =
   Validated.applicative(NonEmptyList.semigroup())

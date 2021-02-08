@@ -1,9 +1,11 @@
 package arrow.typeclasses
 
 import arrow.Kind
+import arrow.KindDeprecation
 import arrow.core.Either
 import arrow.core.identity
 
+@Deprecated(KindDeprecation)
 /**
  *
  * [Decidable] is a typeclass modeling contravariant decision. [Decidable] is the contravariant version of [Alternative].
@@ -35,8 +37,6 @@ import arrow.core.identity
  *   println(result)
  * }
  * ```
- *
- * ank_macro_hierarchy(arrow.typeclasses.Decidable)
  */
 interface Decidable<F> : Divisible<F> {
 

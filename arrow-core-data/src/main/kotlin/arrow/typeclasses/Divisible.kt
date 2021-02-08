@@ -1,11 +1,11 @@
 package arrow.typeclasses
 
 import arrow.Kind
+import arrow.KindDeprecation
 
+@Deprecated(KindDeprecation)
 /**
  * [Divisible] extends [Divide] by providing an empty value
- *
- * ank_macro_hierarchy(arrow.typeclasses.Divisible)
  */
 interface Divisible<F> : Divide<F> {
 

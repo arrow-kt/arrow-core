@@ -1,12 +1,11 @@
 package arrow.typeclasses
 
 import arrow.Kind
+import arrow.KindDeprecation
 import arrow.core.Option
 import kotlin.coroutines.startCoroutine
 
-/**
- * ank_macro_hierarchy(arrow.typeclasses.MonadFilter)
- */
+@Deprecated(KindDeprecation)
 interface MonadFilter<F> : Monad<F>, FunctorFilter<F> {
 
   override val fx: MonadFilterFx<F>

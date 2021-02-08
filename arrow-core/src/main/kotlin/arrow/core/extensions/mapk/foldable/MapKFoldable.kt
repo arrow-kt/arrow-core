@@ -101,7 +101,8 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.fold(arg1: Monoid<A>): A = arrow.core.MapK.
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.fromNullable(values.reduceOrNull(arg1, arg2))",
-    "arrow.core.reduceNullable", "arrow.core.Option"
+    "arrow.core.reduceOrNull",
+    "arrow.core.Option"
   ),
   DeprecationLevel.WARNING
 )
@@ -146,7 +147,7 @@ fun <K, A, B> Kind<Kind<ForMapK, K>, A>.reduceRightToOption(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
     "Option.fromNullable(values.reduceOrNull({ it }, arg1))",
-    "arrow.core.reduceNullable", "arrow.core.Option"
+    "arrow.core.reduceOrNull", "arrow.core.Option"
   ),
   DeprecationLevel.WARNING
 )
@@ -397,7 +398,7 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.size(arg1: Monoid<Long>): Long =
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Map")
+@Deprecated("Applicative typeclass is deprecated. Use concrete methods on Map")
 fun <K, G, A, B, AP : Applicative<G>, MO : Monoid<B>> Kind<Kind<ForMapK, K>, A>.foldMapA(
   arg1: AP,
   arg2: MO,
@@ -413,7 +414,7 @@ fun <K, G, A, B, AP : Applicative<G>, MO : Monoid<B>> Kind<Kind<ForMapK, K>, A>.
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Map")
+@Deprecated("Applicative typeclass is deprecated. Use concrete methods on Map")
 fun <K, G, A, B, MA : Monad<G>, MO : Monoid<B>> Kind<Kind<ForMapK, K>, A>.foldMapM(
   arg1: MA,
   arg2: MO,
@@ -429,7 +430,7 @@ fun <K, G, A, B, MA : Monad<G>, MO : Monoid<B>> Kind<Kind<ForMapK, K>, A>.foldMa
   "EXTENSION_SHADOWED_BY_MEMBER",
   "UNUSED_PARAMETER"
 )
-@Deprecated("Applicative typeclasses is deprecated. Use concrete methods on Map")
+@Deprecated("Applicative typeclass is deprecated. Use concrete methods on Map")
 fun <K, G, A, B> Kind<Kind<ForMapK, K>, A>.foldM(
   arg1: Monad<G>,
   arg2: B,

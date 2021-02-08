@@ -1,11 +1,11 @@
 package arrow.typeclasses
 
 import arrow.Kind
+import arrow.KindDeprecation
 import arrow.core.Option
 
+@Deprecated(KindDeprecation)
 /**
- * ank_macro_hierarchy(arrow.typeclasses.Monoidal)
- *
  * The [Monoidal] type class adds an identity element to the [Semigroupal] type class by defining the function [identity].
  *
  * [identity] returns a specific identity `Kind<F, A>` value for a given type [F] and [A].
