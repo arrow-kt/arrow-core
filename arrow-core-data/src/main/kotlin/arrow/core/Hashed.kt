@@ -4,19 +4,26 @@ import arrow.KindDeprecation
 import arrow.typeclasses.Hash
 import arrow.typeclasses.HashDeprecation
 
-@Deprecated(KindDeprecation)
-class ForHashed private constructor() {
-  companion object
-}
-
-@Deprecated(KindDeprecation)
+@Deprecated(
+  message = KindDeprecation,
+  level = DeprecationLevel.WARNING
+)
+class ForHashed private constructor() { companion object }
+@Deprecated(
+  message = KindDeprecation,
+  level = DeprecationLevel.WARNING
+)
 typealias HashedOf<A> = arrow.Kind<ForHashed, A>
-
-@Deprecated(KindDeprecation)
+@Deprecated(
+  message = KindDeprecation,
+  level = DeprecationLevel.WARNING
+)
 typealias HashedKindedJ<A> = io.kindedj.Hk<ForHashed, A>
-
 @Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
-@Deprecated(KindDeprecation)
+@Deprecated(
+  message = KindDeprecation,
+  level = DeprecationLevel.WARNING
+)
 inline fun <A> HashedOf<A>.fix(): Hashed<A> =
   this as Hashed<A>
 
