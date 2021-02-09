@@ -33,7 +33,7 @@ data class Tuple10<out A, out B, out C, out D, out E, out F, out G, out H, out I
   val f: F,
   @Deprecated("Use seventh instead", ReplaceWith("seventh"))
   val g: G,
-  @Deprecated("Use eigth instead", ReplaceWith("eigth"))
+  @Deprecated("Use eighth instead", ReplaceWith("eighth"))
   val h: H,
   @Deprecated("Use ninth instead", ReplaceWith("ninth"))
   val i: I,
@@ -166,12 +166,12 @@ operator fun <A : Comparable<A>, B : Comparable<B>, C : Comparable<C>, D : Compa
             if (sixth == 0) {
               val seventh = g.compareTo(other.g)
               if (seventh == 0) {
-                val eigth = h.compareTo(other.h)
-                if (eigth == 0) {
+                val eighth = h.compareTo(other.h)
+                if (eighth == 0) {
                   val ninth = i.compareTo(other.i)
                   if (ninth == 0) j.compareTo(other.j)
                   else ninth
-                } else eigth
+                } else eighth
               } else seventh
             } else sixth
           } else fifth

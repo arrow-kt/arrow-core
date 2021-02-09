@@ -31,7 +31,7 @@ data class Tuple11<out A, out B, out C, out D, out E, out F, out G, out H, out I
   val f: F,
   @Deprecated("Use seventh instead", ReplaceWith("seventh"))
   val g: G,
-  @Deprecated("Use eigth instead", ReplaceWith("eigth"))
+  @Deprecated("Use eighth instead", ReplaceWith("eighth"))
   val h: H,
   @Deprecated("Use ninth instead", ReplaceWith("ninth"))
   val i: I,
@@ -80,7 +80,7 @@ data class Tuple12<out A, out B, out C, out D, out E, out F, out G, out H, out I
   val f: F,
   @Deprecated("Use seventh instead", ReplaceWith("seventh"))
   val g: G,
-  @Deprecated("Use eigth instead", ReplaceWith("eigth"))
+  @Deprecated("Use eighth instead", ReplaceWith("eighth"))
   val h: H,
   @Deprecated("Use ninth instead", ReplaceWith("ninth"))
   val i: I,
@@ -132,7 +132,7 @@ data class Tuple13<out A, out B, out C, out D, out E, out F, out G, out H, out I
   val f: F,
   @Deprecated("Use seventh instead", ReplaceWith("seventh"))
   val g: G,
-  @Deprecated("Use eigth instead", ReplaceWith("eigth"))
+  @Deprecated("Use eighth instead", ReplaceWith("eighth"))
   val h: H,
   @Deprecated("Use ninth instead", ReplaceWith("ninth"))
   val i: I,
@@ -187,7 +187,7 @@ data class Tuple14<out A, out B, out C, out D, out E, out F, out G, out H, out I
   val f: F,
   @Deprecated("Use seventh instead", ReplaceWith("seventh"))
   val g: G,
-  @Deprecated("Use eigth instead", ReplaceWith("eigth"))
+  @Deprecated("Use eighth instead", ReplaceWith("eighth"))
   val h: H,
   @Deprecated("Use ninth instead", ReplaceWith("ninth"))
   val i: I,
@@ -245,7 +245,7 @@ data class Tuple15<out A, out B, out C, out D, out E, out F, out G, out H, out I
   val f: F,
   @Deprecated("Use seventh instead", ReplaceWith("seventh"))
   val g: G,
-  @Deprecated("Use eigth instead", ReplaceWith("eigth"))
+  @Deprecated("Use eighth instead", ReplaceWith("eighth"))
   val h: H,
   @Deprecated("Use ninth instead", ReplaceWith("ninth"))
   val i: I,
@@ -306,7 +306,7 @@ data class Tuple16<out A, out B, out C, out D, out E, out F, out G, out H, out I
   val f: F,
   @Deprecated("Use seventh instead", ReplaceWith("seventh"))
   val g: G,
-  @Deprecated("Use eigth instead", ReplaceWith("eigth"))
+  @Deprecated("Use eighth instead", ReplaceWith("eighth"))
   val h: H,
   @Deprecated("Use ninth instead", ReplaceWith("ninth"))
   val i: I,
@@ -370,7 +370,7 @@ data class Tuple17<out A, out B, out C, out D, out E, out F, out G, out H, out I
   val f: F,
   @Deprecated("Use seventh instead", ReplaceWith("seventh"))
   val g: G,
-  @Deprecated("Use eigth instead", ReplaceWith("eigth"))
+  @Deprecated("Use eighth instead", ReplaceWith("eighth"))
   val h: H,
   @Deprecated("Use ninth instead", ReplaceWith("ninth"))
   val i: I,
@@ -437,7 +437,7 @@ data class Tuple18<out A, out B, out C, out D, out E, out F, out G, out H, out I
   val f: F,
   @Deprecated("Use seventh instead", ReplaceWith("seventh"))
   val g: G,
-  @Deprecated("Use eigth instead", ReplaceWith("eigth"))
+  @Deprecated("Use eighth instead", ReplaceWith("eighth"))
   val h: H,
   @Deprecated("Use ninth instead", ReplaceWith("ninth"))
   val i: I,
@@ -507,7 +507,7 @@ data class Tuple19<out A, out B, out C, out D, out E, out F, out G, out H, out I
   val f: F,
   @Deprecated("Use seventh instead", ReplaceWith("seventh"))
   val g: G,
-  @Deprecated("Use eigth instead", ReplaceWith("eigth"))
+  @Deprecated("Use eighth instead", ReplaceWith("eighth"))
   val h: H,
   @Deprecated("Use ninth instead", ReplaceWith("ninth"))
   val i: I,
@@ -580,7 +580,7 @@ data class Tuple20<out A, out B, out C, out D, out E, out F, out G, out H, out I
   val f: F,
   @Deprecated("Use seventh instead", ReplaceWith("seventh"))
   val g: G,
-  @Deprecated("Use eigth instead", ReplaceWith("eigth"))
+  @Deprecated("Use eighth instead", ReplaceWith("eighth"))
   val h: H,
   @Deprecated("Use ninth instead", ReplaceWith("ninth"))
   val i: I,
@@ -656,7 +656,7 @@ data class Tuple21<out A, out B, out C, out D, out E, out F, out G, out H, out I
   val f: F,
   @Deprecated("Use seventh instead", ReplaceWith("seventh"))
   val g: G,
-  @Deprecated("Use eigth instead", ReplaceWith("eigth"))
+  @Deprecated("Use eighth instead", ReplaceWith("eighth"))
   val h: H,
   @Deprecated("Use ninth instead", ReplaceWith("ninth"))
   val i: I,
@@ -734,7 +734,7 @@ data class Tuple22<out A, out B, out C, out D, out E, out F, out G, out H, out I
   val f: F,
   @Deprecated("Use seventh instead", ReplaceWith("seventh"))
   val g: G,
-  @Deprecated("Use eigth instead", ReplaceWith("eigth"))
+  @Deprecated("Use eighth instead", ReplaceWith("eighth"))
   val h: H,
   @Deprecated("Use ninth instead", ReplaceWith("ninth"))
   val i: I,
