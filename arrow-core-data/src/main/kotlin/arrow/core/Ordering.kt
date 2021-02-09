@@ -1,6 +1,8 @@
 package arrow.core
 
-@Deprecated("Ordering is deprecated together with Order. Use compareTo instead of Order instead.")
+const val OrderingDeprecation = "Ordering is deprecated together with Order. Use compareTo instead of Order instead."
+
+@Deprecated(OrderingDeprecation)
 sealed class Ordering {
   override fun equals(other: Any?): Boolean =
     this === other // ref equality is fine because objects should be singletons

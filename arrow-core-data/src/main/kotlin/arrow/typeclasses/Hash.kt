@@ -1,6 +1,6 @@
 package arrow.typeclasses
 
-const val HashDeprecation = "Hash is deprecated in favor of compareTo(), since Kotlin's Std doesn't take Hash into account"
+const val HashDeprecation = "Hash is deprecated in favor of hashCode(), since Kotlin's Std doesn't take Hash into account"
 
 /**
  * A type class used to represent non-cryptographic hashing for objects of type [F]
