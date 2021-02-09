@@ -1,10 +1,10 @@
 package arrow.core
 
 import arrow.Kind
+import arrow.KindDeprecation
 import arrow.typeclasses.Applicative
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
-import arrow.typeclasses.Order
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
 import arrow.typeclasses.ShowDeprecation
@@ -15,18 +15,26 @@ typealias ValidatedNel<E, A> = Validated<Nel<E>, A>
 typealias Valid<A> = Validated.Valid<A>
 typealias Invalid<E> = Validated.Invalid<E>
 
-@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
-class ForValidated private constructor() {
+@Deprecated(
+  message = KindDeprecation,
+  level = DeprecationLevel.WARNING
+)class ForValidated private constructor() {
   companion object
 }
-@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
-typealias ValidatedOf<E, A> = arrow.Kind2<ForValidated, E, A>
-@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
-typealias ValidatedPartialOf<E> = arrow.Kind<ForValidated, E>
+@Deprecated(
+  message = KindDeprecation,
+  level = DeprecationLevel.WARNING
+)typealias ValidatedOf<E, A> = arrow.Kind2<ForValidated, E, A>
+@Deprecated(
+  message = KindDeprecation,
+  level = DeprecationLevel.WARNING
+)typealias ValidatedPartialOf<E> = arrow.Kind<ForValidated, E>
 
 @Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
-@Deprecated("Kind is deprecated, and will be removed in 0.13.0. Please use one of the provided concrete methods instead")
-inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
+@Deprecated(
+  message = KindDeprecation,
+  level = DeprecationLevel.WARNING
+)inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
   this as Validated<E, A>
 
 /**
@@ -953,9 +961,6 @@ sealed class Validated<out E, out A> : ValidatedOf<E, A> {
 fun <E, A> Hash.Companion.validated(HE: Hash<E>, HA: Hash<A>): Hash<Validated<E, A>> =
   ValidatedHash(HE, HA)
 
-fun <E, A> Order.Companion.validated(OE: Order<E>, OA: Order<A>): Order<Validated<E, A>> =
-  ValidatedOrder(OE, OA)
-
 fun <E, A> Semigroup.Companion.validated(SE: Semigroup<E>, SA: Semigroup<A>): Semigroup<Validated<E, A>> =
   ValidatedSemigroup(SE, SA)
 
@@ -1017,34 +1022,11 @@ fun <E, A, B> Validated<A, Either<E, B>>.sequenceEither(): Either<E, Validated<A
 fun <E, A, B> Validated<A, Either<E, B>>.traverseEither_(): Either<E, Unit> =
   traverseEither_(::identity)
 
-fun <E, A> Validated<E, A>.compare(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Ordering = fold(
-  { l1 -> b.fold({ l2 -> OE.run { l1.compare(l2) } }, { LT }) },
-  { r1 -> b.fold({ GT }, { r2 -> OA.run { r1.compare(r2) } }) }
-)
-
-fun <E, A> Validated<E, A>.compareTo(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Int =
-  compare(OE, OA, b).toInt()
-
-fun <E, A> Validated<E, A>.lt(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Boolean =
-  compare(OE, OA, b) == LT
-
-fun <E, A> Validated<E, A>.lte(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Boolean =
-  compare(OE, OA, b) != GT
-
-fun <E, A> Validated<E, A>.gt(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Boolean =
-  compare(OE, OA, b) == GT
-
-fun <E, A> Validated<E, A>.gte(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Boolean =
-  compare(OE, OA, b) != LT
-
-fun <E, A> Validated<E, A>.max(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Validated<E, A> =
-  if (gt(OE, OA, b)) this else b
-
-fun <E, A> Validated<E, A>.min(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Validated<E, A> =
-  if (lt(OE, OA, b)) this else b
-
-fun <E, A> Validated<E, A>.sort(OE: Order<E>, OA: Order<A>, b: Validated<E, A>): Tuple2<Validated<E, A>, Validated<E, A>> =
-  if (gte(OE, OA, b)) Tuple2(this, b) else Tuple2(b, this)
+operator fun <E : Comparable<E>, A : Comparable<A>> Validated<E, A>.compareTo(other: Validated<E, A>): Int =
+  fold(
+    { l1 -> other.fold({ l2 -> l1.compareTo(l2) }, { -1 }) },
+    { r1 -> other.fold({ 1 }, { r2 -> r1.compareTo(r2) }) }
+  )
 
 fun <E, A, B> Validated<E, Either<A, B>>.select(f: Validated<E, (A) -> B>): Validated<E, B> =
   fold({ Invalid(it) }, { it.fold({ l -> f.map { ff -> ff(l) } }, { r -> r.valid() }) })
@@ -1220,14 +1202,6 @@ private class ValidatedHash<L, R>(
 ) : Hash<Validated<L, R>> {
   override fun Validated<L, R>.hashWithSalt(salt: Int): Int =
     hashWithSalt(HL, HR, salt)
-}
-
-private class ValidatedOrder<L, R>(
-  private val OL: Order<L>,
-  private val OR: Order<R>
-) : Order<Validated<L, R>> {
-  override fun Validated<L, R>.compare(b: Validated<L, R>): Ordering =
-    compare(OL, OR, b)
 }
 
 private open class ValidatedSemigroup<A, B>(
