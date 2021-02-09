@@ -2,7 +2,6 @@ package arrow.core
 
 import arrow.Kind
 import arrow.typeclasses.Applicative
-import arrow.typeclasses.Hash
 import arrow.typeclasses.Monoid
 import arrow.typeclasses.Semigroup
 import arrow.typeclasses.Show
@@ -243,16 +242,6 @@ inline fun <A> A.const(): Const<A, Nothing> =
 
 fun <A, T, U> Const<A, T>.contramap(f: (U) -> T): Const<A, U> =
   retag()
-
-@Deprecated(
-  "Hash is going to be removed, please use hashCode() instead",
-  ReplaceWith("hashCode()"),
-  level = DeprecationLevel.WARNING
-)
-fun <A, T> Const<A, T>.hashWithSalt(HA: Hash<A>, salt: Int): Int =
-  HA.run {
-    value().hashWithSalt(salt)
-  }
 
 operator fun <A : Comparable<A>, T> Const<A, T>.compareTo(other: Const<A, T>): Int =
   value().compareTo(other.value())
