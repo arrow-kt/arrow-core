@@ -181,8 +181,8 @@ fun <K, A, B, C> Map<K, A>.padZip(other: Map<K, B>, fa: (K, A?, B?) -> C): Map<K
  *   //sampleStart
  *   val result =
  *    mapOf(
- *      "first" to ("A" toT 1).bothIor(),
- *      "second" to ("B" toT 2).bothIor(),
+ *      "first" to ("A" to 1).bothIor(),
+ *      "second" to ("B" to 2).bothIor(),
  *      "third" to "C".leftIor()
  *    ).unalign()
  *   //sampleEnd
@@ -226,7 +226,7 @@ fun <K, A, B, C> Map<K, C>.unalign(fa: (Map.Entry<K, C>) -> Ior<A, B>): Pair<Map
  * fun main(args: Array<String>) {
  *   //sampleStart
  *   val result =
- *      mapOf("first" to ("A" toT 1), "second" to ("B" toT 2)).unzip()
+ *      mapOf("first" to ("A" to 1), "second" to ("B" to 2)).unzip()
  *   //sampleEnd
  *   println(result)
  * }
@@ -248,7 +248,7 @@ fun <K, A, B> Map<K, Pair<A, B>>.unzip(): Pair<Map<K, A>, Map<K, B>> =
  *   val result =
  *    mapOf("first" to "A:1", "second" to "B:2", "third" to "C:3").unzip { (_, e) ->
  *      e.split(":").let {
- *        it.first() toT it.last()
+ *        it.first() to it.last()
  *      }
  *    }
  *   //sampleEnd
