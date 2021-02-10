@@ -33,7 +33,7 @@ data class Tuple8<out A, out B, out C, out D, out E, out F, out G, out H>(
   val f: F,
   @Deprecated("Use seventh instead", ReplaceWith("seventh"))
   val g: G,
-  @Deprecated("Use eighth instead", ReplaceWith("eigth"))
+  @Deprecated("Use eighth instead", ReplaceWith("eighth"))
   val h: H
 ) : Tuple8Of<A, B, C, D, E, F, G, H> {
 
