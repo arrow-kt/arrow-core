@@ -10,14 +10,14 @@ import kotlin.coroutines.RestrictsSuspension
 )
 fun interface ConstEffect<A, T> : Effect<Const<A, T>> {
 
-  @Deprecated("The monadic operator for the Arrow 1.x series will become invoke in 0.13", ReplaceWith("()"))
-  suspend fun <B> Const<A, B>.bind(): B = this()
+  suspend fun <B> Const<A, B>.bind(): B =
+    value() as B
 
   @Deprecated("The monadic operator for the Arrow 1.x series will become invoke in 0.13", ReplaceWith("()"))
   suspend operator fun <B> Const<A, B>.not(): B = this()
 
   suspend operator fun <B> Const<A, B>.invoke(): B =
-    value() as B
+
 }
 
 @Deprecated(
