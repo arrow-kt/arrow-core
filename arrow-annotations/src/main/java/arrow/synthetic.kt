@@ -31,4 +31,5 @@ package arrow
   AnnotationTarget.TYPEALIAS
 )
 @MustBeDocumented
+@Deprecated("This annotation is deprecated along with the deprecation of the Arrow-meta kapt implementation.")
 annotation class synthetic
