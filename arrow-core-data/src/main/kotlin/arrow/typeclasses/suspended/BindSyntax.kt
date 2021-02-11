@@ -1,7 +1,6 @@
 package arrow.typeclasses.suspended
 
 import arrow.Kind
-import arrow.KindDeprecation
 
 /**
  * All possible approaches to running [Kind] in the context of [Fx]
@@ -15,11 +14,23 @@ import arrow.KindDeprecation
  * }
  * ```
  */
-@Deprecated(KindDeprecation)
-interface BindSyntax<F> {
+interface BindSyntax<F> : Invoke<F> {
 
-  suspend fun <A> Kind<F, A>.bind(): A
+  @Deprecated("This operator can have problems when you do not capture the value, please use () or invoke() instead", ReplaceWith("invoke()"))
+  suspend fun <A> Kind<F, A>.bind(): A =
+    invoke()
 
-  @Deprecated("This operator is being removed to avoid confusion with Boolean operations, and to unify the api to a single method", ReplaceWith("this.bind()"))
-  suspend operator fun <A> Kind<F, A>.not(): A = bind()
+  @Deprecated("This operator can have problems when you do not capture the value, please use () or invoke() instead", ReplaceWith("invoke()"))
+  suspend operator fun <A> Kind<F, A>.not(): A =
+    invoke()
+
+  // TODO remove it completely
+  @Deprecated("This operator can have problems when you do not capture the value, please use () or invoke() instead", ReplaceWith("invoke()"))
+  suspend operator fun <A> Kind<F, A>.component1(): A =
+    invoke()
+}
+
+// TODO: make it fun interface when suspend fun is allowed inside
+interface Invoke<F> {
+  suspend operator fun <A> Kind<F, A>.invoke(): A
 }

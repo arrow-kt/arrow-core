@@ -9,23 +9,23 @@ import kotlin.coroutines.RestrictsSuspension
 
 fun interface EitherEffect<E, A> : Effect<Either<E, A>> {
 
-  suspend fun <B> Either<E, B>.bind(): B =
+  @Deprecated("The monadic operator for the Arrow 1.x series will become invoke in 0.13", ReplaceWith("()"))
+  suspend fun <B> Either<E, B>.bind(): B = this()
+
+  @Deprecated("The monadic operator for the Arrow 1.x series will become invoke in 0.13", ReplaceWith("()"))
+  suspend operator fun <B> Either<E, B>.not(): B = this()
+
+  suspend operator fun <B> Either<E, B>.invoke(): B =
     when (this) {
       is Either.Right -> b
-      is Either.Left -> control().shift(this@bind)
+      is Either.Left -> control().shift(this@invoke)
     }
 
-  suspend fun <B> Validated<E, B>.bind(): B =
+  suspend operator fun <B> Validated<E, B>.invoke(): B =
     when (this) {
       is Validated.Valid -> a
       is Validated.Invalid -> control().shift(Left(e))
     }
-
-  @Deprecated("The monadic operator for the Arrow 1.x series will become bind in 0.13", ReplaceWith("()"))
-  suspend operator fun <B> Either<E, B>.not(): B = bind()
-
-  @Deprecated("The monadic operator for the Arrow 1.x series will become bind in 0.13", ReplaceWith("()"))
-  suspend operator fun <B> Either<E, B>.invoke(): B = bind()
 }
 
 @RestrictsSuspension
