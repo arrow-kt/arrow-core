@@ -331,7 +331,6 @@ class NonEmptyList<out A>(
       NonEmptyList(head.combine(b.head), tail.salign(SA, b.tail).toList())
     }
 
-  @JvmName("padZipTupled")
   fun <B> padZip(other: NonEmptyList<B>): NonEmptyList<Pair<A?, B?>> =
     NonEmptyList(head to other.head, tail.padZip(other.tail))
 
