@@ -7,7 +7,7 @@ import arrow.typeclasses.Show
 import arrow.typeclasses.ShowDeprecation
 
 const val ListKDeprecation =
-  "ListK is deprecated along side Higher Kineded Types in Arrow. Prefer to simply use kotlin.collections.List instead." +
+  "ListK is deprecated along side Higher Kinded Types in Arrow. Prefer to simply use kotlin.collections.List instead." +
     "Arrow provides extension functions on Iterable to cover all the behavior defined for ListK as extension functions"
 
 @Deprecated(
