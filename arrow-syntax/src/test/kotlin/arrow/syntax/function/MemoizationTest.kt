@@ -1,11 +1,30 @@
 package arrow.syntax.function
 
+import arrow.fx.coroutines.parMapN
+import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.FreeSpec
+import kotlinx.coroutines.runBlocking
+import kotlin.random.Random
 
 class MemoizationTest : FreeSpec() {
 
   init {
+    "Memoize races" {
+      forAll<Int> {
+        runBlocking {
+          fun sum(): Int =
+            Random.nextInt(Int.MAX_VALUE)
+
+          val memoized = ::sum.memoize()
+
+          val (first, second) = parMapN( { memoized() }, { memoized() }, ::Pair)
+
+          first == second
+        }
+      }
+    }
+
     "Memoize P0 only first execution runs" {
       var runs = 0
       fun sum(): Int {
