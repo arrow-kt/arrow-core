@@ -10,7 +10,8 @@ import arrow.typeclasses.ShowDeprecation
 @Deprecated(
   message = KindDeprecation,
   level = DeprecationLevel.WARNING
-)class ForNonEmptyList private constructor() {
+)
+class ForNonEmptyList private constructor() {
   companion object
 }
 @Deprecated(
@@ -334,9 +335,18 @@ class NonEmptyList<out A>(
     NonEmptyList(head to other.head, tail.padZip(other.tail))
 
   companion object {
+
+    @Deprecated(
+      "Renamed to nonEmptyListOf to align with Kotlin Std standards",
+      ReplaceWith("nonEmptyListOf(head, t)", "arrow.core.nonEmptyListOf")
+    )
     operator fun <A> invoke(head: A, vararg t: A): NonEmptyList<A> =
       NonEmptyList(head, t.asList())
 
+    @Deprecated(
+      "Renamed to nonEmptyListOf to align with Kotlin Std standards",
+      ReplaceWith("nonEmptyListOf(head, t)", "arrow.core.nonEmptyListOf")
+    )
     fun <A> of(head: A, vararg t: A): NonEmptyList<A> =
       NonEmptyList(head, t.asList())
 
@@ -357,7 +367,8 @@ class NonEmptyList<out A>(
     fun <A> just(a: A): NonEmptyList<A> =
       of(a)
 
-    val unit: NonEmptyList<Unit> =
+    @PublishedApi
+    internal val unit: NonEmptyList<Unit> =
       of(Unit)
 
     inline fun <B, C, D> mapN(
@@ -510,6 +521,9 @@ class NonEmptyList<out A>(
   }
 }
 
+fun <A> nonEmptyListOf(head: A, vararg t: A): NonEmptyList<A> =
+  NonEmptyList(head, t.asList())
+
 inline fun <A> A.nel(): NonEmptyList<A> =
   NonEmptyList.of(this)
 
@@ -543,7 +557,7 @@ fun <A, B, C> NonEmptyList<C>.unzip(f: (C) -> Pair<A, B>): Pair<NonEmptyList<A>,
   this.map(f).let { nel ->
     nel.tail.unzip().let {
       NonEmptyList(nel.head.first, it.first) to
-      NonEmptyList(nel.head.second, it.second)
+        NonEmptyList(nel.head.second, it.second)
     }
   }
 

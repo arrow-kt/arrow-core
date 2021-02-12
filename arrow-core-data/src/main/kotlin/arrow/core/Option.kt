@@ -441,7 +441,8 @@ sealed class Option<out A> : OptionOf<A> {
     )
     fun <A> empty(): Option<A> = None
 
-    val unit: Option<Unit> = Some(Unit)
+    @PublishedApi
+    internal val unit: Option<Unit> = Some(Unit)
 
     inline fun <A, B, C> mapN(
       a: Option<A>,

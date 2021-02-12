@@ -13,23 +13,27 @@ import arrow.typeclasses.ShowDeprecation
 @Deprecated(
   message = KindDeprecation,
   level = DeprecationLevel.WARNING
-)class ForEither private constructor() {
+)
+class ForEither private constructor() {
   companion object
 }
 @Deprecated(
   message = KindDeprecation,
   level = DeprecationLevel.WARNING
-)typealias EitherOf<A, B> = arrow.Kind2<ForEither, A, B>
+)
+typealias EitherOf<A, B> = arrow.Kind2<ForEither, A, B>
 @Deprecated(
   message = KindDeprecation,
   level = DeprecationLevel.WARNING
-)typealias EitherPartialOf<A> = arrow.Kind<ForEither, A>
+)
+typealias EitherPartialOf<A> = arrow.Kind<ForEither, A>
 
 @Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
 @Deprecated(
   message = KindDeprecation,
   level = DeprecationLevel.WARNING
-)inline fun <A, B> EitherOf<A, B>.fix(): Either<A, B> =
+)
+inline fun <A, B> EitherOf<A, B>.fix(): Either<A, B> =
   this as Either<A, B>
 
 /**
@@ -1064,7 +1068,6 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
   /**
    * The left side of the disjoint union, as opposed to the [Right] side.
    */
-  @Suppress("DataClassPrivateConstructor")
   data class Left<out A> constructor(
     @Deprecated("Use value instead", ReplaceWith("value"))
     val a: A
@@ -1084,7 +1087,6 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
   /**
    * The right side of the disjoint union, as opposed to the [Left] side.
    */
-  @Suppress("DataClassPrivateConstructor")
   data class Right<out B> constructor(
     @Deprecated("Use value instead", ReplaceWith("value"))
     val b: B
@@ -1132,11 +1134,12 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
     )
     fun <R> right(right: R): Either<Nothing, R> = Right(right)
 
-    val leftUnit: Either<Unit, Nothing> = left(Unit)
+    @PublishedApi
+    internal val leftUnit: Either<Unit, Nothing> =
+      left(Unit)
 
-    val unit: Either<Nothing, Unit> = right(Unit)
-
-    fun <L> unit(): Either<L, Unit> = unit
+    @PublishedApi
+    internal val unit: Either<Nothing, Unit> = right(Unit)
 
     fun <A> fromNullable(a: A?): Either<Unit, A> = a?.right() ?: Unit.left()
 
