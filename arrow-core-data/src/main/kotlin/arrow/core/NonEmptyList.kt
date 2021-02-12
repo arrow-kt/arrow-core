@@ -346,6 +346,14 @@ class NonEmptyList<out A>(
     fun <A> fromListUnsafe(l: List<A>): NonEmptyList<A> =
       NonEmptyList(l)
 
+    @Deprecated(
+      "just is deprecated, and will be removed in 0.13.0. Please use NonEmptyList.of instead.",
+      ReplaceWith(
+        "NonEmptyList.of(a)",
+        "arrow.core.NonEmptyList"
+      ),
+      DeprecationLevel.WARNING
+    )
     fun <A> just(a: A): NonEmptyList<A> =
       of(a)
 

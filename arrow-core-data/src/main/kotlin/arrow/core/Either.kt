@@ -1118,8 +1118,16 @@ sealed class Either<out A, out B> : EitherOf<A, B> {
 
   companion object {
 
+    @Deprecated(
+      "This constructor is duplicated with Either.Left. Use Either.Left instead.",
+      ReplaceWith("Either.Left(left)", "arrow.core.Either")
+    )
     fun <L> left(left: L): Either<L, Nothing> = Left(left)
 
+    @Deprecated(
+      "This constructor is duplicated with Either.Right. Use Either.Right instead.",
+      ReplaceWith("Either.Right(right)", "arrow.core.Either")
+    )
     fun <R> right(right: R): Either<Nothing, R> = Right(right)
 
     val leftUnit: Either<Unit, Nothing> = left(Unit)
