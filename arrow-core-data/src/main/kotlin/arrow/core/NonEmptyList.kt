@@ -102,7 +102,9 @@ typealias Nel<A> = NonEmptyList<A>
  * }
  * ```
  *
- * ## flatMap
+ * ## Combining NonEmptyLists
+ *
+ * ### flatMap
  *
  * `flatMap` allows us to compute over the contents of multiple `NonEmptyList< * >` values
  *
@@ -110,8 +112,8 @@ typealias Nel<A> = NonEmptyList<A>
  * import arrow.core.NonEmptyList
  *
  * //sampleStart
- * val nelOne: NonEmptyList<Int> = NonEmptyList.of(1)
- * val nelTwo: NonEmptyList<Int> = NonEmptyList.of(2)
+ * val nelOne: NonEmptyList<Int> = NonEmptyList.of(1, 2, 3)
+ * val nelTwo: NonEmptyList<Int> = NonEmptyList.of(4, 5)
  *
  * val value = nelOne.flatMap { one ->
  *  nelTwo.map { two ->
@@ -124,58 +126,13 @@ typealias Nel<A> = NonEmptyList<A>
  * }
  * ```
  *
- * ## Monad binding
- *
- * Λrrow allows imperative style comprehensions to make computing over `NonEmptyList` values easy.
- *
- * ```kotlin:ank:playground
- * import arrow.core.NonEmptyList
- * import arrow.core.extensions.fx
- *
- * //sampleStart
- * val nelOne: NonEmptyList<Int> = NonEmptyList.of(1)
- * val nelTwo: NonEmptyList<Int> = NonEmptyList.of(2)
- * val nelThree: NonEmptyList<Int> = NonEmptyList.of(3)
- *
- * val value = NonEmptyList.fx {
- *  val (one) = nelOne
- *  val (two) = nelTwo
- *  val (three) = nelThree
- *  one + two + three
- * }
- * //sampleEnd
- * fun main() {
- *  println("value = $value")
- * }
- * ```
- *
- * Monad binding in `NonEmptyList` and other collection related data type can be used as generators
- *
- * ```kotlin:ank:playground
- * import arrow.core.NonEmptyList
- * import arrow.core.extensions.fx
- *
- * val value =
- * //sampleStart
- *  NonEmptyList.fx {
- *    val (x) = NonEmptyList.of(1, 2, 3)
- *    val (y) = NonEmptyList.of(1, 2, 3)
- *   x + y
- *  }
- * //sampleEnd
- * fun main() {
- *  println(value)
- * }
- * ```
- *
- * ## Applicative Builder
+ * ### mapN
  *
  * Λrrow contains methods that allow you to preserve type information when computing over different `NonEmptyList` typed values.
  *
  * ```kotlin:ank:playground
  * import arrow.core.NonEmptyList
  * import java.util.UUID
- * import arrow.core.extensions.nonemptylist.apply.map
  *
  * //sampleStart
  * data class Person(val id: UUID, val name: String, val year: Int)
@@ -185,7 +142,7 @@ typealias Nel<A> = NonEmptyList<A>
  * val nelName: NonEmptyList<String> = NonEmptyList.of("William Alvin Howard", "Haskell Curry")
  * val nelYear: NonEmptyList<Int> = NonEmptyList.of(1926, 1900)
  *
- * val value = map(nelId, nelName, nelYear) { (id, name, year) ->
+ * val value = NonEmptyList.mapN(nelId, nelName, nelYear) { (id, name, year) ->
  *  Person(id, name, year)
  * }
  * //sampleEnd
@@ -199,8 +156,7 @@ typealias Nel<A> = NonEmptyList<A>
  * - `NonEmptyList` is __used to model lists that guarantee at least one element__
  * - We can easily construct values of `NonEmptyList` with `NonEmptyList.of`
  * - `foldLeft`, `map`, `flatMap` and others are used to compute over the internal contents of a `NonEmptyList` value.
- * - `fx { ... } comprehensions` can be __used to imperatively compute__ over multiple `NonEmptyList` values in sequence.
- * - `NonEmptyList.applicative().map { ... }` can be used to compute over multiple `NonEmptyList` values preserving type information and __abstracting over arity__ with `map`
+ * - `NonEmptyList.mapM(a, b, c) { ... }` can be used to compute over multiple `NonEmptyList` values preserving type information and __abstracting over arity__ with `mapN`
  *
  */
 class NonEmptyList<out A>(

@@ -2,7 +2,6 @@ package arrow.core.computations
 
 import arrow.continuations.Effect
 import arrow.core.Either
-import arrow.core.Eval
 import arrow.core.Left
 import arrow.core.Validated
 import arrow.core.right
