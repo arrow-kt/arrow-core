@@ -19,7 +19,7 @@ fun interface RestrictedOptionEffect<A> : OptionEffect<A>
 
 @Suppress("ClassName")
 object option {
-  inline fun <A> eager(crossinline func: suspend RestrictedOptionEffect<A>.() -> A?): Option<A> =
+  inline fun <A> eager(crossinline func: suspend RestrictedOptionEffect<A>.() -> A): Option<A> =
     Effect.restricted(eff = { RestrictedOptionEffect { it } }, f = func, just = { Option.fromNullable(it) })
 
   suspend inline operator fun <A> invoke(crossinline func: suspend OptionEffect<*>.() -> A?): Option<A> =

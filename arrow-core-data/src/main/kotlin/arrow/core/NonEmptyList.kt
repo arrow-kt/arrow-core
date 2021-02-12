@@ -141,7 +141,7 @@ typealias Nel<A> = NonEmptyList<A>
  * val nelName: NonEmptyList<String> = NonEmptyList.of("William Alvin Howard", "Haskell Curry")
  * val nelYear: NonEmptyList<Int> = NonEmptyList.of(1926, 1900)
  *
- * val value = NonEmptyList.mapN(nelId, nelName, nelYear) { (id, name, year) ->
+ * val value = NonEmptyList.mapN(nelId, nelName, nelYear) { id, name, year ->
  *  Person(id, name, year)
  * }
  * //sampleEnd

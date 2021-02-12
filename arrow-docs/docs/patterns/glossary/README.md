@@ -135,7 +135,7 @@ When creating an instance with the `@extension` annotation, the processor genera
 import arrow.core.Option
 import arrow.core.computations.option
 
-option {
+option.eager {
   val a = Option(1).bind()
   val b = Option(a + 1).bind()
   a + b
@@ -160,7 +160,7 @@ listOf(Option(1), Option(2), Option(3)).sequence(Option.applicative())
 ```kotlin:ank
 import arrow.core.computations.option
 
-option {
+option.eager {
     val a = Some(1).bind()
     val b = Some(a+1).bind()
     a + b
