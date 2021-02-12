@@ -151,8 +151,8 @@ fun <F, A> Kind<Kind<ForTuple2, F>, A>.reduceLeftOption(arg1: Function2<A, A, A>
 )
 fun <F, A> Kind<Kind<ForTuple2, F>, A>.reduceRightOption(arg1: Function2<A, Eval<A>, Eval<A>>):
   Eval<Option<A>> = arrow.core.Tuple2.foldable<F>().run {
-  this@reduceRightOption.reduceRightOption<A>(arg1) as arrow.core.Eval<arrow.core.Option<A>>
-}
+    this@reduceRightOption.reduceRightOption<A>(arg1) as arrow.core.Eval<arrow.core.Option<A>>
+  }
 
 @JvmName("combineAll")
 @Suppress(

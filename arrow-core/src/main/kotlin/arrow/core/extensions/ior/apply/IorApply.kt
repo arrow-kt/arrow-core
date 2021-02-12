@@ -27,8 +27,8 @@ import arrow.typeclasses.Semigroup
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.ap(SL, arg1)",
-  "arrow.core.ap"
+    "this.ap(SL, arg1)",
+    "arrow.core.ap"
   ),
   DeprecationLevel.WARNING
 )
@@ -49,8 +49,8 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.ap(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.apEval(SL, arg1)",
-  "arrow.core.apEval"
+    "this.apEval(SL, arg1)",
+    "arrow.core.apEval"
   ),
   DeprecationLevel.WARNING
 )
@@ -71,8 +71,8 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.apEval(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.zipEval<L, A, B, Z>(SL, arg1) { a, b -> arg2(Tuple2(a, b)) }",
-  "arrow.core.zipEval", "arrow.core.Tuple2"
+    "this.zipEval<L, A, B, Z>(SL, arg1) { a, b -> arg2(Tuple2(a, b)) }",
+    "arrow.core.zipEval", "arrow.core.Tuple2"
   ),
   DeprecationLevel.WARNING
 )
@@ -95,8 +95,8 @@ fun <L, A, B, Z> Kind<Kind<ForIor, L>, A>.map2Eval(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "Ior.mapN(SL, arg0, arg1) { a, b -> arg2(Tuple2(a, b))}",
-  "arrow.core.Ior", "arrow.core.Tuple2"
+    "Ior.mapN(SL, arg0, arg1) { a, b -> arg2(Tuple2(a, b))}",
+    "arrow.core.Ior", "arrow.core.Tuple2"
   ),
   DeprecationLevel.WARNING
 )
@@ -106,8 +106,8 @@ fun <L, A, B, Z> map(
   arg1: Kind<Kind<ForIor, L>, B>,
   arg2: Function1<Tuple2<A, B>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .map<A, B, Z>(arg0, arg1, arg2) as arrow.core.Ior<L, Z>
+  .apply<L>(SL)
+  .map<A, B, Z>(arg0, arg1, arg2) as arrow.core.Ior<L, Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -130,8 +130,8 @@ fun <L, A, B, Z> mapN(
   arg1: Kind<Kind<ForIor, L>, B>,
   arg2: Function1<Tuple2<A, B>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .mapN<A, B, Z>(arg0, arg1, arg2) as arrow.core.Ior<L, Z>
+  .apply<L>(SL)
+  .mapN<A, B, Z>(arg0, arg1, arg2) as arrow.core.Ior<L, Z>
 
 @JvmName("map")
 @Suppress(
@@ -155,8 +155,8 @@ fun <L, A, B, C, Z> map(
   arg2: Kind<Kind<ForIor, L>, C>,
   arg3: Function1<Tuple3<A, B, C>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .map<A, B, C, Z>(arg0, arg1, arg2, arg3) as arrow.core.Ior<L, Z>
+  .apply<L>(SL)
+  .map<A, B, C, Z>(arg0, arg1, arg2, arg3) as arrow.core.Ior<L, Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -180,8 +180,8 @@ fun <L, A, B, C, Z> mapN(
   arg2: Kind<Kind<ForIor, L>, C>,
   arg3: Function1<Tuple3<A, B, C>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .mapN<A, B, C, Z>(arg0, arg1, arg2, arg3) as arrow.core.Ior<L, Z>
+  .apply<L>(SL)
+  .mapN<A, B, C, Z>(arg0, arg1, arg2, arg3) as arrow.core.Ior<L, Z>
 
 @JvmName("map")
 @Suppress(
@@ -206,8 +206,8 @@ fun <L, A, B, C, D, Z> map(
   arg3: Kind<Kind<ForIor, L>, D>,
   arg4: Function1<Tuple4<A, B, C, D>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .map<A, B, C, D, Z>(arg0, arg1, arg2, arg3, arg4) as arrow.core.Ior<L, Z>
+  .apply<L>(SL)
+  .map<A, B, C, D, Z>(arg0, arg1, arg2, arg3, arg4) as arrow.core.Ior<L, Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -232,8 +232,8 @@ fun <L, A, B, C, D, Z> mapN(
   arg3: Kind<Kind<ForIor, L>, D>,
   arg4: Function1<Tuple4<A, B, C, D>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .mapN<A, B, C, D, Z>(arg0, arg1, arg2, arg3, arg4) as arrow.core.Ior<L, Z>
+  .apply<L>(SL)
+  .mapN<A, B, C, D, Z>(arg0, arg1, arg2, arg3, arg4) as arrow.core.Ior<L, Z>
 
 @JvmName("map")
 @Suppress(
@@ -259,8 +259,8 @@ fun <L, A, B, C, D, E, Z> map(
   arg4: Kind<Kind<ForIor, L>, E>,
   arg5: Function1<Tuple5<A, B, C, D, E>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .map<A, B, C, D, E, Z>(arg0, arg1, arg2, arg3, arg4, arg5) as arrow.core.Ior<L, Z>
+  .apply<L>(SL)
+  .map<A, B, C, D, E, Z>(arg0, arg1, arg2, arg3, arg4, arg5) as arrow.core.Ior<L, Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -286,8 +286,8 @@ fun <L, A, B, C, D, E, Z> mapN(
   arg4: Kind<Kind<ForIor, L>, E>,
   arg5: Function1<Tuple5<A, B, C, D, E>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .mapN<A, B, C, D, E, Z>(arg0, arg1, arg2, arg3, arg4, arg5) as arrow.core.Ior<L, Z>
+  .apply<L>(SL)
+  .mapN<A, B, C, D, E, Z>(arg0, arg1, arg2, arg3, arg4, arg5) as arrow.core.Ior<L, Z>
 
 @JvmName("map")
 @Suppress(
@@ -314,8 +314,8 @@ fun <L, A, B, C, D, E, FF, Z> map(
   arg5: Kind<Kind<ForIor, L>, FF>,
   arg6: Function1<Tuple6<A, B, C, D, E, FF>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .map<A, B, C, D, E, FF, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6) as arrow.core.Ior<L, Z>
+  .apply<L>(SL)
+  .map<A, B, C, D, E, FF, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6) as arrow.core.Ior<L, Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -342,8 +342,8 @@ fun <L, A, B, C, D, E, FF, Z> mapN(
   arg5: Kind<Kind<ForIor, L>, FF>,
   arg6: Function1<Tuple6<A, B, C, D, E, FF>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .mapN<A, B, C, D, E, FF, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6) as arrow.core.Ior<L, Z>
+  .apply<L>(SL)
+  .mapN<A, B, C, D, E, FF, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6) as arrow.core.Ior<L, Z>
 
 @JvmName("map")
 @Suppress(
@@ -371,9 +371,9 @@ fun <L, A, B, C, D, E, FF, G, Z> map(
   arg6: Kind<Kind<ForIor, L>, G>,
   arg7: Function1<Tuple7<A, B, C, D, E, FF, G>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .map<A, B, C, D, E, FF, G, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) as
-    arrow.core.Ior<L, Z>
+  .apply<L>(SL)
+  .map<A, B, C, D, E, FF, G, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) as
+  arrow.core.Ior<L, Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -401,9 +401,9 @@ fun <L, A, B, C, D, E, FF, G, Z> mapN(
   arg6: Kind<Kind<ForIor, L>, G>,
   arg7: Function1<Tuple7<A, B, C, D, E, FF, G>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .mapN<A, B, C, D, E, FF, G, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) as
-    arrow.core.Ior<L, Z>
+  .apply<L>(SL)
+  .mapN<A, B, C, D, E, FF, G, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) as
+  arrow.core.Ior<L, Z>
 
 @JvmName("map")
 @Suppress(
@@ -432,9 +432,9 @@ fun <L, A, B, C, D, E, FF, G, H, Z> map(
   arg7: Kind<Kind<ForIor, L>, H>,
   arg8: Function1<Tuple8<A, B, C, D, E, FF, G, H>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .map<A, B, C, D, E, FF, G, H, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) as
-    arrow.core.Ior<L, Z>
+  .apply<L>(SL)
+  .map<A, B, C, D, E, FF, G, H, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) as
+  arrow.core.Ior<L, Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -463,9 +463,9 @@ fun <L, A, B, C, D, E, FF, G, H, Z> mapN(
   arg7: Kind<Kind<ForIor, L>, H>,
   arg8: Function1<Tuple8<A, B, C, D, E, FF, G, H>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .mapN<A, B, C, D, E, FF, G, H, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) as
-    arrow.core.Ior<L, Z>
+  .apply<L>(SL)
+  .mapN<A, B, C, D, E, FF, G, H, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) as
+  arrow.core.Ior<L, Z>
 
 @JvmName("map")
 @Suppress(
@@ -495,9 +495,9 @@ fun <L, A, B, C, D, E, FF, G, H, I, Z> map(
   arg8: Kind<Kind<ForIor, L>, I>,
   arg9: Function1<Tuple9<A, B, C, D, E, FF, G, H, I>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .map<A, B, C, D, E, FF, G, H, I, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
-    as arrow.core.Ior<L, Z>
+  .apply<L>(SL)
+  .map<A, B, C, D, E, FF, G, H, I, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
+  as arrow.core.Ior<L, Z>
 
 @JvmName("mapN")
 @Suppress(
@@ -527,9 +527,9 @@ fun <L, A, B, C, D, E, FF, G, H, I, Z> mapN(
   arg8: Kind<Kind<ForIor, L>, I>,
   arg9: Function1<Tuple9<A, B, C, D, E, FF, G, H, I>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .mapN<A, B, C, D, E, FF, G, H, I, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
-    as arrow.core.Ior<L, Z>
+  .apply<L>(SL)
+  .mapN<A, B, C, D, E, FF, G, H, I, Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
+  as arrow.core.Ior<L, Z>
 
 @JvmName("map")
 @Suppress(
@@ -560,8 +560,8 @@ fun <L, A, B, C, D, E, FF, G, H, I, J, Z> map(
   arg9: Kind<Kind<ForIor, L>, J>,
   arg10: Function1<Tuple10<A, B, C, D, E, FF, G, H, I, J>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .map<A, B, C, D, E, FF, G, H, I, J,
+  .apply<L>(SL)
+  .map<A, B, C, D, E, FF, G, H, I, J,
     Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10) as arrow.core.Ior<L, Z>
 
 @JvmName("mapN")
@@ -593,8 +593,8 @@ fun <L, A, B, C, D, E, FF, G, H, I, J, Z> mapN(
   arg9: Kind<Kind<ForIor, L>, J>,
   arg10: Function1<Tuple10<A, B, C, D, E, FF, G, H, I, J>, Z>
 ): Ior<L, Z> = arrow.core.Ior
-   .apply<L>(SL)
-   .mapN<A, B, C, D, E, FF, G, H, I, J,
+  .apply<L>(SL)
+  .mapN<A, B, C, D, E, FF, G, H, I, J,
     Z>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10) as arrow.core.Ior<L, Z>
 
 @JvmName("map2")
@@ -636,9 +636,9 @@ fun <L, A, B, Z> Kind<Kind<ForIor, L>, A>.map2(
   DeprecationLevel.WARNING
 )
 fun <L, A, B> Kind<Kind<ForIor, L>, A>.product(SL: Semigroup<L>, arg1: Kind<Kind<ForIor, L>, B>):
-    Ior<L, Tuple2<A, B>> = arrow.core.Ior.apply<L>(SL).run {
-  this@product.product<A, B>(arg1) as arrow.core.Ior<L, arrow.core.Tuple2<A, B>>
-}
+  Ior<L, Tuple2<A, B>> = arrow.core.Ior.apply<L>(SL).run {
+    this@product.product<A, B>(arg1) as arrow.core.Ior<L, arrow.core.Tuple2<A, B>>
+  }
 
 @JvmName("product1")
 @Suppress(
@@ -703,9 +703,9 @@ fun <L, A, B, C, D, Z> Kind<Kind<ForIor, L>, Tuple4<A, B, C, D>>.product(
   SL: Semigroup<L>,
   arg1: Kind<Kind<ForIor, L>, Z>
 ): Ior<L, Tuple5<A, B, C, D, Z>> =
-    arrow.core.Ior.apply<L>(SL).run {
-  this@product.product<A, B, C, D, Z>(arg1) as arrow.core.Ior<L, arrow.core.Tuple5<A, B, C, D, Z>>
-}
+  arrow.core.Ior.apply<L>(SL).run {
+    this@product.product<A, B, C, D, Z>(arg1) as arrow.core.Ior<L, arrow.core.Tuple5<A, B, C, D, Z>>
+  }
 
 @JvmName("product4")
 @Suppress(
@@ -726,10 +726,10 @@ fun <L, A, B, C, D, E, Z> Kind<Kind<ForIor, L>, Tuple5<A, B, C, D, E>>.product(
   SL: Semigroup<L>,
   arg1: Kind<Kind<ForIor, L>, Z>
 ): Ior<L, Tuple6<A, B, C, D, E, Z>> =
-    arrow.core.Ior.apply<L>(SL).run {
-  this@product.product<A, B, C, D, E, Z>(arg1) as arrow.core.Ior<L, arrow.core.Tuple6<A, B, C, D, E,
-    Z>>
-}
+  arrow.core.Ior.apply<L>(SL).run {
+    this@product.product<A, B, C, D, E, Z>(arg1) as arrow.core.Ior<L, arrow.core.Tuple6<A, B, C, D, E,
+        Z>>
+  }
 
 @JvmName("product5")
 @Suppress(
@@ -750,7 +750,7 @@ fun <L, A, B, C, D, E, FF, Z> Kind<Kind<ForIor, L>, Tuple6<A, B, C, D, E,
     FF>>.product(SL: Semigroup<L>, arg1: Kind<Kind<ForIor, L>, Z>): Ior<L, Tuple7<A, B, C, D, E, FF,
     Z>> = arrow.core.Ior.apply<L>(SL).run {
   this@product.product<A, B, C, D, E, FF, Z>(arg1) as arrow.core.Ior<L, arrow.core.Tuple7<A, B, C,
-    D, E, FF, Z>>
+      D, E, FF, Z>>
 }
 
 @JvmName("product6")
@@ -772,7 +772,7 @@ fun <L, A, B, C, D, E, FF, G, Z> Kind<Kind<ForIor, L>, Tuple7<A, B, C, D, E, FF,
     G>>.product(SL: Semigroup<L>, arg1: Kind<Kind<ForIor, L>, Z>): Ior<L, Tuple8<A, B, C, D, E, FF,
     G, Z>> = arrow.core.Ior.apply<L>(SL).run {
   this@product.product<A, B, C, D, E, FF, G, Z>(arg1) as arrow.core.Ior<L, arrow.core.Tuple8<A, B,
-    C, D, E, FF, G, Z>>
+      C, D, E, FF, G, Z>>
 }
 
 @JvmName("product7")
@@ -794,7 +794,7 @@ fun <L, A, B, C, D, E, FF, G, H, Z> Kind<Kind<ForIor, L>, Tuple8<A, B, C, D, E, 
     H>>.product(SL: Semigroup<L>, arg1: Kind<Kind<ForIor, L>, Z>): Ior<L, Tuple9<A, B, C, D, E, FF,
     G, H, Z>> = arrow.core.Ior.apply<L>(SL).run {
   this@product.product<A, B, C, D, E, FF, G, H, Z>(arg1) as arrow.core.Ior<L, arrow.core.Tuple9<A,
-    B, C, D, E, FF, G, H, Z>>
+      B, C, D, E, FF, G, H, Z>>
 }
 
 @JvmName("product8")
@@ -839,8 +839,8 @@ fun <L, A, B> tupled(
   arg0: Kind<Kind<ForIor, L>, A>,
   arg1: Kind<Kind<ForIor, L>, B>
 ): Ior<L, Tuple2<A, B>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupled<A, B>(arg0, arg1) as arrow.core.Ior<L, arrow.core.Tuple2<A, B>>
+  .apply<L>(SL)
+  .tupled<A, B>(arg0, arg1) as arrow.core.Ior<L, arrow.core.Tuple2<A, B>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -862,8 +862,8 @@ fun <L, A, B> tupledN(
   arg0: Kind<Kind<ForIor, L>, A>,
   arg1: Kind<Kind<ForIor, L>, B>
 ): Ior<L, Tuple2<A, B>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupledN<A, B>(arg0, arg1) as arrow.core.Ior<L, arrow.core.Tuple2<A, B>>
+  .apply<L>(SL)
+  .tupledN<A, B>(arg0, arg1) as arrow.core.Ior<L, arrow.core.Tuple2<A, B>>
 
 @JvmName("tupled")
 @Suppress(
@@ -886,8 +886,8 @@ fun <L, A, B, C> tupled(
   arg1: Kind<Kind<ForIor, L>, B>,
   arg2: Kind<Kind<ForIor, L>, C>
 ): Ior<L, Tuple3<A, B, C>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupled<A, B, C>(arg0, arg1, arg2) as arrow.core.Ior<L, arrow.core.Tuple3<A, B, C>>
+  .apply<L>(SL)
+  .tupled<A, B, C>(arg0, arg1, arg2) as arrow.core.Ior<L, arrow.core.Tuple3<A, B, C>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -910,8 +910,8 @@ fun <L, A, B, C> tupledN(
   arg1: Kind<Kind<ForIor, L>, B>,
   arg2: Kind<Kind<ForIor, L>, C>
 ): Ior<L, Tuple3<A, B, C>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupledN<A, B, C>(arg0, arg1, arg2) as arrow.core.Ior<L, arrow.core.Tuple3<A, B, C>>
+  .apply<L>(SL)
+  .tupledN<A, B, C>(arg0, arg1, arg2) as arrow.core.Ior<L, arrow.core.Tuple3<A, B, C>>
 
 @JvmName("tupled")
 @Suppress(
@@ -935,8 +935,8 @@ fun <L, A, B, C, D> tupled(
   arg2: Kind<Kind<ForIor, L>, C>,
   arg3: Kind<Kind<ForIor, L>, D>
 ): Ior<L, Tuple4<A, B, C, D>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupled<A, B, C, D>(arg0, arg1, arg2, arg3) as arrow.core.Ior<L, arrow.core.Tuple4<A, B, C, D>>
+  .apply<L>(SL)
+  .tupled<A, B, C, D>(arg0, arg1, arg2, arg3) as arrow.core.Ior<L, arrow.core.Tuple4<A, B, C, D>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -960,8 +960,8 @@ fun <L, A, B, C, D> tupledN(
   arg2: Kind<Kind<ForIor, L>, C>,
   arg3: Kind<Kind<ForIor, L>, D>
 ): Ior<L, Tuple4<A, B, C, D>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupledN<A, B, C, D>(arg0, arg1, arg2, arg3) as arrow.core.Ior<L, arrow.core.Tuple4<A, B, C, D>>
+  .apply<L>(SL)
+  .tupledN<A, B, C, D>(arg0, arg1, arg2, arg3) as arrow.core.Ior<L, arrow.core.Tuple4<A, B, C, D>>
 
 @JvmName("tupled")
 @Suppress(
@@ -986,8 +986,8 @@ fun <L, A, B, C, D, E> tupled(
   arg3: Kind<Kind<ForIor, L>, D>,
   arg4: Kind<Kind<ForIor, L>, E>
 ): Ior<L, Tuple5<A, B, C, D, E>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupled<A, B, C, D, E>(arg0, arg1, arg2, arg3, arg4) as arrow.core.Ior<L, arrow.core.Tuple5<A, B,
+  .apply<L>(SL)
+  .tupled<A, B, C, D, E>(arg0, arg1, arg2, arg3, arg4) as arrow.core.Ior<L, arrow.core.Tuple5<A, B,
     C, D, E>>
 
 @JvmName("tupledN")
@@ -1013,8 +1013,8 @@ fun <L, A, B, C, D, E> tupledN(
   arg3: Kind<Kind<ForIor, L>, D>,
   arg4: Kind<Kind<ForIor, L>, E>
 ): Ior<L, Tuple5<A, B, C, D, E>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupledN<A, B, C, D, E>(arg0, arg1, arg2, arg3, arg4) as arrow.core.Ior<L, arrow.core.Tuple5<A,
+  .apply<L>(SL)
+  .tupledN<A, B, C, D, E>(arg0, arg1, arg2, arg3, arg4) as arrow.core.Ior<L, arrow.core.Tuple5<A,
     B, C, D, E>>
 
 @JvmName("tupled")
@@ -1041,9 +1041,9 @@ fun <L, A, B, C, D, E, FF> tupled(
   arg4: Kind<Kind<ForIor, L>, E>,
   arg5: Kind<Kind<ForIor, L>, FF>
 ): Ior<L, Tuple6<A, B, C, D, E, FF>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupled<A, B, C, D, E, FF>(arg0, arg1, arg2, arg3, arg4, arg5) as arrow.core.Ior<L,
-    arrow.core.Tuple6<A, B, C, D, E, FF>>
+  .apply<L>(SL)
+  .tupled<A, B, C, D, E, FF>(arg0, arg1, arg2, arg3, arg4, arg5) as arrow.core.Ior<L,
+  arrow.core.Tuple6<A, B, C, D, E, FF>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -1069,9 +1069,9 @@ fun <L, A, B, C, D, E, FF> tupledN(
   arg4: Kind<Kind<ForIor, L>, E>,
   arg5: Kind<Kind<ForIor, L>, FF>
 ): Ior<L, Tuple6<A, B, C, D, E, FF>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupledN<A, B, C, D, E, FF>(arg0, arg1, arg2, arg3, arg4, arg5) as arrow.core.Ior<L,
-    arrow.core.Tuple6<A, B, C, D, E, FF>>
+  .apply<L>(SL)
+  .tupledN<A, B, C, D, E, FF>(arg0, arg1, arg2, arg3, arg4, arg5) as arrow.core.Ior<L,
+  arrow.core.Tuple6<A, B, C, D, E, FF>>
 
 @JvmName("tupled")
 @Suppress(
@@ -1098,9 +1098,9 @@ fun <L, A, B, C, D, E, FF, G> tupled(
   arg5: Kind<Kind<ForIor, L>, FF>,
   arg6: Kind<Kind<ForIor, L>, G>
 ): Ior<L, Tuple7<A, B, C, D, E, FF, G>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupled<A, B, C, D, E, FF, G>(arg0, arg1, arg2, arg3, arg4, arg5, arg6) as arrow.core.Ior<L,
-    arrow.core.Tuple7<A, B, C, D, E, FF, G>>
+  .apply<L>(SL)
+  .tupled<A, B, C, D, E, FF, G>(arg0, arg1, arg2, arg3, arg4, arg5, arg6) as arrow.core.Ior<L,
+  arrow.core.Tuple7<A, B, C, D, E, FF, G>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -1127,9 +1127,9 @@ fun <L, A, B, C, D, E, FF, G> tupledN(
   arg5: Kind<Kind<ForIor, L>, FF>,
   arg6: Kind<Kind<ForIor, L>, G>
 ): Ior<L, Tuple7<A, B, C, D, E, FF, G>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupledN<A, B, C, D, E, FF, G>(arg0, arg1, arg2, arg3, arg4, arg5, arg6) as arrow.core.Ior<L,
-    arrow.core.Tuple7<A, B, C, D, E, FF, G>>
+  .apply<L>(SL)
+  .tupledN<A, B, C, D, E, FF, G>(arg0, arg1, arg2, arg3, arg4, arg5, arg6) as arrow.core.Ior<L,
+  arrow.core.Tuple7<A, B, C, D, E, FF, G>>
 
 @JvmName("tupled")
 @Suppress(
@@ -1157,9 +1157,9 @@ fun <L, A, B, C, D, E, FF, G, H> tupled(
   arg6: Kind<Kind<ForIor, L>, G>,
   arg7: Kind<Kind<ForIor, L>, H>
 ): Ior<L, Tuple8<A, B, C, D, E, FF, G, H>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupled<A, B, C, D, E, FF, G, H>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) as
-    arrow.core.Ior<L, arrow.core.Tuple8<A, B, C, D, E, FF, G, H>>
+  .apply<L>(SL)
+  .tupled<A, B, C, D, E, FF, G, H>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) as
+  arrow.core.Ior<L, arrow.core.Tuple8<A, B, C, D, E, FF, G, H>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -1187,9 +1187,9 @@ fun <L, A, B, C, D, E, FF, G, H> tupledN(
   arg6: Kind<Kind<ForIor, L>, G>,
   arg7: Kind<Kind<ForIor, L>, H>
 ): Ior<L, Tuple8<A, B, C, D, E, FF, G, H>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupledN<A, B, C, D, E, FF, G, H>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) as
-    arrow.core.Ior<L, arrow.core.Tuple8<A, B, C, D, E, FF, G, H>>
+  .apply<L>(SL)
+  .tupledN<A, B, C, D, E, FF, G, H>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) as
+  arrow.core.Ior<L, arrow.core.Tuple8<A, B, C, D, E, FF, G, H>>
 
 @JvmName("tupled")
 @Suppress(
@@ -1218,9 +1218,9 @@ fun <L, A, B, C, D, E, FF, G, H, I> tupled(
   arg7: Kind<Kind<ForIor, L>, H>,
   arg8: Kind<Kind<ForIor, L>, I>
 ): Ior<L, Tuple9<A, B, C, D, E, FF, G, H, I>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupled<A, B, C, D, E, FF, G, H, I>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) as
-    arrow.core.Ior<L, arrow.core.Tuple9<A, B, C, D, E, FF, G, H, I>>
+  .apply<L>(SL)
+  .tupled<A, B, C, D, E, FF, G, H, I>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) as
+  arrow.core.Ior<L, arrow.core.Tuple9<A, B, C, D, E, FF, G, H, I>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -1249,9 +1249,9 @@ fun <L, A, B, C, D, E, FF, G, H, I> tupledN(
   arg7: Kind<Kind<ForIor, L>, H>,
   arg8: Kind<Kind<ForIor, L>, I>
 ): Ior<L, Tuple9<A, B, C, D, E, FF, G, H, I>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupledN<A, B, C, D, E, FF, G, H, I>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) as
-    arrow.core.Ior<L, arrow.core.Tuple9<A, B, C, D, E, FF, G, H, I>>
+  .apply<L>(SL)
+  .tupledN<A, B, C, D, E, FF, G, H, I>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) as
+  arrow.core.Ior<L, arrow.core.Tuple9<A, B, C, D, E, FF, G, H, I>>
 
 @JvmName("tupled")
 @Suppress(
@@ -1281,10 +1281,10 @@ fun <L, A, B, C, D, E, FF, G, H, I, J> tupled(
   arg8: Kind<Kind<ForIor, L>, I>,
   arg9: Kind<Kind<ForIor, L>, J>
 ): Ior<L, Tuple10<A, B, C, D, E, FF, G, H, I, J>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupled<A, B, C, D, E, FF, G, H, I,
+  .apply<L>(SL)
+  .tupled<A, B, C, D, E, FF, G, H, I,
     J>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) as arrow.core.Ior<L,
-    arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
+  arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -1314,10 +1314,10 @@ fun <L, A, B, C, D, E, FF, G, H, I, J> tupledN(
   arg8: Kind<Kind<ForIor, L>, I>,
   arg9: Kind<Kind<ForIor, L>, J>
 ): Ior<L, Tuple10<A, B, C, D, E, FF, G, H, I, J>> = arrow.core.Ior
-   .apply<L>(SL)
-   .tupledN<A, B, C, D, E, FF, G, H, I,
+  .apply<L>(SL)
+  .tupledN<A, B, C, D, E, FF, G, H, I,
     J>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) as arrow.core.Ior<L,
-    arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
+  arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, J>>
 
 @JvmName("followedBy")
 @Suppress(
@@ -1329,15 +1329,15 @@ fun <L, A, B, C, D, E, FF, G, H, I, J> tupledN(
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "this.flatMap(SL) { arg1 }",
-  "arrow.core.followedBy"
+    "this.flatMap(SL) { arg1 }",
+    "arrow.core.followedBy"
   ),
   DeprecationLevel.WARNING
 )
 fun <L, A, B> Kind<Kind<ForIor, L>, A>.followedBy(SL: Semigroup<L>, arg1: Kind<Kind<ForIor, L>, B>):
-    Ior<L, B> = arrow.core.Ior.apply<L>(SL).run {
-  this@followedBy.followedBy<A, B>(arg1) as arrow.core.Ior<L, B>
-}
+  Ior<L, B> = arrow.core.Ior.apply<L>(SL).run {
+    this@followedBy.followedBy<A, B>(arg1) as arrow.core.Ior<L, B>
+  }
 
 @JvmName("apTap")
 @Suppress(
@@ -1349,15 +1349,15 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.followedBy(SL: Semigroup<L>, arg1: Kind<K
 @Deprecated(
   "@extension kinded projected functions are deprecated",
   ReplaceWith(
-  "Ior.mapN(SL, this, arg1) { left, _ -> left }",
-  "arrow.core.Ior"
+    "Ior.mapN(SL, this, arg1) { left, _ -> left }",
+    "arrow.core.Ior"
   ),
   DeprecationLevel.WARNING
 )
 fun <L, A, B> Kind<Kind<ForIor, L>, A>.apTap(SL: Semigroup<L>, arg1: Kind<Kind<ForIor, L>, B>):
-    Ior<L, A> = arrow.core.Ior.apply<L>(SL).run {
-  this@apTap.apTap<A, B>(arg1) as arrow.core.Ior<L, A>
-}
+  Ior<L, A> = arrow.core.Ior.apply<L>(SL).run {
+    this@apTap.apTap<A, B>(arg1) as arrow.core.Ior<L, A>
+  }
 
 @Suppress(
   "UNCHECKED_CAST",
@@ -1368,4 +1368,4 @@ fun <L, A, B> Kind<Kind<ForIor, L>, A>.apTap(SL: Semigroup<L>, arg1: Kind<Kind<F
   level = DeprecationLevel.WARNING
 )
 inline fun <L> Companion.apply(SL: Semigroup<L>): IorApply<L> = object :
-    arrow.core.extensions.IorApply<L> { override fun SL(): arrow.typeclasses.Semigroup<L> = SL }
+  arrow.core.extensions.IorApply<L> { override fun SL(): arrow.typeclasses.Semigroup<L> = SL }

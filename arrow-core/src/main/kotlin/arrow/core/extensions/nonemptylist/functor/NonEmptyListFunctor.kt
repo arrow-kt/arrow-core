@@ -12,7 +12,7 @@ import arrow.core.extensions.NonEmptyListFunctor
  */
 @PublishedApi()
 internal val functor_singleton: NonEmptyListFunctor = object :
-    arrow.core.extensions.NonEmptyListFunctor {}
+  arrow.core.extensions.NonEmptyListFunctor {}
 
 /**
  *  Transform the [F] wrapped value [A] into [B] preserving the [F] structure
@@ -51,9 +51,9 @@ internal val functor_singleton: NonEmptyListFunctor = object :
   DeprecationLevel.WARNING
 )
 fun <A, B> Kind<ForNonEmptyList, A>.map(arg1: Function1<A, B>): NonEmptyList<B> =
-    arrow.core.NonEmptyList.functor().run {
-  this@map.map<A, B>(arg1) as arrow.core.NonEmptyList<B>
-}
+  arrow.core.NonEmptyList.functor().run {
+    this@map.map<A, B>(arg1) as arrow.core.NonEmptyList<B>
+  }
 
 @JvmName("imap")
 @Suppress(
@@ -71,9 +71,9 @@ fun <A, B> Kind<ForNonEmptyList, A>.map(arg1: Function1<A, B>): NonEmptyList<B> 
   DeprecationLevel.WARNING
 )
 fun <A, B> Kind<ForNonEmptyList, A>.imap(arg1: Function1<A, B>, arg2: Function1<B, A>):
-    NonEmptyList<B> = arrow.core.NonEmptyList.functor().run {
-  this@imap.imap<A, B>(arg1, arg2) as arrow.core.NonEmptyList<B>
-}
+  NonEmptyList<B> = arrow.core.NonEmptyList.functor().run {
+    this@imap.imap<A, B>(arg1, arg2) as arrow.core.NonEmptyList<B>
+  }
 
 /**
  *  Lifts a function `A -> B` to the [F] structure returning a polymorphic function
@@ -115,9 +115,9 @@ fun <A, B> Kind<ForNonEmptyList, A>.imap(arg1: Function1<A, B>, arg2: Function1<
 )
 fun <A, B> lift(arg0: Function1<A, B>): Function1<Kind<ForNonEmptyList, A>, Kind<ForNonEmptyList,
     B>> = arrow.core.NonEmptyList
-   .functor()
-   .lift<A, B>(arg0) as kotlin.Function1<arrow.Kind<arrow.core.ForNonEmptyList, A>,
-    arrow.Kind<arrow.core.ForNonEmptyList, B>>
+  .functor()
+  .lift<A, B>(arg0) as kotlin.Function1<arrow.Kind<arrow.core.ForNonEmptyList, A>,
+  arrow.Kind<arrow.core.ForNonEmptyList, B>>
 
 @JvmName("void")
 @Suppress(
@@ -135,9 +135,9 @@ fun <A, B> lift(arg0: Function1<A, B>): Function1<Kind<ForNonEmptyList, A>, Kind
   DeprecationLevel.WARNING
 )
 fun <A> Kind<ForNonEmptyList, A>.void(): NonEmptyList<Unit> =
-    arrow.core.NonEmptyList.functor().run {
-  this@void.void<A>() as arrow.core.NonEmptyList<kotlin.Unit>
-}
+  arrow.core.NonEmptyList.functor().run {
+    this@void.void<A>() as arrow.core.NonEmptyList<kotlin.Unit>
+  }
 
 @JvmName("fproduct")
 @Suppress(
@@ -155,9 +155,9 @@ fun <A> Kind<ForNonEmptyList, A>.void(): NonEmptyList<Unit> =
   DeprecationLevel.WARNING
 )
 fun <A, B> Kind<ForNonEmptyList, A>.fproduct(arg1: Function1<A, B>): NonEmptyList<Tuple2<A, B>> =
-    arrow.core.NonEmptyList.functor().run {
-  this@fproduct.fproduct<A, B>(arg1) as arrow.core.NonEmptyList<arrow.core.Tuple2<A, B>>
-}
+  arrow.core.NonEmptyList.functor().run {
+    this@fproduct.fproduct<A, B>(arg1) as arrow.core.NonEmptyList<arrow.core.Tuple2<A, B>>
+  }
 
 @JvmName("mapConst")
 @Suppress(
@@ -175,9 +175,9 @@ fun <A, B> Kind<ForNonEmptyList, A>.fproduct(arg1: Function1<A, B>): NonEmptyLis
   DeprecationLevel.WARNING
 )
 fun <A, B> Kind<ForNonEmptyList, A>.mapConst(arg1: B): NonEmptyList<B> =
-    arrow.core.NonEmptyList.functor().run {
-  this@mapConst.mapConst<A, B>(arg1) as arrow.core.NonEmptyList<B>
-}
+  arrow.core.NonEmptyList.functor().run {
+    this@mapConst.mapConst<A, B>(arg1) as arrow.core.NonEmptyList<B>
+  }
 
 /**
  *  Replaces the [B] value inside [F] with [A] resulting in a Kind<F, A>
@@ -198,9 +198,9 @@ fun <A, B> Kind<ForNonEmptyList, A>.mapConst(arg1: B): NonEmptyList<B> =
   DeprecationLevel.WARNING
 )
 fun <A, B> A.mapConst(arg1: Kind<ForNonEmptyList, B>): NonEmptyList<A> =
-    arrow.core.NonEmptyList.functor().run {
-  this@mapConst.mapConst<A, B>(arg1) as arrow.core.NonEmptyList<A>
-}
+  arrow.core.NonEmptyList.functor().run {
+    this@mapConst.mapConst<A, B>(arg1) as arrow.core.NonEmptyList<A>
+  }
 
 @JvmName("tupleLeft")
 @Suppress(
@@ -218,9 +218,9 @@ fun <A, B> A.mapConst(arg1: Kind<ForNonEmptyList, B>): NonEmptyList<A> =
   DeprecationLevel.WARNING
 )
 fun <A, B> Kind<ForNonEmptyList, A>.tupleLeft(arg1: B): NonEmptyList<Tuple2<B, A>> =
-    arrow.core.NonEmptyList.functor().run {
-  this@tupleLeft.tupleLeft<A, B>(arg1) as arrow.core.NonEmptyList<arrow.core.Tuple2<B, A>>
-}
+  arrow.core.NonEmptyList.functor().run {
+    this@tupleLeft.tupleLeft<A, B>(arg1) as arrow.core.NonEmptyList<arrow.core.Tuple2<B, A>>
+  }
 
 @JvmName("tupleRight")
 @Suppress(
@@ -238,9 +238,9 @@ fun <A, B> Kind<ForNonEmptyList, A>.tupleLeft(arg1: B): NonEmptyList<Tuple2<B, A
   DeprecationLevel.WARNING
 )
 fun <A, B> Kind<ForNonEmptyList, A>.tupleRight(arg1: B): NonEmptyList<Tuple2<A, B>> =
-    arrow.core.NonEmptyList.functor().run {
-  this@tupleRight.tupleRight<A, B>(arg1) as arrow.core.NonEmptyList<arrow.core.Tuple2<A, B>>
-}
+  arrow.core.NonEmptyList.functor().run {
+    this@tupleRight.tupleRight<A, B>(arg1) as arrow.core.NonEmptyList<arrow.core.Tuple2<A, B>>
+  }
 
 @JvmName("widen")
 @Suppress(
@@ -258,9 +258,9 @@ fun <A, B> Kind<ForNonEmptyList, A>.tupleRight(arg1: B): NonEmptyList<Tuple2<A, 
   DeprecationLevel.WARNING
 )
 fun <B, A : B> Kind<ForNonEmptyList, A>.widen(): NonEmptyList<B> =
-    arrow.core.NonEmptyList.functor().run {
-  this@widen.widen<B, A>() as arrow.core.NonEmptyList<B>
-}
+  arrow.core.NonEmptyList.functor().run {
+    this@widen.widen<B, A>() as arrow.core.NonEmptyList<B>
+  }
 
 @Suppress(
   "UNCHECKED_CAST",

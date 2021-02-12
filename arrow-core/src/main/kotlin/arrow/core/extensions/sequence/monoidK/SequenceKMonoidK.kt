@@ -21,15 +21,15 @@ import arrow.typeclasses.Monoid
   DeprecationLevel.WARNING
 )
 fun <A> algebra(): Monoid<Kind<ForSequenceK, A>> = arrow.core.extensions.sequence.monoidK.Sequence
-   .monoidK()
-   .algebra<A>() as arrow.typeclasses.Monoid<arrow.Kind<arrow.core.ForSequenceK, A>>
+  .monoidK()
+  .algebra<A>() as arrow.typeclasses.Monoid<arrow.Kind<arrow.core.ForSequenceK, A>>
 
 /**
  * cached extension
  */
 @PublishedApi()
 internal val monoidK_singleton: SequenceKMonoidK = object : arrow.core.extensions.SequenceKMonoidK
-    {}
+{}
 
 @Deprecated(
   "Receiver Sequence object is deprecated, prefer to turn Sequence functions into top-level functions",
@@ -44,4 +44,5 @@ object Sequence {
     "MonoidK typeclass is deprecated. Use concrete methods on Sequence",
     level = DeprecationLevel.WARNING
   )
-  inline fun monoidK(): SequenceKMonoidK = monoidK_singleton}
+  inline fun monoidK(): SequenceKMonoidK = monoidK_singleton
+}

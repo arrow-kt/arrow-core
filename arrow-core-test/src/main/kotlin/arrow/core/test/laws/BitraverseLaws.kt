@@ -28,8 +28,10 @@ object BitraverseLaws {
   fun <F> Bitraverse<F>.identityBitraverse(BT: Bitraverse<F>, GEN: Gen<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>) =
     idApplicative.run {
       val idApp = this
-      forAll(Gen.functionAToB<Int, Kind<Id.Companion, Int>>(Gen.intSmall().map(::Id)),
-        Gen.functionAToB<Int, Kind<Id.Companion, Int>>(Gen.intSmall().map(::Id)), GEN) { f, g, fa ->
+      forAll(
+        Gen.functionAToB<Int, Kind<Id.Companion, Int>>(Gen.intSmall().map(::Id)),
+        Gen.functionAToB<Int, Kind<Id.Companion, Int>>(Gen.intSmall().map(::Id)), GEN
+      ) { f, g, fa ->
         fa.bitraverse(idApplicative, f, g).fix().value.equalUnderTheLaw(BT.run { fa.bimap({ f(it).fix().value }, { g(it).fix().value }) }, EQ)
       }
     }

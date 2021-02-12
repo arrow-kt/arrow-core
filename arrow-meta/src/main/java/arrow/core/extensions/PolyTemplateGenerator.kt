@@ -97,9 +97,11 @@ interface PolyTemplateGenerator : MetaApi {
     setOf("Const", "Tuple").find { it in dataType.name.simpleName } != null
 
   private fun String.replaceApplicativeImports(info: TypeClassInstance): String {
-    val applicativePackageName = PackageName(info.instance.packageName.value +
-      "." + info.projectedCompanion.simpleName.substringAfterLast(".").toLowerCase() +
-      ".applicative")
+    val applicativePackageName = PackageName(
+      info.instance.packageName.value +
+        "." + info.projectedCompanion.simpleName.substringAfterLast(".").toLowerCase() +
+        ".applicative"
+    )
     val monoidImports = if (info.applicativeRequiresMonoid()) "\nimport arrow.core.extensions.monoid" else ""
     return replace(
       "_imports_applicative_",
@@ -108,9 +110,11 @@ interface PolyTemplateGenerator : MetaApi {
   }
 
   private fun String.replaceMonadDeferImports(info: TypeClassInstance): String {
-    val monadDeferPackageName = PackageName(info.instance.packageName.value +
-      "." + info.projectedCompanion.simpleName.substringAfterLast(".").toLowerCase() +
-      ".monadDefer")
+    val monadDeferPackageName = PackageName(
+      info.instance.packageName.value +
+        "." + info.projectedCompanion.simpleName.substringAfterLast(".").toLowerCase() +
+        ".monadDefer"
+    )
     return replace(
       "_imports_monaddefer_",
       """
@@ -121,9 +125,11 @@ interface PolyTemplateGenerator : MetaApi {
   }
 
   private fun String.replaceImports(info: TypeClassInstance): String {
-    val packageName = PackageName(info.instance.packageName.value +
-      "." + info.projectedCompanion.simpleName.substringAfterLast(".").toLowerCase() +
-      "." + info.typeClass.name.simpleName.decapitalize())
+    val packageName = PackageName(
+      info.instance.packageName.value +
+        "." + info.projectedCompanion.simpleName.substringAfterLast(".").toLowerCase() +
+        "." + info.typeClass.name.simpleName.decapitalize()
+    )
     val factoryImports = info.factoryImports()
     val funcs = info.functionsIn(this)
     val additionalImports = additionalImports(funcs)
@@ -175,15 +181,16 @@ interface PolyTemplateGenerator : MetaApi {
   private fun TypeClassInstance.instanceArgs(): String =
     when {
       requiredAbstractFunctions.isEmpty() -> ""
-      else -> requiredAbstractFunctions
-        .joinToString(", ") {
-          val factory = it.returnType?.simpleName?.decapitalize()?.substringBefore("<") ?: ""
-          val fact = if (factory == "functor") "monad" else factory
-          val dataType =
-            if (dataType.typeVariables.size >= 2) "Id"
-            else "String"
-          "$dataType.$fact()"
-        }
+      else ->
+        requiredAbstractFunctions
+          .joinToString(", ") {
+            val factory = it.returnType?.simpleName?.decapitalize()?.substringBefore("<") ?: ""
+            val fact = if (factory == "functor") "monad" else factory
+            val dataType =
+              if (dataType.typeVariables.size >= 2) "Id"
+              else "String"
+            "$dataType.$fact()"
+          }
     }
 
   private fun TypeClassInstance.funcTypeArgs(): List<String> =

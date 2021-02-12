@@ -18,9 +18,9 @@ import kotlin.sequences.Sequence
   DeprecationLevel.WARNING
 )
 operator fun <A> Sequence<A>.plus(arg1: Sequence<A>): Sequence<A> =
-    arrow.core.extensions.sequence.semigroup.Sequence.semigroup<A>().run {
-  arrow.core.SequenceK(this@plus).plus(arrow.core.SequenceK(arg1)) as kotlin.sequences.Sequence<A>
-}
+  arrow.core.extensions.sequence.semigroup.Sequence.semigroup<A>().run {
+    arrow.core.SequenceK(this@plus).plus(arrow.core.SequenceK(arg1)) as kotlin.sequences.Sequence<A>
+  }
 
 @JvmName("maybeCombine")
 @Suppress(
@@ -37,10 +37,10 @@ operator fun <A> Sequence<A>.plus(arg1: Sequence<A>): Sequence<A> =
   DeprecationLevel.WARNING
 )
 fun <A> Sequence<A>.maybeCombine(arg1: Sequence<A>): Sequence<A> =
-    arrow.core.extensions.sequence.semigroup.Sequence.semigroup<A>().run {
-  arrow.core.SequenceK(this@maybeCombine).maybeCombine(arrow.core.SequenceK(arg1)) as
-    kotlin.sequences.Sequence<A>
-}
+  arrow.core.extensions.sequence.semigroup.Sequence.semigroup<A>().run {
+    arrow.core.SequenceK(this@maybeCombine).maybeCombine(arrow.core.SequenceK(arg1)) as
+      kotlin.sequences.Sequence<A>
+  }
 
 /**
  * cached extension
@@ -66,4 +66,5 @@ object Sequence {
     DeprecationLevel.WARNING
   )
   inline fun <A> semigroup(): SequenceKSemigroup<A> = semigroup_singleton as
-      arrow.core.extensions.SequenceKSemigroup<A>}
+    arrow.core.extensions.SequenceKSemigroup<A>
+}

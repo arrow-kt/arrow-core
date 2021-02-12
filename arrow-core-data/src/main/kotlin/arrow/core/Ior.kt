@@ -1084,6 +1084,7 @@ operator fun <A : Comparable<A>, B : Comparable<B>> Ior<A, B>.compareTo(other: I
     other.fold(
       { 1 },
       { 1 },
-      { a2, b2 -> if (a1.compareTo(a2) == 0) b1.compareTo(b2) else a1.compareTo(a2) })
+      { a2, b2 -> if (a1.compareTo(a2) == 0) b1.compareTo(b2) else a1.compareTo(a2) }
+    )
   }
 )

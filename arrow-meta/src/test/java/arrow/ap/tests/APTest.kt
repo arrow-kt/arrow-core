@@ -39,10 +39,12 @@ abstract class APTest(
         val compilation = javac()
           .withProcessors(proc)
           .withOptions(listOf("-Akapt.kotlin.generated=$generationDir", "-proc:only"))
-          .compile(sources.map {
-            val stub = File(stubs, it).toURI().toURL()
-            JavaFileObjects.forResource(stub)
-          })
+          .compile(
+            sources.map {
+              val stub = File(stubs, it).toURI().toURL()
+              JavaFileObjects.forResource(stub)
+            }
+          )
 
         if (error != null) {
 

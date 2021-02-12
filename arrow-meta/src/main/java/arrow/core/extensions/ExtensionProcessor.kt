@@ -256,7 +256,8 @@ class ExtensionProcessor : MetaProcessor<extension>(extension::class), PolyTempl
               } else {
                 staticExtensionImpl(companionOrFactory, func, typeVars, wrappedArgs)
               }
-            })
+            }
+          )
       }
       .toList()
   }

@@ -129,10 +129,12 @@ interface JvmMetaApi : MetaApi, TypeElementEncoder, ProcessorUtils, TypeDecoder 
    * @see [MetaApi.defaultDummyArgValue]
    */
   override fun Parameter.defaultDummyArgValue(): Parameter =
-    copy(defaultValue = when {
-      type.simpleName == "Unit" -> Code("Unit")
-      else -> null
-    })
+    copy(
+      defaultValue = when {
+        type.simpleName == "Unit" -> Code("Unit")
+        else -> null
+      }
+    )
 
   /**
    * @see [MetaApi.downKindParameters]
@@ -385,10 +387,13 @@ interface JvmMetaApi : MetaApi, TypeElementEncoder, ProcessorUtils, TypeDecoder 
    */
   override val TypeName.WildcardType.downKind: TypeName
     get() = if (upperBounds.isNotEmpty() &&
-      (upperBounds.find {
-        name.matches("arrow.Kind<(\\w?), (\\w?)>".toRegex()) ||
-          name.matches("arrow.Kind<arrow.Kind<(\\w?), (\\w?)>, (\\w?)>".toRegex())
-      } != null)) {
+      (
+        upperBounds.find {
+          name.matches("arrow.Kind<(\\w?), (\\w?)>".toRegex()) ||
+            name.matches("arrow.Kind<arrow.Kind<(\\w?), (\\w?)>, (\\w?)>".toRegex())
+        } != null
+        )
+    ) {
       this
     } else {
       name.downKind().let { (pckg, unPrefixedName, extraArgs) ->
@@ -556,10 +561,12 @@ interface JvmMetaApi : MetaApi, TypeElementEncoder, ProcessorUtils, TypeDecoder 
       type = TypeName.typeNameOf(Deprecated::class),
       members = listOf(
         Code(""""$msg""""),
-        Code("""ReplaceWith(
+        Code(
+          """ReplaceWith(
           |"$replaceWithExpression",
           |"${imports.joinToString(", ")}"
-          |)""".trimMargin()),
+          |)""".trimMargin()
+        ),
         Code("DeprecationLevel.WARNING")
       ),
       useSiteTarget = null
@@ -583,8 +590,10 @@ interface JvmMetaApi : MetaApi, TypeElementEncoder, ProcessorUtils, TypeDecoder 
       val dataTypeDownKinded = downKind
       return when {
         this is TypeName.TypeVariable &&
-          (dataTypeDownKinded.simpleName.startsWith("arrow.Kind") ||
-            dataTypeDownKinded.simpleName.startsWith("arrow.typeclasses.Conested")) -> {
+          (
+            dataTypeDownKinded.simpleName.startsWith("arrow.Kind") ||
+              dataTypeDownKinded.simpleName.startsWith("arrow.typeclasses.Conested")
+            ) -> {
           simpleName
             .substringAfterLast("arrow.Kind<")
             .substringAfterLast("arrow.typeclasses.Conested<")

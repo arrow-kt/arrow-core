@@ -148,8 +148,8 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.followedBy(
 )
 fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.apTap(MF: Monoid<F>, arg1: Kind<Kind<ForTuple2, F>, B>):
   Tuple2<F, A> = arrow.core.Tuple2.monad<F>(MF).run {
-  this@apTap.apTap<A, B>(arg1) as arrow.core.Tuple2<F, A>
-}
+    this@apTap.apTap<A, B>(arg1) as arrow.core.Tuple2<F, A>
+  }
 
 @JvmName("followedByEval")
 @Suppress(

@@ -86,10 +86,12 @@ interface TypeElementEncoder : KotlinMetatadataEncoder, KotlinPoetEncoder, Proce
               val constructors = ElementFilter.constructorsIn(elementUtils.getAllMembers(this@type)).filter { executableElement ->
                 declaredConstructorSignatures.any { it?.asString() == executableElement.jvmMethodSignature }
               }.mapNotNull { it.asConstructor(this@type) }
-              Either.Right(classBuilder.copy(
-                primaryConstructor = constructors.find { it.first }?.second,
-                superclass = if (typeElement.superclass is NoType) null else typeElement.superclass.asTypeName().toMeta()
-              ))
+              Either.Right(
+                classBuilder.copy(
+                  primaryConstructor = constructors.find { it.first }?.second,
+                  superclass = if (typeElement.superclass is NoType) null else typeElement.superclass.asTypeName().toMeta()
+                )
+              )
             }
             else -> Either.Left(EncodingError.UnsupportedElementType("Unsupported ${this@TypeElementEncoder}, as ($kind) to Type", this@type))
           }
@@ -170,7 +172,8 @@ interface TypeElementEncoder : KotlinMetatadataEncoder, KotlinPoetEncoder, Proce
           val t = it?.type
           if (t is TypeName.ParameterizedType &&
             t.rawName == "kotlin.coroutines.Continuation" &&
-            t.typeArguments.isNotEmpty()) t.typeArguments[0]
+            t.typeArguments.isNotEmpty()
+          ) t.typeArguments[0]
           else null
         } ?: returnType
       )
@@ -274,7 +277,8 @@ interface TypeElementEncoder : KotlinMetatadataEncoder, KotlinPoetEncoder, Proce
       meta.nameResolver.getString(it.id)
     }
     return if (
-      "kotlin/ExtensionFunctionType" in jvmTypeAnnotations && typeArguments.size >= 2)
+      "kotlin/ExtensionFunctionType" in jvmTypeAnnotations && typeArguments.size >= 2
+    )
       if (isMonadContinuation() || isContinuation()) asSuspendedContinuation()
       else TypeName.FunctionLiteral(
         receiverType = typeArguments[0],

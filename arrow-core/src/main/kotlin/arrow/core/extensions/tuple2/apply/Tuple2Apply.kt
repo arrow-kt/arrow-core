@@ -43,8 +43,8 @@ internal val apply_singleton: Tuple2Apply<Any?> = object : Tuple2Apply<Any?> {}
 )
 fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.ap(arg1: Kind<Kind<ForTuple2, F>, Function1<A, B>>):
   Tuple2<F, B> = arrow.core.Tuple2.apply<F>().run {
-  this@ap.ap<A, B>(arg1) as arrow.core.Tuple2<F, B>
-}
+    this@ap.ap<A, B>(arg1) as arrow.core.Tuple2<F, B>
+  }
 
 @JvmName("apEval")
 @Suppress(
@@ -62,10 +62,10 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.ap(arg1: Kind<Kind<ForTuple2, F>, Func
 )
 fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.apEval(
   arg1: Eval<Kind<Kind<ForTuple2, F>, Function1<A,
-    B>>>
+        B>>>
 ): Eval<Kind<Kind<ForTuple2, F>, B>> = arrow.core.Tuple2.apply<F>().run {
   this@apEval.apEval<A, B>(arg1) as arrow.core.Eval<arrow.Kind<arrow.Kind<arrow.core.ForTuple2, F>,
-    B>>
+      B>>
 }
 
 @JvmName("map2Eval")
@@ -639,8 +639,8 @@ fun <F, A, B> Kind<Kind<ForTuple2, F>, A>.product(arg1: Kind<Kind<ForTuple2, F>,
 )
 fun <F, A, B, Z> Kind<Kind<ForTuple2, F>, Tuple2<A, B>>.product(arg1: Kind<Kind<ForTuple2, F>, Z>):
   Tuple2<F, Tuple3<A, B, Z>> = arrow.core.Tuple2.apply<F>().run {
-  this@product.product<A, B, Z>(arg1) as arrow.core.Tuple2<F, arrow.core.Tuple3<A, B, Z>>
-}
+    this@product.product<A, B, Z>(arg1) as arrow.core.Tuple2<F, arrow.core.Tuple3<A, B, Z>>
+  }
 
 @JvmName("product2")
 @Suppress(
@@ -680,10 +680,10 @@ fun <F, A, B, C, Z> Kind<Kind<ForTuple2, F>, Tuple3<A, B, C>>.product(
   DeprecationLevel.WARNING
 )
 fun <F, A, B, C, D, Z> Kind<Kind<ForTuple2, F>, Tuple4<A, B, C,
-  D>>.product(arg1: Kind<Kind<ForTuple2, F>, Z>): Tuple2<F, Tuple5<A, B, C, D, Z>> =
+    D>>.product(arg1: Kind<Kind<ForTuple2, F>, Z>): Tuple2<F, Tuple5<A, B, C, D, Z>> =
   arrow.core.Tuple2.apply<F>().run {
     this@product.product<A, B, C, D, Z>(arg1) as arrow.core.Tuple2<F, arrow.core.Tuple5<A, B, C, D,
-      Z>>
+        Z>>
   }
 
 @JvmName("product4")
@@ -702,10 +702,10 @@ fun <F, A, B, C, D, Z> Kind<Kind<ForTuple2, F>, Tuple4<A, B, C,
   DeprecationLevel.WARNING
 )
 fun <F, A, B, C, D, E, Z> Kind<Kind<ForTuple2, F>, Tuple5<A, B, C, D,
-  E>>.product(arg1: Kind<Kind<ForTuple2, F>, Z>): Tuple2<F, Tuple6<A, B, C, D, E, Z>> =
+    E>>.product(arg1: Kind<Kind<ForTuple2, F>, Z>): Tuple2<F, Tuple6<A, B, C, D, E, Z>> =
   arrow.core.Tuple2.apply<F>().run {
     this@product.product<A, B, C, D, E, Z>(arg1) as arrow.core.Tuple2<F, arrow.core.Tuple6<A, B, C, D,
-      E, Z>>
+        E, Z>>
   }
 
 @JvmName("product5")
@@ -724,10 +724,10 @@ fun <F, A, B, C, D, E, Z> Kind<Kind<ForTuple2, F>, Tuple5<A, B, C, D,
   DeprecationLevel.WARNING
 )
 fun <F, A, B, C, D, E, FF, Z> Kind<Kind<ForTuple2, F>, Tuple6<A, B, C, D, E,
-  FF>>.product(arg1: Kind<Kind<ForTuple2, F>, Z>): Tuple2<F, Tuple7<A, B, C, D, E, FF, Z>> =
+    FF>>.product(arg1: Kind<Kind<ForTuple2, F>, Z>): Tuple2<F, Tuple7<A, B, C, D, E, FF, Z>> =
   arrow.core.Tuple2.apply<F>().run {
     this@product.product<A, B, C, D, E, FF, Z>(arg1) as arrow.core.Tuple2<F, arrow.core.Tuple7<A, B,
-      C, D, E, FF, Z>>
+        C, D, E, FF, Z>>
   }
 
 @JvmName("product6")
@@ -746,10 +746,10 @@ fun <F, A, B, C, D, E, FF, Z> Kind<Kind<ForTuple2, F>, Tuple6<A, B, C, D, E,
   DeprecationLevel.WARNING
 )
 fun <F, A, B, C, D, E, FF, G, Z> Kind<Kind<ForTuple2, F>, Tuple7<A, B, C, D, E, FF,
-  G>>.product(arg1: Kind<Kind<ForTuple2, F>, Z>): Tuple2<F, Tuple8<A, B, C, D, E, FF, G, Z>> =
+    G>>.product(arg1: Kind<Kind<ForTuple2, F>, Z>): Tuple2<F, Tuple8<A, B, C, D, E, FF, G, Z>> =
   arrow.core.Tuple2.apply<F>().run {
     this@product.product<A, B, C, D, E, FF, G, Z>(arg1) as arrow.core.Tuple2<F, arrow.core.Tuple8<A,
-      B, C, D, E, FF, G, Z>>
+        B, C, D, E, FF, G, Z>>
   }
 
 @JvmName("product7")
@@ -768,7 +768,7 @@ fun <F, A, B, C, D, E, FF, G, Z> Kind<Kind<ForTuple2, F>, Tuple7<A, B, C, D, E, 
   DeprecationLevel.WARNING
 )
 fun <F, A, B, C, D, E, FF, G, H, Z> Kind<Kind<ForTuple2, F>, Tuple8<A, B, C, D, E, FF, G,
-  H>>.product(arg1: Kind<Kind<ForTuple2, F>, Z>): Tuple2<F, Tuple9<A, B, C, D, E, FF, G, H, Z>> =
+    H>>.product(arg1: Kind<Kind<ForTuple2, F>, Z>): Tuple2<F, Tuple9<A, B, C, D, E, FF, G, H, Z>> =
   arrow.core.Tuple2.apply<F>().run {
     this@product.product<A, B, C, D, E, FF, G, H, Z>(arg1) as arrow.core.Tuple2<F,
       arrow.core.Tuple9<A, B, C, D, E, FF, G, H, Z>>
@@ -790,8 +790,8 @@ fun <F, A, B, C, D, E, FF, G, H, Z> Kind<Kind<ForTuple2, F>, Tuple8<A, B, C, D, 
   DeprecationLevel.WARNING
 )
 fun <F, A, B, C, D, E, FF, G, H, I, Z> Kind<Kind<ForTuple2, F>, Tuple9<A, B, C, D, E, FF, G, H,
-  I>>.product(arg1: Kind<Kind<ForTuple2, F>, Z>): Tuple2<F, Tuple10<A, B, C, D, E, FF, G, H, I,
-  Z>> = arrow.core.Tuple2.apply<F>().run {
+    I>>.product(arg1: Kind<Kind<ForTuple2, F>, Z>): Tuple2<F, Tuple10<A, B, C, D, E, FF, G, H, I,
+    Z>> = arrow.core.Tuple2.apply<F>().run {
   this@product.product<A, B, C, D, E, FF, G, H, I, Z>(arg1) as arrow.core.Tuple2<F,
     arrow.core.Tuple10<A, B, C, D, E, FF, G, H, I, Z>>
 }
@@ -813,8 +813,8 @@ fun <F, A, B, C, D, E, FF, G, H, I, Z> Kind<Kind<ForTuple2, F>, Tuple9<A, B, C, 
 )
 fun <F, A, B> tupled(arg0: Kind<Kind<ForTuple2, F>, A>, arg1: Kind<Kind<ForTuple2, F>, B>):
   Tuple2<F, Tuple2<A, B>> = arrow.core.Tuple2
-  .apply<F>()
-  .tupled<A, B>(arg0, arg1) as arrow.core.Tuple2<F, arrow.core.Tuple2<A, B>>
+    .apply<F>()
+    .tupled<A, B>(arg0, arg1) as arrow.core.Tuple2<F, arrow.core.Tuple2<A, B>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -833,8 +833,8 @@ fun <F, A, B> tupled(arg0: Kind<Kind<ForTuple2, F>, A>, arg1: Kind<Kind<ForTuple
 )
 fun <F, A, B> tupledN(arg0: Kind<Kind<ForTuple2, F>, A>, arg1: Kind<Kind<ForTuple2, F>, B>):
   Tuple2<F, Tuple2<A, B>> = arrow.core.Tuple2
-  .apply<F>()
-  .tupledN<A, B>(arg0, arg1) as arrow.core.Tuple2<F, arrow.core.Tuple2<A, B>>
+    .apply<F>()
+    .tupledN<A, B>(arg0, arg1) as arrow.core.Tuple2<F, arrow.core.Tuple2<A, B>>
 
 @JvmName("tupled")
 @Suppress(
@@ -905,7 +905,7 @@ fun <F, A, B, C, D> tupled(
 ): Tuple2<F, Tuple4<A, B, C, D>> = arrow.core.Tuple2
   .apply<F>()
   .tupled<A, B, C, D>(arg0, arg1, arg2, arg3) as arrow.core.Tuple2<F, arrow.core.Tuple4<A, B, C,
-  D>>
+    D>>
 
 @JvmName("tupledN")
 @Suppress(
@@ -930,7 +930,7 @@ fun <F, A, B, C, D> tupledN(
 ): Tuple2<F, Tuple4<A, B, C, D>> = arrow.core.Tuple2
   .apply<F>()
   .tupledN<A, B, C, D>(arg0, arg1, arg2, arg3) as arrow.core.Tuple2<F, arrow.core.Tuple4<A, B, C,
-  D>>
+    D>>
 
 @JvmName("tupled")
 @Suppress(
@@ -956,7 +956,7 @@ fun <F, A, B, C, D, E> tupled(
 ): Tuple2<F, Tuple5<A, B, C, D, E>> = arrow.core.Tuple2
   .apply<F>()
   .tupled<A, B, C, D, E>(arg0, arg1, arg2, arg3, arg4) as arrow.core.Tuple2<F, arrow.core.Tuple5<A,
-  B, C, D, E>>
+    B, C, D, E>>
 
 @JvmName("tupledN")
 @Suppress(

@@ -20,7 +20,7 @@ import kotlin.jvm.JvmName
  */
 @PublishedApi()
 internal val applicative_singleton: NonEmptyListApplicative = object :
-    arrow.core.extensions.NonEmptyListApplicative {}
+  arrow.core.extensions.NonEmptyListApplicative {}
 
 @JvmName("just1")
 @Suppress(
@@ -57,8 +57,8 @@ fun <A> A.just(): NonEmptyList<A> = arrow.core.NonEmptyList.applicative().run {
   DeprecationLevel.WARNING
 )
 fun unit(): NonEmptyList<Unit> = arrow.core.NonEmptyList
-   .applicative()
-   .unit() as arrow.core.NonEmptyList<kotlin.Unit>
+  .applicative()
+  .unit() as arrow.core.NonEmptyList<kotlin.Unit>
 
 @JvmName("map")
 @Suppress(
@@ -69,15 +69,16 @@ fun unit(): NonEmptyList<Unit> = arrow.core.NonEmptyList
 )
 @Deprecated(
   "@extension kinded projected functions are deprecated",
-  ReplaceWith("fix().map<B>(arg1)",
+  ReplaceWith(
+    "fix().map<B>(arg1)",
     "arrow.core.fix"
   ),
   DeprecationLevel.WARNING
 )
 fun <A, B> Kind<ForNonEmptyList, A>.map(arg1: Function1<A, B>): NonEmptyList<B> =
-    arrow.core.NonEmptyList.applicative().run {
-  this@map.map<A, B>(arg1) as arrow.core.NonEmptyList<B>
-}
+  arrow.core.NonEmptyList.applicative().run {
+    this@map.map<A, B>(arg1) as arrow.core.NonEmptyList<B>
+  }
 
 @JvmName("replicate")
 @Suppress(
@@ -95,9 +96,9 @@ fun <A, B> Kind<ForNonEmptyList, A>.map(arg1: Function1<A, B>): NonEmptyList<B> 
   DeprecationLevel.WARNING
 )
 fun <A> Kind<ForNonEmptyList, A>.replicate(arg1: Int): NonEmptyList<List<A>> =
-    arrow.core.NonEmptyList.applicative().run {
-  this@replicate.replicate<A>(arg1) as arrow.core.NonEmptyList<kotlin.collections.List<A>>
-}
+  arrow.core.NonEmptyList.applicative().run {
+    this@replicate.replicate<A>(arg1) as arrow.core.NonEmptyList<kotlin.collections.List<A>>
+  }
 
 @JvmName("replicate")
 @Suppress(
@@ -114,9 +115,9 @@ fun <A> Kind<ForNonEmptyList, A>.replicate(arg1: Int): NonEmptyList<List<A>> =
   )
 )
 fun <A> Kind<ForNonEmptyList, A>.replicate(arg1: Int, arg2: Monoid<A>): NonEmptyList<A> =
-    arrow.core.NonEmptyList.applicative().run {
-  this@replicate.replicate<A>(arg1, arg2) as arrow.core.NonEmptyList<A>
-}
+  arrow.core.NonEmptyList.applicative().run {
+    this@replicate.replicate<A>(arg1, arg2) as arrow.core.NonEmptyList<A>
+  }
 
 @Suppress(
   "UNCHECKED_CAST",
@@ -124,5 +125,6 @@ fun <A> Kind<ForNonEmptyList, A>.replicate(arg1: Int, arg2: Monoid<A>): NonEmpty
 )
 @Deprecated(
   "Applicative typeclass is deprecated. Use concrete methods on NonEmptyList",
-  level = DeprecationLevel.WARNING)
+  level = DeprecationLevel.WARNING
+)
 inline fun Companion.applicative(): NonEmptyListApplicative = applicative_singleton

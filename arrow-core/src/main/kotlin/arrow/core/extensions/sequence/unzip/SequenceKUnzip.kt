@@ -22,11 +22,11 @@ import kotlin.sequences.Sequence
   DeprecationLevel.WARNING
 )
 fun <A, B> Sequence<Tuple2<A, B>>.unzip(): Tuple2<Kind<ForSequenceK, A>, Kind<ForSequenceK, B>> =
-    arrow.core.extensions.sequence.unzip.Sequence.unzip().run {
-  arrow.core.SequenceK(this@unzip).unzip<A, B>() as
-    arrow.core.Tuple2<arrow.Kind<arrow.core.ForSequenceK, A>, arrow.Kind<arrow.core.ForSequenceK,
-    B>>
-}
+  arrow.core.extensions.sequence.unzip.Sequence.unzip().run {
+    arrow.core.SequenceK(this@unzip).unzip<A, B>() as
+      arrow.core.Tuple2<arrow.Kind<arrow.core.ForSequenceK, A>, arrow.Kind<arrow.core.ForSequenceK,
+          B>>
+  }
 
 @JvmName("unzipWith")
 @Suppress(
@@ -44,10 +44,10 @@ fun <A, B> Sequence<Tuple2<A, B>>.unzip(): Tuple2<Kind<ForSequenceK, A>, Kind<Fo
   DeprecationLevel.WARNING
 )
 fun <A, B, C> Sequence<C>.unzipWith(arg1: Function1<C, Tuple2<A, B>>): Tuple2<Kind<ForSequenceK, A>,
-    Kind<ForSequenceK, B>> = arrow.core.extensions.sequence.unzip.Sequence.unzip().run {
+  Kind<ForSequenceK, B>> = arrow.core.extensions.sequence.unzip.Sequence.unzip().run {
   arrow.core.SequenceK(this@unzipWith).unzipWith<A, B, C>(arg1) as
     arrow.core.Tuple2<arrow.Kind<arrow.core.ForSequenceK, A>, arrow.Kind<arrow.core.ForSequenceK,
-    B>>
+        B>>
 }
 
 /**

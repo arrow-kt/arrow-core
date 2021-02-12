@@ -232,7 +232,8 @@ object FoldableLaws {
     forAll(
       Gen.functionAToB<Boolean, Int>(Gen.intSmall()),
       Gen.functionBAToB<Boolean, Int>(Gen.intSmall()),
-      G) { f: (Boolean) -> Int, g: (Int, Boolean) -> Int, fa: Kind<F, Boolean> ->
+      G
+    ) { f: (Boolean) -> Int, g: (Int, Boolean) -> Int, fa: Kind<F, Boolean> ->
 
       val expected = fa.foldLeft(Option.empty<Int>()) { option, a ->
         when (option) {
@@ -247,7 +248,8 @@ object FoldableLaws {
     forAll(
       Gen.functionAToB<Boolean, Int>(Gen.intSmall()),
       Gen.functionABToB<Boolean, Eval<Int>>(Gen.intSmall().eval()),
-      G) { f: (Boolean) -> Int, g: (Boolean, Eval<Int>) -> Eval<Int>, fa: Kind<F, Boolean> ->
+      G
+    ) { f: (Boolean) -> Int, g: (Boolean, Eval<Int>) -> Eval<Int>, fa: Kind<F, Boolean> ->
 
       val expected = fa.foldRight(Eval.Now<Option<Int>>(Option.empty())) { a: Boolean, lb: Eval<Option<Int>> ->
         lb.flatMap { option ->

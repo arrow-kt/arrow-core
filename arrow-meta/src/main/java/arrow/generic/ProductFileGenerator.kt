@@ -304,11 +304,14 @@ class ProductFileGenerator(
     (0 until propertiesSize).joinToString(prefix = "$sourceClassName(", postfix = ")", transform = { "this.${letters[it]}" })
 
   private fun classConstructorFromHList(sourceClassName: String, propertiesSize: Int): String =
-    (0 until propertiesSize).joinToString(prefix = "$sourceClassName(", postfix = ")", transform = {
-      "this." + (0 until it).fold("") { acc, _ ->
-        acc + "tail."
-      } + "head"
-    })
+    (0 until propertiesSize).joinToString(
+      prefix = "$sourceClassName(", postfix = ")",
+      transform = {
+        "this." + (0 until it).fold("") { acc, _ ->
+          acc + "tail."
+        } + "head"
+      }
+    )
 
   private fun kindedProperties(prefix: String, product: AnnotatedGeneric): String =
     product.targets.map { it.paramName }.zip(product.targetNames).joinToString(

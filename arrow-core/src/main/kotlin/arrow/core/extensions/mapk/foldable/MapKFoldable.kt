@@ -173,8 +173,8 @@ fun <K, A> Kind<Kind<ForMapK, K>, A>.reduceLeftOption(arg1: Function2<A, A, A>):
 )
 fun <K, A> Kind<Kind<ForMapK, K>, A>.reduceRightOption(arg1: Function2<A, Eval<A>, Eval<A>>):
   Eval<Option<A>> = arrow.core.MapK.foldable<K>().run {
-  this@reduceRightOption.reduceRightOption<A>(arg1) as arrow.core.Eval<arrow.core.Option<A>>
-}
+    this@reduceRightOption.reduceRightOption<A>(arg1) as arrow.core.Eval<arrow.core.Option<A>>
+  }
 
 @JvmName("combineAll")
 @Suppress(

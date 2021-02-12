@@ -92,17 +92,23 @@ internal open class MultiShotDelimContScope<R>(val f: suspend RestrictedScope<R>
     MultiShotDelimContScope(f).invoke()
 
   fun invoke(): R {
-    f.startCoroutineUninterceptedOrReturn(this, Continuation(EmptyCoroutineContext) { result ->
-      resultVar.value = result.getOrThrow()
-    }).let {
+    f.startCoroutineUninterceptedOrReturn(
+      this,
+      Continuation(EmptyCoroutineContext) { result ->
+        resultVar.value = result.getOrThrow()
+      }
+    ).let {
       if (it == COROUTINE_SUSPENDED) {
         resultVar.loop { mRes ->
           if (mRes == null) {
             val nextShiftFn = nextShift.getAndSet(null)
               ?: throw IllegalStateException("No further work to do but also no result!")
-            nextShiftFn.startCoroutineUninterceptedOrReturn(this, Continuation(EmptyCoroutineContext) { result ->
-              resultVar.value = result.getOrThrow()
-            }).let {
+            nextShiftFn.startCoroutineUninterceptedOrReturn(
+              this,
+              Continuation(EmptyCoroutineContext) { result ->
+                resultVar.value = result.getOrThrow()
+              }
+            ).let {
               if (it != COROUTINE_SUSPENDED) resultVar.value = it as R
             }
           } else return@let

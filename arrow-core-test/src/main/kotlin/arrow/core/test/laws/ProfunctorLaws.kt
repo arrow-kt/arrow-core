@@ -25,7 +25,7 @@ object ProfunctorLaws {
       Law("Profunctor Laws: Rmap Identity") { PF.rMapIdentity(G, EQ) },
       Law("Profunctor Laws: Lmap Composition") { PF.lMapComposition(G, EQ) },
       Law("Profunctor Laws: Rmap Composition") { PF.rMapComposition(G, EQ) }
-      )
+    )
   }
 
   fun <F> Profunctor<F>.identity(f: Gen<Kind2<F, Int, Int>>, EQ: Eq<Kind2<F, Int, Int>>): Unit =

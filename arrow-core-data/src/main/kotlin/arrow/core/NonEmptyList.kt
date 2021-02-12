@@ -535,7 +535,7 @@ fun <A, B, C> NonEmptyList<C>.unzip(f: (C) -> Pair<A, B>): Pair<NonEmptyList<A>,
   this.map(f).let { nel ->
     nel.tail.unzip().let {
       NonEmptyList(nel.head.first, it.first) to
-      NonEmptyList(nel.head.second, it.second)
+        NonEmptyList(nel.head.second, it.second)
     }
   }
 

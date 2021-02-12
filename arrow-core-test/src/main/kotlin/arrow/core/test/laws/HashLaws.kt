@@ -11,7 +11,7 @@ object HashLaws {
     listOf(
       Law("Hash Laws: Equality implies equal hash") { equalHash(HF, EQ, G) },
       Law("Hash Laws: Multiple calls to hash should result in the same hash") { equalHashM(HF, G) },
-        Law("Hash Laws: Multiple calls to hashWithSalt with the same salt should result in the same hash") { equalHashWithSaltM(HF, G) }
+      Law("Hash Laws: Multiple calls to hashWithSalt with the same salt should result in the same hash") { equalHashWithSaltM(HF, G) }
     )
 
   private fun <F> equalHash(HF: Hash<F>, EQ: Eq<F>, G: Gen<F>) {
