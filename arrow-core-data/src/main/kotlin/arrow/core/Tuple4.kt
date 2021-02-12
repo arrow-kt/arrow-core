@@ -3,22 +3,55 @@
 
 package arrow.core
 
+import arrow.KindDeprecation
 import arrow.typeclasses.Hash
 import arrow.typeclasses.Show
 import arrow.typeclasses.ShowDeprecation
 import arrow.typeclasses.defaultSalt
 
+@Deprecated(
+  message = KindDeprecation,
+  level = DeprecationLevel.WARNING
+)
 class ForTuple4 private constructor() {
   companion object
 }
+
+@Deprecated(
+  message = KindDeprecation,
+  level = DeprecationLevel.WARNING
+)
 typealias Tuple4Of<A, B, C, D> = arrow.Kind4<ForTuple4, A, B, C, D>
+
+@Deprecated(
+  message = KindDeprecation,
+  level = DeprecationLevel.WARNING
+)
 typealias Tuple4PartialOf<A, B, C> = arrow.Kind3<ForTuple4, A, B, C>
 
 @Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
+@Deprecated(
+  message = KindDeprecation,
+  level = DeprecationLevel.WARNING
+)
 inline fun <A, B, C, D> Tuple4Of<A, B, C, D>.fix(): Tuple4<A, B, C, D> =
   this as Tuple4<A, B, C, D>
 
-data class Tuple4<out A, out B, out C, out D>(val a: A, val b: B, val c: C, val d: D) : Tuple4Of<A, B, C, D> {
+data class Tuple4<out A, out B, out C, out D>(
+  @Deprecated("Use first instead", ReplaceWith("first"))
+  val a: A,
+  @Deprecated("Use second instead", ReplaceWith("second"))
+  val b: B,
+  @Deprecated("Use third instead", ReplaceWith("third"))
+  val c: C,
+  @Deprecated("Use fourth instead", ReplaceWith("fourth"))
+  val d: D
+) : Tuple4Of<A, B, C, D> {
+
+  val first: A = a
+  val second: B = b
+  val third: C = c
+  val fourth: D = d
 
   @Deprecated(ShowDeprecation)
   fun show(SA: Show<A>, SB: Show<B>, SC: Show<C>, SD: Show<D>): String =
