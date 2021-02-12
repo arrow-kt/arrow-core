@@ -18,7 +18,7 @@ class MemoizationTest : FreeSpec() {
 
           val memoized = ::sum.memoize()
 
-          val (first, second) = parMapN( { memoized() }, { memoized() }, ::Pair)
+          val (first, second) = parMapN({ memoized() }, { memoized() }, ::Pair)
 
           first == second
         }
