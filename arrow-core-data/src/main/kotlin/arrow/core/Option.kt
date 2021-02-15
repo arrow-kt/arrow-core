@@ -310,7 +310,7 @@ inline fun <A> OptionOf<A>.fix(): Option<A> = this as Option<A>
  *
  * val value: Option<Int> =
  * //sampleStart
- *  option.eager {
+ *  option.eager<Int> {
  *    val a = Some(1).bind()
  *    val b = Some(1 + a).bind()
  *    val c = Some(1 + b).bind()
@@ -330,7 +330,7 @@ inline fun <A> OptionOf<A>.fix(): Option<A> = this as Option<A>
  *
  * val value: Option<Int> =
  * //sampleStart
- *  option.eager {
+ *  option.eager<Int> {
  *    val x = none<Int>().bind()
  *    val y = Some(1 + x).bind()
  *    val z = Some(1 + y).bind()

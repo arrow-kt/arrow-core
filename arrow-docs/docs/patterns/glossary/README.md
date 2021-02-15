@@ -169,7 +169,7 @@ option.eager<Int> {
 ```
 
 ```kotlin:ank:silent
-import Option
+import arrow.core.Option
 
 Option.mapN(Some(1), Some(2), Some(3)) { one, two, three ->
   one + two + three
