@@ -178,7 +178,7 @@ Option.mapN(Some(1), Some(2), Some(3)) { one, two, three ->
 
 ```kotlin:ank:silent
 import arrow.core.Right
-import arrow.core.sequenceEither()
+import arrow.core.sequenceEither
 
 listOf(Right(1), Right(2), Right(3)).sequenceEither()
 ```
