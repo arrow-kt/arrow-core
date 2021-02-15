@@ -135,7 +135,7 @@ When creating an instance with the `@extension` annotation, the processor genera
 import arrow.core.Option
 import arrow.core.computations.option
 
-option.eager {
+option.eager<Int> {
   val a = Option(1).bind()
   val b = Option(a + 1).bind()
   a + b
