@@ -158,9 +158,10 @@ listOf(Option(1), Option(2), Option(3)).sequence(Option.applicative())
 ```
 
 ```kotlin:ank
+import arrow.core.Some
 import arrow.core.computations.option
 
-option.eager {
+option.eager<Int> {
     val a = Some(1).bind()
     val b = Some(a+1).bind()
     a + b

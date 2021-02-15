@@ -328,7 +328,7 @@ inline fun <A> OptionOf<A>.fix(): Option<A> = this as Option<A>
  * import arrow.core.none
  * import arrow.core.Option
  *
- * val value =
+ * val value: Option<Int> =
  * //sampleStart
  *  option.eager {
  *    val x = none<Int>().bind()
