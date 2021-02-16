@@ -23,6 +23,7 @@ import kotlinx.atomicfu.loop
  *   //sampleEnd
  *   println("$value1 $value2")
  * }
+ * ```
  *
  * Note that calling this function with the same parameters in parallel might cause the function to be executed twice.
  */
