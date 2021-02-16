@@ -267,8 +267,8 @@ inline fun <A> OptionOf<A>.fix(): Option<A> = this as Option<A>
  *
  * //sampleEnd
  * fun main() {
- *  println("empty = empty")
- *  println("filled = filled")
+ *  println("empty = $empty")
+ *  println("filled = $filled")
  * }
  * ```
  *
