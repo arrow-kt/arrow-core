@@ -308,17 +308,17 @@ inline fun <A> OptionOf<A>.fix(): Option<A> = this as Option<A>
  * import arrow.core.Some
  * import arrow.core.Option
  *
- * val value: Option<Int> =
+ * suspend fun value(): Option<Int> =
  * //sampleStart
- *  option.eager<Int> {
+ *  option {
  *    val a = Some(1).bind()
  *    val b = Some(1 + a).bind()
  *    val c = Some(1 + b).bind()
  *    a + b + c
  * }
  * //sampleEnd
- * fun main() {
- *  println(value)
+ * suspend fun main() {
+ *  println(value())
  * }
  * ```
  *
@@ -328,17 +328,17 @@ inline fun <A> OptionOf<A>.fix(): Option<A> = this as Option<A>
  * import arrow.core.none
  * import arrow.core.Option
  *
- * val value: Option<Int> =
+ * suspend fun value(): Option<Int> =
  * //sampleStart
- *  option.eager<Int> {
+ *  option {
  *    val x = none<Int>().bind()
  *    val y = Some(1 + x).bind()
  *    val z = Some(1 + y).bind()
  *    x + y + z
  *  }
  * //sampleEnd
- * fun main() {
- *  println(value)
+ * suspend fun main() {
+ *  println(value())
  * }
  * ```
  *
