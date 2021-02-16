@@ -34,12 +34,12 @@ typealias Nel<A> = NonEmptyList<A>
  * `NonEmptyList` is a data type used in __Λrrow__ to model ordered lists that guarantee to have at least one value.
  * `NonEmptyList` is available in the `arrow-core-data` module under the `import arrow.core.NonEmptyList`
  *
- * ## of
+ * ## nonEmptyListOf
  *
  * A `NonEmptyList` guarantees the list always has at least 1 element.
  *
  * ```kotlin:ank:playground
- * import arrow.core.NonEmptyList
+ * import arrow.core.nonEmptyListOf
  *
  * val value =
  * //sampleStart
@@ -56,7 +56,7 @@ typealias Nel<A> = NonEmptyList<A>
  * Unlike `List[0]`, `NonEmptyList.head` it's a safe operation that guarantees no exception throwing.
  *
  * ```kotlin:ank:playground
- * import arrow.core.NonEmptyList
+ * import arrow.core.nonEmptyListOf
  *
  * val value =
  * //sampleStart
@@ -75,6 +75,7 @@ typealias Nel<A> = NonEmptyList<A>
  *
  * ```kotlin:ank:playground
  * import arrow.core.NonEmptyList
+ * import arrow.core.nonEmptyListOf
  *
  * //sampleStart
  * fun sumNel(nel: NonEmptyList<Int>): Int =
@@ -91,7 +92,7 @@ typealias Nel<A> = NonEmptyList<A>
  * `map` allows us to transform `A` into `B` in `NonEmptyList< A >`
  *
  * ```kotlin:ank:playground
- * import arrow.core.NonEmptyList
+ * import arrow.core.nonEmptyListOf
  *
  * val value =
  * //sampleStart
@@ -108,6 +109,7 @@ typealias Nel<A> = NonEmptyList<A>
  *
  * ```kotlin:ank:playground
  * import arrow.core.NonEmptyList
+ * import arrow.core.nonEmptyListOf
  *
  * //sampleStart
  * val nelOne: NonEmptyList<Int> = nonEmptyListOf(1)
@@ -153,6 +155,7 @@ typealias Nel<A> = NonEmptyList<A>
  *
  * ```kotlin:ank:playground
  * import arrow.core.NonEmptyList
+ * import arrow.core.nonEmptyListOf
  * import arrow.core.extensions.fx
  *
  * val value =
@@ -174,6 +177,7 @@ typealias Nel<A> = NonEmptyList<A>
  *
  * ```kotlin:ank:playground
  * import arrow.core.NonEmptyList
+ * import arrow.core.nonEmptyListOf
  * import java.util.UUID
  * import arrow.core.extensions.nonemptylist.apply.map
  *
