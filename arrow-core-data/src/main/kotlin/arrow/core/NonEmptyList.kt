@@ -359,7 +359,7 @@ class NonEmptyList<out A>(
     @Deprecated(
       "just is deprecated, and will be removed in 0.13.0. Please use NonEmptyList.of instead.",
       ReplaceWith(
-        "NonEmptyList.of(a)",
+        "nonEmptyListOf(a)",
         "arrow.core.NonEmptyList"
       ),
       DeprecationLevel.WARNING
