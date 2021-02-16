@@ -43,8 +43,8 @@ typealias Nel<A> = NonEmptyList<A>
  *
  * val value =
  * //sampleStart
- *  // NonEmptyList.of() // does not compile
- *  NonEmptyList.of(1, 2, 3, 4, 5) // NonEmptyList<Int>
+ *  // nonEmptyListOf() // does not compile
+ *  nonEmptyListOf(1, 2, 3, 4, 5) // NonEmptyList<Int>
  * //sampleEnd
  * fun main() {
  *  println(value)
@@ -60,7 +60,7 @@ typealias Nel<A> = NonEmptyList<A>
  *
  * val value =
  * //sampleStart
- *  NonEmptyList.of(1, 2, 3, 4, 5).head
+ *  nonEmptyListOf(1, 2, 3, 4, 5).head
  * //sampleEnd
  * fun main() {
  *  println(value)
@@ -79,7 +79,7 @@ typealias Nel<A> = NonEmptyList<A>
  * //sampleStart
  * fun sumNel(nel: NonEmptyList<Int>): Int =
  *  nel.foldLeft(0) { acc, n -> acc + n }
- * val value = sumNel(NonEmptyList.of(1, 1, 1, 1))
+ * val value = sumNel(nonEmptyListOf(1, 1, 1, 1))
  * //sampleEnd
  * fun main() {
  *  println("value = $value")
@@ -95,7 +95,7 @@ typealias Nel<A> = NonEmptyList<A>
  *
  * val value =
  * //sampleStart
- *  NonEmptyList.of(1, 1, 1, 1).map { it + 1 }
+ *  nonEmptyListOf(1, 1, 1, 1).map { it + 1 }
  * //sampleEnd
  * fun main() {
  *  println(value)
@@ -110,8 +110,8 @@ typealias Nel<A> = NonEmptyList<A>
  * import arrow.core.NonEmptyList
  *
  * //sampleStart
- * val nelOne: NonEmptyList<Int> = NonEmptyList.of(1)
- * val nelTwo: NonEmptyList<Int> = NonEmptyList.of(2)
+ * val nelOne: NonEmptyList<Int> = nonEmptyListOf(1)
+ * val nelTwo: NonEmptyList<Int> = nonEmptyListOf(2)
  *
  * val value = nelOne.flatMap { one ->
  *  nelTwo.map { two ->
@@ -133,9 +133,9 @@ typealias Nel<A> = NonEmptyList<A>
  * import arrow.core.extensions.fx
  *
  * //sampleStart
- * val nelOne: NonEmptyList<Int> = NonEmptyList.of(1)
- * val nelTwo: NonEmptyList<Int> = NonEmptyList.of(2)
- * val nelThree: NonEmptyList<Int> = NonEmptyList.of(3)
+ * val nelOne: NonEmptyList<Int> = nonEmptyListOf(1)
+ * val nelTwo: NonEmptyList<Int> = nonEmptyListOf(2)
+ * val nelThree: NonEmptyList<Int> = nonEmptyListOf(3)
  *
  * val value = NonEmptyList.fx {
  *  val (one) = nelOne
@@ -158,8 +158,8 @@ typealias Nel<A> = NonEmptyList<A>
  * val value =
  * //sampleStart
  *  NonEmptyList.fx {
- *    val (x) = NonEmptyList.of(1, 2, 3)
- *    val (y) = NonEmptyList.of(1, 2, 3)
+ *    val (x) = nonEmptyListOf(1, 2, 3)
+ *    val (y) = nonEmptyListOf(1, 2, 3)
  *   x + y
  *  }
  * //sampleEnd
@@ -181,9 +181,9 @@ typealias Nel<A> = NonEmptyList<A>
  * data class Person(val id: UUID, val name: String, val year: Int)
  *
  * // Note each NonEmptyList is of a different type
- * val nelId: NonEmptyList<UUID> = NonEmptyList.of(UUID.randomUUID(), UUID.randomUUID())
- * val nelName: NonEmptyList<String> = NonEmptyList.of("William Alvin Howard", "Haskell Curry")
- * val nelYear: NonEmptyList<Int> = NonEmptyList.of(1926, 1900)
+ * val nelId: NonEmptyList<UUID> = nonEmptyListOf(UUID.randomUUID(), UUID.randomUUID())
+ * val nelName: NonEmptyList<String> = nonEmptyListOf("William Alvin Howard", "Haskell Curry")
+ * val nelYear: NonEmptyList<Int> = nonEmptyListOf(1926, 1900)
  *
  * val value = map(nelId, nelName, nelYear) { (id, name, year) ->
  *  Person(id, name, year)
@@ -197,7 +197,7 @@ typealias Nel<A> = NonEmptyList<A>
  * ### Summary
  *
  * - `NonEmptyList` is __used to model lists that guarantee at least one element__
- * - We can easily construct values of `NonEmptyList` with `NonEmptyList.of`
+ * - We can easily construct values of `NonEmptyList` with `nonEmptyListOf`
  * - `foldLeft`, `map`, `flatMap` and others are used to compute over the internal contents of a `NonEmptyList` value.
  * - `fx { ... } comprehensions` can be __used to imperatively compute__ over multiple `NonEmptyList` values in sequence.
  * - `NonEmptyList.applicative().map { ... }` can be used to compute over multiple `NonEmptyList` values preserving type information and __abstracting over arity__ with `map`
@@ -357,7 +357,7 @@ class NonEmptyList<out A>(
       NonEmptyList(l)
 
     @Deprecated(
-      "just is deprecated, and will be removed in 0.13.0. Please use NonEmptyList.of instead.",
+      "just is deprecated, and will be removed in 0.13.0. Please use nonEmptyListOf instead.",
       ReplaceWith(
         "nonEmptyListOf(a)",
         "arrow.core.NonEmptyList"
@@ -525,7 +525,7 @@ fun <A> nonEmptyListOf(head: A, vararg t: A): NonEmptyList<A> =
   NonEmptyList(head, t.asList())
 
 inline fun <A> A.nel(): NonEmptyList<A> =
-  NonEmptyList.of(this)
+  nonEmptyListOf(this)
 
 fun <A, G> NonEmptyListOf<Kind<G, A>>.sequence(GA: Applicative<G>): Kind<G, NonEmptyList<A>> =
   fix().traverse(GA, ::identity)
