@@ -20,7 +20,8 @@ import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 @Deprecated(
   message = KindDeprecation,
   level = DeprecationLevel.WARNING
-)inline fun <A> EvalOf<A>.fix(): Eval<A> =
+)inline
+fun <A> EvalOf<A>.fix(): Eval<A> =
   this as Eval<A>
 
 @Deprecated(
