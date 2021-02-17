@@ -25,25 +25,25 @@ class SuspendingComputationTest : StringSpec({
 
   "immediate values" {
     either<String, Int> {
-      Right(1).invoke()
+      Right(1).bind()
     } shouldBe Right(1)
   }
 
   "suspended value" {
     either<String, Int> {
-      Right(1).suspend().invoke()
+      Right(1).suspend().bind()
     } shouldBe Right(1)
   }
 
   "immediate short-circuit" {
     either<String, Int> {
-      Left("hello").invoke()
+      Left("hello").bind()
     } shouldBe Left("hello")
   }
 
   "suspended short-circuit" {
     either<String, Int> {
-      Left("hello").suspend().invoke()
+      Left("hello").suspend().bind()
     } shouldBe Left("hello")
   }
 
@@ -51,8 +51,8 @@ class SuspendingComputationTest : StringSpec({
     val e = RuntimeException("test")
     shouldThrow<RuntimeException> {
       either<String, Int> {
-        Right(1).invoke()
-        Right(1).suspend().invoke()
+        Right(1).bind()
+        Right(1).suspend().bind()
         throw e
       }
     } shouldBe e
@@ -62,8 +62,8 @@ class SuspendingComputationTest : StringSpec({
     val e = RuntimeException("test")
     shouldThrow<RuntimeException> {
       either<String, Int> {
-        Right(1).invoke()
-        Right(1).suspend().invoke()
+        Right(1).bind()
+        Right(1).suspend().bind()
         e.suspend()
       }
     } shouldBe e
@@ -72,7 +72,7 @@ class SuspendingComputationTest : StringSpec({
   "Can short-circuit immediately from nested blocks" {
     either<String, Int> {
       val x = maybeEff {
-        Left("test").invoke()
+        Left("test").bind()
         5L
       }
 
@@ -84,7 +84,7 @@ class SuspendingComputationTest : StringSpec({
   "Can short-circuit suspended from nested blocks" {
     either<String, Int> {
       val x = maybeEff {
-        Left("test").suspend().invoke()
+        Left("test").suspend().bind()
         5L
       }
 
@@ -96,8 +96,8 @@ class SuspendingComputationTest : StringSpec({
   "Can short-circuit immediately after suspending from nested blocks" {
     either<String, Int> {
       val x = maybeEff {
-        Just(1L).suspend().invoke()
-        Left("test").suspend().invoke()
+        Just(1L).suspend().bind()
+        Left("test").suspend().bind()
         5L
       }
 
@@ -109,8 +109,8 @@ class SuspendingComputationTest : StringSpec({
   "Can short-circuit suspended after suspending from nested blocks" {
     either<String, Int> {
       val x = maybeEff {
-        Just(1L).suspend().invoke()
-        Left("test").suspend().invoke()
+        Just(1L).suspend().bind()
+        Left("test").suspend().bind()
         5L
       }
 
@@ -132,7 +132,7 @@ class SuspendingComputationTest : StringSpec({
         },
         scope.async<Int> {
           latch.await()
-          Left("hello").invoke()
+          Left("hello").bind()
         }
       )
 
@@ -166,18 +166,22 @@ suspend fun completeOnCancellation(latch: CompletableDeferred<Unit>, cancelled: 
 
 internal suspend fun Throwable.suspend(): Nothing =
   suspendCoroutineUninterceptedOrReturn { cont ->
-    suspend { throw this }.startCoroutine(Continuation(Dispatchers.Default) {
-      cont.intercepted().resumeWith(it)
-    })
+    suspend { throw this }.startCoroutine(
+      Continuation(Dispatchers.Default) {
+        cont.intercepted().resumeWith(it)
+      }
+    )
 
     COROUTINE_SUSPENDED
   }
 
 internal suspend fun <A> A.suspend(): A =
   suspendCoroutineUninterceptedOrReturn { cont ->
-    suspend { this }.startCoroutine(Continuation(Dispatchers.Default) {
-      cont.intercepted().resumeWith(it)
-    })
+    suspend { this }.startCoroutine(
+      Continuation(Dispatchers.Default) {
+        cont.intercepted().resumeWith(it)
+      }
+    )
 
     COROUTINE_SUSPENDED
   }

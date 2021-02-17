@@ -13,27 +13,26 @@ import arrow.typeclasses.ShowDeprecation
 @Deprecated(
   message = KindDeprecation,
   level = DeprecationLevel.WARNING
-)
-class ForEither private constructor() {
+) class ForEither private constructor() {
   companion object
 }
+
 @Deprecated(
   message = KindDeprecation,
   level = DeprecationLevel.WARNING
-)
-typealias EitherOf<A, B> = arrow.Kind2<ForEither, A, B>
+) typealias EitherOf<A, B> = arrow.Kind2<ForEither, A, B>
+
 @Deprecated(
   message = KindDeprecation,
   level = DeprecationLevel.WARNING
-)
-typealias EitherPartialOf<A> = arrow.Kind<ForEither, A>
+) typealias EitherPartialOf<A> = arrow.Kind<ForEither, A>
 
 @Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
 @Deprecated(
   message = KindDeprecation,
   level = DeprecationLevel.WARNING
-)
-inline fun <A, B> EitherOf<A, B>.fix(): Either<A, B> =
+)inline
+fun <A, B> EitherOf<A, B>.fix(): Either<A, B> =
   this as Either<A, B>
 
 /**
@@ -794,9 +793,9 @@ inline fun <A, B> EitherOf<A, B>.fix(): Either<A, B> =
  * val value =
  * //sampleStart
  *  either<Int, Int> {
- *   val a = Either.Right(1)()
- *   val b = Either.Right(1 + a)()
- *   val c = Either.Right(1 + b)()
+ *   val a = Either.Right(1).bind()
+ *   val b = Either.Right(1 + a).bind()
+ *   val c = Either.Right(1 + b).bind()
  *   a + b + c
  *  }
  * //sampleEnd

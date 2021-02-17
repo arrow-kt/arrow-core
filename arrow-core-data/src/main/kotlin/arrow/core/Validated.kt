@@ -15,23 +15,26 @@ typealias Invalid<E> = Validated.Invalid<E>
 @Deprecated(
   message = KindDeprecation,
   level = DeprecationLevel.WARNING
-)class ForValidated private constructor() {
+) class ForValidated private constructor() {
   companion object
 }
+
 @Deprecated(
   message = KindDeprecation,
   level = DeprecationLevel.WARNING
-)typealias ValidatedOf<E, A> = arrow.Kind2<ForValidated, E, A>
+) typealias ValidatedOf<E, A> = arrow.Kind2<ForValidated, E, A>
+
 @Deprecated(
   message = KindDeprecation,
   level = DeprecationLevel.WARNING
-)typealias ValidatedPartialOf<E> = arrow.Kind<ForValidated, E>
+) typealias ValidatedPartialOf<E> = arrow.Kind<ForValidated, E>
 
 @Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
 @Deprecated(
   message = KindDeprecation,
   level = DeprecationLevel.WARNING
-)inline fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
+)inline
+fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
   this as Validated<E, A>
 
 /**
@@ -167,10 +170,10 @@ typealias Invalid<E> = Validated.Invalid<E>
  *   suspend fun <A> parse(read: Read<A>, key: String) = either<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
- *     }()
+ *     }.bind()
  *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
- *     }()
+ *     }.bind()
  *     readVal
  *   }
  * }
@@ -286,10 +289,10 @@ typealias Invalid<E> = Validated.Invalid<E>
  *   suspend fun <A> parse(read: Read<A>, key: String) = either<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
- *     }()
+ *     }.bind()
  *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
- *     }()
+ *     }.bind()
  *     readVal
  *   }.toValidatedNel()
  * }
@@ -349,10 +352,10 @@ typealias Invalid<E> = Validated.Invalid<E>
  *   suspend fun <A> parse(read: Read<A>, key: String) = either<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
- *     }()
+ *     }.bind()
  *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
- *     }()
+ *     }.bind()
  *     readVal
  *   }.toValidatedNel()
  * }
@@ -409,10 +412,10 @@ typealias Invalid<E> = Validated.Invalid<E>
  *   suspend fun <A> parse(read: Read<A>, key: String) = either<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
- *     }()
+ *     }.bind()
  *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
- *     }()
+ *     }.bind()
  *     readVal
  *   }.toValidatedNel()
  * }
