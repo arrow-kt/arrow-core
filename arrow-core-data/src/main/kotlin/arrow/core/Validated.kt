@@ -170,10 +170,10 @@ fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  *   suspend fun <A> parse(read: Read<A>, key: String) = either<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
- *     }()
+ *     }.bind()
  *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
- *     }()
+ *     }.bind()
  *     readVal
  *   }
  * }
@@ -289,10 +289,10 @@ fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  *   suspend fun <A> parse(read: Read<A>, key: String) = either<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
- *     }()
+ *     }.bind()
  *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
- *     }()
+ *     }.bind()
  *     readVal
  *   }.toValidatedNel()
  * }
@@ -352,10 +352,10 @@ fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  *   suspend fun <A> parse(read: Read<A>, key: String) = either<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
- *     }()
+ *     }.bind()
  *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
- *     }()
+ *     }.bind()
  *     readVal
  *   }.toValidatedNel()
  * }
@@ -412,10 +412,10 @@ fun <E, A> ValidatedOf<E, A>.fix(): Validated<E, A> =
  *   suspend fun <A> parse(read: Read<A>, key: String) = either<ConfigError, A> {
  *     val value = Validated.fromNullable(map[key]) {
  *       ConfigError.MissingConfig(key)
- *     }()
+ *     }.bind()
  *     val readVal = Validated.fromNullable(read.read(value)) {
  *       ConfigError.ParseConfig(key)
- *     }()
+ *     }.bind()
  *     readVal
  *   }.toValidatedNel()
  * }
